@@ -4,7 +4,9 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=Conchosu@1
     volumes:
-      - ./mydata:/var/lib/mysql
+      - ./data:/var/lib/mysql
+      - ./backupfile.sql:/docker-entrypoint-initdb.d/backup.sql
+    command: --init-file /docker-entrypoint-initdb.d/backup.sql
 
   backend:
     build:
@@ -49,7 +51,7 @@ services:
   web-server:
     image: nginx:1.25.4-alpine
     ports:
-      - 10048:80
+      - 10041:80
       - 443:443
     volumes:
       - ./nginx/conf/nginx.conf:/etc/nginx/conf.d/nginx.conf
