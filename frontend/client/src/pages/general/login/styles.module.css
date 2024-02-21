@@ -1,0 +1,61 @@
+.container{
+    margin: 20px 0px 100px 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.loginContainer{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 80px;
+    margin: 20px 0;
+    width: 100%;
+    max-width: 1024px;
+}
+
+.loginImg img{
+    width: 400px;
+    height: 400px;
+    object-fit:cover;
+}
+
+.formContainerBig
+{
+    width: 100%;
+}
+
+.formContainerSmall{
+    width: 85%;
+}
+
+.formInfor{
+  text-align: center;
+}
+
+.btnLogin{
+  margin-top: 30px;
+  margin-bottom: 30px;
+}
+
+.tab-content {
+  position: relative;
+}
+
+.loading_icon{
+  margin-top: 15px;
+}
+
+.subLink{
+  display: none;
+  font-size: 14px;
+}
+
+@media only screen and (max-width: 754px){
+
+  .subLink{
+    display: block
+  }
+
+}

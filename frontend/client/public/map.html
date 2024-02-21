@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>OpenStreetMap with Route, Markers, and Current Location</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    #map {
+      height: 400px;
+    }
+  </style>
+</head>
+<body>
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script>
+    // Tạo một đối tượng bản đồ
+    var map = L.map('map').setView([0, 0], 13);
+
+    // Thêm layer OSM vào bản đồ
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors'
+    }).addTo(map);
+
+    // Tạo một mảng chứa các điểm trên tuyến đường
+    var coordinates = [
+      [11.91708820, 109.13897710],
+      [10.87828310, 106.81348220],
+      // Thêm các điểm khác nếu cần
+    ];
+
+    // Tạo đối tượng đường từ mảng các điểm
+    var polyline = L.polyline(coordinates, { color: 'red' }).addTo(map);
+
+    // Đánh dấu điểm đầu tuyến đường
+    var startMarker = L.marker(coordinates[0]).addTo(map);
+    startMarker.bindPopup("Điểm bắt đầu");
+
+    // Đánh dấu điểm cuối tuyến đường
+    var endMarker = L.marker(coordinates[coordinates.length - 1]).addTo(map);
+    endMarker.bindPopup("Điểm kết thúc");
+
+    // Đánh dấu các điểm trung gian trên tuyến đường (nếu có)
+    for (var i = 1; i < coordinates.length - 1; i++) {
+      var intermediateMarker = L.marker(coordinates[i]).addTo(map);
+      intermediateMarker.bindPopup("Điểm trung gian " + i);
+    }
+
+    // Lấy vị trí hiện tại của người dùng
+    navigator.geolocation.getCurrentPosition(function(position) {
+      var currentLatitude = position.coords.latitude;
+      var currentLongitude = position.coords.longitude;
+
+      // Hiển thị đánh dấu vị trí hiện tại
+      var currentLocationMarker = L.marker([currentLatitude, currentLongitude]).addTo(map);
+      currentLocationMarker.bindPopup("Vị trí hiện tại của bạn");
+    });
+  </script>
+</body>
+</html>

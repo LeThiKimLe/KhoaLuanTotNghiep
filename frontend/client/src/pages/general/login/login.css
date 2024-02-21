@@ -1,0 +1,155 @@
+.tab{
+    display: flex;
+    gap: 20px;
+    justify-content: space-between;
+    text-transform: uppercase;
+}
+
+.subTab{
+    flex: 1;
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+}
+
+.subTab::after{
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #e1dede;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+}
+
+.subTab:hover{
+    cursor: pointer;
+    color: #4fc6ed;
+
+}
+
+.subTab-active{
+    position: relative;
+}
+
+.subTab-active::after{
+    color:  #4fc6ed;
+    position: absolute;
+    content: "";
+    border-bottom: 2px solid #4fc6ed;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+}
+
+.loginTab{
+   
+}
+
+.registerTab{
+   
+}
+
+/* Remove browser defaults */
+* {
+    box-sizing: border-box;
+    padding: 0;
+    margin: 0;
+  }
+   
+  /* Style App.js wrapper */
+  .App {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .loginTabContainer{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
+   
+  /* Tab Container */
+  .loginTabContainer .Tabs {
+    height: auto;
+    min-height: 400px;
+    border: 1px solid #ccc;
+    border-radius: 2rem;
+    padding: 20px 0;
+  }
+   
+  .loginTabContainer .react-tabs {
+    -webkit-tap-highlight-color: transparent;
+  }
+   
+  .loginTabContainer .react-tabs__tab-list {
+    width: 60%;
+    margin: 0 auto 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #39A2DB;
+    border-radius: 2rem;
+    padding-left: 0px;
+  }
+   
+  .loginTabContainer .react-tabs__tab {
+    width: 50%;
+    padding: 1rem;
+    list-style: none;
+    text-align: center;
+    cursor: pointer;
+    /* transition: all 0.1s; */
+    transform: translateX(0%);
+    transition: transform 300ms ease-in-out;
+  }
+   
+  .loginTabContainer .react-tabs__tab--selected {
+    background: #4fc6ed;
+  }
+   
+  .loginTabContainer .react-tabs__tab--disabled {
+    color: #ccc;
+    cursor: default;
+  }
+   
+  .loginTabContainer .react-tabs__tab:hover {
+    background: rgba(50, 224, 196, 0.15);
+  }
+   
+  .loginTabContainer .react-tabs__tab:first-child {
+    border-bottom-left-radius: 2rem;
+    border-top-left-radius: 2rem;
+  }
+   
+  .loginTabContainer .react-tabs__tab:last-child {
+    border-bottom-right-radius: 2rem;
+    border-top-right-radius: 2rem;
+  }
+   
+  .loginTabContainer .react-tabs__tab-panel {
+    display: block;
+  }
+   
+  .loginTabContainer .react-tabs__tab-panel--selected {
+    display: block;
+    font-size: 2rem;
+    text-align: center;
+  }
+
+  
+  @media only screen and (max-width: 754px){
+    .loginTabContainer .react-tabs__tab{
+      display: none;
+    }
+
+    .loginTabContainer .react-tabs__tab--selected{
+    display: block;
+    width: 100%;
+    border-radius: 2rem 2rem 2rem 2rem;
+    }
+ 
+}

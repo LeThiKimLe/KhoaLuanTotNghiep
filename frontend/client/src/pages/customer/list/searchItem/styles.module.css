@@ -1,0 +1,144 @@
+@keyframes appearAnimation {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  
+.cover{
+    border: 1px solid #797777;
+    margin-top: 20px;
+    border-radius: 5px 0 5px 0;
+    background-color: var(--primary-color);
+    animation: appearAnimation 1s ease-in-out;
+    opacity: 1;
+}
+.searchResult
+{
+    background-color: white;
+    border-radius: 35px 0 35px 0;
+    padding: 15px;
+    font-weight: 500;
+}
+
+.searchResult:hover{
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 14px 28px, rgba(0, 0, 0, 0.22) 0px 10px 10px;
+}
+
+.routeTime{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+}
+
+.startRoute{
+    color: #236550;
+}
+
+.distanceRoute{
+    display: flex;
+    flex: 1;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.dotDistance{
+    border: 2px dotted #ccc;
+    height: 0;
+    flex: 1;
+    padding: 0 10px;
+}
+
+.hourRoute{
+
+}
+
+.endRoute{
+    color: #11738e
+}
+
+.routeLocation{
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.routePoint{
+
+}
+
+.endPoint{
+    text-align: right;
+
+}
+
+.busType
+{
+    margin-top: 10px;
+    color: #616060;
+    display: inline-block;
+
+}
+
+.typeIcon{
+    margin-right: 10px;
+}
+
+.seatBlank{
+    float: right;
+    margin-top: 10px;
+    text-align: right;
+    color: red;
+    font-weight: 500;
+}
+
+.split{
+    height: 0;
+    border: 1px solid #e6e1e1;
+    margin: 10px 0;
+}
+
+.note{
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.ticketPrice{
+    color: #2e94ee;
+    font-size: 20px;
+    font-weight: 600;
+    text-align: right
+}
+
+.bookTicket{
+    width: 100%;
+    display: flex;
+    justify-content: end;
+    margin-top: 10px;
+}
+
+.bookBtn{
+    color: #3e3d3d;
+    background-color: #fac83f;
+    font-weight: 600;
+    padding: 10px;
+    border-radius: 5px;
+    width: 20%;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.bookBtn:hover{
+    cursor: pointer;
+    box-shadow: 0 0 4px #727171;
+}
+
+
+
+
+

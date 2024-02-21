@@ -1,0 +1,149 @@
+.container{
+    width: 100%;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.status{
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    transform: scale(2);
+    margin: 20px 0;
+    padding: 10px;
+}
+
+.message{
+    font-weight: 600;
+    color: #676565;
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+.inforForm{
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding-bottom: 40px;
+
+}
+
+.formTitle{
+    background-color: #e0dddd;
+    color: #000;
+    text-transform: uppercase;
+    font-size: 18px;
+    font-weight: 600;
+    border-radius: 10px 10px 0 0;
+    padding: 10px 0;
+}
+
+.infor{
+    padding: 10px;
+    
+}
+
+.detailInfor{
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+}
+
+.detailInfor span:first-child{
+    color: var(--text-color);
+    min-width: 125px;
+    text-align: left;
+
+}
+
+.detailInfor span:last-child{
+    color: #212121;
+}
+
+.ticketContainer{
+    position: relative;
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin: 20px;
+    padding: 0 0 20px 0;
+    box-shadow: 0 0px 6px rgba(0,0,0,0.5);
+    background-color: #ffffff;
+}
+
+.downloadQR{
+    margin-top: 5px;
+    text-decoration: underline;
+    margin-left: 5px;
+}
+
+.downloadQR:hover{
+    cursor: pointer;
+    color: var(--primary-color)
+}
+
+.ticketContainer::before {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 20px;
+    background-color: #ffffff;
+    /* border: 2px solid #000000; */
+    border-radius: 50%;
+  }
+  
+.ticketCode{
+    color: #000;
+    font-size: 16px;
+    padding: 25px 0 5px 0;
+    background-color: var(--primary-color);
+    border-radius: 10px 10px 0 0;
+}
+
+.qrCode{
+    margin: 15px 0;
+    display: inline-block;
+}
+
+
+.ticketDetail{
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 10px;
+}
+
+.ticketDetail span:first-child{
+    color: var(--text-color);
+    min-width: 100px;
+    text-align: left;
+}
+
+.ticketDetail span:last-child{
+    text-align: right;
+    color: #212121;
+}
+
+.copyBtn:hover{
+    cursor: pointer;
+
+}
+
+.ticket-state.success{
+    color: green !important;
+}
+
+.ticket-state.pending{
+    color: rgb(141, 141, 4) !important;
+}
+
+.ticket-state.cancel{
+    color: red !important;
+}
+
+.ticket-state.canceling{
+    color: rgb(255, 153, 0) !important;
+}
+

@@ -1,0 +1,106 @@
+.container{
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.wrapper{
+    width: 100%;
+    max-width: 1024px;
+}
+
+.paymentContainer{
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+}
+
+.colTitle{
+    text-align: center;
+    color: #474646;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+.methods{
+    padding: 0 15px 
+}
+
+.methodCol{
+    position: relative;
+    padding: 0 10px;
+}
+
+.methodCol::after{
+    position: absolute;
+    content: '';
+    height: 80%;
+    border-left: 1px solid var(--border-color);
+    right: 8px;
+    top: 45px;
+}
+
+.qrCol{
+    text-align: center;
+}
+
+.qrCol h2{
+    margin: 0 0 10px 0;
+    color: #f68a38; 
+}
+
+.qr{
+    margin: 20px 0;
+}
+
+.direction{
+    margin: 40px 0 20px 0;
+}
+
+.direction h4{
+    font-size: 18px;
+    text-align: left;
+}
+
+.direction ol{
+    text-align: left;
+    font-weight: 500;
+    padding: 0 40px 0 40px;
+}
+
+.direction ol li {
+    padding: 5px 0;
+
+}
+
+
+.trip_sum{
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+    height: max-content;
+    background-color: rgb(246, 240, 130);
+    margin-bottom: 20px;
+}
+
+.sum_title{
+    text-align: center;
+    font-size: 18px;
+    font-weight: 700;
+
+}
+.sum_infor{
+    display: flex;
+    gap: 30px;
+    margin: 10px 0;
+
+}
+.sum_infor_title{
+    font-weight: 600;
+    min-width: 100px;
+
+}
+.sum_infor_value{
+    font-weight: 400;
+    overflow-wrap: anywhere;
+}

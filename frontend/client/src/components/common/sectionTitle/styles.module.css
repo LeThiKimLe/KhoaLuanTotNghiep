@@ -1,0 +1,23 @@
+.sectionTitle
+{
+    width: 100%;
+    max-width: 1024px;
+    margin: 25px 0 10px 0;
+    text-align: center;
+}
+
+.sectionTitle h1
+{
+    font-size: 25px;
+    color: #0e5f7a;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+}
+
+.sectionTitle h2
+{
+    font-size: 18px;
+    color: rgb(66, 65, 65);
+    margin: 10px 0 20px 0;
+
+}

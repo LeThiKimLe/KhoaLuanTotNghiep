@@ -1,0 +1,67 @@
+{
+    "header":{
+        "menu": {
+                "home": "Home",
+                "schedule": "Schedule",
+                "ticket": "Check Ticket",
+                "invoice": "Invoice",
+                "contact": "Contacts",
+                "about": "About Us",
+                "other": "Other"
+            },
+        "welcome": "Wanna to travel through VietNam? Let's book XeKimNguyen",
+        "promo": "Create your account. Start your first booking with discount",
+        "login/signup": "Login / Register",
+        "login": "Login",
+        "searchbox":{
+                "one_way": "One-way",
+                "round_trip": "Round-trip",
+                "origin": "Origin",
+                "destination": "Destination",
+                "depart_date": "Departure Date",
+                "return_date": "Return Date",
+                "ticket_number": "Ticket Number",
+                "search_btn": "Search Trips"
+        }
+    },
+    "feature": {
+        "title": "Common Routes",
+        "slogan": "Trusted and chosen by customers"
+        },
+    "property":{
+        "title": "Customers are the best cooperator",
+        "slogan": "Customer's satisfaction is the measure of our success",
+        "list_props": [
+            {
+                "property": "Over 200 million",
+                "property_field": "Passengers",
+                "property_desc": "XeKimNguyen served an average of more than 200 million passengers/year nationwide."
+            },
+            {
+                "property": "Over 100",
+                "property_field": "Ticket Offices",
+                "property_desc": "XeKimNguyen has more than 350 ticket offices, transit stations, bus stations, etc. throughout the system."
+            },
+            {
+                "property": "Over 50",
+                "property_field": "Bus trips",
+                "property_desc": "XeKimNguyen serves more than 50 long-distance and intercity bus trips every day."
+            }
+        ]
+    },
+    "comment":{
+        "title": "OUR CUSTOMERS'S THOUGHT",
+        "slogan": "We're trying our best to deliver best service to passengers"
+    },
+    "filter":{
+        "title": "Seach",
+        "list_filter":[
+            {
+                "title": "Departure time",
+                "options":[
+                    "Mid"
+                ]
+            }
+        ]
+    }
+}

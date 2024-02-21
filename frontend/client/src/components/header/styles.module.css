@@ -1,0 +1,556 @@
+.header{
+    background-color: #4fc6ed;
+    color: white;
+    display: flex;
+    justify-content: center;
+    position: relative;
+    z-index: 2;
+    padding: 5px;
+}
+
+.headerContainer
+{
+    width: 100%;
+    max-width: 1024px;
+    margin: 20px 0px 100px 0px;
+}
+
+.headerTitle{
+   
+}
+
+.headerDesc{
+    
+}
+
+.headerContainer.listMode{
+    margin: 20px 0px 10px 0px;
+}
+
+.headerList{
+    display: flex;
+    gap: 20px;
+}
+
+.headerListItem{
+    text-decoration: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid var(--primary-color);
+    position: relative;
+}
+
+.headerListItem::after{
+    position: absolute;
+    content: "";
+    width: 100%;
+    height: 20px;
+    background-color: transparent;
+    top: 100%;
+}
+
+.headerListItem:hover{
+    background-color: rgba(237, 244, 159, 0.3);
+    cursor: pointer;
+}
+
+.headerListItem.active{
+    border-color: white;
+}
+
+.headerListItem:hover .subMenu{
+    display: block
+}
+
+.subMenu{
+    display: none;
+    position: absolute;
+    list-style-type: none;
+    box-shadow: 0 0 3px 3px rgb(0, 0, 0, 0.3);
+    border-radius: 10px;
+    top: 50px;
+    right: 0;
+    padding: 0;
+    z-index: 20;
+}
+
+.subMenu:hover{
+    cursor: pointer;
+}
+
+.subMenuItem{
+    color: var(--primary-color);
+    background-color: white;
+    padding: 10px;
+    display: flex;
+    gap: 20px;
+    min-width: 200px;
+    text-decoration: none;
+    align-items: center;
+}
+
+.subMenuItem svg{
+    width: 20px;
+}
+
+.subMenu li:first-child .subMenuItem{
+    border-radius: 10px 10px 0 0;
+}
+
+.subMenu li:last-child .subMenuItem{
+    border-radius: 0 0 10px 10px;
+}
+
+.subMenuItem:hover{
+    background-color: rgb(231, 227, 227);
+}
+
+.subMenuItem.active{
+    background-color: rgb(231, 227, 227);
+}
+
+.headerDesc{
+    margin: 20px 0px;
+}
+
+.headerButton{
+    background-color: blue;
+    color: white;
+    font-weight: 500;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+
+
+
+@media only screen and (min-width: 1000px) {
+    /* styles for devices with a minimum screen width of 480px */
+ 
+.headerSearch{
+    background-color: white;
+    border: 3px solid #febb02;
+    padding: 20px 0px 40px 0;
+    border-radius: 5px;
+    position: absolute;
+    width: 100%;
+    max-width: 1024px;
+    z-index: 3
+}
+
+.mask {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #ccc;
+}
+
+.headerSearchList
+{
+    display: flex; 
+    align-items: center;
+    justify-content: center;
+    margin: 10px 0;
+    gap: 20px;
+    /* padding: 0px 15px; */
+}
+
+.groupItem{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+}
+
+.headerSearchItem{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    flex: 1;
+    min-width: 190px;
+    max-width: 230px;
+}
+
+.dot{
+    display: none
+}
+
+.datePicker{
+    max-width: 150px;
+}
+
+}
+
+@media only screen and (min-width: 542px) and (max-width: 1000px){
+
+.headerSearch{
+    background-color: white;
+    border: 3px solid #febb02;
+    padding: 10px 0px 20px 0;
+    border-radius: 5px;
+    position: absolute;
+    /* bottom: -93px; */
+    width: 100%;
+    height: max-content;
+    z-index: 3
+}
+
+.headerSearchList
+{
+    display: flex; 
+    align-items: center;
+    justify-content: space-around;
+    margin: 10px 0;
+}
+
+.groupItem{
+    display: block;
+    flex: 1;
+    padding: 0 20px;
+}
+
+.headerSearchItem{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.headerSearchItem svg{
+    width: 40px;
+}
+
+.headerSearchItem::after{
+    display: none;
+}
+
+.dot{
+    height: 40px;
+    border-left: 3px dotted #757474;
+    margin-left: 19px;
+}
+
+.datePicker{
+    max-width: none;
+}
+
+
+}
+
+@media only screen and (max-width: 542px) {
+
+.headerSearch{
+    background-color: white;
+    border: 3px solid #febb02;
+    padding: 10px 0px 30px 0;
+    border-radius: 5px;
+    position: absolute;
+    /* bottom: -93px; */
+    width: 97%;
+    height: max-content;
+    z-index: 3
+}
+
+.headerSearchList
+{
+    display: block; 
+    margin: 10px 0;
+    padding: 0px 15px;
+}
+
+.headerSearchItem{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    flex: 1;
+    margin-bottom: 10px;
+}
+
+.headerSearchItem::after{
+    display: none
+}
+
+}
+
+
+.headerSearchItem::after{
+    content: "";
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    height: 23px;
+    border-right: 1px solid #000;
+    transform: translateY(-50%);
+}
+
+.headerIcon{
+    font-size: 25px;
+    color: lightgray;
+}
+
+.headerSearchInput{
+    border: none !important;
+    outline: none !important;
+    font-size: 17px;
+    width: 100%;
+}
+
+.headerSearchText{
+    color: black;
+    font-size: 18px;
+    font-weight: 500;
+    margin: 0px 10px;
+}
+
+.tripTypeBox
+{
+    color: gray;
+    margin: 5px 20px;
+    display: flex;
+    gap: 20px
+}
+
+.tripTypeBoxItem
+{
+    margin: 0px 5px;
+    display: flex;
+    gap: 5px;
+}
+
+.tripTypeBoxItem:hover
+{
+    color: #4fc6ed;
+}
+
+.tripTypeBoxItem input[type='radio']:checked +span{
+    color:#4fc6ed;
+  }
+
+  .radioBox:hover
+  {
+      border-color: #4fc6ed !important;
+  }
+
+.dateArea
+{
+    flex: 1;
+
+}
+
+.datePicker{
+   position: relative;
+   /* margin-top: 12px; */
+    padding:7px;
+    border-radius: 5px;
+    border: 1px solid  hsl(0, 0%, 80%);
+}
+
+.form-control{
+    min-height: auto;
+    padding: 4.5px 12px 3.68px 12px;
+    transition: all 0.1s linear;
+    box-shadow: none;
+    /* border: 1px solid gray; */
+    border-radius: 5px;
+}
+
+.form-control:focus{
+    box-shadow: none;
+    transition: all 0.1s linear;
+    border-color: #4fc6ed;
+    box-shadow: inset 0px 0px 0px 1px #4fc6ed;
+}
+
+.form-outline {
+    position: relative;
+    width: 100%;
+    margin-top: 19px;
+}
+
+.form-outline .form-control{
+    min-height: auto;
+    padding: 5px;
+    background: transparent;
+    transition: all 0.2s linear;
+}
+
+.form-outline .form-control ~ .form-label{
+    position: absolute;
+    top: -14px;
+    max-width: 90%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    left: 10px;
+    padding-top: 7px;
+    pointer-events: none;
+    transform-origin: 0 0;
+    transition: all 0.2s ease-out;
+    color: gray;
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.form-outline .form-control:focus {
+
+    box-shadow: none !important;
+    transition: all 0.1s linear;
+    border-color: #4fc6ed;
+    box-shadow: inset 0px 0px 0px 1px #4fc6ed;
+}
+
+  .form-outline .form-control::placeholder
+  {
+    opacity: 0;
+  }
+
+  .form-outline input:focus + .form-label,
+  .form-outline input:not(:placeholder-shown) + .form-label {
+
+    top: -22px;
+    left: 6px;
+    font-size: 12px;
+    color: #4fc6ed;
+    font-weight: 500;
+  }
+
+.ticketAmount
+{
+    flex: 0;
+    min-width: max-content;
+    /* margin-left: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative; */
+}
+
+.ticketAmount::after{
+    display: none;
+}
+
+.returnDate
+{
+    /* margin-left: 10px; */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    /* flex: 1.1; */
+}
+
+.returnDate::after
+{
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    height: 23px;
+    border-right: 1px solid #000;
+    transform: translateY(-50%);
+}
+
+.headerSearchButton
+{
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.searchButton{
+    min-width: 250px;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 15px;
+    background-color: #13b9f0;
+    padding: 10px;
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
+}
+.searchButton:hover
+{
+    border: 2px solid;
+}
+
+.searchButton:active
+{
+    background-color: #055e7b;
+}
+
+.optionCounterButton
+{
+    width: 40px;
+    height: 40px;
+    border: 1px solid #4fc6ed;
+    cursor: pointer;
+    font-weight: 500;
+    border-radius: 10px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.optionCounterButton span{
+    font-size: 24px; 
+}
+
+.optionCounterButton:active
+{
+    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
+}
+
+.ticketChange{
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+/* .ticketChange::after
+{
+    content: "Ticket Number";
+    position: absolute;
+    top: -16px;
+    left: 3px;
+    font-size: 12px;
+    color: #4fc6ed;
+    font-weight: 500;
+    min-width: 150%
+} */
+
+/* .labelDate::placeholder
+{
+    opacity: 0;
+} */
+
+.selectItem
+{
+    
+    color: black;
+}
+
+.selectTitle
+{
+    color: gray;
+    font-weight: 500;
+    margin-bottom: 5px;
+}
+
+.selectArea{
+    /* margin-right: 20px; */
+    flex: 1;
+}

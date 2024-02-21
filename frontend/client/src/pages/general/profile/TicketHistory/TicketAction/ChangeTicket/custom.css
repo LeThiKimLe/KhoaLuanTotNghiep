@@ -1,0 +1,8 @@
+.searchChange{
+
+}
+
+.searchChange .react-datepicker__input-container input {
+    padding: 6px;
+    border-radius: 7px;
+}

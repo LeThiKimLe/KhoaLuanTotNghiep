@@ -1,0 +1,86 @@
+.container{
+    width: 100%;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background-color: var(--primary-color);
+}
+
+.sub_container{
+    width: 100%;
+    padding: 20px;
+    border: 1px solid var(--border-color);
+    background-color: white;
+    border-radius: 50px 10px 50px 10px;
+}
+
+.container:hover{
+    box-shadow: 0 0 8px #ccc;
+}
+
+.routeName{
+    font-size: 19px;
+    font-weight: 700;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.routePlace{
+    flex: 1;
+}
+
+.routePlace:first-child{
+    text-align: left;
+}
+.routePlace:last-child{
+    text-align: right;
+}
+
+.routeTime{
+    display: flex;
+    align-items: center;
+    color: var(--sub-color);
+    margin: 10px 0;
+}
+
+.routeTime .time{
+    color: var(--text-color)
+}
+
+.dot{
+    border: 1px dashed #ccc;
+    height: 0;
+    flex: 1;
+}
+
+.infor{
+    margin: 5px 0;
+    display: flex;
+}
+
+.infor .infor_title{
+    font-weight: 700;
+    min-width: 120px;
+
+}
+
+.searchArea{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.note{
+    font-size: 12px;
+    
+}
+
+.container .searchBtn{
+    text-align: right;
+}
+
+.searchBtn{
+    background-color: var(--sub-color);
+}
+

@@ -1,0 +1,72 @@
+.footer
+{
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    align-items: center;
+    padding: 20px 0 0 0;
+    background-color: rgb(223, 243, 249, 0.5);
+}
+
+.fLists{
+    width: 100%;
+    max-width: 1024px;
+    font-size: 15px;
+    font-weight: 400;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.fList{
+    list-style: none;
+    padding: 0;
+}
+
+.fListItem{
+    margin-bottom: 10px;
+    color: #4fc6ed;
+    cursor: pointer;
+}
+
+.fText{
+    width: 100%;
+    background-color: #4fc6ed;
+    text-align: center;
+}
+
+.footer h3{
+    font-size: 17px;
+    text-transform: uppercase;
+    color: rgb(176, 162, 5);
+    margin: 5px 0;
+}
+
+.footer h2{
+    color: rgb(53, 161, 215);
+    font-weight: 500;
+    margin: 10px 0;
+}
+
+.footer span{
+    color: var(--text-color)
+}
+
+.footer ul{
+    
+}
+
+.footer li{
+    padding: 5px 0;
+}
+
+.footer li a{
+    text-decoration: none;
+    color: #737272;
+    font-weight: 500;
+}
+
+.footer li:hover, .footer li a:hover{
+    color: var(--primary-color)
+}

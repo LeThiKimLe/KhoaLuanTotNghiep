@@ -1,0 +1,56 @@
+{
+    "header":{
+        "menu": {
+                "home": "Trang chủ",
+                "schedule": "Lộ trình",
+                "ticket": "Tra cứu vé",
+                "invoice": "Tra cứu hóa đơn",
+                "contact": "Liên hệ",
+                "about": "Về chúng tôi",
+                "other": "Khác"
+            },
+        "welcome": "Bạn muốn đi đến địa điểm nào ở Việt Nam? Hãy đặt Xe Kim Nguyên",
+        "promo": "Tạo tài khoản và nhận được nhiều ưu đãi cho chuyến xe của bạn",
+        "login/signup": "Đăng nhập / Đăng ký",
+        "login": "Đăng nhập",
+        "searchbox":{
+                "one_way": "Một chiều",
+                "round_trip": "Hai chiều",
+                "origin": "Điểm đi",
+                "destination": "Điểm đến",
+                "depart_date": "Ngày đi",
+                "return_date": "Ngày về",
+                "ticket_number": "Số vé",
+                "search_btn": "Tìm chuyến xe"
+        }
+    },
+    "feature": {
+        "title": "Tuyến đường phổ biến",
+        "slogan": "Được tin tưởng và lựa chọn bởi khách hàng"
+        },
+    "property":{
+        "title": "Khách hàng là đối tác quan trọng nhất",
+        "slogan": "Sự hài lòng của khách hàng là thước đo thành công của chúng tôi",
+        "list_props": [
+            {
+                "property": "Hơn 2 triệu",
+                "property_field": "Hành khách",
+                "property_desc": "Xe Kim Nguyên đã phục vụ hơn 2 triệu lượt khách mỗi năm trên khắp cả nước"
+            },
+            {
+                "property": "Hơn 100",
+                "property_field": "Phòng vé",
+                "property_desc": "Hệ thống Xe Kim Nguyên có hơn 100 trạm vé, trạm trung chuyển"
+            },
+            {
+                "property": "Hơn 500",
+                "property_field": "Chuyến xe",
+                "property_desc": "Xe Kim Nguyên vận hành hơn 500 chuyến xe đường dài mỗi ngày"
+            }
+        ]
+    },
+    "comment":{
+        "title": "Cảm nhận của khách hàng",
+        "slogan": "Chúng tôi luôn cố gắng hết sức để mang đến dịch vụ chất lượng nhất đến khách hàng"
+    }
+}

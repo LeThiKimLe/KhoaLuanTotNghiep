@@ -1,0 +1,302 @@
+.listContainer{
+    display: flex;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.subContainer{
+    width: 100%;
+    max-width: 1024px;
+    
+}
+
+@media only screen and (min-width: 878px) {
+    .listWrapper{
+        width: 100%;
+        max-width: 1024px;
+        display: flex;
+        padding: 5px;
+        gap: 20px;
+    }
+}
+
+@media only screen and (max-width: 878px) {
+    .listWrapper{
+        width: 100%;
+        max-width: 1024px;
+        display: flex;
+        padding: 5px;
+    }
+}
+
+.searchBox{
+    background-color: white;
+    border: 3px solid #febb02;
+    padding: 10px 0px 30px 0;
+    border-radius: 5px;
+    width: 100%;
+    max-width: 1024px;
+    z-index: 3;
+    position: relative;
+    margin: 0 0 30px 0;
+}
+
+.listSearch{
+    flex: 1;
+    background-color: #fac83f;
+    padding: 10px;
+    border-radius: 10px;
+    position: sticky;
+    top: 10px;
+    height: max-content;
+}
+
+.lsTitle
+{
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.listResult{
+    flex: 3;
+}
+
+
+
+.searchBar
+{
+    display: flex;
+    justify-content: space-around;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    align-content: center;
+    padding: 0 10px ;
+}
+
+.searchPlace
+{
+    display: flex;
+    /* justify-content: space-between; */
+    align-items: center;
+    flex: 2;
+}
+
+.searchItem{
+    /* border: 1px solid #ccc; */
+    border-radius: 5px;
+    padding: 10px 0px;
+    /* margin-right: 10px; */
+    /* position: relative; */
+}
+
+.searchItem:not(:last-child)::after
+{
+    position: absolute;
+    content: "";
+    height: 50%;
+    border-left: 1px solid #ccc;
+    right: 0;
+}
+
+.searchItem:last-child
+{
+    flex: 0.8;
+}
+
+@media only screen and (max-width: 878px) {
+    .searchBar{
+        flex-direction: column;
+        align-items: center;
+    }
+    .searchItem
+    {
+        width: 100%;
+        flex: 1;
+    }
+}
+
+.searchItemIcon
+{
+    color: #368099;
+}
+
+.searchInput
+{
+    border: none;
+    width: 90%;
+    padding: 0 5px;
+
+}
+
+.searchInput:focus{
+    border: none !important;
+    outline: none !important;
+}
+
+.searchBtn{
+    background-color: #4fc6ed;
+    align-content: center;
+    display: flex;
+    align-items: center;
+    width: 60px;
+    justify-content: center;
+    border-radius: 10px;
+    height: 40px;
+    
+}
+
+.exchangeBtn
+{
+    flex: 0;
+    margin: 0 10px;
+}
+
+.exchangeBtn::after{
+    display: none;
+}
+
+.searchNumber
+{
+    flex: 1;
+}
+
+.searchDate{
+    flex: 1;
+}
+
+.searchTotal{
+    font-size: 18px;
+    font-weight: 600;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.sortArea
+{
+    color: #8a8888;
+    display: flex;
+    margin: 8px 0;
+    font-weight: 500;
+    align-items: center;
+}
+
+.optionChoice:hover
+{
+    cursor: pointer;
+}
+
+.optionChoice{
+    margin: 0 5px;
+    padding: 5px;
+    background-color: rgba(248, 244, 244);
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+.optionChoice-active
+{
+    background-color: rgba(195, 232, 245, 0.8);
+    border-color: #12baf2
+}
+
+.resultContainer{
+    position: relative;
+    
+}
+
+.notfound{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+   align-items: center;
+   margin: 40px 0;
+}
+
+.notfound img{
+    max-width: 330px;
+}
+
+.notfound p{
+    font-size: 20px;
+    font-weight: 600;
+    margin: 0
+}
+
+.tripSum {
+    margin-bottom: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.tripSum .header {
+    height: 45px;
+    background-color: #b2afaf;
+    border-radius: 5px 5px 0 0;
+    padding: 5px;
+    border-bottom: 1px solid #4e4d4d;
+    display: flex;
+    align-items: center;
+}
+
+.tripSum .header .title {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.tripSum .body {
+    padding: 5px;
+}
+
+.filterBtn{
+    font-size: 13px;
+    background-color: #cdeaf4;
+    align-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 5px;
+}
+
+.filterContainer {
+    position: absolute;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    background-color: rgba(0, 0, 0, 0.5); /* Black with 50% opacity */
+    transition: transform 0.3s ease-out;
+  }
+  
+.filterContainer.hidden {
+    transform: translateX(100%);
+    display: none;
+}
+
+.closeFilter{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    font-size: 30px;
+    color: #555;
+    cursor: pointer;
+}
+
+.mask {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5); /* Black with 50% opacity */
+    z-index: 3; /* Below the .filterContainer */
+    transition: opacity 0.3s ease-out;
+  }
+  
+  .mask.hidden {
+    display: none;
+  }

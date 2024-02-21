@@ -1,0 +1,168 @@
+.filterInput{
+    height: 36px;
+    width:  100%;
+    border-radius: 4px;
+    border: 1px solid hsl(0, 0%, 80%);
+    padding: 0 10px;
+}
+
+.filterTitle{
+    padding: 5px 0;
+    margin: 5px 0;
+}
+
+.historyContainer{
+    max-height: 285px;
+    overflow: auto;
+}
+
+.tableHistory{
+    border: 1px solid #ddd;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.tableHistory tbody{
+    
+}
+
+.tableHistory th,
+.tableHistory td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.tableHistory th {
+  background-color: #f2f2f2;
+  position: sticky;
+  top: 0;
+  z-index: 1; 
+}
+
+.tableHistory .even {
+    background-color: rgba(202, 238, 247, 0.3);
+  }
+  
+.tableHistory .odd {
+    background-color: #ffffff;
+}
+
+.pending{
+    font-size: 13px;
+    color: #454444;
+    font-weight: 400;
+    background-color: rgba(250, 250, 11, 0.5);
+    padding: 0 5px;
+    border: 1px solid #000;
+}
+
+.cancel{
+    font-size: 13px;
+    color: #454444;
+    font-weight: 400;
+    background-color: rgba(246, 50, 50, 0.5);
+    padding: 0 5px;
+    border: 1px solid #000;
+}
+
+.success{
+    font-size: 13px;
+    color: #454444;
+    font-weight: 400;
+    background-color: rgba(29, 250, 29, 0.5);
+    padding: 0 5px;
+    border: 1px solid #000;
+}
+
+.tableHistory tr.selected td
+ {
+    border-top: 2px solid var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+  }
+
+.tableHistory tr.selected td:first-child
+{
+    border-left: 2px solid var(--primary-color);
+}
+
+.tableHistory tr.selected td:last-child
+{
+    border-right: 2px solid var(--primary-color);
+}
+
+.actionContainer{
+    margin: 10px 0 0 0;
+    position: relative;
+    float: right;
+}
+
+.actionContainer .actionBtn{
+    padding: 5px 10px; 
+    width: max-content;
+    display: flex;
+    gap: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    align-items: center;
+    margin-bottom: 5px;
+}
+
+.disable{
+    background-color: rgba(228, 224, 224, 0.2);
+    color: #bbbaba;
+}
+
+.disable:hover{
+    cursor: not-allowed !important;
+}
+
+.actionBtn:hover{
+    cursor: pointer;
+}
+
+
+.actionSelect{
+    list-style: none;
+    position: absolute;
+    padding: 0;
+    background-color: white;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    z-index: 2; 
+    box-shadow: 0 0 3px 2px #787777;
+}
+
+.actionSelect li{
+    padding: 5px 10px;
+}
+
+.actionSelect li:not(.disable):hover{
+    background-color: rgb(147, 230, 247, 0.5);
+    cursor: pointer;
+}
+
+.actionSelect li.disable{
+    color: #686666;
+    background-color: #ada5a552;
+    cursor: none;
+}
+
+.actionContainer i{
+    float: right;
+    text-decoration: underline;
+}
+
+.actionContainer i:hover{
+    cursor: pointer;
+}
+
+
+.selectItem{
+    z-index: 2;
+}
+
+
+
+

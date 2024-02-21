@@ -1,0 +1,651 @@
+{
+    "seat_bus":{
+        "row_no": 7,
+        "col_no": 4,
+        "floor_no": 1,
+        "seat_map":
+            [
+                {
+                    "name": "01",
+                    "row": 1,
+                    "col": 4,
+                    "floor": 1
+                },
+                {
+                    "name": "02",
+                    "row": 1,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "03",
+                    "row": 1,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "04",
+                    "row": 1,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "05",
+                    "row": 2,
+                    "col": 4,
+                    "floor": 1
+                },
+                {
+                    "name": "06",
+                    "row": 2,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "07",
+                    "row": 2,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "08",
+                    "row": 2,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "09",
+                    "row": 3,
+                    "col": 4,
+                    "floor": 1
+                },
+                {
+                    "name": "10",
+                    "row": 3,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "11",
+                    "row": 3,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "12",
+                    "row": 3,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "13",
+                    "row": 4,
+                    "col": 4,
+                    "floor": 1
+                },
+                {
+                    "name": "14",
+                    "row": 4,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "15",
+                    "row": 4,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "16",
+                    "row": 4,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "17",
+                    "row": 5,
+                    "col": 4,
+                    "floor": 1
+                },
+                {
+                    "name": "18",
+                    "row": 5,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "19",
+                    "row": 5,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "20",
+                    "row": 5,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "21",
+                    "row": 6,
+                    "col": 4,
+                    "floor": 1
+                },
+                {
+                    "name": "22",
+                    "row": 6,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "23",
+                    "row": 6,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "24",
+                    "row": 6,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "25",
+                    "row": 7,
+                    "col": 4,
+                    "floor": 1
+                },
+                {
+                    "name": "26",
+                    "row": 7,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "27",
+                    "row": 7,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "28",
+                    "row": 7,
+                    "col": 1,
+                    "floor": 1
+                }
+            ]
+    },
+    "bumk_bus":{
+        "row_no": 7,
+        "col_no": 5,
+        "floor_no": 2,
+        "seat_map":
+            [
+                {
+                    "name": "A01",
+                    "row": 1,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A02",
+                    "row": 1,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A03",
+                    "row": 1,
+                    "col": 5,
+                    "floor": 1
+                },
+                {
+                    "name": "A04",
+                    "row": 2,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A05",
+                    "row": 2,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A06",
+                    "row": 2,
+                    "col": 5,
+                    "floor": 1
+                },
+                {
+                    "name": "A07",
+                    "row": 3,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A08",
+                    "row": 3,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A09",
+                    "row": 3,
+                    "col": 5,
+                    "floor": 1
+                },
+                {
+                    "name": "A10",
+                    "row": 4,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A11",
+                    "row": 4,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A12",
+                    "row": 4,
+                    "col": 5,
+                    "floor": 1
+                },
+                {
+                    "name": "A13",
+                    "row": 5,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A14",
+                    "row": 5,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A15",
+                    "row": 5,
+                    "col": 5,
+                    "floor": 1
+                },
+                {
+                    "name": "A16",
+                    "row": 6,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A17",
+                    "row": 6,
+                    "col": 5,
+                    "floor": 1
+                },
+                {
+                    "name": "A18",
+                    "row": 7,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A19",
+                    "row": 7,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "A20",
+                    "row": 7,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "21",
+                    "row": 7,
+                    "col": 4,
+                    "floor": 1
+                },
+                {
+                    "name": "A22",
+                    "row": 7,
+                    "col": 5,
+                    "floor": 1
+                },
+
+                {
+                    "name": "B01",
+                    "row": 1,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B02",
+                    "row": 1,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B03",
+                    "row": 1,
+                    "col": 5,
+                    "floor": 2
+                },
+                {
+                    "name": "B04",
+                    "row": 2,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B05",
+                    "row": 2,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B06",
+                    "row": 2,
+                    "col": 5,
+                    "floor": 2
+                },
+                {
+                    "name": "B07",
+                    "row": 3,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B08",
+                    "row": 3,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B09",
+                    "row": 3,
+                    "col": 5,
+                    "floor": 2
+                },
+                {
+                    "name": "B10",
+                    "row": 4,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B11",
+                    "row": 4,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B12",
+                    "row": 4,
+                    "col": 5,
+                    "floor": 2
+                },
+                {
+                    "name": "B13",
+                    "row": 5,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B14",
+                    "row": 5,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B15",
+                    "row": 5,
+                    "col": 5,
+                    "floor": 2
+                },
+                {
+                    "name": "B17",
+                    "row": 6,
+                    "col": 5,
+                    "floor": 2
+                },
+                {
+                    "name": "B18",
+                    "row": 7,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B19",
+                    "row": 7,
+                    "col": 2,
+                    "floor": 2
+                },
+                {
+                    "name": "B20",
+                    "row": 7,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B21",
+                    "row": 7,
+                    "col": 4,
+                    "floor": 2
+                },
+                {
+                    "name": "B22",
+                    "row": 7,
+                    "col": 5,
+                    "floor": 2
+                } 
+            ]
+    },
+    "limousine":{
+        "row_no": 6,
+        "col_no": 3,
+        "floor_no": 1,
+        "seat_map":
+            [
+                {
+                    "name": "A01",
+                    "row": 1,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A02",
+                    "row": 1,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A03",
+                    "row": 2,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A04",
+                    "row": 2,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "A05",
+                    "row": 2,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A06",
+                    "row": 3,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A07",
+                    "row": 3,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "A08",
+                    "row": 3,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A09",
+                    "row": 4,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A10",
+                    "row": 4,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "A11",
+                    "row": 4,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A12",
+                    "row": 5,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A13",
+                    "row": 5,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "A14",
+                    "row": 5,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "A15",
+                    "row": 6,
+                    "col": 1,
+                    "floor": 1
+                },
+                {
+                    "name": "A16",
+                    "row": 6,
+                    "col": 2,
+                    "floor": 1
+                },
+                {
+                    "name": "A17",
+                    "row": 6,
+                    "col": 3,
+                    "floor": 1
+                },
+                {
+                    "name": "B02",
+                    "row": 1,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B03",
+                    "row": 2,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B04",
+                    "row": 2,
+                    "col": 2,
+                    "floor": 2
+                },
+                {
+                    "name": "B05",
+                    "row": 2,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B06",
+                    "row": 3,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B07",
+                    "row": 3,
+                    "col": 2,
+                    "floor": 2
+                },
+                {
+                    "name": "B08",
+                    "row": 3,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B09",
+                    "row": 4,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B10",
+                    "row": 4,
+                    "col": 2,
+                    "floor": 2
+                },
+                {
+                    "name": "B11",
+                    "row": 4,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B12",
+                    "row": 5,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B13",
+                    "row": 5,
+                    "col": 2,
+                    "floor": 2
+                },
+                {
+                    "name": "B14",
+                    "row": 5,
+                    "col": 3,
+                    "floor": 2
+                },
+                {
+                    "name": "B15",
+                    "row": 6,
+                    "col": 1,
+                    "floor": 2
+                },
+                {
+                    "name": "B16",
+                    "row": 6,
+                    "col": 2,
+                    "floor": 2
+                },
+                {
+                    "name": "B17",
+                    "row": 6,
+                    "col": 3,
+                    "floor": 2
+                }
+            ]
+    }
+}

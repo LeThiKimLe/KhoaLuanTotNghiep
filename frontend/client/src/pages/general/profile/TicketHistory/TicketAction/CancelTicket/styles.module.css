@@ -1,0 +1,39 @@
+.container{
+    padding: 10px 0 70px 0;
+    font-size: 17px;
+    height: 100%;
+}
+
+.nextBtn{
+    margin: 20px 0;
+    float: right;
+}
+
+.inforTitle{
+    font-weight: 600;
+    color: grey
+}
+
+.inforValue{
+    font-weight: 700;
+}
+
+.ticketContainer{
+    display: flex;
+    gap: 30px;
+    /* justify-content: center; */
+}
+
+.ticketCover{
+    background-color: var(--primary-color);
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    min-width: 100px;
+}
+
+.ticketItem{
+    padding: 10px;
+    border-radius: 10px 40px 10px 10px;
+    background-color: white;
+    border: 1px solid #ccc;
+}

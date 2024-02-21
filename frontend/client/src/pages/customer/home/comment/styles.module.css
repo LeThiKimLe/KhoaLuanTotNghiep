@@ -1,0 +1,18 @@
+.container{
+    width: 100%;
+    margin: 50px 0;
+    max-width: 1026px;
+}
+
+.commentWrapper{
+    width: 300px;
+    height: 300px;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.commentInner{
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 10px;
+}
