@@ -4,7 +4,7 @@ FROM node:18-alpine3.19
 ENV NODE_ENV development
 
 # COPY [host machine] [container]
-COPY package.json package-lock.json ./
+COPY package.json ./
 
 RUN npm install
 
