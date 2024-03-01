@@ -63,8 +63,10 @@ public class ReviewService {
 		
 		if(!edit.isActive()) {
 			review.setState(RequestState.CANCELED.getLabel());
+		}else {
+			review.setState(RequestState.APPROVED.getLabel());
 		}
-		review.setState(RequestState.APPROVED.getLabel());
+		
 		reviewRepository.save(review);
 		Trip trip = review.getSchedule().getTrip();
         trip.setSchedules(null);
