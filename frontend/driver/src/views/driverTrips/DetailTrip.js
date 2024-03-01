@@ -32,6 +32,7 @@ import { QrReader } from 'react-qr-reader'
 import MediaQuery from 'react-responsive'
 import CIcon from '@coreui/icons-react'
 import { cilQrCode } from '@coreui/icons'
+import { useMediaQuery } from 'react-responsive'
 const DetailTrip = () => {
     const schedule = useSelector(selectCurrentSchedule)
     const currentTrip = useSelector(selectCurrentTrip)
@@ -44,6 +45,7 @@ const DetailTrip = () => {
     const [showScan, setShowScan] = useState(false)
     const qrReaderRef = useRef(null)
     const ticketMap = useRef(null)
+    const isMobile = useMediaQuery({ query: '(max-width: 878px)' })
     const getSeatTicket = (seat) => {
         return listTicket.filter((tk) => tk.seat === seat.name && tk.state !== 'Đã hủy')[0]
     }
@@ -121,6 +123,7 @@ const DetailTrip = () => {
             setSuccessMessage('')
         }
     }, [showScan])
+    console.log(isMobile)
     return (
         <>
             {currentTrip && (
@@ -307,7 +310,11 @@ const DetailTrip = () => {
                                                                 md={getColWidth()}
                                                                 key={seat.name}
                                                                 className="d-flex justify-content-center"
-                                                                style={{ width: 'fit-content' }}
+                                                                style={
+                                                                    isMobile
+                                                                        ? { width: 'fit-content' }
+                                                                        : {}
+                                                                }
                                                             >
                                                                 <Ticket
                                                                     seat={seat}
@@ -322,7 +329,11 @@ const DetailTrip = () => {
                                                             sm={2}
                                                             md={getColWidth()}
                                                             key={`${floorNumber}-${rowNumber}-${colNumber}`}
-                                                            style={{ width: 'fit-content' }}
+                                                            style={
+                                                                isMobile
+                                                                    ? { width: 'fit-content' }
+                                                                    : {}
+                                                            }
                                                         >
                                                             <Ticket empty={true} />
                                                         </CCol>

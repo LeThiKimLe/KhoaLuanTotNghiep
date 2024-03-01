@@ -103,7 +103,7 @@ const searchSlice = createSlice({
 })
 
 export const selectSearchInfor = (state) => state.search.infor
-export const selectRearchResult = (state) => state.search.result.listTrip
+export const selectSearchResult = (state) => state.search.result.listTrip
 export const selectLoading = (state) => state.search.loading
 export const selectFilterResult = (state) => state.search.result.filterTrip
 export const searchAction = searchSlice.actions

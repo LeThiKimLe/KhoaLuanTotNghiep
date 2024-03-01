@@ -91,7 +91,7 @@ public class TripService {
 
 	public List<TripDTO> getTripsForRoute(GetTripDTO getTripDTO, String authorizationHeader) {
 		Boolean filter = true;
-		if (authorizationHeader != null) {
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			String jwt = authorizationHeader.substring(7);
 			Integer userId = Integer.valueOf(jwtService.extractUsername(jwt));
 

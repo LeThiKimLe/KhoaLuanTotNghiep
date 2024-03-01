@@ -8,7 +8,7 @@ import { faMagnifyingGlass, faCalendarDays, faLocationDot, faTicketSimple, faArr
 import { format } from 'date-fns';
 import SearchItem from './searchItem'
 import { useSelector } from 'react-redux'
-import { selectSearchInfor, selectRearchResult } from '../../../feature/search/search.slice'
+import { selectSearchInfor, selectSearchResult } from '../../../feature/search/search.slice'
 import { selectListRoute } from '../../../feature/route/route.slice'
 import { search } from 'slick/finder'
 import SearchBox from '../../../components/header/searchBox'
@@ -78,7 +78,7 @@ const List = () => {
     const [loading, setLoading] = useState(true)
     const dispatch = useDispatch()
     const listRoute = useSelector(selectListRoute)
-    const {listTripGo, listTripReturn} = useSelector(selectRearchResult)
+    const {listTripGo, listTripReturn} = useSelector(selectSearchResult)
     const [selectedTab, setSelectedTab] = useState(0)
     const [search, setSearch] = useState(true)
     const seatMap = useSelector(selectSeatMap)

@@ -228,8 +228,14 @@ const Trip = ({ tabStyle }) => {
     }, [selectedSeats, message.messagetype]);
 
     const handleNext = () => {
-        dispatch(ticketAction.setNewChangeInfor(selectedSeats))
-        dispatch(ticketAction.comeForward())
+        if (selectedSeats.length !== 0 && changeInfor.length === selectedSeats.length)
+        {
+            dispatch(ticketAction.setNewChangeInfor(selectedSeats))
+            dispatch(ticketAction.comeForward())
+        }
+        else{
+            setMessage({ message: 'Vui lòng chọn đủ chỗ', messagetype: message.messagetype + 1 })
+        }
     }
 
     if (!tabStyle) {
@@ -499,6 +505,7 @@ const Trip = ({ tabStyle }) => {
     else {
         return (
             <div className={`tabStyle ${styles.tabStyle}`}>
+                {message.message !== '' && <Message message={message.message} messagetype={message.messagetype} />}
                 <Tabs>
                     <TabList>
                         <Tab>Chọn ghế</Tab>
@@ -507,7 +514,9 @@ const Trip = ({ tabStyle }) => {
                         <SeatMap seatMap={currentTrip.tripInfor.route.busType.seatMap}
                             booked={currentTrip.tickets}
                             selectedSeats={selectedSeats}
-                            handleSeatClick={handleSeatTabStyle}>
+                            handleSeatClick={handleSeatTabStyle}
+                            time={currentTrip.departTime.slice(0, -3) + ' ngày ' + convertToDisplayDate(currentTrip.departDate)}
+                        >
                         </SeatMap>
                         <Button onClick={handleNext} text='Tiếp tục'></Button>
                     </TabPanel>

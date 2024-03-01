@@ -7,13 +7,13 @@ import { useSelector } from 'react-redux'
 import { selectCurrentTicket, selectProcess } from '../../../../../../feature/ticket/ticket.slice'
 import SeatMap from '../../../../../customer/trip/seatmap'
 import DatePicker from 'react-datepicker';
-import { parse, format } from 'date-fns'
+import { parse, format, set } from 'date-fns'
 import { useDispatch } from 'react-redux'
 import { ticketAction } from '../../../../../../feature/ticket/ticket.slice'
 import { searchAction } from '../../../../../../feature/search/search.slice'
 import './custom.css'
 import searchThunk from '../../../../../../feature/search/search.service'
-import { selectRearchResult } from '../../../../../../feature/search/search.slice'
+import { selectSearchResult } from '../../../../../../feature/search/search.slice'
 import notfound from '../../../../../../assets/notfound.png'
 import SearchItem from '../../../../../customer/list/searchItem'
 import { convertToDisplayDate } from '../../../../../../utils/unitUtils'
@@ -32,7 +32,7 @@ const ChangeTicket = ({ close }) => {
     const [action, setAction] = useState('changeSeat')
     const [selectedSeats, setSelectedSeats] = useState([])
     const [newDepDate, setNewDepDate] = useState(parse(currrentTickets.tickets[0].schedule.departDate, 'yyyy-MM-dd', new Date()))
-    const {listTripGo} = useSelector(selectRearchResult)
+    const {listTripGo} = useSelector(selectSearchResult)
     const [searchResult, setSearchResult] = useState(listTripGo)
     const [loading, setLoading] = useState(false)
     const newTrip = useSelector(selectNewTrip)
@@ -194,6 +194,10 @@ const ChangeTicket = ({ close }) => {
         if (currrentTickets)
             setFilterTicket(currrentTickets.tickets.filter((tk)=>tk.state !== 'Đã hủy' && tk.state !== 'Chờ hủy'))
     }, [currrentTickets])
+
+    useEffect(() => {
+        setSearchResult(listTripGo)
+    }, [listTripGo])
 
     return (
         <div>

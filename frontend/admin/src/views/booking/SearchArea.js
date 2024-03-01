@@ -15,7 +15,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
     selectSearchInfor,
     selectLoading,
-    selectRearchResult,
+    selectSearchResult,
 } from 'src/feature/search/search.slice'
 import { createListRoutes } from 'src/utils/routeUtils'
 import { CustomToast } from '../customToast/CustomToast'
@@ -46,7 +46,7 @@ const SearchArea = () => {
     const twoMonthsLater = new Date()
     const isChanging = useSelector(selectChangeState)
     const currentTrip = useSelector(selectCurrentTrip)
-    const searchResult = useSelector(selectRearchResult)
+    const searchResult = useSelector(selectSearchResult)
     const [showFilter, setShowFilter] = useState(false)
     const [filterData, setFilterData] = useState('')
     twoMonthsLater.setMonth(today.getMonth() + 2)

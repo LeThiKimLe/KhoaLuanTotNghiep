@@ -1,6 +1,6 @@
 import React from 'react'
 import {
-    selectRearchResult,
+    selectSearchResult,
     selectSearchInfor,
     selectFilterResult,
 } from 'src/feature/search/search.slice'
@@ -31,7 +31,7 @@ import { searchAction } from 'src/feature/search/search.slice'
 import { selectSortOption } from 'src/feature/filter/filter.slice'
 const ListTrip = () => {
     const dispatch = useDispatch()
-    const searchResult = useSelector(selectRearchResult)
+    const searchResult = useSelector(selectSearchResult)
     const filterResult = useSelector(selectFilterResult)
     const currentTrip = useSelector(selectCurrentTrip)
     const loadingBook = useSelector(LoadingBook)

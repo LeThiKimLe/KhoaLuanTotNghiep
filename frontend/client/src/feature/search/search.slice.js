@@ -110,7 +110,7 @@ const searchSlice = createSlice({
 })
 
 export const selectSearchInfor = (state) => state.search.infor
-export const selectRearchResult = (state) => state.search.result
+export const selectSearchResult = (state) => state.search.result
 export const selectListDeparture = (state) => state.search.listDeparture
 export const selectListDestination = (state) => state.search.listDestination
 export const selectRound = (state) => state.search.infor.oneway

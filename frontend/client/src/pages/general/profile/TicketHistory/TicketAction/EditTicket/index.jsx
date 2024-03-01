@@ -12,7 +12,7 @@ import ticketThunk from '../../../../../../feature/ticket/ticket.service'
 import { selectLoading, selectModifiedTrip } from '../../../../../../feature/ticket/ticket.slice'
 import bookingThunk from '../../../../../../feature/booking/booking.service'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
-import { selectRearchResult } from '../../../../../../feature/search/search.slice'
+import { selectSearchResult } from '../../../../../../feature/search/search.slice'
 import { parse, format } from 'date-fns'
 import searchThunk from '../../../../../../feature/search/search.service'
 import { tripActions } from '../../../../../../feature/trip/trip.slice'
@@ -31,7 +31,7 @@ const EditTicket = ({ close }) => {
     const [dropLocation, setDropLocation] = useState(currrentTickets.dropStation)
     const dispatch = useDispatch()
     const currentTrip = useSelector(selectModifiedTrip)
-    const {listTripGo} = useSelector(selectRearchResult)
+    const {listTripGo} = useSelector(selectSearchResult)
     const [searchResult, setSearchResult] = useState(listTripGo)
     const handleLoadStation = async () => {
         try {

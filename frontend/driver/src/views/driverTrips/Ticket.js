@@ -36,6 +36,7 @@ import seat_paid from 'src/assets/items/seat_paid.svg'
 import seat_empty from 'src/assets/items/seat_empty.svg'
 import seat_checkedin from 'src/assets/items/seat_checkedin.svg'
 import seat_unpaid from 'src/assets/items/seat_unpaid.svg'
+import { useMediaQuery } from 'react-responsive'
 
 const Ticket = ({ seat, ticket, empty, updateList }) => {
     const dispatch = useDispatch()
@@ -45,6 +46,7 @@ const Ticket = ({ seat, ticket, empty, updateList }) => {
     const toaster = useRef('')
     const [loading, setLoading] = useState(false)
     const [showModal, setShowModal] = useState(false)
+    const isMobile = useMediaQuery({ query: '(max-width: 878px)' })
     const getItemColor = () => {
         if (ticket)
             if (ticket.state === 'Đã thanh toán') return 'success'
@@ -71,11 +73,12 @@ const Ticket = ({ seat, ticket, empty, updateList }) => {
 
     if (empty) {
         return (
-            <div style={{ width: 'fit-content' }}>
+            <div
+                style={isMobile ? { width: 'fit-content' } : { width: '250px', height: '320px' }}
+                className="mb-2"
+            >
                 <MediaQuery minWidth={878}>
-                    <CCard
-                        style={{ width: '250px', height: '320px', visibility: 'hidden' }}
-                    ></CCard>
+                    <CCard style={{ width: '100%', height: '100%', visibility: 'hidden' }}></CCard>
                 </MediaQuery>
                 <MediaQuery maxWidth={878}>
                     <CCard style={{ width: '33px', height: '35px', visibility: 'hidden' }}></CCard>
@@ -85,13 +88,18 @@ const Ticket = ({ seat, ticket, empty, updateList }) => {
     } else {
         if (ticket && ticket.state !== 'Đã hủy')
             return (
-                <div style={{ width: 'fit-content' }}>
+                <div
+                    style={
+                        isMobile ? { width: 'fit-content' } : { width: '250px', height: '320px' }
+                    }
+                    className="mb-2"
+                >
                     <CToaster ref={toaster} push={toast} placement="top-end" />
                     <MediaQuery minWidth={878}>
                         <CCard
                             id={seat.name}
-                            style={{ width: '250px', height: '280px' }}
-                            className={`mb-3 border-${getItemColor()} border-3`}
+                            style={{ width: '100%', height: '100%' }}
+                            className={`border-${getItemColor()} border-3`}
                         >
                             <CCardHeader className={`bg-${getItemColor()}`}>
                                 <CRow>
@@ -251,12 +259,17 @@ const Ticket = ({ seat, ticket, empty, updateList }) => {
             )
         else {
             return (
-                <div style={{ width: 'fit-content' }}>
+                <div
+                    style={
+                        isMobile ? { width: 'fit-content' } : { width: '250px', height: '320px' }
+                    }
+                    className="mb-2"
+                >
                     <CToaster ref={toaster} push={toast} placement="top-end" />
                     <MediaQuery minWidth={878}>
                         <CCard
-                            style={{ width: '250px', height: '280px' }}
-                            className={`mb-3 border-${getItemColor()} border-3`}
+                            style={{ width: '100%', height: '100%' }}
+                            className={`border-${getItemColor()} border-3`}
                         >
                             <CCardHeader className="d-flex justify-content-between align-items-center">
                                 <strong>{seat.name}</strong>

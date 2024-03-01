@@ -125,12 +125,6 @@ const SearchBox = ({ listRoute, intro, parentClass, setSearchAction }) => {
     useEffect(() => {
         if (currentInfor.departDate)
         {
-            if (parse(currentInfor.departDate, 'dd/MM/yyyy', new Date()).getDate() - new Date().getDate() < 0)
-                if (currentInfor.searchRoute)
-                    setCurrentInfor({
-                        ...currentInfor,
-                        departDate: format(new Date(), 'dd/MM/yyyy')
-            })
             if (parse(currentInfor.departDate, 'dd/MM/yyyy', new Date()) - parse(currentInfor.arrivalDate, 'dd/MM/yyyy', new Date()) > 0)
                     setCurrentInfor({
                         ...currentInfor,
