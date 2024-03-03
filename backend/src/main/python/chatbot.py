@@ -19,23 +19,17 @@ class Chatbot:
             documents = SimpleDirectoryReader('data').load_data()
             self.index = VectorStoreIndex.from_documents(documents)
             self.index.storage_context.persist()
-
+        print('tạo lại')
         self.query_engine = self.index.as_query_engine()
 
     def query(self, user_input):
+        print('query')
         return self.query_engine.query(user_input).response
+    class Java:
+        implements = ["com.example.QuanLyNhaXe.interfaces.Chatbot"]
 
+from py4j.java_gateway import JavaGateway, CallbackServerParameters
 chatbot = Chatbot()
-
-@csrf_exempt
-def query(request):
-    if request.method == "POST":
-        data = request.POST
-        user_input = data.get("question")
-        if user_input:
-            response = chatbot.query(user_input)
-            return JsonResponse({"answer": response})
-        else:
-            return JsonResponse({"error": "Missing 'question' parameter."})
-    else:
-        return JsonResponse({"error": "Invalid request method."})
+gateway = JavaGateway(
+    callback_server_parameters=CallbackServerParameters(),
+    python_server_entry_point=chatbot)

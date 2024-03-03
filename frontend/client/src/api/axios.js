@@ -2,6 +2,7 @@ import axios from 'axios'
 import queryString from 'query-string'
 
 const API_URL = process.env.REACT_APP_API_URL
+const CHAT_API_URL = process.env.REACT_APP_API_CHAT_URL
 
 //Tạo instance của axios
 const axiosClient = axios.create({

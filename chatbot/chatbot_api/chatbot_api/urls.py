@@ -20,5 +20,5 @@ from chatbot.views import query
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/query', query, name='query'),
+    path('api/chatbot', query, name='query'),
 ]

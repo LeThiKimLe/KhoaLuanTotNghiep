@@ -17,6 +17,7 @@ import TripInfor from './tripInfor'
 import { Helmet } from 'react-helmet';
 import reviewThunk from '../../../feature/review/review.service'
 import { selectListReview } from '../../../feature/review/review.slice'
+import Chat from './chat'
 
 const Home = () => {
     const user = useSelector(selectUser)
@@ -42,6 +43,9 @@ const Home = () => {
     return (
         <div>
             <Navbar></Navbar>
+            <div className={styles.chat}>
+                <Chat></Chat>
+            </div>
             <div style={{position:'relative'}}>
             {loading ? (<Loading scale={0.8}></Loading>) : 
             (
