@@ -34,3 +34,5 @@ build/
 /.apt_generated_tests/
 
 **/src/main/python/pyenv/
+
+create.sql
