@@ -1,0 +1,82 @@
+Giới thiệu website đặt vé xe khách XeKimNguyen
+XeKimNguyen là trang web đặt vé xe của hãng xe Kim Nguyên. Hãng xe trân trọng phục vụ khách hàng các chuyến xe tuyến cố định từ các tỉnh miền Trung đến Nam Bộ Việt Nam. Các tuyến xe nổi bật được khách hàng thường xuyên tin tưởng và sử dụng là tuyến Nha Trang – Thành phố Hồ Chí Minh, Trà Vinh – Thành phố Hồ Chí Minh.
+Mọi thắc mắc, ý kiến đóng góp về trang web hoặc chất lượng phục vụ, vui lòng gọi đến số tổng đài 0333.843.250 hoặc gửi mail về địa chỉ 20110248@student.hcmute.edu.vn.
+Hướng dẫn sử dụng web đặt vé
+1. Tìm kiếm chuyến xe
+- Bước 1: Click vào mũi tên trỏ xuống, để chọn điểm đi trong danh sách điểm đi.
+- Bước 2: Click vào mũi tên trỏ xuống, để chọn điểm đến trong danh sách điểm đến. 
+- Bước 3: Click vào ô Ngày đi để chọn ngày đi hoặc nhập ngày đi.
+- Bước 4: Click vào dấu + để tăng số lượng vé muốn mua, ngược lại dấu - để giảm số lượng vé.
+- Bước 5: Click tìm kiếm để tìm kiếm các chuyến xe theo yêu cầu. Bên cạnh đó có thể tick vào các ô thời gian để lọc các chuyến xe khi tìm kiếm chuyến xe theo các khung giờ (sáng, chiều, tối), các loại xe( ghế, giường, limousine), các vé thuộc dãy ghế (trái, giữa, phải), hàng ghế (đầu, giữa, cuối, tầng(trên hay dưới).
+2. Đặt vé
+- Bước 1: Sau khi tìm kiếm chuyến xe nhấn chọn chuyến để tiến hành các thao tác trong phần đặt vé. Sau khi nhấn chọn chuyến website sẽ hiển thị các thông tin của chuyến xe ở khung màu vàng bên phải, các sơ đồ ghế ngồi, các ô để khách hàng nhập thông tin của mình.
+- Bước 2: Chọn ghế màu xanh trên sơ đồ ghế ngồi, lưu ý các ghế có màu xám( đã bán) khách hàng sẽ không chọn được, sau khi chọn thì ghế đang chọn sẽ có màu xanh lá.
+- Bước 3:  Thay đổi điểm đón hoặc điểm trả theo ý muốn bằng cách tick vào các chấm tròn đối với các chuyến xe có thể xuất phát từ nhiều bến xe.
+- Bước 4: Thông tin khách hàng đã đăng nhập khi đặt vé sẽ được tự động điền sẵn giống với thông tin mà người dùng nhập vào khi đăng ký tài khoản, tuy nhiên có thể nhấn vào các ô thông tin đó để thay đổi theo ý muốn (khi đặt vé cho người khác).
+- Bước 5: Tick vào ô Chấp nhận điều khoản đặt vé & chính sách bảo mật thông tin của Xe Kim Nguyên rồi bấm nút thanh toán để hoàn tất quá trình đặt vé. Các vé đã đặt sẽ có trạng thái chờ thanh toán.
+3. Thanh toán vé
+- Bước 1: Sau khi chọn vé, khách hàng nhấn thanh toán để chuyển đến trang thanh toán. (Thời gian giữ chỗ sẽ đếm ngược 10 phút) nếu hết 10 phút mà người dùng chưa thanh toán thì trạng thái các vé sẽ chuyển sang đã hủy.
+- Bước 2: Chọn hình thức thanh toán Momo (mặc định) hoặc thay đổi sang VNPay, rồi nhấn nút Thanh toán. Khách hàng sẽ nhận được thông báo thanh toán vé thành công.
+- Bước 3: Trở về trang chủ sẽ thấy hiển thị chuyến xe sắp khởi hành mà khách hàng đã đặt .
+- Bước 4: Check mail để đọc lại thông tin về chuyến xe.
+4. Đăng nhập
+- Bước 1: Trên thanh Nav bấm vào nút Đăng nhập/ Đăng ký để mở trang Đăng nhập
+- Bước 2: Nhập đúng số điện thoại và mật khẩu đã đăng ký trước đó, sau đó Click Đăng nhập. Ví dụ
+Tài khoản: 0101010101
+Password: 123456
+- Bước 3: Đăng nhập thành công sẽ quay về trang chủ, với tên người dùng được hiển thị bên góc phải.
+5. Xem lịch sử đặt vé
+- Bước 1: Rê chuột vào mũi tên trỏ xuống sau Username, Click chọn Lịch sử đặt vé.
+- Bước 2: Thông tin về lịch sử đặt vé hiện ra dưới dạng bảng.
+- Bước 3: Kéo thanh cuộn phía dưới bảng để xem thêm các thông tin.
+- Bước 4: Tại khung thời gian đặt vé, chọn ngày bắt đầu và ngày kết thúc để giới hạn lịch sử đặt vé theo thời gian.
+- Bước 5: Tại khung trạng thái có thể lọc chỉ hiển thị các vé có trạng thái thanh toán đã hủy, thành công, giữ chỗ.
+- Bước 6: Tại các vé có trạng thái giữ chỗ có thể Click Thanh toán ngay để chuyển đến trang thanh toán và thực hiện thanh toán như đã hướng dẫn ở chức năng thanh toán.
+- Bước 7: Có thể nhập mã vé vào ô Mã đặt vé để tìm kiếm vé đó.
+- Bước 8: Tại vé muốn xem chi tiết thông tin hãy click vào ô chi tiết trên vé đó, kéo thanh cuộn bên góc phải để xem thêm thông tin vé. Nếu muốn quay lại trang trước đó click vào nút Đóng.
+- Bước 9: Click Tải về để lưu mã QR, có thể dùng mã này để quét check in lúc lên xe.
+6. Tra cứu hóa đơn
+- Bước 1: Trên thanh Nav chọn mục Tra cứu hóa đơn.
+- Bước 2: Trang tra cứu hóa đơn hiển thị 2 ô input yêu cầu nhập mã hóa đơn và mã xác thực như ảnh bên dưới và bấm nút Tra cứu.
+- Bước 3: Nhập mã hóa đơn và mã xác thực vào theo yêu cầu, mã hóa đơn có thể lấy khi xem chi tiết lịch sử đặt vé, nhấn vào biểu tượng copy để sao chép mã hóa đơn.
+- Bước 4: Click vào nút Tải hóa đơn để lưu hóa đơn về máy.
+7. Hủy vé
+- Bước 1: Vào trong phần Lịch sử đặt vé, sau đó chọn một ô tròn trước các hàng tóm tắt thông tin của lượt đặt vé trong bảng.
+- Bước 2: Click vào mũi tên trỏ xuống tại ô Hành động, và chọn Hủy vé.
+- Bước 3: Sau khi nhấn hủy vé đọc kỹ điều khoản trong chính sách  hủy vé, kéo thanh cuộn bên phải để xem đầy đủ danh sách.
+- Bước 4: Chọn vào ô Tôi đồng ý với chính sách hủy vé của Xe Kim Nguyên phía cuối Chính sách hủy vé để xác nhận đã đọc kỹ và tuân thủ chính sách.
+- Bước 5: Click tiếp tục để chuyển đến trang chọn các vé muốn hủy, lần lượt tích và các ô vé trong trường hợp nhiều vé (Hoặc tích vào ô Chọn tất cả để hủy toàn bộ vé của lượt đặt vé đó).
+- Bước 6: Nhấn tiếp tục để chuyển đến bước tiếp theo trong quy trình hủy vé.
+- Bước 7: Nhấn xác nhận hủy vé để hoàn tất gửi yêu cầu hủy vé.
+8. Đổi vé
+- Bước 1: Vào trong phần Lịch sử đặt vé, sau đó chọn một ô tròn trước các hàng tóm tắt thông tin của lượt đặt vé trong bảng để xuất hiện các lựa chọn Hành động.
+- Bước 2: Click vào mũi tên trỏ xuống tại ô Hành động, và click vào lựa chọn Đổi vé.
+- Bước 3: Đọc kỹ chính sách hỗ trợ đổi vé của nhà xe, click vào ô Tôi đồng ý với chính sách đổi vé của Xe Kim Nguyên và nhấn tiếp tục để thực hiện các bước tiếp theo trong quy trình.
+- Bước 4: Tick vào ô trước vé muốn đổi, hoặc tick vào ô Chọn tất cả để chọn nhanh tất cả các vé trong trường hợp muốn đổi nhiều vé. Sau đó tick vào chấm tròn để chọn đổi chỗ hay đổi chuyến rồi nhấn nút Tiếp tục để thực hiện các bước tiếp theo trong quy trình.
+- Bước 5: Trường hợp chọn đổi chỗ, chọn chỗ mới rồi bấm tiếp tục. Trường hợp đổi chuyến, chọn thời gian và nhấn vào chọn chuyến để lựa chọn ghế ngồi phù hợp rồi nhấn Tiếp tục.
+- Bước 6: Xem kỹ thông tin đổi vé rồi nhấn nút Xác nhận đổi vé.
+- Bước 7: Đổi vé thành công sẽ nhận được thông báo, Click Đóng để trở về trang lịch sử đặt vé.
+Lưu ý: Nếu vé muốn đổi không nằm trong thời gian cho phép đổi vé thì Hành động Đổi vé sẽ có màu xám và không thể chọn được.
+9. Sửa vé
+- Bước 1: Vào trong phần Lịch sử đặt vé, sau đó chọn một ô tròn trước các hàng tóm tắt thông tin của lượt đặt vé trong bảng để xuất hiện các lựa chọn Hành động.
+- Bước 2: Click vào mũi tên trỏ xuống tại ô Hành động, và click vào lựa chọn Sửa vé.
+- Bước 3: Đọc Điều kiện sửa vé và tick vào ô trống để xác nhận Tôi đồng ý với chính sách sửa vé của Xe Kim Nguyên sau đó nhấn nút Tiếp tục để thực hiện các bước tiếp theo.
+- Bước 4: Tick vào chấm tròn để chọn điểm đón khác nếu chuyến xe đó có hỗ trợ nhiều điểm đón, sau đó bấm sang tab Điểm trả để chọn điểm trả khác nếu chuyến xe có hỗ trợ nhiều điểm trả. Sau đó nhấn Tiếp tục để thực hiện các bước tiếp theo trong quy trình.
+- Bước 5: Xem lại thông tin sửa vé bao gồm chuyến, thời gian, điểm đón- trả cũ và điểm đón-trả mới sau khi sửa rồi nhấn nút Xác nhận sửa vé.
+- Bước 6: Sửa vé thành công sẽ nhận được thông báo, Click Đóng để quay trở lại trang Lịch sử đặt vé.
+
+10. Cập nhật thông tin cá nhân
+- Bước 1: Trên thanh Nav rê chuột vào vị trí tên người dùng, sau đó chọn thông tin tài khoản.
+- Bước 2: Trang thông tin tài khoản hiển thị các thông tin như số điện thoại, họ tên, email, giới tính.
+- Bước 3: Click nút cập nhật để các ô trống Họ và Tên, Email, Giới tính cho phép sửa đổi thông tin. Nhập tên khác , gmail khác hay chọn lại giới tính. Nếu muốn đổi ảnh đại diện thì click vào chọn tệp và chọn ảnh đại diện khác.
+- Bước 4: Click Lưu thông tin để lưu lại những sửa đổi thông tin.
+11. Đổi mật khẩu
+- Bước 1: Trên thanh Nav rê chuột vào vị trí tên người dùng, sau đó chọn Đổi mật khẩu sau biểu tượng ổ khóa.
+- Bước 2: Trang đổi mật khẩu hiển thị yêu cầu nhập mật khẩu cũ, mật khẩu mới và xác nhận mật khẩu mới.
+- Bước 3: Nhập đúng mật khẩu cũ, sau đó nhập mật khẩu mới có ít nhất 6 ký tự và xác nhận lại mật khẩu mới khớp với mật khẩu mới vừa nhập.
+- Bước 4: Bấm vào nút Xác nhận để hoàn tất đổi mật khẩu, nhận được thông báo Đổi mật khẩu thành công.
+- Bước 5: Phiên đăng nhập đã bị xóa và người dùng cần đăng nhập lại để sử dụng mật khẩu mới.
+12. Đăg xuất
+- Bước 1: Trên thanh Nav rê chuột vào vị trí tên người dùng, sau đó chọn Đăng xuất sau biểu tượng Exit.
+- Bước 2: Bấm vào nút Xác nhận để thực hiện đăng xuất, nếu muốn dừng quá trình đăng xuất bấm nút Hủy.
+Các câu hỏi khác không liên quan đến thông tin nhà xe hoặc các thao tác trên trang web đặt vé thì từ chối trả lời

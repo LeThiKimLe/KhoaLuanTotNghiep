@@ -1,0 +1,29 @@
+# Virtual environment
+venv/
+
+# Compiled Python files
+*.pyc
+__pycache__/
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite3
+
+# Static files
+staticfiles/
+
+# Media files
+media/
+
+# Environment variables
+.env
+
+# IDE/Editor-specific files (có thể thay đổi tùy thuộc vào IDE của bạn)
+.idea/
+.vscode/
+
+# Other
+*.swp
