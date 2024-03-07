@@ -15,5 +15,7 @@ public class CreatePaymentDTO {
 	
 	private String bookingCode;
 	private String paymentMethod;
+	private String transactionNo;
+	private String transactionDate;
 
 }

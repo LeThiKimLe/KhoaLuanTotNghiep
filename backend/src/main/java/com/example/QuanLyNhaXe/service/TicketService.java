@@ -51,6 +51,7 @@ import com.example.QuanLyNhaXe.repository.TransactionRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
 
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -69,6 +70,7 @@ public class TicketService {
 	private final TransactionRepository transactionRepository;
 	private final StopStationRepository stopStationRepository;
 	private final CancelRequestRepository cancelRequestRepository;
+	private final VNPayService vnPayService;
 
 	public Object paymentTicket(CreatePaymentDTO createPaymentDTO) {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
@@ -78,12 +80,12 @@ public class TicketService {
 
 		}
 		String pay = createPaymentDTO.getPaymentMethod();
-		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) && !pay.equals(PaymentMethod.MOMO.getLabel())
-				&& !pay.equals(PaymentMethod.BANKING.getLabel())) {
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) )
+				 {
 			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
 		}
 
-		LocalDateTime currentDateTime = utilityService.convertHCMDateTime();
+		LocalDateTime currentDateTime = utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate());
 		LocalDateTime bookingDateTime = booking.getBookingDate();
 		boolean isExpired = bookingDateTime.plusMinutes(10).isBefore(currentDateTime);
 		if (!isExpired) {
@@ -175,7 +177,7 @@ public class TicketService {
 	}
 
 	@Transactional
-	public Object cancelTicketForStaff(CancelTicketApproval cancelTicketApproval, String authorization) {
+	public Object cancelTicketForStaff(CancelTicketApproval cancelTicketApproval, String authorization,HttpServletRequest httpServletRequest) {
 
 		List<History> histories = new ArrayList<>();
 		Integer ticketPrice = 0;
@@ -207,7 +209,7 @@ public class TicketService {
 			Schedule schedule = tickets.get(0).getSchedule();
 			schedule.setAvailability(schedule.getAvailability() + tickets.size());
 			String paymentMethod = tickets.get(0).getBooking().getTransaction().getPaymentMethod();
-			Transaction transaction = transactionService.createTransactionForCancelTickets(paymentMethod, ticketPrice);
+			Transaction transaction = transactionService.createTransactionForCancelTickets(paymentMethod, ticketPrice,null);
 			try {
 				transactionRepository.save(transaction);
 				for (Ticket ticket : tickets) {
@@ -215,7 +217,12 @@ public class TicketService {
 					History history = createHistory(user, transaction, ticket, cancelRequest.getPolicy(),
 							HistoryAction.CANCEL.getLabel());
 					histories.add(history);
+					
 				}
+				Transaction transactionPayment=booking.getTransaction();
+				String orderId=booking.getOrder_id();
+				String transactionDate=utilityService.convertDateTimeToString(transactionPayment.getPaymentTime());
+				vnPayService.refund("03",orderId , ticketPrice,transactionDate, "xeKimNguyen", transactionPayment.getTransactionNo(), httpServletRequest);
 				cancelRequest.setState(RequestState.APPROVED.getLabel());
 				cancelRequestRepository.save(cancelRequest);
 				historyRepository.saveAll(histories);
@@ -291,7 +298,7 @@ public class TicketService {
 		ticketPrice = Math.round(ticketPrice * policyForCancel.getRefundRate());
 
 		transaction = transactionService.createTransactionForCancelTickets(booking.getTransaction().getPaymentMethod(),
-				ticketPrice);
+				ticketPrice,null);
 
 		return ReponseCancelTicket.builder().policy(modelMapper.map(policyForCancel, PolicyDTO.class))
 				.transaction(modelMapper.map(transaction, TransactionDTO.class)).build();
@@ -438,16 +445,17 @@ public class TicketService {
 	}
 
 	@Transactional
-	public Object cancelTicket(CancelTicketsDTO cancelTicketsDTO, String authorization) {
+	public Object cancelTicket(CancelTicketsDTO cancelTicketsDTO, String authorization, HttpServletRequest httpServletRequest) {
 
 		Transaction transaction = null;
+		
 		Policy policy = null;
 		User user = userService.getUserByAuthorizationHeader(authorization);
 		List<Ticket> tickets = new ArrayList<>();
 		List<History> histories = new ArrayList<>();
 		String pay=cancelTicketsDTO.getPaymentMethod();
-		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) && !pay.equals(PaymentMethod.MOMO.getLabel())
-				&& !pay.equals(PaymentMethod.BANKING.getLabel()) && !pay.equals(PaymentMethod.CASH.getLabel())) {
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel())
+				 && !pay.equals(PaymentMethod.CASH.getLabel())) {
 			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
 		}
 		if (cancelTicketsDTO.getNumberTicket() != cancelTicketsDTO.getTicketIdList().size()) {
@@ -470,13 +478,18 @@ public class TicketService {
 		try {
 			String state = tickets.get(0).getState();
 			if (state.equals(TicketState.PAID.getLabel())) {
+				
 				Object reponseCancelTicket = getPolicyForCancelTicket(cancelTicketsDTO, authorization);
 				if (reponseCancelTicket instanceof ReponseCancelTicket response) {
 					transaction=transactionService.createTransactionForCancelTickets(pay,
-							response.getTransaction().getAmount());
+							response.getTransaction().getAmount(),null);
 					transactionRepository.save(transaction);
 					policy = modelMapper.map(response.getPolicy(), Policy.class);
-
+					Transaction transactionPayment=transactionRepository.findByBookingCode(cancelTicketsDTO.getBookingCode())
+							.orElseThrow(() -> new NotFoundException("Không tìm thấy giao dịch đã thanh toán"));
+					String orderId=transactionPayment.getBooking().getOrder_id();
+					String transactionDate=utilityService.convertDateTimeToString(transactionPayment.getPaymentTime());
+					vnPayService.refund("03",orderId , (int)response.getTransaction().getAmount(), transactionDate,  "xeKimNguyen",transactionPayment.getTransactionNo(), httpServletRequest);
 				}
 			}
 			for (Ticket ticket : tickets) {
@@ -494,6 +507,7 @@ public class TicketService {
 			e.printStackTrace();
 			throw new BadRequestException("Lỗi xảy ra trong quá trình xử lý");
 		}
+		
 		return new ResponseMessage("Hủy vé thành công");
 
 	}

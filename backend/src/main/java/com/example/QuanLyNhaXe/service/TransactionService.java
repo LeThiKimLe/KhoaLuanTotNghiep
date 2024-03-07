@@ -46,10 +46,7 @@ public class TransactionService {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
 
-		String referenceId = utilityService.generateRandomString(10);
-		while (transactionRepository.existsByReferenceId(referenceId)) {
-			referenceId = utilityService.generateRandomString(10);
-		}
+		
 
 		List<Ticket> tickets = booking.getTickets();
 		if (!tickets.isEmpty()) {
@@ -69,9 +66,9 @@ public class TransactionService {
 
 		}
 
-		Transaction transaction = Transaction.builder().paymentTime(utilityService.convertHCMDateTime())
-				.booking(booking).amount(priceBill).paymentMethod(createPaymentDTO.getPaymentMethod())
-				.referenceId(referenceId).transactionType(TransactionType.PAYMENT.getLabel()).build();
+		Transaction transaction = Transaction.builder().paymentTime(utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate()))
+				.booking(booking).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo()).paymentMethod(createPaymentDTO.getPaymentMethod())
+				.transactionType(TransactionType.PAYMENT.getLabel()).build();
 		booking.setTransaction(transaction);
 
 		try {
@@ -88,15 +85,12 @@ public class TransactionService {
 
 	}
 
-	public Transaction createTransactionForCancelTickets(String paymanetMethod, double amount) {
+	public Transaction createTransactionForCancelTickets(String paymanetMethod, double amount, String transactionNo) {
 
-		String referenceId = utilityService.generateRandomString(10);
-		while (transactionRepository.existsByReferenceId(referenceId)) {
-			referenceId = utilityService.generateRandomString(10);
-		}
+		
 
 		return Transaction.builder().paymentTime(utilityService.convertHCMDateTime()).amount(amount)
-				.paymentMethod(paymanetMethod).referenceId(referenceId)
+				.paymentMethod(paymanetMethod).transactionNo(transactionNo)
 				.transactionType(TransactionType.REFUND.getLabel()).build();
 
 	}
