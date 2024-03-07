@@ -20,6 +20,7 @@ import com.example.QuanLyNhaXe.service.ReviewService;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -32,18 +33,18 @@ public class BookingController {
 	private final ReviewService reviewService;
 	@SecurityRequirement(name="bearerAuth")
 	@PostMapping("/booking-users")
-	public ResponseEntity<Object> createBookingForUser(@RequestBody CreateBookingDTO createBookingDTO, @Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization) {
-		return new ResponseEntity<>(bookingService.booking(createBookingDTO,authorization), HttpStatus.OK);
+	public ResponseEntity<Object> createBookingForUser(@RequestBody CreateBookingDTO createBookingDTO, @Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,HttpServletRequest httpServletRequest) {
+		return new ResponseEntity<>(bookingService.booking(createBookingDTO,authorization,httpServletRequest), HttpStatus.OK);
 	}
 	
 	@PostMapping("/booking-guest")
-	public ResponseEntity<Object> createBookingForGuest(@RequestBody CreateBookingDTO createBookingDTO) {
-		return new ResponseEntity<>(bookingService.bookingForGuest(createBookingDTO), HttpStatus.OK);
+	public ResponseEntity<Object> createBookingForGuest(@RequestBody CreateBookingDTO createBookingDTO,HttpServletRequest httpServletRequest) {
+		return new ResponseEntity<>(bookingService.bookingForGuest(createBookingDTO,httpServletRequest), HttpStatus.OK);
 	}
 	
 	@PostMapping("/keep-booking")
-	public ResponseEntity<Object> createKeepBooking(@RequestParam String bookingCode) {
-		return new ResponseEntity<>(bookingService.keepBookingSession(bookingCode), HttpStatus.OK);
+	public ResponseEntity<Object> createKeepBooking(@RequestParam String bookingCode,HttpServletRequest httpServletRequest) {
+		return new ResponseEntity<>(bookingService.keepBookingSession(bookingCode,httpServletRequest), HttpStatus.OK);
 	}
 
 

@@ -19,7 +19,7 @@ public class TransactionDTO {
 	 private String transactionType;
 	 private double amount;
 	 private LocalDateTime paymentTime;
-	 private String referenceId;
+	 private String transactionNo;
 	 private String paymentMethod;
-	// private BookingSimpleDTO booking;
+	
 }

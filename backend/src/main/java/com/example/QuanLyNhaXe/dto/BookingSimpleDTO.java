@@ -17,5 +17,6 @@ public class BookingSimpleDTO {
 	private String code;
 	private LocalDateTime bookingDate;
 	private String status;
+	private String paymentURL;
 
 }

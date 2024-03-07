@@ -54,6 +54,11 @@ public class Booking {
     
     @Column(name = "status", length = 45, nullable = false)
 	private String status;
+    
+    @Column(name = "order_id", length = 45)
+	private String order_id;
+    
+    
 
     @ManyToOne
 	@JoinColumn(name = "trip_id", referencedColumnName = "id")

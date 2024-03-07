@@ -1,12 +1,16 @@
 package com.example.QuanLyNhaXe.model;
 
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.util.List;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -28,6 +32,9 @@ public class Transaction {
 
 	@Column(name = "transaction_type", nullable = false)
 	private String transactionType;
+	
+	@Column(name = "transaction_no")
+	private String transactionNo;
 
 	@Column(name = "amount", nullable = false)
 	private double amount;
@@ -38,8 +45,7 @@ public class Transaction {
 	@Column(name = "payment_method")
 	private String paymentMethod;
 
-	@Column(name = "reference_id", nullable = false, length = 20)
-	private String referenceId;
+	
 
 	@OneToOne(mappedBy = "transaction")
 	private Booking booking;

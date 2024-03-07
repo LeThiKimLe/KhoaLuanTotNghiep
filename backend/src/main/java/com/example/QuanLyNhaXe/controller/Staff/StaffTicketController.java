@@ -24,6 +24,7 @@ import com.example.QuanLyNhaXe.service.TicketService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -37,8 +38,8 @@ public class StaffTicketController {
 
 	@PostMapping("/cancel")
 	public ResponseEntity<Object> cancelTicketForStaff(@RequestBody CancelTicketsDTO cancelTicketsDTO,
-			@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
-		return new ResponseEntity<>(ticketService.cancelTicket(cancelTicketsDTO, authorization), HttpStatus.OK);
+			@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,HttpServletRequest httpServletRequest) {
+		return new ResponseEntity<>(ticketService.cancelTicket(cancelTicketsDTO, authorization,httpServletRequest), HttpStatus.OK);
 	}
 
 	@GetMapping("/schedule-ticket")
@@ -53,8 +54,8 @@ public class StaffTicketController {
 
 	@PostMapping("/cancel-approval")
 	public ResponseEntity<Object> cancelTicket(@RequestBody CancelTicketApproval cancelTicketApproval,
-			@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
-		return new ResponseEntity<>(ticketService.cancelTicketForStaff(cancelTicketApproval, authorization),
+			@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization,HttpServletRequest httpServletRequest) {
+		return new ResponseEntity<>(ticketService.cancelTicketForStaff(cancelTicketApproval, authorization,httpServletRequest),
 				HttpStatus.OK);
 	}
 	

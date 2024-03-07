@@ -3,6 +3,7 @@ package com.example.QuanLyNhaXe.service;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Random;
 
@@ -43,5 +44,24 @@ public class UtilityService {
 		return sb.toString();
 	}
 	
+	 public static String getRandomNumber(int len) {
+	        Random rnd = new Random();
+	        String chars = "0123456789";
+	        StringBuilder sb = new StringBuilder(len);
+	        for (int i = 0; i < len; i++) {
+	            sb.append(chars.charAt(rnd.nextInt(chars.length())));
+	        }
+	        return sb.toString();
+	    }
+	 
+	 public  LocalDateTime convertStringToDateTime(String dateString) {
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	        return LocalDateTime.parse(dateString, formatter);
+	    }
+	 
+	 public  String convertDateTimeToString(LocalDateTime dateTime) {
+	        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
+	        return dateTime.format(formatter);
+	    }
 
 }
