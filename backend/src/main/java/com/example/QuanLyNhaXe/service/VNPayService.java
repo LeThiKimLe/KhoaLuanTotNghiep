@@ -23,6 +23,7 @@ import java.util.TimeZone;
 import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.configuration.PaymentConfig;
+import com.example.QuanLyNhaXe.model.Booking;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
@@ -97,7 +98,7 @@ public class VNPayService {
 		}
 	}
 
-	public String generatePaymentUrl(HttpServletRequest req, Integer amountNumber, String order_id) throws UnsupportedEncodingException {
+	public String generatePaymentUrl(HttpServletRequest req, Integer amountNumber, String order_id, Booking bookingInfor) throws UnsupportedEncodingException {
 		String vnp_Version = "2.1.0";
 		String vnp_Command = "pay";
 		String orderType = "other";
@@ -120,12 +121,12 @@ public class VNPayService {
 			vnp_Params.put("vnp_BankCode", bankCode);
 		}
 		vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-		vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+		vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + bookingInfor.getCode());
 		vnp_Params.put("vnp_OrderType", orderType);
 
 		vnp_Params.put("vnp_Locale", "vn");
 
-		vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_Returnurl);
+		vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_Returnurl + bookingInfor.getCode() + "/");
 		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
 		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));

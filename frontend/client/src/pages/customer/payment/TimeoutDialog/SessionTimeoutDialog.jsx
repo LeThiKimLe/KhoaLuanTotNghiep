@@ -96,7 +96,7 @@ const SessionTimeoutDialog = ({ onCancelPayment, onContinue, type }) => {
                   <h2 style={{ textAlign: 'center' }}>Thanh toán không hợp lệ</h2>
                 </div>
                 <div>
-                  <b>Giao dịch đã được thanh toán hoặc phiên thanh toán đã hết hạn</b>
+                  <b>Giao dịch đã được thanh toán hoặc phiên thanh toán đã bị hủy hoặc hết hạn</b>
                   <br />
                   <i>{`Hệ thống sẽ tự động trở về trang chủ trong ${countDown} giây nữa`}</i>
                 </div>

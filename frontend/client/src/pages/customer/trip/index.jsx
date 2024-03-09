@@ -21,6 +21,7 @@ import bookingThunk from '../../../feature/booking/booking.service'
 import './custom.css'
 import { selectChangeInfor, ticketAction, selectNewSeat } from '../../../feature/ticket/ticket.slice'
 import MediaQuery from 'react-responsive'
+import { setPaymentURL } from '../../../feature/payment/payment.slice'
 
 const TripSum = ({ turn, trip, selectedSeats }) => {
     return (
@@ -196,6 +197,7 @@ const Trip = ({ tabStyle }) => {
                 dispatch(bookingThunk.bookingForUser(bookingInfor))
                     .unwrap()
                     .then((response) => {
+                        dispatch(setPaymentURL(response.paymentURL))
                         navigate(`/payment/${response.code}`)
                     })
                     .catch((error) => {
@@ -205,6 +207,7 @@ const Trip = ({ tabStyle }) => {
                 dispatch(bookingThunk.bookingForGuest(bookingInfor))
                     .unwrap()
                     .then((response) => {
+                        dispatch(setPaymentURL(response.paymentURL))
                         navigate(`/payment/${response.code}`)
                     })
                     .catch((error) => {

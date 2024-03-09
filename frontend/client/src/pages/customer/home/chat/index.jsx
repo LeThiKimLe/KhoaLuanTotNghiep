@@ -125,6 +125,9 @@ const Chat = () => {
         dispatch(chatThunk.sendChatbotQuery(question))
         .unwrap()
         .then((ans) => {
+            console.log(ans)
+            if (ans.data == '')
+                ans = 'Hệ thống đang bận. Bạn vui lòng thử lại sau.' 
             const repMessage = {
                 message: ans,
                 direction: 'incoming',

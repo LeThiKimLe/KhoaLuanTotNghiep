@@ -24,6 +24,14 @@ import { useParams } from 'react-router-dom';
 import { STATE_DICTIONARY } from '../../../utils/constants'
 import { selectIsLoggedIn } from '../../../feature/auth/auth.slice'
 import { useCallbackPrompt } from './hooks/useCallbackPrompt'
+import paymentThunk from '../../../feature/payment/payment.service'
+import paymentSlice, { paymentURL, setPaymentURL } from '../../../feature/payment/payment.slice'
+import atm_img from '../../../assets/atn_logo.png'
+import visa_img from '../../../assets/visa_logo.png'
+import mobi_img from '../../../assets/mobi_banking.png'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
+import clock_img from '../../../assets/timer-clock.gif'
 
 const Payment = () => {
     const message = useSelector(selectMessage)
@@ -37,6 +45,7 @@ const Payment = () => {
     const handleChooseMethod = (e) => {
         setPayment(e.target.value)
     }
+    const payURL = useSelector(paymentURL)
     const dispatch = useDispatch()
     const bookingInfor = useSelector(selectBookingInfor)
     const [showPendingDialog, setShowPendingDialog] = useState(false)
@@ -48,6 +57,11 @@ const Payment = () => {
     const [showCountDown, setShowCountDown] = useState(true)
     const { bookingCode: urlBookingCode } = useParams()
     const [paid, setPaid] = useState(false)
+    const url = new URL(window.location.href);
+    const params = new URLSearchParams(url.search);
+    const [vnp_ResponseCode, setResponseCode] = useState(params.get('vnp_ResponseCode'))
+    const [vnp_TransactionNo, setTransactionNo] = useState(params.get('vnp_TransactionNo'))
+    const [vnp_TransactionDate, setTransactionDate] = useState(params.get('vnp_PayDate'))
     const handleCancelOut = async () => {
         await dispatch(bookingThunk.cancelPayment(urlBookingCode))
             .unwrap()
@@ -79,7 +93,12 @@ const Payment = () => {
 
     const handlePayment = () => {
         dispatch(bookingActions.resetMessage())
-        dispatch(bookingThunk.bookingPayment({ bookingCode: urlBookingCode, payment }))
+        dispatch(bookingThunk.bookingPayment(
+                { bookingCode: urlBookingCode,
+                  payment: 'VNPay',
+                  transactionNo: vnp_TransactionNo,
+                  transactionDate: vnp_TransactionDate}
+            ))
             .unwrap()
             .then(() => {
                 setPaid(true)
@@ -100,7 +119,8 @@ const Payment = () => {
     const handleContinue = () => {
         dispatch(bookingThunk.keepPayment(urlBookingCode))
             .unwrap()
-            .then(() => {
+            .then((res) => {
+                dispatch(setPaymentURL(res.paymentURL))
                 setPaid(false)
                 setShowPendingDialog(false)
                 setShowCountDown(true)
@@ -138,6 +158,12 @@ const Payment = () => {
             bookedSeat: booking.tickets.map((ticket) => ticket.seat),
             pickPoint: booking.pickStation.id,
             dropPoint: booking.dropStation.id
+        }
+    }
+
+    const openPayment = () => {
+        if (payURL !== '') {
+            window.location.href = payURL
         }
     }
 
@@ -210,29 +236,45 @@ const Payment = () => {
     useEffect(() => {
         window.scrollTo(0, 0);
         dispatch(bookingActions.resetMessage())
-        const handleBeforeUnload = (event) => {
-            event.preventDefault(); // Hủy bỏ sự kiện mặc định để ngăn người dùng rời khỏi trang
-            event.returnValue = 'Bạn chắc chắn muốn thoát khỏi trang? Vé sẽ bị hủy'
-          }
-        const handleUnload = (event) => {
-            dispatch(bookingThunk.cancelPayment(urlBookingCode))
-        };
-        window.addEventListener('beforeunload', handleBeforeUnload);
-        window.addEventListener('unload', handleUnload);
-        return () => {
-            dispatch(bookingActions.resetMessage())
-            // dispatch(bookingActions.clearBookingSession())
-            window.removeEventListener('beforeunload', handleBeforeUnload);
-            window.removeEventListener('unload', handleUnload);
-        }
+        // const handleBeforeUnload = (event) => {
+        //     event.preventDefault(); // Hủy bỏ sự kiện mặc định để ngăn người dùng rời khỏi trang
+        //     event.returnValue = 'Bạn chắc chắn muốn thoát khỏi trang? Vé sẽ bị hủy'
+        //   }
+        // const handleUnload = (event) => {
+        //     dispatch(bookingThunk.cancelPayment(urlBookingCode))
+        // };
+        // window.addEventListener('beforeunload', handleBeforeUnload);
+        // window.addEventListener('unload', handleUnload);
+        // return () => {
+        //     dispatch(bookingActions.resetMessage())
+        //     // dispatch(bookingActions.clearBookingSession())
+        //     window.removeEventListener('beforeunload', handleBeforeUnload);
+        //     window.removeEventListener('unload', handleUnload);
+        // }
     }, [])
+
+    useEffect(() => {
+        if (vnp_ResponseCode === '00') {
+            handlePayment()
+        }
+        else if (vnp_ResponseCode) {
+            // Dùng nav để trigger xác nhận out trang
+            navigate('/')
+        }
+    }, [vnp_ResponseCode])
+
     return (
         <div>
             {message !== '' && <Message message={message} messagetype={error ? 2 : 1} />}
             {isValidPayment && showPendingDialog && <SessionTimeoutDialog onCancelPayment={handleCancel} onContinue={handleContinue} type='pending'></SessionTimeoutDialog>}
             {isValidPayment && showSuccessDialog && <SessionTimeoutDialog onCancelPayment={handleBackToHome} type='success' ></SessionTimeoutDialog>}
             {isValidPayment && showCancelDialog && <SessionTimeoutDialog onCancelPayment={handleBackToHome} onContinue={remainPayment} type='success' ></SessionTimeoutDialog>}
-            {isValidPayment && showConfirmOutDialog && <SessionTimeoutDialog onCancelPayment={confirmNavigation} onContinue={cancelNavigation} type='cancel' ></SessionTimeoutDialog>}
+            {isValidPayment && showConfirmOutDialog && 
+                <SessionTimeoutDialog 
+                    onCancelPayment={confirmNavigation} 
+                    onContinue={!vnp_ResponseCode ? cancelNavigation : () => {cancelNavigation(); handleContinue()}} 
+                    type='cancel' >
+                </SessionTimeoutDialog>}
             {!isValidPayment && showInvalidDialog && <SessionTimeoutDialog onCancelPayment={handleBackToHome} type='deny' ></SessionTimeoutDialog>}
             <Navbar></Navbar>
             <Header type="list" />
@@ -244,30 +286,30 @@ const Payment = () => {
                                 <Col lg={8} className={styles.paymentContainer}>
                                     <Row>
                                         <Col lg={5} md={5} className={styles.methodCol}>
-                                            <h3 className={styles.colTitle}>Chọn hình thức thanh toán</h3>
+                                            <h3 className={styles.colTitle}>Hình thức thanh toán</h3>
                                             <div className={styles.methods}>
                                                 <label style={{ margin: '15px 0' }}>
-                                                    <input
-                                                        type="radio"
-                                                        value="Momo"
-                                                        checked={payment === 'Momo'}
-                                                        onChange={handleChooseMethod}
-                                                        style={{ marginRight: '10px' }}
-                                                    />
-                                                    <img src={momo} alt="" style={{ marginRight: '10px' }} />
-                                                    <b>MoMo</b>
+                                                    <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/>
+                                                    <img src={vnpay} alt=""/>
+                                                    <b>VNPay</b>
                                                 </label>
                                                 <br></br>
                                                 <label style={{ margin: '15px 0' }}>
-                                                    <input
-                                                        type="radio"
-                                                        value="VNPay"
-                                                        checked={payment === 'VNPay'}
-                                                        onChange={handleChooseMethod}
-                                                        style={{ marginRight: '10px' }}
-                                                    />
-                                                    <img src={vnpay} alt="" style={{ marginRight: '10px' }} />
-                                                    <b>VNPay</b>
+                                                    <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/>
+                                                    <img src={mobi_img} alt=""/>
+                                                    <b>Mobile Banking</b>
+                                                </label>
+                                                <br></br>
+                                                <label style={{ margin: '15px 0' }}>
+                                                    <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/>
+                                                    <img src={atm_img} alt=""/>
+                                                    <b>Thẻ ATM nội địa</b>
+                                                </label>
+                                                <br></br>
+                                                <label style={{ margin: '15px 0' }}>
+                                                    <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/>
+                                                    <img src={visa_img} alt=""/>
+                                                    <b>Thẻ Visa/Master/JCB</b>
                                                 </label>
                                             </div>
                                         </Col>
@@ -277,26 +319,18 @@ const Payment = () => {
                                             <i style={{ color: 'red', fontSize: '14px' }}>{`Thời gian giữ chỗ còn lại `}
                                                 {showCountDown ? <CountDown onTimeout={handleTimeout}></CountDown> : <i>00:00</i>}
                                             </i>
-                                            <div className={styles.qr}>
-                                                <QRCode
-                                                    value={payment}
-                                                    size={200}
-                                                    level={'H'}
-                                                />
-                                            </div>
+                                            <br></br>
+                                            <img src={clock_img} style={{width: '50px', height: '50px', marginTop: '10px'}}></img>
                                             <div className={styles.direction}>
                                                 <h4>Hướng dẫn thanh toán</h4>
                                                 <ol>
-                                                    <li>Mở ứng dụng tương ứng trên điện thoại</li>
-                                                    <li>{`Dùng biểu tượng `}
-                                                        <img src={icon_scan} alt="" />
-                                                        {` để quét mã QR`}
-                                                    </li>
-                                                    <li>Quét mã tại trang và thực hiện các bước
-                                                        xác nhận thanh toán ở ứng dụng</li>
+                                                    <li>Click vào nút "Thanh toán tại đây"</li>
+                                                    <li>Chọn phương thức thanh toán phù hợp</li>
+                                                    <li>Thực hiện các bước xác nhận thanh toán tương ứng</li>
+                                                    <li>Sau khi thanh toán thành công, bạn sẽ nhận được thông báo và trở về trang chủ</li>
                                                 </ol>
                                             </div>
-                                            <Button text='Thanh toán' onClick={handlePayment} loading={loading}></Button>
+                                            <Button text='Thanh toán tại đây' onClick={openPayment} loading={loading}></Button>
                                         </Col>
                                     </Row>
                                 </Col>

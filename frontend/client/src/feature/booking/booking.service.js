@@ -85,12 +85,14 @@ const getBookingInfor = createAsyncThunk('bookings/tickets', async ({ searchInfo
 }
 )
 
-const bookingPayment = createAsyncThunk('tickets/payment', async ({bookingCode, payment}, thunkAPI) => {
+const bookingPayment = createAsyncThunk('tickets/payment', async ({bookingCode, payment, transactionNo, transactionDate}, thunkAPI) => {
     try {
         const response = await axiosClient.put('tickets/payment',
             {
                 bookingCode: bookingCode,
-                paymentMethod: payment
+                paymentMethod: payment,
+                transactionNo: transactionNo,
+                transactionDate: transactionDate
             }
         )
         return response

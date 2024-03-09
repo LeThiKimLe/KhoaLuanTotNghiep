@@ -14,6 +14,7 @@ import tripReducer from './feature/trip/trip.slice'
 import bookingReducer from './feature/booking/booking.slice'
 import navigationReducer from './feature/navigation/navigation.slice'
 import reviewReducer from './feature/review/review.slice'
+import paymentReducer from './feature/payment/payment.slice'
 
 
 const rootPersistConfig = {
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
     booking: bookingReducer,
     navigation: navigationReducer,
     review: reviewReducer,
+    payment: paymentReducer,
 })
 
 const persitedReducer = persistReducer(rootPersistConfig, rootReducer)
