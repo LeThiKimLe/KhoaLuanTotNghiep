@@ -32,6 +32,9 @@ const ReviewManagement = React.lazy(() => import('./views/system/ReviewManagemen
 const ScheduleManagement = React.lazy(() => import('./views/schedule/ScheduleManagement'))
 const TripDistribute = React.lazy(() => import('./views/schedule/TripDistribute'))
 
+//Chat
+const Chat = React.lazy(() => import('./views/chat/Chat'))
+
 const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
@@ -40,6 +43,7 @@ const routes = [
     { path: '/booking', name: 'Đặt vé', element: Booking },
     { path: '/search-ticket', name: 'Tìm vé', element: SearchTicket },
     { path: '/confirm-cancel', name: 'Duyệt hủy vé', element: ConfirmCancel },
+    { path: '/chat', name: 'Cửa sổ khách hàng', element: Chat },
     {
         path: '/employee-manage',
         name: 'Quản lý nhân sự',

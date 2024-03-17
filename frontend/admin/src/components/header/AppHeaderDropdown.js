@@ -21,8 +21,6 @@ import {
     cilUser,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-
-import avatar8 from './../../assets/images/avatars/8.jpg'
 import male from './../../assets/images/avatars/male.svg'
 import female from './../../assets/images/avatars/female.svg'
 import { NavLink, useNavigate } from 'react-router-dom'

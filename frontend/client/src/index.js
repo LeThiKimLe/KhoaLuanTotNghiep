@@ -19,9 +19,7 @@ root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <I18nextProvider i18n={i18n}>
-        <React.StrictMode>
           <App />
-        </React.StrictMode>
       </I18nextProvider>
     </PersistGate>
   </Provider>

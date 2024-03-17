@@ -15,6 +15,7 @@ import {
     cilPeople,
     cilFactory,
     cilCalendar,
+    cilChatBubble,
 } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 const _nav = [
@@ -46,6 +47,16 @@ const _nav = [
         name: 'Duyệt hủy vé',
         to: '/confirm-cancel',
         icon: <CIcon icon={cilPencil} customClassName="nav-icon" />,
+        badge: {
+            color: 'success',
+            text: '',
+        },
+    },
+    {
+        component: CNavItem,
+        name: 'Cửa sổ khách hàng',
+        to: '/chat',
+        icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
         badge: {
             color: 'success',
             text: '',

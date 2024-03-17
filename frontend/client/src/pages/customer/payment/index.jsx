@@ -255,13 +255,13 @@ const Payment = () => {
 
     useEffect(() => {
         if (vnp_ResponseCode === '00') {
-            handlePayment()
+            handlePayment()    
         }
         else if (vnp_ResponseCode) {
             // Dùng nav để trigger xác nhận out trang
             navigate('/')
         }
-    }, [vnp_ResponseCode])
+    }, [])
 
     return (
         <div>

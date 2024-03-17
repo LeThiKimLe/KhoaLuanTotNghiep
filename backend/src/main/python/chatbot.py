@@ -19,11 +19,9 @@ class Chatbot:
             documents = SimpleDirectoryReader('data').load_data()
             self.index = VectorStoreIndex.from_documents(documents)
             self.index.storage_context.persist()
-        print('tạo lại')
         self.query_engine = self.index.as_query_engine()
 
     def query(self, user_input):
-        print('query')
         return self.query_engine.query(user_input).response
     class Java:
         implements = ["com.example.QuanLyNhaXe.interfaces.Chatbot"]
