@@ -13,6 +13,8 @@ import About from './pages/customer/about';
 import Payment from './pages/customer/payment';
 // import ProtectedRoute from './components/privateRoute';
 import ProtectedRoute from './privateRoute';
+import TicketSignup from './pages/bus_company/ticket-signup';
+import PartnerSignup from './pages/vehicle_owner/partner-signup';
 function App() {
 
     return (
@@ -31,6 +33,8 @@ function App() {
                     <Route path="/bill" element={<Bill />}></Route>
                     <Route path="/about" element={<About />}></Route>
                     <Route path="/payment/:bookingCode" element={<Payment/>}></Route>
+                    <Route path="/sold_ticket" element={<TicketSignup />}></Route>
+                    <Route path="/transport_partner" element={<PartnerSignup />}></Route>
                 </Routes>
             </BrowserRouter>
         </div>

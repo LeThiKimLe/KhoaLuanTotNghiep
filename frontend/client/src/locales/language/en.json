@@ -7,7 +7,12 @@
                 "invoice": "Invoice",
                 "contact": "Contacts",
                 "about": "About Us",
-                "other": "Other"
+                "other": "Other",
+                "become_partner": {
+                    "title": "Become a Partner",
+                    "sold_ticket": "Sell Tickets",
+                    "transport_partner": "Transport Partner"
+                }
             },
         "welcome": "Wanna to travel through VietNam? Let's book XeKimNguyen",
         "promo": "Create your account. Start your first booking with discount",
