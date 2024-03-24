@@ -57,6 +57,10 @@ public class Staff {
     private List<CancelRequest> cancelRequests;
     
     
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    private BusCompany busCompany;
+    
     
 
     

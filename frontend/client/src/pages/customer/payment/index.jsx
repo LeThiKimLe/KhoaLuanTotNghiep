@@ -261,7 +261,7 @@ const Payment = () => {
             // Dùng nav để trigger xác nhận out trang
             navigate('/')
         }
-    }, [vnp_ResponseCode])
+    }, [])
 
     return (
         <div>

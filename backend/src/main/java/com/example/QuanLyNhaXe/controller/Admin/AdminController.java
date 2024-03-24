@@ -1,5 +1,6 @@
 package com.example.QuanLyNhaXe.controller.Admin;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -7,6 +8,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,6 +20,7 @@ import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
 import com.example.QuanLyNhaXe.service.UserService;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -36,8 +39,8 @@ public class AdminController {
 	
 
 	@PostMapping("/staffs")
-	public ResponseEntity<Object> createStaff(@Valid @RequestBody SignupStaffDTO signupStaffDTO) {
-		return new ResponseEntity<>(authenticationService.createStaff(signupStaffDTO), HttpStatus.CREATED);
+	public ResponseEntity<Object> createStaff(@Valid @RequestBody SignupStaffDTO signupStaffDTO,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+		return new ResponseEntity<>(authenticationService.createNewStaff(signupStaffDTO, authorization), HttpStatus.CREATED);
 	}
 
 	@PostMapping("/drivers")

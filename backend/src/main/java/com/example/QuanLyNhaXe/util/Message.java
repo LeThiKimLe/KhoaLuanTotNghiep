@@ -42,6 +42,7 @@ public class Message {
     public static final String BILL_NOT_FOUND = "Không tìm thấy hóa đơn tham chiếu";
     public static final String  TRIP_DELETED="Chuyến xe đã bị vô hiệu hóa";
     public static final String REVIEW_NOT_FOUND = "Không tìm thấy đánh giá nào";
+    public static final String COMPANY_NOT_FOUND = "Không tìm thấy nhà xe";
    
     
     

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.QuanLyNhaXe.Request.ChangePasswordDTO;
+import com.example.QuanLyNhaXe.Request.CreateManager;
 import com.example.QuanLyNhaXe.Request.LoginDTO;
 import com.example.QuanLyNhaXe.Request.ResetPassword;
 import com.example.QuanLyNhaXe.Request.SignupDTO;
@@ -27,16 +28,19 @@ import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Account;
 import com.example.QuanLyNhaXe.model.Admin;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Customer;
 import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Role;
 import com.example.QuanLyNhaXe.model.Staff;
+import com.example.QuanLyNhaXe.model.SystemManager;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.AccountRepository;
 import com.example.QuanLyNhaXe.repository.AdminRepository;
 import com.example.QuanLyNhaXe.repository.CustomerRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.StaffRepository;
+import com.example.QuanLyNhaXe.repository.SystemManagerRepository;
 import com.example.QuanLyNhaXe.repository.UserRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
@@ -63,6 +67,7 @@ public class AuthenticationService {
 	private static final String DEFAULT_TYPE_AUTHENTICATION = "Bearer ";
 	private static final String DEFAULT_IMG = "https://bookingupfile.s3.amazonaws.com/Image/1700527483380-anh-chipi-16.jpg";
 	private final TwilioService twilioService;
+	private final SystemManagerRepository managerRepository;
 
 	public TokenDTO login(LoginDTO loginDTO) {
 
@@ -103,16 +108,16 @@ public class AuthenticationService {
 			throw new BadRequestException("Access denied");
 		}
 		String JWT = authorizationHeader.substring(7);
-		if(!jwtService.extractType(JWT).equals("Verify Token")) {
+		if (!jwtService.extractType(JWT).equals("Verify Token")) {
 			throw new BadRequestException("Token Invalid");
 		}
-		
-		String tel=jwtService.extractUsername(JWT);
-		if(!tel.equals(signupDTO.getTel())) {
+
+		String tel = jwtService.extractUsername(JWT);
+		if (!tel.equals(signupDTO.getTel())) {
 			throw new BadRequestException("Unverified phone number");
 		}
 		String userName = signupDTO.getTel();
-	
+
 		User user = createUser(signupDTO, 4, userName);
 		Customer customer = Customer.builder().user(user).img(DEFAULT_IMG).build();
 
@@ -129,46 +134,39 @@ public class AuthenticationService {
 	}
 
 	@Transactional
-	public ResponseMessage createStaff(SignupStaffDTO signupStaffDTO) {
-		User user=null;
-		boolean checkExist1=userRepository.existsByTel(signupStaffDTO.getTel());
+	public Staff createStaff(SignupStaffDTO signupStaffDTO, Integer roleId) {
+		User user = null;
+
+		boolean checkExist1 = userRepository.existsByTel(signupStaffDTO.getTel());
 		boolean checkExist2 = staffRepository.existsByIdCard(signupStaffDTO.getIdCard());
-		if (checkExist2||checkExist1) {
+		if (checkExist2 || checkExist1) {
 			throw new ConflictException("Nhân viên đã tồn tại trong hệ thống");
 		}
 		SignupDTO signupDTO = SignupDTO.builder().email(signupStaffDTO.getEmail()).tel(signupStaffDTO.getTel())
 				.name(signupStaffDTO.getName()).gender(signupStaffDTO.getGender()).password("@12345678@").build();
 		String userName = signupStaffDTO.getEmail();
-		if(signupStaffDTO.isAdmin()) {
-			user = createUser(signupDTO, 1, userName);
-		}
-		else {
-			user = createUser(signupDTO, 2, userName);
-		}
-		
+
+		user = createUser(signupDTO, roleId, userName);
+
 		Staff staff = Staff.builder().address(signupStaffDTO.getAddress())
-				.beginWorkDate(signupStaffDTO.getBeginWorkDate()).idCard(signupStaffDTO.getIdCard()).img(DEFAULT_IMG).nickname("NV: "+signupStaffDTO.getName())
-				.user(user).build();
+				.beginWorkDate(signupStaffDTO.getBeginWorkDate()).idCard(signupStaffDTO.getIdCard()).img(DEFAULT_IMG)
+				.nickname("NV: " + signupStaffDTO.getName()).user(user).build();
 		try {
 			accountRepository.save(user.getAccount());
 			userRepository.save(user);
 			staffRepository.save(staff);
-			if(signupStaffDTO.isAdmin()) {
-				Admin admin=Admin.builder().staff(staff).build();
-				adminRepository.save(admin);
-			}
 
 		} catch (DataAccessException e) {
-			return new ResponseMessage(Message.INACCURATE_DATA);
+			return new Staff();
 		}
-		return new ResponseMessage(Message.SUCCESS_ADD_STAFF);
+		return staff;
 	}
 
 	@Transactional
 	public Object createDriver(SignupDriverDTO signupDriverDTO) {
-		boolean checkExist1=userRepository.existsByTel(signupDriverDTO.getTel());
+		boolean checkExist1 = userRepository.existsByTel(signupDriverDTO.getTel());
 		boolean checkExistIdCard = driverRepository.existsByIdCard(signupDriverDTO.getIdCard());
-		if (checkExistIdCard||checkExist1) {
+		if (checkExistIdCard || checkExist1) {
 			throw new ConflictException("Tài xế đã tồn tại trong hệ thống");
 		}
 		boolean checkExistLicenseNumber = driverRepository.existsByLicenseNumber(signupDriverDTO.getLicenseNumber());
@@ -180,7 +178,7 @@ public class AuthenticationService {
 				.name(signupDriverDTO.getName()).gender(signupDriverDTO.getGender()).password("@123456@").build();
 		String userName = signupDriverDTO.getEmail();
 		User user = createUser(signupDTO, 3, userName);
-		
+
 		Driver driver = Driver.builder().address(signupDriverDTO.getAddress())
 				.beginWorkDate(signupDriverDTO.getBeginWorkDate()).idCard(signupDriverDTO.getIdCard()).img(DEFAULT_IMG)
 				.licenseNumber(signupDriverDTO.getLicenseNumber()).issueDate(signupDriverDTO.getIssueDate()).user(user)
@@ -249,7 +247,7 @@ public class AuthenticationService {
 	}
 
 	public ResponseMessage changePassword(ChangePasswordDTO changePasswordDTO, String authorization) {
-		User user=userService.getUserByAuthorizationHeader(authorization);
+		User user = userService.getUserByAuthorizationHeader(authorization);
 		Account account = user.getAccount();
 		if (changePasswordDTO.getOldPassword() == null || changePasswordDTO.getNewPassword() == null
 				|| changePasswordDTO.getOldPassword().isEmpty() || changePasswordDTO.getNewPassword().isEmpty()) {
@@ -265,45 +263,101 @@ public class AuthenticationService {
 		}
 
 	}
-	
+
 	public Object verifyAccount(ResetPassword resetPassword) {
-		if(resetPassword.getTel().isEmpty()||resetPassword.getOtp().isEmpty()) {
+		if (resetPassword.getTel().isEmpty() || resetPassword.getOtp().isEmpty()) {
 			throw new BadRequestException("Vui lòng nhập đủ dữ liệu");
-		}	
-		
-		if(twilioService.verifyOtp(resetPassword.getTel(),resetPassword.getOtp())){			
+		}
+
+		if (twilioService.verifyOtp(resetPassword.getTel(), resetPassword.getOtp())) {
 			String verifyToken = jwtService.generateNewVerifyToken(resetPassword.getTel());
 
-			return "VerifyToken:"+ verifyToken;
+			return "VerifyToken:" + verifyToken;
 		}
 		throw new BadRequestException("OTP không hợp lệ");
 
 	}
-	public Object resetPassword(String password,String authorizationHeader) {
+
+	public Object resetPassword(String password, String authorizationHeader) {
 		if (authorizationHeader == null || authorizationHeader.isEmpty()
 				|| !authorizationHeader.startsWith("Bearer ")) {
 			throw new BadRequestException("Access denied");
 		}
 		String JWT = authorizationHeader.substring(7);
-		
-		if(!jwtService.extractType(JWT).equals("Verify Token")) {
+
+		if (!jwtService.extractType(JWT).equals("Verify Token")) {
 			throw new BadRequestException("Token Invalid");
 		}
-		String tel=jwtService.extractUsername(JWT);
-		
-		
-		User user=userRepository.findByTel(tel)
-				.orElseThrow(() -> new NotFoundException(Message.USER_NOT_FOUND));
+		String tel = jwtService.extractUsername(JWT);
+
+		User user = userRepository.findByTel(tel).orElseThrow(() -> new NotFoundException(Message.USER_NOT_FOUND));
 		Account account = user.getAccount();
-		if(password.isEmpty()) {
+		if (password.isEmpty()) {
 			throw new BadRequestException("Mật khẩu không được để trống");
 		}
 		account.setPassword(passwordEncoder.encode(password));
-		accountRepository.save(account);	
+		accountRepository.save(account);
 		return new ResponseMessage("Tạo mật khẩu thành công");
-		
+
 	}
-	
-	
+
+	@Transactional
+	public ResponseMessage createManager(CreateManager createManager) {
+
+		User user = null;
+		boolean checkExist1 = userRepository.existsByTel(createManager.getTel());
+		boolean checkExist2 = managerRepository.existsByIdCard(createManager.getIdCard());
+		if (checkExist2 || checkExist1) {
+			throw new ConflictException("Nhân viên đã tồn tại trong hệ thống");
+		}
+		SignupDTO signupDTO = SignupDTO.builder().email(createManager.getEmail()).tel(createManager.getTel())
+				.name(createManager.getName()).gender(createManager.getGender()).password("@123456789@").build();
+		String userName = createManager.getEmail();
+		user = createUser(signupDTO, 5, userName);
+		SystemManager manager = SystemManager.builder().address(createManager.getAddress())
+				.beginWorkDate(createManager.getBeginWorkDate()).idCard(createManager.getIdCard()).img(DEFAULT_IMG)
+				.user(user).build();
+		try {
+			accountRepository.save(user.getAccount());
+			userRepository.save(user);
+			managerRepository.save(manager);
+
+		} catch (DataAccessException e) {
+			return new ResponseMessage(Message.INACCURATE_DATA);
+		}
+		return new ResponseMessage(Message.SUCCESS_ADD_STAFF);
+
+	}
+
+	@Transactional
+	public ResponseMessage createNewStaff(SignupStaffDTO signupStaffDTO, String authentication) {
+		User adminUser = userService.getUserByAuthorizationHeader(authentication);
+		BusCompany busCompany = adminUser.getStaff().getAdmin().getBusCompany();
+		Staff staff = createStaff(signupStaffDTO, 2);
+		staff.setBusCompany(busCompany);
+		try {
+			staffRepository.save(staff);
+
+		} catch (DataAccessException e) {
+			return new ResponseMessage(Message.INACCURATE_DATA);
+		}
+		return new ResponseMessage(Message.SUCCESS_ADD_STAFF);
+
+	}
+
+	@Transactional
+	public Admin createNewAdmin(SignupStaffDTO signupStaffDTO) {
+		try {
+			Staff staff = createStaff(signupStaffDTO, 1);
+			Admin admin = Admin.builder().staff(staff).build();
+			adminRepository.save(admin);
+			return admin;
+
+		} catch (DataAccessException e) {
+			return new Admin();
+		}
+		
+
+	}
 
 }

@@ -13,6 +13,7 @@ import lombok.NoArgsConstructor;
 public class TripDTO {
 	private Integer id;
 	private boolean turn;
+	private Integer price;
 	private StationDTO startStation;
 	private StationDTO endStation;
 	private List<ScheduleDTO> schedules;

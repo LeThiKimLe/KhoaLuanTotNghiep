@@ -6,7 +6,7 @@ import lombok.Data;
 public class EditRouteDTO {
 	private Integer id;
 	private Integer distance;
-	private Integer price;
+
 	private String schedule;
 	private Integer parents;
 	private float hours;

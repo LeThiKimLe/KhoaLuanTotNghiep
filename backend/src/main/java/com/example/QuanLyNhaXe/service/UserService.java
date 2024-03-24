@@ -232,5 +232,35 @@ public class UserService {
 		}
 		
 	}
+	public Object editAdmin(Integer id,String email, String idCard, String name, String tel, String address) {
+		
+		Staff staff = staffRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException(Message.STAFF_NOT_FOUND));
+		User user = staff.getUser();
+		Account account = user.getAccount();
+		
+		account.setUsername(email);
+		user.setEmail(email);
+		user.setName(name);
+		
+		user.setTel(tel);
+		staff.setAddress(address);
+		
+		staff.setNickname("NV: " + name);
+		staff.setIdCard(idCard);
+		user.setAccount(account);
+		user.setStaff(staff);
+		
+		try {
+			accountRepository.save(account);
+			userRepository.save(user);
+			staffRepository.save(staff);
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new BadRequestException(Message.INACCURATE_DATA);
+		}
+		return user;
+		
+	}
 
 }

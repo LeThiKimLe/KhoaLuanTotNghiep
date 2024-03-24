@@ -58,4 +58,7 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<History>historys;
     
+    @OneToOne(mappedBy = "user")
+    private SystemManager  systemManager;
+    
 }

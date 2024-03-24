@@ -33,6 +33,9 @@ public class Trip {
 	@Column(name = "turn")
 	private boolean turn;
 	
+	@Column(name = "price")
+    private Integer price;
+	
 	@Column(name = "is_active")
     private boolean isActive;
 
@@ -62,6 +65,10 @@ public class Trip {
 	
 	@OneToMany(mappedBy = "trip")
     private List<Trip_Bus> tripBus;
+    
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    private BusCompany busCompany;
 	
 
 	
