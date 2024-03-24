@@ -1,1 +1,402 @@
-{"docstore/metadata": {"983c39ba-d569-4075-a8c3-d0d8e5e413a7": {"doc_hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91"}, "baa4dba9-9ba7-4d44-87e2-17fdade287f9": {"doc_hash": "6a85a33c826138c5db98c9925d5576b96823f402c38d9a23fff09bd4996a9d09", "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"}, "f4ef331d-77ca-4c63-9549-4df8cd104fec": {"doc_hash": "1a1d7a716499433faa7a63e1458255dcd563db0c987aef63cfdd5ad0b32504a0", "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"}, "d71851ad-6b93-4c74-82b9-da9a57c77996": {"doc_hash": "0611e2e30360515283ff06ac1407739172bc2077459a0e45cf439f19df35958a", "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"}, "d3fb860f-2504-407b-9e2c-62a06360622a": {"doc_hash": "21dd9a398127b20ac7bd2fd035e522a7e4c42463270e9efaa89b7b007188ef66", "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"}, "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e": {"doc_hash": "42bdc0ae3ce6f9c80f95ff4f080690b2944ee2eb662d997bfc5673ae19df31c4", "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"}}, "docstore/data": {"baa4dba9-9ba7-4d44-87e2-17fdade287f9": {"__data__": {"id_": "baa4dba9-9ba7-4d44-87e2-17fdade287f9", "embedding": null, "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "excluded_embed_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "excluded_llm_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "relationships": {"1": {"node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7", "node_type": "4", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91", "class_name": "RelatedNodeInfo"}, "3": {"node_id": "f4ef331d-77ca-4c63-9549-4df8cd104fec", "node_type": "1", "metadata": {}, "hash": "f671a7b127425dc910c3409d2c27f82e5155e74142b1ee39d715da8fcf28f8c8", "class_name": "RelatedNodeInfo"}}, "text": "Gi\u1edbi thi\u1ec7u website \u0111\u1eb7t v\u00e9 xe kh\u00e1ch XeKimNguyen\r\nXeKimNguyen l\u00e0 trang web \u0111\u1eb7t v\u00e9 xe c\u1ee7a h\u00e3ng xe Kim Nguy\u00ean. H\u00e3ng xe tr\u00e2n tr\u1ecdng ph\u1ee5c v\u1ee5 kh\u00e1ch h\u00e0ng c\u00e1c chuy\u1ebfn xe tuy\u1ebfn c\u1ed1 \u0111\u1ecbnh t\u1eeb c\u00e1c t\u1ec9nh mi\u1ec1n Trung \u0111\u1ebfn Nam B\u1ed9 Vi\u1ec7t Nam. C\u00e1c tuy\u1ebfn xe n\u1ed5i b\u1eadt \u0111\u01b0\u1ee3c kh\u00e1ch h\u00e0ng th\u01b0\u1eddng xuy\u00ean tin t\u01b0\u1edfng v\u00e0 s\u1eed d\u1ee5ng l\u00e0 tuy\u1ebfn Nha Trang \u2013 Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh, Tr\u00e0 Vinh \u2013 Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh.\r\nM\u1ecdi th\u1eafc m\u1eafc, \u00fd ki\u1ebfn \u0111\u00f3ng g\u00f3p v\u1ec1 trang web ho\u1eb7c ch\u1ea5t l\u01b0\u1ee3ng ph\u1ee5c v\u1ee5, vui l\u00f2ng g\u1ecdi \u0111\u1ebfn s\u1ed1 t\u1ed5ng \u0111\u00e0i 0333.843.250 ho\u1eb7c g\u1eedi mail v\u1ec1 \u0111\u1ecba ch\u1ec9 20110248@student.hcmute.edu.vn.\r\nH\u01b0\u1edbng d\u1eabn s\u1eed d\u1ee5ng web \u0111\u1eb7t v\u00e9\r\n1. T\u00ecm ki\u1ebfm chuy\u1ebfn xe\r\n- B\u01b0\u1edbc 1: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng, \u0111\u1ec3 ch\u1ecdn \u0111i\u1ec3m \u0111i trong danh s\u00e1ch \u0111i\u1ec3m \u0111i.\r\n- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng, \u0111\u1ec3 ch\u1ecdn \u0111i\u1ec3m \u0111\u1ebfn trong danh s\u00e1ch \u0111i\u1ec3m \u0111\u1ebfn. \r\n- B\u01b0\u1edbc 3: Click v\u00e0o \u00f4 Ng\u00e0y \u0111i \u0111\u1ec3 ch\u1ecdn ng\u00e0y \u0111i ho\u1eb7c nh\u1eadp ng\u00e0y \u0111i.\r\n- B\u01b0\u1edbc 4: Click v\u00e0o d\u1ea5u + \u0111\u1ec3 t\u0103ng s\u1ed1 l\u01b0\u1ee3ng v\u00e9 mu\u1ed1n mua, ng\u01b0\u1ee3c l\u1ea1i d\u1ea5u - \u0111\u1ec3 gi\u1ea3m s\u1ed1 l\u01b0\u1ee3ng v\u00e9.\r\n- B\u01b0\u1edbc 5: Click t\u00ecm ki\u1ebfm \u0111\u1ec3 t\u00ecm ki\u1ebfm c\u00e1c chuy\u1ebfn xe theo y\u00eau c\u1ea7u. B\u00ean c\u1ea1nh \u0111\u00f3 c\u00f3 th\u1ec3 tick v\u00e0o c\u00e1c \u00f4 th\u1eddi gian \u0111\u1ec3 l\u1ecdc c\u00e1c chuy\u1ebfn xe khi t\u00ecm ki\u1ebfm chuy\u1ebfn xe theo c\u00e1c khung gi\u1edd (s\u00e1ng, chi\u1ec1u, t\u1ed1i), c\u00e1c lo\u1ea1i xe( gh\u1ebf, gi\u01b0\u1eddng, limousine), c\u00e1c v\u00e9 thu\u1ed9c d\u00e3y gh\u1ebf (tr\u00e1i, gi\u1eefa, ph\u1ea3i), h\u00e0ng gh\u1ebf (\u0111\u1ea7u, gi\u1eefa, cu\u1ed1i, t\u1ea7ng(tr\u00ean hay d\u01b0\u1edbi).\r\n2. \u0110\u1eb7t v\u00e9\r\n- B\u01b0\u1edbc 1: Sau khi t\u00ecm ki\u1ebfm chuy\u1ebfn xe nh\u1ea5n ch\u1ecdn chuy\u1ebfn \u0111\u1ec3 ti\u1ebfn h\u00e0nh c\u00e1c thao t\u00e1c trong ph\u1ea7n \u0111\u1eb7t v\u00e9. Sau khi nh\u1ea5n ch\u1ecdn chuy\u1ebfn website s\u1ebd hi\u1ec3n th\u1ecb c\u00e1c th\u00f4ng tin c\u1ee7a chuy\u1ebfn xe \u1edf khung m\u00e0u v\u00e0ng b\u00ean ph\u1ea3i, c\u00e1c s\u01a1 \u0111\u1ed3 gh\u1ebf ng\u1ed3i, c\u00e1c \u00f4 \u0111\u1ec3 kh\u00e1ch h\u00e0ng nh\u1eadp th\u00f4ng tin c\u1ee7a m\u00ecnh.\r\n- B\u01b0\u1edbc 2: Ch\u1ecdn gh\u1ebf m\u00e0u xanh tr\u00ean s\u01a1 \u0111\u1ed3 gh\u1ebf ng\u1ed3i, l\u01b0u \u00fd c\u00e1c gh\u1ebf c\u00f3 m\u00e0u x\u00e1m( \u0111\u00e3 b\u00e1n) kh\u00e1ch h\u00e0ng s\u1ebd kh\u00f4ng ch\u1ecdn \u0111\u01b0\u1ee3c, sau khi ch\u1ecdn th\u00ec gh\u1ebf \u0111ang ch\u1ecdn s\u1ebd c\u00f3 m\u00e0u xanh l\u00e1.\r\n- B\u01b0\u1edbc 3:  Thay \u0111\u1ed5i \u0111i\u1ec3m \u0111\u00f3n ho\u1eb7c \u0111i\u1ec3m tr\u1ea3 theo \u00fd mu\u1ed1n b\u1eb1ng c\u00e1ch tick v\u00e0o c\u00e1c ch\u1ea5m tr\u00f2n \u0111\u1ed1i v\u1edbi c\u00e1c chuy\u1ebfn xe c\u00f3 th\u1ec3 xu\u1ea5t ph\u00e1t t\u1eeb nhi\u1ec1u b\u1ebfn xe.\r\n- B\u01b0\u1edbc 4: Th\u00f4ng tin kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u0103ng nh\u1eadp khi \u0111\u1eb7t v\u00e9 s\u1ebd \u0111\u01b0\u1ee3c t\u1ef1 \u0111\u1ed9ng \u0111i\u1ec1n s\u1eb5n gi\u1ed1ng v\u1edbi th\u00f4ng tin m\u00e0 ng\u01b0\u1eddi d\u00f9ng nh\u1eadp v\u00e0o khi \u0111\u0103ng k\u00fd t\u00e0i kho\u1ea3n, tuy nhi\u00ean c\u00f3 th\u1ec3 nh\u1ea5n v\u00e0o c\u00e1c \u00f4 th\u00f4ng tin \u0111\u00f3 \u0111\u1ec3 thay \u0111\u1ed5i theo \u00fd mu\u1ed1n (khi \u0111\u1eb7t v\u00e9 cho ng\u01b0\u1eddi kh\u00e1c).", "start_char_idx": 0, "end_char_idx": 2062, "text_template": "{metadata_str}\n\n{content}", "metadata_template": "{key}: {value}", "metadata_seperator": "\n", "class_name": "TextNode"}, "__type__": "1"}, "f4ef331d-77ca-4c63-9549-4df8cd104fec": {"__data__": {"id_": "f4ef331d-77ca-4c63-9549-4df8cd104fec", "embedding": null, "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "excluded_embed_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "excluded_llm_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "relationships": {"1": {"node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7", "node_type": "4", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91", "class_name": "RelatedNodeInfo"}, "2": {"node_id": "baa4dba9-9ba7-4d44-87e2-17fdade287f9", "node_type": "1", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "6a85a33c826138c5db98c9925d5576b96823f402c38d9a23fff09bd4996a9d09", "class_name": "RelatedNodeInfo"}, "3": {"node_id": "d71851ad-6b93-4c74-82b9-da9a57c77996", "node_type": "1", "metadata": {}, "hash": "2c7c816059b106ecc4172c744cddc4fd5dd9a94bf9e960de8ad5b04d74307ba4", "class_name": "RelatedNodeInfo"}}, "text": "- B\u01b0\u1edbc 3:  Thay \u0111\u1ed5i \u0111i\u1ec3m \u0111\u00f3n ho\u1eb7c \u0111i\u1ec3m tr\u1ea3 theo \u00fd mu\u1ed1n b\u1eb1ng c\u00e1ch tick v\u00e0o c\u00e1c ch\u1ea5m tr\u00f2n \u0111\u1ed1i v\u1edbi c\u00e1c chuy\u1ebfn xe c\u00f3 th\u1ec3 xu\u1ea5t ph\u00e1t t\u1eeb nhi\u1ec1u b\u1ebfn xe.\r\n- B\u01b0\u1edbc 4: Th\u00f4ng tin kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u0103ng nh\u1eadp khi \u0111\u1eb7t v\u00e9 s\u1ebd \u0111\u01b0\u1ee3c t\u1ef1 \u0111\u1ed9ng \u0111i\u1ec1n s\u1eb5n gi\u1ed1ng v\u1edbi th\u00f4ng tin m\u00e0 ng\u01b0\u1eddi d\u00f9ng nh\u1eadp v\u00e0o khi \u0111\u0103ng k\u00fd t\u00e0i kho\u1ea3n, tuy nhi\u00ean c\u00f3 th\u1ec3 nh\u1ea5n v\u00e0o c\u00e1c \u00f4 th\u00f4ng tin \u0111\u00f3 \u0111\u1ec3 thay \u0111\u1ed5i theo \u00fd mu\u1ed1n (khi \u0111\u1eb7t v\u00e9 cho ng\u01b0\u1eddi kh\u00e1c).\r\n- B\u01b0\u1edbc 5: Tick v\u00e0o \u00f4 Ch\u1ea5p nh\u1eadn \u0111i\u1ec1u kho\u1ea3n \u0111\u1eb7t v\u00e9 & ch\u00ednh s\u00e1ch b\u1ea3o m\u1eadt th\u00f4ng tin c\u1ee7a Xe Kim Nguy\u00ean r\u1ed3i b\u1ea5m n\u00fat thanh to\u00e1n \u0111\u1ec3 ho\u00e0n t\u1ea5t qu\u00e1 tr\u00ecnh \u0111\u1eb7t v\u00e9. C\u00e1c v\u00e9 \u0111\u00e3 \u0111\u1eb7t s\u1ebd c\u00f3 tr\u1ea1ng th\u00e1i ch\u1edd thanh to\u00e1n.\r\n3. Thanh to\u00e1n v\u00e9\r\n- B\u01b0\u1edbc 1: Sau khi ch\u1ecdn v\u00e9, kh\u00e1ch h\u00e0ng nh\u1ea5n thanh to\u00e1n \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang thanh to\u00e1n. (Th\u1eddi gian gi\u1eef ch\u1ed7 s\u1ebd \u0111\u1ebfm ng\u01b0\u1ee3c 10 ph\u00fat) n\u1ebfu h\u1ebft 10 ph\u00fat m\u00e0 ng\u01b0\u1eddi d\u00f9ng ch\u01b0a thanh to\u00e1n th\u00ec tr\u1ea1ng th\u00e1i c\u00e1c v\u00e9 s\u1ebd chuy\u1ec3n sang \u0111\u00e3 h\u1ee7y.\r\n- B\u01b0\u1edbc 2: Ch\u1ecdn h\u00ecnh th\u1ee9c thanh to\u00e1n Momo (m\u1eb7c \u0111\u1ecbnh) ho\u1eb7c thay \u0111\u1ed5i sang VNPay, r\u1ed3i nh\u1ea5n n\u00fat Thanh to\u00e1n. Kh\u00e1ch h\u00e0ng s\u1ebd nh\u1eadn \u0111\u01b0\u1ee3c th\u00f4ng b\u00e1o thanh to\u00e1n v\u00e9 th\u00e0nh c\u00f4ng.\r\n- B\u01b0\u1edbc 3: Tr\u1edf v\u1ec1 trang ch\u1ee7 s\u1ebd th\u1ea5y hi\u1ec3n th\u1ecb chuy\u1ebfn xe s\u1eafp kh\u1edfi h\u00e0nh m\u00e0 kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u1eb7t .\r\n- B\u01b0\u1edbc 4: Check mail \u0111\u1ec3 \u0111\u1ecdc l\u1ea1i th\u00f4ng tin v\u1ec1 chuy\u1ebfn xe.\r\n4. \u0110\u0103ng nh\u1eadp\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav b\u1ea5m v\u00e0o n\u00fat \u0110\u0103ng nh\u1eadp/ \u0110\u0103ng k\u00fd \u0111\u1ec3 m\u1edf trang \u0110\u0103ng nh\u1eadp\r\n- B\u01b0\u1edbc 2: Nh\u1eadp \u0111\u00fang s\u1ed1 \u0111i\u1ec7n tho\u1ea1i v\u00e0 m\u1eadt kh\u1ea9u \u0111\u00e3 \u0111\u0103ng k\u00fd tr\u01b0\u1edbc \u0111\u00f3, sau \u0111\u00f3 Click \u0110\u0103ng nh\u1eadp. V\u00ed d\u1ee5\r\nT\u00e0i kho\u1ea3n: 0101010101\r\nPassword: 123456\r\n- B\u01b0\u1edbc 3: \u0110\u0103ng nh\u1eadp th\u00e0nh c\u00f4ng s\u1ebd quay v\u1ec1 trang ch\u1ee7, v\u1edbi t\u00ean ng\u01b0\u1eddi d\u00f9ng \u0111\u01b0\u1ee3c hi\u1ec3n th\u1ecb b\u00ean g\u00f3c ph\u1ea3i.\r\n5. Xem l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9\r\n- B\u01b0\u1edbc 1: R\u00ea chu\u1ed9t v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng sau Username, Click ch\u1ecdn L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9.\r\n- B\u01b0\u1edbc 2: Th\u00f4ng tin v\u1ec1 l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9 hi\u1ec7n ra d\u01b0\u1edbi d\u1ea1ng b\u1ea3ng.\r\n- B\u01b0\u1edbc 3: K\u00e9o thanh cu\u1ed9n ph\u00eda d\u01b0\u1edbi b\u1ea3ng \u0111\u1ec3 xem th\u00eam c\u00e1c th\u00f4ng tin.\r\n- B\u01b0\u1edbc 4: T\u1ea1i khung th\u1eddi gian \u0111\u1eb7t v\u00e9, ch\u1ecdn ng\u00e0y b\u1eaft \u0111\u1ea7u v\u00e0 ng\u00e0y k\u1ebft th\u00fac \u0111\u1ec3 gi\u1edbi h\u1ea1n l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9 theo th\u1eddi gian.\r\n- B\u01b0\u1edbc 5: T\u1ea1i khung tr\u1ea1ng th\u00e1i c\u00f3 th\u1ec3 l\u1ecdc ch\u1ec9 hi\u1ec3n th\u1ecb c\u00e1c v\u00e9 c\u00f3 tr\u1ea1ng th\u00e1i thanh to\u00e1n \u0111\u00e3 h\u1ee7y, th\u00e0nh c\u00f4ng, gi\u1eef ch\u1ed7.\r\n- B\u01b0\u1edbc 6: T\u1ea1i c\u00e1c v\u00e9 c\u00f3 tr\u1ea1ng th\u00e1i gi\u1eef ch\u1ed7 c\u00f3 th\u1ec3 Click Thanh to\u00e1n ngay \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang thanh to\u00e1n v\u00e0 th\u1ef1c hi\u1ec7n thanh to\u00e1n nh\u01b0 \u0111\u00e3 h\u01b0\u1edbng d\u1eabn \u1edf ch\u1ee9c n\u0103ng thanh to\u00e1n.", "start_char_idx": 1674, "end_char_idx": 3784, "text_template": "{metadata_str}\n\n{content}", "metadata_template": "{key}: {value}", "metadata_seperator": "\n", "class_name": "TextNode"}, "__type__": "1"}, "d71851ad-6b93-4c74-82b9-da9a57c77996": {"__data__": {"id_": "d71851ad-6b93-4c74-82b9-da9a57c77996", "embedding": null, "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "excluded_embed_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "excluded_llm_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "relationships": {"1": {"node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7", "node_type": "4", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91", "class_name": "RelatedNodeInfo"}, "2": {"node_id": "f4ef331d-77ca-4c63-9549-4df8cd104fec", "node_type": "1", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "1a1d7a716499433faa7a63e1458255dcd563db0c987aef63cfdd5ad0b32504a0", "class_name": "RelatedNodeInfo"}, "3": {"node_id": "d3fb860f-2504-407b-9e2c-62a06360622a", "node_type": "1", "metadata": {}, "hash": "95e4c6e0e65a13e7db86a4912418d20f9e827d70eba1c31c092c1dd34175c633", "class_name": "RelatedNodeInfo"}}, "text": "- B\u01b0\u1edbc 4: T\u1ea1i khung th\u1eddi gian \u0111\u1eb7t v\u00e9, ch\u1ecdn ng\u00e0y b\u1eaft \u0111\u1ea7u v\u00e0 ng\u00e0y k\u1ebft th\u00fac \u0111\u1ec3 gi\u1edbi h\u1ea1n l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9 theo th\u1eddi gian.\r\n- B\u01b0\u1edbc 5: T\u1ea1i khung tr\u1ea1ng th\u00e1i c\u00f3 th\u1ec3 l\u1ecdc ch\u1ec9 hi\u1ec3n th\u1ecb c\u00e1c v\u00e9 c\u00f3 tr\u1ea1ng th\u00e1i thanh to\u00e1n \u0111\u00e3 h\u1ee7y, th\u00e0nh c\u00f4ng, gi\u1eef ch\u1ed7.\r\n- B\u01b0\u1edbc 6: T\u1ea1i c\u00e1c v\u00e9 c\u00f3 tr\u1ea1ng th\u00e1i gi\u1eef ch\u1ed7 c\u00f3 th\u1ec3 Click Thanh to\u00e1n ngay \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang thanh to\u00e1n v\u00e0 th\u1ef1c hi\u1ec7n thanh to\u00e1n nh\u01b0 \u0111\u00e3 h\u01b0\u1edbng d\u1eabn \u1edf ch\u1ee9c n\u0103ng thanh to\u00e1n.\r\n- B\u01b0\u1edbc 7: C\u00f3 th\u1ec3 nh\u1eadp m\u00e3 v\u00e9 v\u00e0o \u00f4 M\u00e3 \u0111\u1eb7t v\u00e9 \u0111\u1ec3 t\u00ecm ki\u1ebfm v\u00e9 \u0111\u00f3.\r\n- B\u01b0\u1edbc 8: T\u1ea1i v\u00e9 mu\u1ed1n xem chi ti\u1ebft th\u00f4ng tin h\u00e3y click v\u00e0o \u00f4 chi ti\u1ebft tr\u00ean v\u00e9 \u0111\u00f3, k\u00e9o thanh cu\u1ed9n b\u00ean g\u00f3c ph\u1ea3i \u0111\u1ec3 xem th\u00eam th\u00f4ng tin v\u00e9. N\u1ebfu mu\u1ed1n quay l\u1ea1i trang tr\u01b0\u1edbc \u0111\u00f3 click v\u00e0o n\u00fat \u0110\u00f3ng.\r\n- B\u01b0\u1edbc 9: Click T\u1ea3i v\u1ec1 \u0111\u1ec3 l\u01b0u m\u00e3 QR, c\u00f3 th\u1ec3 d\u00f9ng m\u00e3 n\u00e0y \u0111\u1ec3 qu\u00e9t check in l\u00fac l\u00ean xe.\r\n6. Tra c\u1ee9u h\u00f3a \u0111\u01a1n\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav ch\u1ecdn m\u1ee5c Tra c\u1ee9u h\u00f3a \u0111\u01a1n.\r\n- B\u01b0\u1edbc 2: Trang tra c\u1ee9u h\u00f3a \u0111\u01a1n hi\u1ec3n th\u1ecb 2 \u00f4 input y\u00eau c\u1ea7u nh\u1eadp m\u00e3 h\u00f3a \u0111\u01a1n v\u00e0 m\u00e3 x\u00e1c th\u1ef1c nh\u01b0 \u1ea3nh b\u00ean d\u01b0\u1edbi v\u00e0 b\u1ea5m n\u00fat Tra c\u1ee9u.\r\n- B\u01b0\u1edbc 3: Nh\u1eadp m\u00e3 h\u00f3a \u0111\u01a1n v\u00e0 m\u00e3 x\u00e1c th\u1ef1c v\u00e0o theo y\u00eau c\u1ea7u, m\u00e3 h\u00f3a \u0111\u01a1n c\u00f3 th\u1ec3 l\u1ea5y khi xem chi ti\u1ebft l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9, nh\u1ea5n v\u00e0o bi\u1ec3u t\u01b0\u1ee3ng copy \u0111\u1ec3 sao ch\u00e9p m\u00e3 h\u00f3a \u0111\u01a1n.\r\n- B\u01b0\u1edbc 4: Click v\u00e0o n\u00fat T\u1ea3i h\u00f3a \u0111\u01a1n \u0111\u1ec3 l\u01b0u h\u00f3a \u0111\u01a1n v\u1ec1 m\u00e1y.\r\n7. H\u1ee7y v\u00e9\r\n- B\u01b0\u1edbc 1: V\u00e0o trong ph\u1ea7n L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9, sau \u0111\u00f3 ch\u1ecdn m\u1ed9t \u00f4 tr\u00f2n tr\u01b0\u1edbc c\u00e1c h\u00e0ng t\u00f3m t\u1eaft th\u00f4ng tin c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 trong b\u1ea3ng.\r\n- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng t\u1ea1i \u00f4 H\u00e0nh \u0111\u1ed9ng, v\u00e0 ch\u1ecdn H\u1ee7y v\u00e9.\r\n- B\u01b0\u1edbc 3: Sau khi nh\u1ea5n h\u1ee7y v\u00e9 \u0111\u1ecdc k\u1ef9 \u0111i\u1ec1u kho\u1ea3n trong ch\u00ednh s\u00e1ch  h\u1ee7y v\u00e9, k\u00e9o thanh cu\u1ed9n b\u00ean ph\u1ea3i \u0111\u1ec3 xem \u0111\u1ea7y \u0111\u1ee7 danh s\u00e1ch.\r\n- B\u01b0\u1edbc 4: Ch\u1ecdn v\u00e0o \u00f4 T\u00f4i \u0111\u1ed3ng \u00fd v\u1edbi ch\u00ednh s\u00e1ch h\u1ee7y v\u00e9 c\u1ee7a Xe Kim Nguy\u00ean ph\u00eda cu\u1ed1i Ch\u00ednh s\u00e1ch h\u1ee7y v\u00e9 \u0111\u1ec3 x\u00e1c nh\u1eadn \u0111\u00e3 \u0111\u1ecdc k\u1ef9 v\u00e0 tu\u00e2n th\u1ee7 ch\u00ednh s\u00e1ch.\r\n- B\u01b0\u1edbc 5: Click ti\u1ebfp t\u1ee5c \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang ch\u1ecdn c\u00e1c v\u00e9 mu\u1ed1n h\u1ee7y, l\u1ea7n l\u01b0\u1ee3t t\u00edch v\u00e0 c\u00e1c \u00f4 v\u00e9 trong tr\u01b0\u1eddng h\u1ee3p nhi\u1ec1u v\u00e9 (Ho\u1eb7c t\u00edch v\u00e0o \u00f4 Ch\u1ecdn t\u1ea5t c\u1ea3 \u0111\u1ec3 h\u1ee7y to\u00e0n b\u1ed9 v\u00e9 c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 \u0111\u00f3).\r\n- B\u01b0\u1edbc 6: Nh\u1ea5n ti\u1ebfp t\u1ee5c \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh h\u1ee7y v\u00e9.\r\n- B\u01b0\u1edbc 7: Nh\u1ea5n x\u00e1c nh\u1eadn h\u1ee7y v\u00e9 \u0111\u1ec3 ho\u00e0n t\u1ea5t g\u1eedi y\u00eau c\u1ea7u h\u1ee7y v\u00e9.\r\n8.", "start_char_idx": 3383, "end_char_idx": 5362, "text_template": "{metadata_str}\n\n{content}", "metadata_template": "{key}: {value}", "metadata_seperator": "\n", "class_name": "TextNode"}, "__type__": "1"}, "d3fb860f-2504-407b-9e2c-62a06360622a": {"__data__": {"id_": "d3fb860f-2504-407b-9e2c-62a06360622a", "embedding": null, "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "excluded_embed_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "excluded_llm_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "relationships": {"1": {"node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7", "node_type": "4", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91", "class_name": "RelatedNodeInfo"}, "2": {"node_id": "d71851ad-6b93-4c74-82b9-da9a57c77996", "node_type": "1", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "0611e2e30360515283ff06ac1407739172bc2077459a0e45cf439f19df35958a", "class_name": "RelatedNodeInfo"}, "3": {"node_id": "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e", "node_type": "1", "metadata": {}, "hash": "b1165169251e32dad9da8fa4593bd0d0879de2071c5067a83673d815ef48dbe6", "class_name": "RelatedNodeInfo"}}, "text": "- B\u01b0\u1edbc 5: Click ti\u1ebfp t\u1ee5c \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang ch\u1ecdn c\u00e1c v\u00e9 mu\u1ed1n h\u1ee7y, l\u1ea7n l\u01b0\u1ee3t t\u00edch v\u00e0 c\u00e1c \u00f4 v\u00e9 trong tr\u01b0\u1eddng h\u1ee3p nhi\u1ec1u v\u00e9 (Ho\u1eb7c t\u00edch v\u00e0o \u00f4 Ch\u1ecdn t\u1ea5t c\u1ea3 \u0111\u1ec3 h\u1ee7y to\u00e0n b\u1ed9 v\u00e9 c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 \u0111\u00f3).\r\n- B\u01b0\u1edbc 6: Nh\u1ea5n ti\u1ebfp t\u1ee5c \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh h\u1ee7y v\u00e9.\r\n- B\u01b0\u1edbc 7: Nh\u1ea5n x\u00e1c nh\u1eadn h\u1ee7y v\u00e9 \u0111\u1ec3 ho\u00e0n t\u1ea5t g\u1eedi y\u00eau c\u1ea7u h\u1ee7y v\u00e9.\r\n8. \u0110\u1ed5i v\u00e9\r\n- B\u01b0\u1edbc 1: V\u00e0o trong ph\u1ea7n L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9, sau \u0111\u00f3 ch\u1ecdn m\u1ed9t \u00f4 tr\u00f2n tr\u01b0\u1edbc c\u00e1c h\u00e0ng t\u00f3m t\u1eaft th\u00f4ng tin c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 trong b\u1ea3ng \u0111\u1ec3 xu\u1ea5t hi\u1ec7n c\u00e1c l\u1ef1a ch\u1ecdn H\u00e0nh \u0111\u1ed9ng.\r\n- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng t\u1ea1i \u00f4 H\u00e0nh \u0111\u1ed9ng, v\u00e0 click v\u00e0o l\u1ef1a ch\u1ecdn \u0110\u1ed5i v\u00e9.\r\n- B\u01b0\u1edbc 3: \u0110\u1ecdc k\u1ef9 ch\u00ednh s\u00e1ch h\u1ed7 tr\u1ee3 \u0111\u1ed5i v\u00e9 c\u1ee7a nh\u00e0 xe, click v\u00e0o \u00f4 T\u00f4i \u0111\u1ed3ng \u00fd v\u1edbi ch\u00ednh s\u00e1ch \u0111\u1ed5i v\u00e9 c\u1ee7a Xe Kim Nguy\u00ean v\u00e0 nh\u1ea5n ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh.\r\n- B\u01b0\u1edbc 4: Tick v\u00e0o \u00f4 tr\u01b0\u1edbc v\u00e9 mu\u1ed1n \u0111\u1ed5i, ho\u1eb7c tick v\u00e0o \u00f4 Ch\u1ecdn t\u1ea5t c\u1ea3 \u0111\u1ec3 ch\u1ecdn nhanh t\u1ea5t c\u1ea3 c\u00e1c v\u00e9 trong tr\u01b0\u1eddng h\u1ee3p mu\u1ed1n \u0111\u1ed5i nhi\u1ec1u v\u00e9. Sau \u0111\u00f3 tick v\u00e0o ch\u1ea5m tr\u00f2n \u0111\u1ec3 ch\u1ecdn \u0111\u1ed5i ch\u1ed7 hay \u0111\u1ed5i chuy\u1ebfn r\u1ed3i nh\u1ea5n n\u00fat Ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh.\r\n- B\u01b0\u1edbc 5: Tr\u01b0\u1eddng h\u1ee3p ch\u1ecdn \u0111\u1ed5i ch\u1ed7, ch\u1ecdn ch\u1ed7 m\u1edbi r\u1ed3i b\u1ea5m ti\u1ebfp t\u1ee5c. Tr\u01b0\u1eddng h\u1ee3p \u0111\u1ed5i chuy\u1ebfn, ch\u1ecdn th\u1eddi gian v\u00e0 nh\u1ea5n v\u00e0o ch\u1ecdn chuy\u1ebfn \u0111\u1ec3 l\u1ef1a ch\u1ecdn gh\u1ebf ng\u1ed3i ph\u00f9 h\u1ee3p r\u1ed3i nh\u1ea5n Ti\u1ebfp t\u1ee5c.\r\n- B\u01b0\u1edbc 6: Xem k\u1ef9 th\u00f4ng tin \u0111\u1ed5i v\u00e9 r\u1ed3i nh\u1ea5n n\u00fat X\u00e1c nh\u1eadn \u0111\u1ed5i v\u00e9.\r\n- B\u01b0\u1edbc 7: \u0110\u1ed5i v\u00e9 th\u00e0nh c\u00f4ng s\u1ebd nh\u1eadn \u0111\u01b0\u1ee3c th\u00f4ng b\u00e1o, Click \u0110\u00f3ng \u0111\u1ec3 tr\u1edf v\u1ec1 trang l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9.\r\nL\u01b0u \u00fd: N\u1ebfu v\u00e9 mu\u1ed1n \u0111\u1ed5i kh\u00f4ng n\u1eb1m trong th\u1eddi gian cho ph\u00e9p \u0111\u1ed5i v\u00e9 th\u00ec H\u00e0nh \u0111\u1ed9ng \u0110\u1ed5i v\u00e9 s\u1ebd c\u00f3 m\u00e0u x\u00e1m v\u00e0 kh\u00f4ng th\u1ec3 ch\u1ecdn \u0111\u01b0\u1ee3c.\r\n9. S\u1eeda v\u00e9\r\n- B\u01b0\u1edbc 1: V\u00e0o trong ph\u1ea7n L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9, sau \u0111\u00f3 ch\u1ecdn m\u1ed9t \u00f4 tr\u00f2n tr\u01b0\u1edbc c\u00e1c h\u00e0ng t\u00f3m t\u1eaft th\u00f4ng tin c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 trong b\u1ea3ng \u0111\u1ec3 xu\u1ea5t hi\u1ec7n c\u00e1c l\u1ef1a ch\u1ecdn H\u00e0nh \u0111\u1ed9ng.\r\n- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng t\u1ea1i \u00f4 H\u00e0nh \u0111\u1ed9ng, v\u00e0 click v\u00e0o l\u1ef1a ch\u1ecdn S\u1eeda v\u00e9.\r\n- B\u01b0\u1edbc 3: \u0110\u1ecdc \u0110i\u1ec1u ki\u1ec7n s\u1eeda v\u00e9 v\u00e0 tick v\u00e0o \u00f4 tr\u1ed1ng \u0111\u1ec3 x\u00e1c nh\u1eadn T\u00f4i \u0111\u1ed3ng \u00fd v\u1edbi ch\u00ednh s\u00e1ch s\u1eeda v\u00e9 c\u1ee7a Xe Kim Nguy\u00ean sau \u0111\u00f3 nh\u1ea5n n\u00fat Ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo.", "start_char_idx": 5030, "end_char_idx": 6957, "text_template": "{metadata_str}\n\n{content}", "metadata_template": "{key}: {value}", "metadata_seperator": "\n", "class_name": "TextNode"}, "__type__": "1"}, "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e": {"__data__": {"id_": "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e", "embedding": null, "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "excluded_embed_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "excluded_llm_metadata_keys": ["file_name", "file_type", "file_size", "creation_date", "last_modified_date", "last_accessed_date"], "relationships": {"1": {"node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7", "node_type": "4", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91", "class_name": "RelatedNodeInfo"}, "2": {"node_id": "d3fb860f-2504-407b-9e2c-62a06360622a", "node_type": "1", "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}, "hash": "21dd9a398127b20ac7bd2fd035e522a7e4c42463270e9efaa89b7b007188ef66", "class_name": "RelatedNodeInfo"}}, "text": "- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng t\u1ea1i \u00f4 H\u00e0nh \u0111\u1ed9ng, v\u00e0 click v\u00e0o l\u1ef1a ch\u1ecdn S\u1eeda v\u00e9.\r\n- B\u01b0\u1edbc 3: \u0110\u1ecdc \u0110i\u1ec1u ki\u1ec7n s\u1eeda v\u00e9 v\u00e0 tick v\u00e0o \u00f4 tr\u1ed1ng \u0111\u1ec3 x\u00e1c nh\u1eadn T\u00f4i \u0111\u1ed3ng \u00fd v\u1edbi ch\u00ednh s\u00e1ch s\u1eeda v\u00e9 c\u1ee7a Xe Kim Nguy\u00ean sau \u0111\u00f3 nh\u1ea5n n\u00fat Ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo.\r\n- B\u01b0\u1edbc 4: Tick v\u00e0o ch\u1ea5m tr\u00f2n \u0111\u1ec3 ch\u1ecdn \u0111i\u1ec3m \u0111\u00f3n kh\u00e1c n\u1ebfu chuy\u1ebfn xe \u0111\u00f3 c\u00f3 h\u1ed7 tr\u1ee3 nhi\u1ec1u \u0111i\u1ec3m \u0111\u00f3n, sau \u0111\u00f3 b\u1ea5m sang tab \u0110i\u1ec3m tr\u1ea3 \u0111\u1ec3 ch\u1ecdn \u0111i\u1ec3m tr\u1ea3 kh\u00e1c n\u1ebfu chuy\u1ebfn xe c\u00f3 h\u1ed7 tr\u1ee3 nhi\u1ec1u \u0111i\u1ec3m tr\u1ea3. Sau \u0111\u00f3 nh\u1ea5n Ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh.\r\n- B\u01b0\u1edbc 5: Xem l\u1ea1i th\u00f4ng tin s\u1eeda v\u00e9 bao g\u1ed3m chuy\u1ebfn, th\u1eddi gian, \u0111i\u1ec3m \u0111\u00f3n- tr\u1ea3 c\u0169 v\u00e0 \u0111i\u1ec3m \u0111\u00f3n-tr\u1ea3 m\u1edbi sau khi s\u1eeda r\u1ed3i nh\u1ea5n n\u00fat X\u00e1c nh\u1eadn s\u1eeda v\u00e9.\r\n- B\u01b0\u1edbc 6: S\u1eeda v\u00e9 th\u00e0nh c\u00f4ng s\u1ebd nh\u1eadn \u0111\u01b0\u1ee3c th\u00f4ng b\u00e1o, Click \u0110\u00f3ng \u0111\u1ec3 quay tr\u1edf l\u1ea1i trang L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9.\r\n\r\n10. C\u1eadp nh\u1eadt th\u00f4ng tin c\u00e1 nh\u00e2n\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav r\u00ea chu\u1ed9t v\u00e0o v\u1ecb tr\u00ed t\u00ean ng\u01b0\u1eddi d\u00f9ng, sau \u0111\u00f3 ch\u1ecdn th\u00f4ng tin t\u00e0i kho\u1ea3n.\r\n- B\u01b0\u1edbc 2: Trang th\u00f4ng tin t\u00e0i kho\u1ea3n hi\u1ec3n th\u1ecb c\u00e1c th\u00f4ng tin nh\u01b0 s\u1ed1 \u0111i\u1ec7n tho\u1ea1i, h\u1ecd t\u00ean, email, gi\u1edbi t\u00ednh.\r\n- B\u01b0\u1edbc 3: Click n\u00fat c\u1eadp nh\u1eadt \u0111\u1ec3 c\u00e1c \u00f4 tr\u1ed1ng H\u1ecd v\u00e0 T\u00ean, Email, Gi\u1edbi t\u00ednh cho ph\u00e9p s\u1eeda \u0111\u1ed5i th\u00f4ng tin. Nh\u1eadp t\u00ean kh\u00e1c , gmail kh\u00e1c hay ch\u1ecdn l\u1ea1i gi\u1edbi t\u00ednh. N\u1ebfu mu\u1ed1n \u0111\u1ed5i \u1ea3nh \u0111\u1ea1i di\u1ec7n th\u00ec click v\u00e0o ch\u1ecdn t\u1ec7p v\u00e0 ch\u1ecdn \u1ea3nh \u0111\u1ea1i di\u1ec7n kh\u00e1c.\r\n- B\u01b0\u1edbc 4: Click L\u01b0u th\u00f4ng tin \u0111\u1ec3 l\u01b0u l\u1ea1i nh\u1eefng s\u1eeda \u0111\u1ed5i th\u00f4ng tin.\r\n11. \u0110\u1ed5i m\u1eadt kh\u1ea9u\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav r\u00ea chu\u1ed9t v\u00e0o v\u1ecb tr\u00ed t\u00ean ng\u01b0\u1eddi d\u00f9ng, sau \u0111\u00f3 ch\u1ecdn \u0110\u1ed5i m\u1eadt kh\u1ea9u sau bi\u1ec3u t\u01b0\u1ee3ng \u1ed5 kh\u00f3a.\r\n- B\u01b0\u1edbc 2: Trang \u0111\u1ed5i m\u1eadt kh\u1ea9u hi\u1ec3n th\u1ecb y\u00eau c\u1ea7u nh\u1eadp m\u1eadt kh\u1ea9u c\u0169, m\u1eadt kh\u1ea9u m\u1edbi v\u00e0 x\u00e1c nh\u1eadn m\u1eadt kh\u1ea9u m\u1edbi.\r\n- B\u01b0\u1edbc 3: Nh\u1eadp \u0111\u00fang m\u1eadt kh\u1ea9u c\u0169, sau \u0111\u00f3 nh\u1eadp m\u1eadt kh\u1ea9u m\u1edbi c\u00f3 \u00edt nh\u1ea5t 6 k\u00fd t\u1ef1 v\u00e0 x\u00e1c nh\u1eadn l\u1ea1i m\u1eadt kh\u1ea9u m\u1edbi kh\u1edbp v\u1edbi m\u1eadt kh\u1ea9u m\u1edbi v\u1eeba nh\u1eadp.\r\n- B\u01b0\u1edbc 4: B\u1ea5m v\u00e0o n\u00fat X\u00e1c nh\u1eadn \u0111\u1ec3 ho\u00e0n t\u1ea5t \u0111\u1ed5i m\u1eadt kh\u1ea9u, nh\u1eadn \u0111\u01b0\u1ee3c th\u00f4ng b\u00e1o \u0110\u1ed5i m\u1eadt kh\u1ea9u th\u00e0nh c\u00f4ng.\r\n- B\u01b0\u1edbc 5: Phi\u00ean \u0111\u0103ng nh\u1eadp \u0111\u00e3 b\u1ecb x\u00f3a v\u00e0 ng\u01b0\u1eddi d\u00f9ng c\u1ea7n \u0111\u0103ng nh\u1eadp l\u1ea1i \u0111\u1ec3 s\u1eed d\u1ee5ng m\u1eadt kh\u1ea9u m\u1edbi.\r\n12. \u0110\u0103g xu\u1ea5t\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav r\u00ea chu\u1ed9t v\u00e0o v\u1ecb tr\u00ed t\u00ean ng\u01b0\u1eddi d\u00f9ng, sau \u0111\u00f3 ch\u1ecdn \u0110\u0103ng xu\u1ea5t sau bi\u1ec3u t\u01b0\u1ee3ng Exit.\r\n- B\u01b0\u1edbc 2: B\u1ea5m v\u00e0o n\u00fat X\u00e1c nh\u1eadn \u0111\u1ec3 th\u1ef1c hi\u1ec7n \u0111\u0103ng xu\u1ea5t, n\u1ebfu mu\u1ed1n d\u1eebng qu\u00e1 tr\u00ecnh \u0111\u0103ng xu\u1ea5t b\u1ea5m n\u00fat H\u1ee7y.\r\nC\u00e1c c\u00e2u h\u1ecfi kh\u00e1c kh\u00f4ng li\u00ean quan \u0111\u1ebfn th\u00f4ng tin nh\u00e0 xe ho\u1eb7c c\u00e1c thao t\u00e1c tr\u00ean trang web \u0111\u1eb7t v\u00e9 th\u00ec t\u1eeb ch\u1ed1i tr\u1ea3 l\u1eddi", "start_char_idx": 6700, "end_char_idx": 8891, "text_template": "{metadata_str}\n\n{content}", "metadata_template": "{key}: {value}", "metadata_seperator": "\n", "class_name": "TextNode"}, "__type__": "1"}}, "docstore/ref_doc_info": {"983c39ba-d569-4075-a8c3-d0d8e5e413a7": {"node_ids": ["baa4dba9-9ba7-4d44-87e2-17fdade287f9", "f4ef331d-77ca-4c63-9549-4df8cd104fec", "d71851ad-6b93-4c74-82b9-da9a57c77996", "d3fb860f-2504-407b-9e2c-62a06360622a", "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e"], "metadata": {"file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt", "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt", "file_type": "text/plain", "file_size": 11740, "creation_date": "2024-03-02", "last_modified_date": "2024-03-02"}}}}
+{
+  "docstore/metadata": {
+    "983c39ba-d569-4075-a8c3-d0d8e5e413a7": {
+      "doc_hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91"
+    },
+    "baa4dba9-9ba7-4d44-87e2-17fdade287f9": {
+      "doc_hash": "6a85a33c826138c5db98c9925d5576b96823f402c38d9a23fff09bd4996a9d09",
+      "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"
+    },
+    "f4ef331d-77ca-4c63-9549-4df8cd104fec": {
+      "doc_hash": "1a1d7a716499433faa7a63e1458255dcd563db0c987aef63cfdd5ad0b32504a0",
+      "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"
+    },
+    "d71851ad-6b93-4c74-82b9-da9a57c77996": {
+      "doc_hash": "0611e2e30360515283ff06ac1407739172bc2077459a0e45cf439f19df35958a",
+      "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"
+    },
+    "d3fb860f-2504-407b-9e2c-62a06360622a": {
+      "doc_hash": "21dd9a398127b20ac7bd2fd035e522a7e4c42463270e9efaa89b7b007188ef66",
+      "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"
+    },
+    "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e": {
+      "doc_hash": "42bdc0ae3ce6f9c80f95ff4f080690b2944ee2eb662d997bfc5673ae19df31c4",
+      "ref_doc_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7"
+    }
+  },
+  "docstore/data": {
+    "baa4dba9-9ba7-4d44-87e2-17fdade287f9": {
+      "__data__": {
+        "id_": "baa4dba9-9ba7-4d44-87e2-17fdade287f9",
+        "embedding": null,
+        "metadata": {
+          "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+          "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+          "file_type": "text/plain",
+          "file_size": 11740,
+          "creation_date": "2024-03-02",
+          "last_modified_date": "2024-03-02"
+        },
+        "excluded_embed_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "excluded_llm_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "relationships": {
+          "1": {
+            "node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7",
+            "node_type": "4",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91",
+            "class_name": "RelatedNodeInfo"
+          },
+          "3": {
+            "node_id": "f4ef331d-77ca-4c63-9549-4df8cd104fec",
+            "node_type": "1",
+            "metadata": {},
+            "hash": "f671a7b127425dc910c3409d2c27f82e5155e74142b1ee39d715da8fcf28f8c8",
+            "class_name": "RelatedNodeInfo"
+          }
+        },
+        "text": "Gi\u1edbi thi\u1ec7u website \u0111\u1eb7t v\u00e9 xe kh\u00e1ch XeKimNguyen\r\nXeKimNguyen l\u00e0 trang web \u0111\u1eb7t v\u00e9 xe c\u1ee7a h\u00e3ng xe Kim Nguy\u00ean. H\u00e3ng xe tr\u00e2n tr\u1ecdng ph\u1ee5c v\u1ee5 kh\u00e1ch h\u00e0ng c\u00e1c chuy\u1ebfn xe tuy\u1ebfn c\u1ed1 \u0111\u1ecbnh t\u1eeb c\u00e1c t\u1ec9nh mi\u1ec1n Trung \u0111\u1ebfn Nam B\u1ed9 Vi\u1ec7t Nam. C\u00e1c tuy\u1ebfn xe n\u1ed5i b\u1eadt \u0111\u01b0\u1ee3c kh\u00e1ch h\u00e0ng th\u01b0\u1eddng xuy\u00ean tin t\u01b0\u1edfng v\u00e0 s\u1eed d\u1ee5ng l\u00e0 tuy\u1ebfn Nha Trang \u2013 Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh, Tr\u00e0 Vinh \u2013 Th\u00e0nh ph\u1ed1 H\u1ed3 Ch\u00ed Minh.\r\nM\u1ecdi th\u1eafc m\u1eafc, \u00fd ki\u1ebfn \u0111\u00f3ng g\u00f3p v\u1ec1 trang web ho\u1eb7c ch\u1ea5t l\u01b0\u1ee3ng ph\u1ee5c v\u1ee5, vui l\u00f2ng g\u1ecdi \u0111\u1ebfn s\u1ed1 t\u1ed5ng \u0111\u00e0i 0333.843.250 ho\u1eb7c g\u1eedi mail v\u1ec1 \u0111\u1ecba ch\u1ec9 20110248@student.hcmute.edu.vn.\r\nH\u01b0\u1edbng d\u1eabn s\u1eed d\u1ee5ng web \u0111\u1eb7t v\u00e9\r\n1. T\u00ecm ki\u1ebfm chuy\u1ebfn xe\r\n- B\u01b0\u1edbc 1: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng, \u0111\u1ec3 ch\u1ecdn \u0111i\u1ec3m \u0111i trong danh s\u00e1ch \u0111i\u1ec3m \u0111i.\r\n- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng, \u0111\u1ec3 ch\u1ecdn \u0111i\u1ec3m \u0111\u1ebfn trong danh s\u00e1ch \u0111i\u1ec3m \u0111\u1ebfn. \r\n- B\u01b0\u1edbc 3: Click v\u00e0o \u00f4 Ng\u00e0y \u0111i \u0111\u1ec3 ch\u1ecdn ng\u00e0y \u0111i ho\u1eb7c nh\u1eadp ng\u00e0y \u0111i.\r\n- B\u01b0\u1edbc 4: Click v\u00e0o d\u1ea5u + \u0111\u1ec3 t\u0103ng s\u1ed1 l\u01b0\u1ee3ng v\u00e9 mu\u1ed1n mua, ng\u01b0\u1ee3c l\u1ea1i d\u1ea5u - \u0111\u1ec3 gi\u1ea3m s\u1ed1 l\u01b0\u1ee3ng v\u00e9.\r\n- B\u01b0\u1edbc 5: Click t\u00ecm ki\u1ebfm \u0111\u1ec3 t\u00ecm ki\u1ebfm c\u00e1c chuy\u1ebfn xe theo y\u00eau c\u1ea7u. B\u00ean c\u1ea1nh \u0111\u00f3 c\u00f3 th\u1ec3 tick v\u00e0o c\u00e1c \u00f4 th\u1eddi gian \u0111\u1ec3 l\u1ecdc c\u00e1c chuy\u1ebfn xe khi t\u00ecm ki\u1ebfm chuy\u1ebfn xe theo c\u00e1c khung gi\u1edd (s\u00e1ng, chi\u1ec1u, t\u1ed1i), c\u00e1c lo\u1ea1i xe( gh\u1ebf, gi\u01b0\u1eddng, limousine), c\u00e1c v\u00e9 thu\u1ed9c d\u00e3y gh\u1ebf (tr\u00e1i, gi\u1eefa, ph\u1ea3i), h\u00e0ng gh\u1ebf (\u0111\u1ea7u, gi\u1eefa, cu\u1ed1i, t\u1ea7ng(tr\u00ean hay d\u01b0\u1edbi).\r\n2. \u0110\u1eb7t v\u00e9\r\n- B\u01b0\u1edbc 1: Sau khi t\u00ecm ki\u1ebfm chuy\u1ebfn xe nh\u1ea5n ch\u1ecdn chuy\u1ebfn \u0111\u1ec3 ti\u1ebfn h\u00e0nh c\u00e1c thao t\u00e1c trong ph\u1ea7n \u0111\u1eb7t v\u00e9. Sau khi nh\u1ea5n ch\u1ecdn chuy\u1ebfn website s\u1ebd hi\u1ec3n th\u1ecb c\u00e1c th\u00f4ng tin c\u1ee7a chuy\u1ebfn xe \u1edf khung m\u00e0u v\u00e0ng b\u00ean ph\u1ea3i, c\u00e1c s\u01a1 \u0111\u1ed3 gh\u1ebf ng\u1ed3i, c\u00e1c \u00f4 \u0111\u1ec3 kh\u00e1ch h\u00e0ng nh\u1eadp th\u00f4ng tin c\u1ee7a m\u00ecnh.\r\n- B\u01b0\u1edbc 2: Ch\u1ecdn gh\u1ebf m\u00e0u xanh tr\u00ean s\u01a1 \u0111\u1ed3 gh\u1ebf ng\u1ed3i, l\u01b0u \u00fd c\u00e1c gh\u1ebf c\u00f3 m\u00e0u x\u00e1m( \u0111\u00e3 b\u00e1n) kh\u00e1ch h\u00e0ng s\u1ebd kh\u00f4ng ch\u1ecdn \u0111\u01b0\u1ee3c, sau khi ch\u1ecdn th\u00ec gh\u1ebf \u0111ang ch\u1ecdn s\u1ebd c\u00f3 m\u00e0u xanh l\u00e1.\r\n- B\u01b0\u1edbc 3:  Thay \u0111\u1ed5i \u0111i\u1ec3m \u0111\u00f3n ho\u1eb7c \u0111i\u1ec3m tr\u1ea3 theo \u00fd mu\u1ed1n b\u1eb1ng c\u00e1ch tick v\u00e0o c\u00e1c ch\u1ea5m tr\u00f2n \u0111\u1ed1i v\u1edbi c\u00e1c chuy\u1ebfn xe c\u00f3 th\u1ec3 xu\u1ea5t ph\u00e1t t\u1eeb nhi\u1ec1u b\u1ebfn xe.\r\n- B\u01b0\u1edbc 4: Th\u00f4ng tin kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u0103ng nh\u1eadp khi \u0111\u1eb7t v\u00e9 s\u1ebd \u0111\u01b0\u1ee3c t\u1ef1 \u0111\u1ed9ng \u0111i\u1ec1n s\u1eb5n gi\u1ed1ng v\u1edbi th\u00f4ng tin m\u00e0 ng\u01b0\u1eddi d\u00f9ng nh\u1eadp v\u00e0o khi \u0111\u0103ng k\u00fd t\u00e0i kho\u1ea3n, tuy nhi\u00ean c\u00f3 th\u1ec3 nh\u1ea5n v\u00e0o c\u00e1c \u00f4 th\u00f4ng tin \u0111\u00f3 \u0111\u1ec3 thay \u0111\u1ed5i theo \u00fd mu\u1ed1n (khi \u0111\u1eb7t v\u00e9 cho ng\u01b0\u1eddi kh\u00e1c).",
+        "start_char_idx": 0,
+        "end_char_idx": 2062,
+        "text_template": "{metadata_str}\n\n{content}",
+        "metadata_template": "{key}: {value}",
+        "metadata_seperator": "\n",
+        "class_name": "TextNode"
+      },
+      "__type__": "1"
+    },
+    "f4ef331d-77ca-4c63-9549-4df8cd104fec": {
+      "__data__": {
+        "id_": "f4ef331d-77ca-4c63-9549-4df8cd104fec",
+        "embedding": null,
+        "metadata": {
+          "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+          "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+          "file_type": "text/plain",
+          "file_size": 11740,
+          "creation_date": "2024-03-02",
+          "last_modified_date": "2024-03-02"
+        },
+        "excluded_embed_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "excluded_llm_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "relationships": {
+          "1": {
+            "node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7",
+            "node_type": "4",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91",
+            "class_name": "RelatedNodeInfo"
+          },
+          "2": {
+            "node_id": "baa4dba9-9ba7-4d44-87e2-17fdade287f9",
+            "node_type": "1",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "6a85a33c826138c5db98c9925d5576b96823f402c38d9a23fff09bd4996a9d09",
+            "class_name": "RelatedNodeInfo"
+          },
+          "3": {
+            "node_id": "d71851ad-6b93-4c74-82b9-da9a57c77996",
+            "node_type": "1",
+            "metadata": {},
+            "hash": "2c7c816059b106ecc4172c744cddc4fd5dd9a94bf9e960de8ad5b04d74307ba4",
+            "class_name": "RelatedNodeInfo"
+          }
+        },
+        "text": "- B\u01b0\u1edbc 3:  Thay \u0111\u1ed5i \u0111i\u1ec3m \u0111\u00f3n ho\u1eb7c \u0111i\u1ec3m tr\u1ea3 theo \u00fd mu\u1ed1n b\u1eb1ng c\u00e1ch tick v\u00e0o c\u00e1c ch\u1ea5m tr\u00f2n \u0111\u1ed1i v\u1edbi c\u00e1c chuy\u1ebfn xe c\u00f3 th\u1ec3 xu\u1ea5t ph\u00e1t t\u1eeb nhi\u1ec1u b\u1ebfn xe.\r\n- B\u01b0\u1edbc 4: Th\u00f4ng tin kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u0103ng nh\u1eadp khi \u0111\u1eb7t v\u00e9 s\u1ebd \u0111\u01b0\u1ee3c t\u1ef1 \u0111\u1ed9ng \u0111i\u1ec1n s\u1eb5n gi\u1ed1ng v\u1edbi th\u00f4ng tin m\u00e0 ng\u01b0\u1eddi d\u00f9ng nh\u1eadp v\u00e0o khi \u0111\u0103ng k\u00fd t\u00e0i kho\u1ea3n, tuy nhi\u00ean c\u00f3 th\u1ec3 nh\u1ea5n v\u00e0o c\u00e1c \u00f4 th\u00f4ng tin \u0111\u00f3 \u0111\u1ec3 thay \u0111\u1ed5i theo \u00fd mu\u1ed1n (khi \u0111\u1eb7t v\u00e9 cho ng\u01b0\u1eddi kh\u00e1c).\r\n- B\u01b0\u1edbc 5: Tick v\u00e0o \u00f4 Ch\u1ea5p nh\u1eadn \u0111i\u1ec1u kho\u1ea3n \u0111\u1eb7t v\u00e9 & ch\u00ednh s\u00e1ch b\u1ea3o m\u1eadt th\u00f4ng tin c\u1ee7a Xe Kim Nguy\u00ean r\u1ed3i b\u1ea5m n\u00fat thanh to\u00e1n \u0111\u1ec3 ho\u00e0n t\u1ea5t qu\u00e1 tr\u00ecnh \u0111\u1eb7t v\u00e9. C\u00e1c v\u00e9 \u0111\u00e3 \u0111\u1eb7t s\u1ebd c\u00f3 tr\u1ea1ng th\u00e1i ch\u1edd thanh to\u00e1n.\r\n3. Thanh to\u00e1n v\u00e9\r\n- B\u01b0\u1edbc 1: Sau khi ch\u1ecdn v\u00e9, kh\u00e1ch h\u00e0ng nh\u1ea5n thanh to\u00e1n \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang thanh to\u00e1n. (Th\u1eddi gian gi\u1eef ch\u1ed7 s\u1ebd \u0111\u1ebfm ng\u01b0\u1ee3c 10 ph\u00fat) n\u1ebfu h\u1ebft 10 ph\u00fat m\u00e0 ng\u01b0\u1eddi d\u00f9ng ch\u01b0a thanh to\u00e1n th\u00ec tr\u1ea1ng th\u00e1i c\u00e1c v\u00e9 s\u1ebd chuy\u1ec3n sang \u0111\u00e3 h\u1ee7y.\r\n- B\u01b0\u1edbc 2: Ch\u1ecdn h\u00ecnh th\u1ee9c thanh to\u00e1n Momo (m\u1eb7c \u0111\u1ecbnh) ho\u1eb7c thay \u0111\u1ed5i sang VNPay, r\u1ed3i nh\u1ea5n n\u00fat Thanh to\u00e1n. Kh\u00e1ch h\u00e0ng s\u1ebd nh\u1eadn \u0111\u01b0\u1ee3c th\u00f4ng b\u00e1o thanh to\u00e1n v\u00e9 th\u00e0nh c\u00f4ng.\r\n- B\u01b0\u1edbc 3: Tr\u1edf v\u1ec1 trang ch\u1ee7 s\u1ebd th\u1ea5y hi\u1ec3n th\u1ecb chuy\u1ebfn xe s\u1eafp kh\u1edfi h\u00e0nh m\u00e0 kh\u00e1ch h\u00e0ng \u0111\u00e3 \u0111\u1eb7t .\r\n- B\u01b0\u1edbc 4: Check mail \u0111\u1ec3 \u0111\u1ecdc l\u1ea1i th\u00f4ng tin v\u1ec1 chuy\u1ebfn xe.\r\n4. \u0110\u0103ng nh\u1eadp\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav b\u1ea5m v\u00e0o n\u00fat \u0110\u0103ng nh\u1eadp/ \u0110\u0103ng k\u00fd \u0111\u1ec3 m\u1edf trang \u0110\u0103ng nh\u1eadp\r\n- B\u01b0\u1edbc 2: Nh\u1eadp \u0111\u00fang s\u1ed1 \u0111i\u1ec7n tho\u1ea1i v\u00e0 m\u1eadt kh\u1ea9u \u0111\u00e3 \u0111\u0103ng k\u00fd tr\u01b0\u1edbc \u0111\u00f3, sau \u0111\u00f3 Click \u0110\u0103ng nh\u1eadp. V\u00ed d\u1ee5\r\nT\u00e0i kho\u1ea3n: 0101010101\r\nPassword: 123456\r\n- B\u01b0\u1edbc 3: \u0110\u0103ng nh\u1eadp th\u00e0nh c\u00f4ng s\u1ebd quay v\u1ec1 trang ch\u1ee7, v\u1edbi t\u00ean ng\u01b0\u1eddi d\u00f9ng \u0111\u01b0\u1ee3c hi\u1ec3n th\u1ecb b\u00ean g\u00f3c ph\u1ea3i.\r\n5. Xem l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9\r\n- B\u01b0\u1edbc 1: R\u00ea chu\u1ed9t v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng sau Username, Click ch\u1ecdn L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9.\r\n- B\u01b0\u1edbc 2: Th\u00f4ng tin v\u1ec1 l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9 hi\u1ec7n ra d\u01b0\u1edbi d\u1ea1ng b\u1ea3ng.\r\n- B\u01b0\u1edbc 3: K\u00e9o thanh cu\u1ed9n ph\u00eda d\u01b0\u1edbi b\u1ea3ng \u0111\u1ec3 xem th\u00eam c\u00e1c th\u00f4ng tin.\r\n- B\u01b0\u1edbc 4: T\u1ea1i khung th\u1eddi gian \u0111\u1eb7t v\u00e9, ch\u1ecdn ng\u00e0y b\u1eaft \u0111\u1ea7u v\u00e0 ng\u00e0y k\u1ebft th\u00fac \u0111\u1ec3 gi\u1edbi h\u1ea1n l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9 theo th\u1eddi gian.\r\n- B\u01b0\u1edbc 5: T\u1ea1i khung tr\u1ea1ng th\u00e1i c\u00f3 th\u1ec3 l\u1ecdc ch\u1ec9 hi\u1ec3n th\u1ecb c\u00e1c v\u00e9 c\u00f3 tr\u1ea1ng th\u00e1i thanh to\u00e1n \u0111\u00e3 h\u1ee7y, th\u00e0nh c\u00f4ng, gi\u1eef ch\u1ed7.\r\n- B\u01b0\u1edbc 6: T\u1ea1i c\u00e1c v\u00e9 c\u00f3 tr\u1ea1ng th\u00e1i gi\u1eef ch\u1ed7 c\u00f3 th\u1ec3 Click Thanh to\u00e1n ngay \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang thanh to\u00e1n v\u00e0 th\u1ef1c hi\u1ec7n thanh to\u00e1n nh\u01b0 \u0111\u00e3 h\u01b0\u1edbng d\u1eabn \u1edf ch\u1ee9c n\u0103ng thanh to\u00e1n.",
+        "start_char_idx": 1674,
+        "end_char_idx": 3784,
+        "text_template": "{metadata_str}\n\n{content}",
+        "metadata_template": "{key}: {value}",
+        "metadata_seperator": "\n",
+        "class_name": "TextNode"
+      },
+      "__type__": "1"
+    },
+    "d71851ad-6b93-4c74-82b9-da9a57c77996": {
+      "__data__": {
+        "id_": "d71851ad-6b93-4c74-82b9-da9a57c77996",
+        "embedding": null,
+        "metadata": {
+          "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+          "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+          "file_type": "text/plain",
+          "file_size": 11740,
+          "creation_date": "2024-03-02",
+          "last_modified_date": "2024-03-02"
+        },
+        "excluded_embed_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "excluded_llm_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "relationships": {
+          "1": {
+            "node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7",
+            "node_type": "4",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91",
+            "class_name": "RelatedNodeInfo"
+          },
+          "2": {
+            "node_id": "f4ef331d-77ca-4c63-9549-4df8cd104fec",
+            "node_type": "1",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "1a1d7a716499433faa7a63e1458255dcd563db0c987aef63cfdd5ad0b32504a0",
+            "class_name": "RelatedNodeInfo"
+          },
+          "3": {
+            "node_id": "d3fb860f-2504-407b-9e2c-62a06360622a",
+            "node_type": "1",
+            "metadata": {},
+            "hash": "95e4c6e0e65a13e7db86a4912418d20f9e827d70eba1c31c092c1dd34175c633",
+            "class_name": "RelatedNodeInfo"
+          }
+        },
+        "text": "- B\u01b0\u1edbc 4: T\u1ea1i khung th\u1eddi gian \u0111\u1eb7t v\u00e9, ch\u1ecdn ng\u00e0y b\u1eaft \u0111\u1ea7u v\u00e0 ng\u00e0y k\u1ebft th\u00fac \u0111\u1ec3 gi\u1edbi h\u1ea1n l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9 theo th\u1eddi gian.\r\n- B\u01b0\u1edbc 5: T\u1ea1i khung tr\u1ea1ng th\u00e1i c\u00f3 th\u1ec3 l\u1ecdc ch\u1ec9 hi\u1ec3n th\u1ecb c\u00e1c v\u00e9 c\u00f3 tr\u1ea1ng th\u00e1i thanh to\u00e1n \u0111\u00e3 h\u1ee7y, th\u00e0nh c\u00f4ng, gi\u1eef ch\u1ed7.\r\n- B\u01b0\u1edbc 6: T\u1ea1i c\u00e1c v\u00e9 c\u00f3 tr\u1ea1ng th\u00e1i gi\u1eef ch\u1ed7 c\u00f3 th\u1ec3 Click Thanh to\u00e1n ngay \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang thanh to\u00e1n v\u00e0 th\u1ef1c hi\u1ec7n thanh to\u00e1n nh\u01b0 \u0111\u00e3 h\u01b0\u1edbng d\u1eabn \u1edf ch\u1ee9c n\u0103ng thanh to\u00e1n.\r\n- B\u01b0\u1edbc 7: C\u00f3 th\u1ec3 nh\u1eadp m\u00e3 v\u00e9 v\u00e0o \u00f4 M\u00e3 \u0111\u1eb7t v\u00e9 \u0111\u1ec3 t\u00ecm ki\u1ebfm v\u00e9 \u0111\u00f3.\r\n- B\u01b0\u1edbc 8: T\u1ea1i v\u00e9 mu\u1ed1n xem chi ti\u1ebft th\u00f4ng tin h\u00e3y click v\u00e0o \u00f4 chi ti\u1ebft tr\u00ean v\u00e9 \u0111\u00f3, k\u00e9o thanh cu\u1ed9n b\u00ean g\u00f3c ph\u1ea3i \u0111\u1ec3 xem th\u00eam th\u00f4ng tin v\u00e9. N\u1ebfu mu\u1ed1n quay l\u1ea1i trang tr\u01b0\u1edbc \u0111\u00f3 click v\u00e0o n\u00fat \u0110\u00f3ng.\r\n- B\u01b0\u1edbc 9: Click T\u1ea3i v\u1ec1 \u0111\u1ec3 l\u01b0u m\u00e3 QR, c\u00f3 th\u1ec3 d\u00f9ng m\u00e3 n\u00e0y \u0111\u1ec3 qu\u00e9t check in l\u00fac l\u00ean xe.\r\n6. Tra c\u1ee9u h\u00f3a \u0111\u01a1n\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav ch\u1ecdn m\u1ee5c Tra c\u1ee9u h\u00f3a \u0111\u01a1n.\r\n- B\u01b0\u1edbc 2: Trang tra c\u1ee9u h\u00f3a \u0111\u01a1n hi\u1ec3n th\u1ecb 2 \u00f4 input y\u00eau c\u1ea7u nh\u1eadp m\u00e3 h\u00f3a \u0111\u01a1n v\u00e0 m\u00e3 x\u00e1c th\u1ef1c nh\u01b0 \u1ea3nh b\u00ean d\u01b0\u1edbi v\u00e0 b\u1ea5m n\u00fat Tra c\u1ee9u.\r\n- B\u01b0\u1edbc 3: Nh\u1eadp m\u00e3 h\u00f3a \u0111\u01a1n v\u00e0 m\u00e3 x\u00e1c th\u1ef1c v\u00e0o theo y\u00eau c\u1ea7u, m\u00e3 h\u00f3a \u0111\u01a1n c\u00f3 th\u1ec3 l\u1ea5y khi xem chi ti\u1ebft l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9, nh\u1ea5n v\u00e0o bi\u1ec3u t\u01b0\u1ee3ng copy \u0111\u1ec3 sao ch\u00e9p m\u00e3 h\u00f3a \u0111\u01a1n.\r\n- B\u01b0\u1edbc 4: Click v\u00e0o n\u00fat T\u1ea3i h\u00f3a \u0111\u01a1n \u0111\u1ec3 l\u01b0u h\u00f3a \u0111\u01a1n v\u1ec1 m\u00e1y.\r\n7. H\u1ee7y v\u00e9\r\n- B\u01b0\u1edbc 1: V\u00e0o trong ph\u1ea7n L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9, sau \u0111\u00f3 ch\u1ecdn m\u1ed9t \u00f4 tr\u00f2n tr\u01b0\u1edbc c\u00e1c h\u00e0ng t\u00f3m t\u1eaft th\u00f4ng tin c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 trong b\u1ea3ng.\r\n- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng t\u1ea1i \u00f4 H\u00e0nh \u0111\u1ed9ng, v\u00e0 ch\u1ecdn H\u1ee7y v\u00e9.\r\n- B\u01b0\u1edbc 3: Sau khi nh\u1ea5n h\u1ee7y v\u00e9 \u0111\u1ecdc k\u1ef9 \u0111i\u1ec1u kho\u1ea3n trong ch\u00ednh s\u00e1ch  h\u1ee7y v\u00e9, k\u00e9o thanh cu\u1ed9n b\u00ean ph\u1ea3i \u0111\u1ec3 xem \u0111\u1ea7y \u0111\u1ee7 danh s\u00e1ch.\r\n- B\u01b0\u1edbc 4: Ch\u1ecdn v\u00e0o \u00f4 T\u00f4i \u0111\u1ed3ng \u00fd v\u1edbi ch\u00ednh s\u00e1ch h\u1ee7y v\u00e9 c\u1ee7a Xe Kim Nguy\u00ean ph\u00eda cu\u1ed1i Ch\u00ednh s\u00e1ch h\u1ee7y v\u00e9 \u0111\u1ec3 x\u00e1c nh\u1eadn \u0111\u00e3 \u0111\u1ecdc k\u1ef9 v\u00e0 tu\u00e2n th\u1ee7 ch\u00ednh s\u00e1ch.\r\n- B\u01b0\u1edbc 5: Click ti\u1ebfp t\u1ee5c \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang ch\u1ecdn c\u00e1c v\u00e9 mu\u1ed1n h\u1ee7y, l\u1ea7n l\u01b0\u1ee3t t\u00edch v\u00e0 c\u00e1c \u00f4 v\u00e9 trong tr\u01b0\u1eddng h\u1ee3p nhi\u1ec1u v\u00e9 (Ho\u1eb7c t\u00edch v\u00e0o \u00f4 Ch\u1ecdn t\u1ea5t c\u1ea3 \u0111\u1ec3 h\u1ee7y to\u00e0n b\u1ed9 v\u00e9 c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 \u0111\u00f3).\r\n- B\u01b0\u1edbc 6: Nh\u1ea5n ti\u1ebfp t\u1ee5c \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh h\u1ee7y v\u00e9.\r\n- B\u01b0\u1edbc 7: Nh\u1ea5n x\u00e1c nh\u1eadn h\u1ee7y v\u00e9 \u0111\u1ec3 ho\u00e0n t\u1ea5t g\u1eedi y\u00eau c\u1ea7u h\u1ee7y v\u00e9.\r\n8.",
+        "start_char_idx": 3383,
+        "end_char_idx": 5362,
+        "text_template": "{metadata_str}\n\n{content}",
+        "metadata_template": "{key}: {value}",
+        "metadata_seperator": "\n",
+        "class_name": "TextNode"
+      },
+      "__type__": "1"
+    },
+    "d3fb860f-2504-407b-9e2c-62a06360622a": {
+      "__data__": {
+        "id_": "d3fb860f-2504-407b-9e2c-62a06360622a",
+        "embedding": null,
+        "metadata": {
+          "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+          "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+          "file_type": "text/plain",
+          "file_size": 11740,
+          "creation_date": "2024-03-02",
+          "last_modified_date": "2024-03-02"
+        },
+        "excluded_embed_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "excluded_llm_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "relationships": {
+          "1": {
+            "node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7",
+            "node_type": "4",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91",
+            "class_name": "RelatedNodeInfo"
+          },
+          "2": {
+            "node_id": "d71851ad-6b93-4c74-82b9-da9a57c77996",
+            "node_type": "1",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "0611e2e30360515283ff06ac1407739172bc2077459a0e45cf439f19df35958a",
+            "class_name": "RelatedNodeInfo"
+          },
+          "3": {
+            "node_id": "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e",
+            "node_type": "1",
+            "metadata": {},
+            "hash": "b1165169251e32dad9da8fa4593bd0d0879de2071c5067a83673d815ef48dbe6",
+            "class_name": "RelatedNodeInfo"
+          }
+        },
+        "text": "- B\u01b0\u1edbc 5: Click ti\u1ebfp t\u1ee5c \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn trang ch\u1ecdn c\u00e1c v\u00e9 mu\u1ed1n h\u1ee7y, l\u1ea7n l\u01b0\u1ee3t t\u00edch v\u00e0 c\u00e1c \u00f4 v\u00e9 trong tr\u01b0\u1eddng h\u1ee3p nhi\u1ec1u v\u00e9 (Ho\u1eb7c t\u00edch v\u00e0o \u00f4 Ch\u1ecdn t\u1ea5t c\u1ea3 \u0111\u1ec3 h\u1ee7y to\u00e0n b\u1ed9 v\u00e9 c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 \u0111\u00f3).\r\n- B\u01b0\u1edbc 6: Nh\u1ea5n ti\u1ebfp t\u1ee5c \u0111\u1ec3 chuy\u1ec3n \u0111\u1ebfn b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh h\u1ee7y v\u00e9.\r\n- B\u01b0\u1edbc 7: Nh\u1ea5n x\u00e1c nh\u1eadn h\u1ee7y v\u00e9 \u0111\u1ec3 ho\u00e0n t\u1ea5t g\u1eedi y\u00eau c\u1ea7u h\u1ee7y v\u00e9.\r\n8. \u0110\u1ed5i v\u00e9\r\n- B\u01b0\u1edbc 1: V\u00e0o trong ph\u1ea7n L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9, sau \u0111\u00f3 ch\u1ecdn m\u1ed9t \u00f4 tr\u00f2n tr\u01b0\u1edbc c\u00e1c h\u00e0ng t\u00f3m t\u1eaft th\u00f4ng tin c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 trong b\u1ea3ng \u0111\u1ec3 xu\u1ea5t hi\u1ec7n c\u00e1c l\u1ef1a ch\u1ecdn H\u00e0nh \u0111\u1ed9ng.\r\n- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng t\u1ea1i \u00f4 H\u00e0nh \u0111\u1ed9ng, v\u00e0 click v\u00e0o l\u1ef1a ch\u1ecdn \u0110\u1ed5i v\u00e9.\r\n- B\u01b0\u1edbc 3: \u0110\u1ecdc k\u1ef9 ch\u00ednh s\u00e1ch h\u1ed7 tr\u1ee3 \u0111\u1ed5i v\u00e9 c\u1ee7a nh\u00e0 xe, click v\u00e0o \u00f4 T\u00f4i \u0111\u1ed3ng \u00fd v\u1edbi ch\u00ednh s\u00e1ch \u0111\u1ed5i v\u00e9 c\u1ee7a Xe Kim Nguy\u00ean v\u00e0 nh\u1ea5n ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh.\r\n- B\u01b0\u1edbc 4: Tick v\u00e0o \u00f4 tr\u01b0\u1edbc v\u00e9 mu\u1ed1n \u0111\u1ed5i, ho\u1eb7c tick v\u00e0o \u00f4 Ch\u1ecdn t\u1ea5t c\u1ea3 \u0111\u1ec3 ch\u1ecdn nhanh t\u1ea5t c\u1ea3 c\u00e1c v\u00e9 trong tr\u01b0\u1eddng h\u1ee3p mu\u1ed1n \u0111\u1ed5i nhi\u1ec1u v\u00e9. Sau \u0111\u00f3 tick v\u00e0o ch\u1ea5m tr\u00f2n \u0111\u1ec3 ch\u1ecdn \u0111\u1ed5i ch\u1ed7 hay \u0111\u1ed5i chuy\u1ebfn r\u1ed3i nh\u1ea5n n\u00fat Ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh.\r\n- B\u01b0\u1edbc 5: Tr\u01b0\u1eddng h\u1ee3p ch\u1ecdn \u0111\u1ed5i ch\u1ed7, ch\u1ecdn ch\u1ed7 m\u1edbi r\u1ed3i b\u1ea5m ti\u1ebfp t\u1ee5c. Tr\u01b0\u1eddng h\u1ee3p \u0111\u1ed5i chuy\u1ebfn, ch\u1ecdn th\u1eddi gian v\u00e0 nh\u1ea5n v\u00e0o ch\u1ecdn chuy\u1ebfn \u0111\u1ec3 l\u1ef1a ch\u1ecdn gh\u1ebf ng\u1ed3i ph\u00f9 h\u1ee3p r\u1ed3i nh\u1ea5n Ti\u1ebfp t\u1ee5c.\r\n- B\u01b0\u1edbc 6: Xem k\u1ef9 th\u00f4ng tin \u0111\u1ed5i v\u00e9 r\u1ed3i nh\u1ea5n n\u00fat X\u00e1c nh\u1eadn \u0111\u1ed5i v\u00e9.\r\n- B\u01b0\u1edbc 7: \u0110\u1ed5i v\u00e9 th\u00e0nh c\u00f4ng s\u1ebd nh\u1eadn \u0111\u01b0\u1ee3c th\u00f4ng b\u00e1o, Click \u0110\u00f3ng \u0111\u1ec3 tr\u1edf v\u1ec1 trang l\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9.\r\nL\u01b0u \u00fd: N\u1ebfu v\u00e9 mu\u1ed1n \u0111\u1ed5i kh\u00f4ng n\u1eb1m trong th\u1eddi gian cho ph\u00e9p \u0111\u1ed5i v\u00e9 th\u00ec H\u00e0nh \u0111\u1ed9ng \u0110\u1ed5i v\u00e9 s\u1ebd c\u00f3 m\u00e0u x\u00e1m v\u00e0 kh\u00f4ng th\u1ec3 ch\u1ecdn \u0111\u01b0\u1ee3c.\r\n9. S\u1eeda v\u00e9\r\n- B\u01b0\u1edbc 1: V\u00e0o trong ph\u1ea7n L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9, sau \u0111\u00f3 ch\u1ecdn m\u1ed9t \u00f4 tr\u00f2n tr\u01b0\u1edbc c\u00e1c h\u00e0ng t\u00f3m t\u1eaft th\u00f4ng tin c\u1ee7a l\u01b0\u1ee3t \u0111\u1eb7t v\u00e9 trong b\u1ea3ng \u0111\u1ec3 xu\u1ea5t hi\u1ec7n c\u00e1c l\u1ef1a ch\u1ecdn H\u00e0nh \u0111\u1ed9ng.\r\n- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng t\u1ea1i \u00f4 H\u00e0nh \u0111\u1ed9ng, v\u00e0 click v\u00e0o l\u1ef1a ch\u1ecdn S\u1eeda v\u00e9.\r\n- B\u01b0\u1edbc 3: \u0110\u1ecdc \u0110i\u1ec1u ki\u1ec7n s\u1eeda v\u00e9 v\u00e0 tick v\u00e0o \u00f4 tr\u1ed1ng \u0111\u1ec3 x\u00e1c nh\u1eadn T\u00f4i \u0111\u1ed3ng \u00fd v\u1edbi ch\u00ednh s\u00e1ch s\u1eeda v\u00e9 c\u1ee7a Xe Kim Nguy\u00ean sau \u0111\u00f3 nh\u1ea5n n\u00fat Ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo.",
+        "start_char_idx": 5030,
+        "end_char_idx": 6957,
+        "text_template": "{metadata_str}\n\n{content}",
+        "metadata_template": "{key}: {value}",
+        "metadata_seperator": "\n",
+        "class_name": "TextNode"
+      },
+      "__type__": "1"
+    },
+    "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e": {
+      "__data__": {
+        "id_": "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e",
+        "embedding": null,
+        "metadata": {
+          "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+          "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+          "file_type": "text/plain",
+          "file_size": 11740,
+          "creation_date": "2024-03-02",
+          "last_modified_date": "2024-03-02"
+        },
+        "excluded_embed_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "excluded_llm_metadata_keys": [
+          "file_name",
+          "file_type",
+          "file_size",
+          "creation_date",
+          "last_modified_date",
+          "last_accessed_date"
+        ],
+        "relationships": {
+          "1": {
+            "node_id": "983c39ba-d569-4075-a8c3-d0d8e5e413a7",
+            "node_type": "4",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "dc53270efb7710cc92960dc3762611ba5f5c8c17a598f44bc244aa29df90db91",
+            "class_name": "RelatedNodeInfo"
+          },
+          "2": {
+            "node_id": "d3fb860f-2504-407b-9e2c-62a06360622a",
+            "node_type": "1",
+            "metadata": {
+              "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+              "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+              "file_type": "text/plain",
+              "file_size": 11740,
+              "creation_date": "2024-03-02",
+              "last_modified_date": "2024-03-02"
+            },
+            "hash": "21dd9a398127b20ac7bd2fd035e522a7e4c42463270e9efaa89b7b007188ef66",
+            "class_name": "RelatedNodeInfo"
+          }
+        },
+        "text": "- B\u01b0\u1edbc 2: Click v\u00e0o m\u0169i t\u00ean tr\u1ecf xu\u1ed1ng t\u1ea1i \u00f4 H\u00e0nh \u0111\u1ed9ng, v\u00e0 click v\u00e0o l\u1ef1a ch\u1ecdn S\u1eeda v\u00e9.\r\n- B\u01b0\u1edbc 3: \u0110\u1ecdc \u0110i\u1ec1u ki\u1ec7n s\u1eeda v\u00e9 v\u00e0 tick v\u00e0o \u00f4 tr\u1ed1ng \u0111\u1ec3 x\u00e1c nh\u1eadn T\u00f4i \u0111\u1ed3ng \u00fd v\u1edbi ch\u00ednh s\u00e1ch s\u1eeda v\u00e9 c\u1ee7a Xe Kim Nguy\u00ean sau \u0111\u00f3 nh\u1ea5n n\u00fat Ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo.\r\n- B\u01b0\u1edbc 4: Tick v\u00e0o ch\u1ea5m tr\u00f2n \u0111\u1ec3 ch\u1ecdn \u0111i\u1ec3m \u0111\u00f3n kh\u00e1c n\u1ebfu chuy\u1ebfn xe \u0111\u00f3 c\u00f3 h\u1ed7 tr\u1ee3 nhi\u1ec1u \u0111i\u1ec3m \u0111\u00f3n, sau \u0111\u00f3 b\u1ea5m sang tab \u0110i\u1ec3m tr\u1ea3 \u0111\u1ec3 ch\u1ecdn \u0111i\u1ec3m tr\u1ea3 kh\u00e1c n\u1ebfu chuy\u1ebfn xe c\u00f3 h\u1ed7 tr\u1ee3 nhi\u1ec1u \u0111i\u1ec3m tr\u1ea3. Sau \u0111\u00f3 nh\u1ea5n Ti\u1ebfp t\u1ee5c \u0111\u1ec3 th\u1ef1c hi\u1ec7n c\u00e1c b\u01b0\u1edbc ti\u1ebfp theo trong quy tr\u00ecnh.\r\n- B\u01b0\u1edbc 5: Xem l\u1ea1i th\u00f4ng tin s\u1eeda v\u00e9 bao g\u1ed3m chuy\u1ebfn, th\u1eddi gian, \u0111i\u1ec3m \u0111\u00f3n- tr\u1ea3 c\u0169 v\u00e0 \u0111i\u1ec3m \u0111\u00f3n-tr\u1ea3 m\u1edbi sau khi s\u1eeda r\u1ed3i nh\u1ea5n n\u00fat X\u00e1c nh\u1eadn s\u1eeda v\u00e9.\r\n- B\u01b0\u1edbc 6: S\u1eeda v\u00e9 th\u00e0nh c\u00f4ng s\u1ebd nh\u1eadn \u0111\u01b0\u1ee3c th\u00f4ng b\u00e1o, Click \u0110\u00f3ng \u0111\u1ec3 quay tr\u1edf l\u1ea1i trang L\u1ecbch s\u1eed \u0111\u1eb7t v\u00e9.\r\n\r\n10. C\u1eadp nh\u1eadt th\u00f4ng tin c\u00e1 nh\u00e2n\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav r\u00ea chu\u1ed9t v\u00e0o v\u1ecb tr\u00ed t\u00ean ng\u01b0\u1eddi d\u00f9ng, sau \u0111\u00f3 ch\u1ecdn th\u00f4ng tin t\u00e0i kho\u1ea3n.\r\n- B\u01b0\u1edbc 2: Trang th\u00f4ng tin t\u00e0i kho\u1ea3n hi\u1ec3n th\u1ecb c\u00e1c th\u00f4ng tin nh\u01b0 s\u1ed1 \u0111i\u1ec7n tho\u1ea1i, h\u1ecd t\u00ean, email, gi\u1edbi t\u00ednh.\r\n- B\u01b0\u1edbc 3: Click n\u00fat c\u1eadp nh\u1eadt \u0111\u1ec3 c\u00e1c \u00f4 tr\u1ed1ng H\u1ecd v\u00e0 T\u00ean, Email, Gi\u1edbi t\u00ednh cho ph\u00e9p s\u1eeda \u0111\u1ed5i th\u00f4ng tin. Nh\u1eadp t\u00ean kh\u00e1c , gmail kh\u00e1c hay ch\u1ecdn l\u1ea1i gi\u1edbi t\u00ednh. N\u1ebfu mu\u1ed1n \u0111\u1ed5i \u1ea3nh \u0111\u1ea1i di\u1ec7n th\u00ec click v\u00e0o ch\u1ecdn t\u1ec7p v\u00e0 ch\u1ecdn \u1ea3nh \u0111\u1ea1i di\u1ec7n kh\u00e1c.\r\n- B\u01b0\u1edbc 4: Click L\u01b0u th\u00f4ng tin \u0111\u1ec3 l\u01b0u l\u1ea1i nh\u1eefng s\u1eeda \u0111\u1ed5i th\u00f4ng tin.\r\n11. \u0110\u1ed5i m\u1eadt kh\u1ea9u\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav r\u00ea chu\u1ed9t v\u00e0o v\u1ecb tr\u00ed t\u00ean ng\u01b0\u1eddi d\u00f9ng, sau \u0111\u00f3 ch\u1ecdn \u0110\u1ed5i m\u1eadt kh\u1ea9u sau bi\u1ec3u t\u01b0\u1ee3ng \u1ed5 kh\u00f3a.\r\n- B\u01b0\u1edbc 2: Trang \u0111\u1ed5i m\u1eadt kh\u1ea9u hi\u1ec3n th\u1ecb y\u00eau c\u1ea7u nh\u1eadp m\u1eadt kh\u1ea9u c\u0169, m\u1eadt kh\u1ea9u m\u1edbi v\u00e0 x\u00e1c nh\u1eadn m\u1eadt kh\u1ea9u m\u1edbi.\r\n- B\u01b0\u1edbc 3: Nh\u1eadp \u0111\u00fang m\u1eadt kh\u1ea9u c\u0169, sau \u0111\u00f3 nh\u1eadp m\u1eadt kh\u1ea9u m\u1edbi c\u00f3 \u00edt nh\u1ea5t 6 k\u00fd t\u1ef1 v\u00e0 x\u00e1c nh\u1eadn l\u1ea1i m\u1eadt kh\u1ea9u m\u1edbi kh\u1edbp v\u1edbi m\u1eadt kh\u1ea9u m\u1edbi v\u1eeba nh\u1eadp.\r\n- B\u01b0\u1edbc 4: B\u1ea5m v\u00e0o n\u00fat X\u00e1c nh\u1eadn \u0111\u1ec3 ho\u00e0n t\u1ea5t \u0111\u1ed5i m\u1eadt kh\u1ea9u, nh\u1eadn \u0111\u01b0\u1ee3c th\u00f4ng b\u00e1o \u0110\u1ed5i m\u1eadt kh\u1ea9u th\u00e0nh c\u00f4ng.\r\n- B\u01b0\u1edbc 5: Phi\u00ean \u0111\u0103ng nh\u1eadp \u0111\u00e3 b\u1ecb x\u00f3a v\u00e0 ng\u01b0\u1eddi d\u00f9ng c\u1ea7n \u0111\u0103ng nh\u1eadp l\u1ea1i \u0111\u1ec3 s\u1eed d\u1ee5ng m\u1eadt kh\u1ea9u m\u1edbi.\r\n12. \u0110\u0103g xu\u1ea5t\r\n- B\u01b0\u1edbc 1: Tr\u00ean thanh Nav r\u00ea chu\u1ed9t v\u00e0o v\u1ecb tr\u00ed t\u00ean ng\u01b0\u1eddi d\u00f9ng, sau \u0111\u00f3 ch\u1ecdn \u0110\u0103ng xu\u1ea5t sau bi\u1ec3u t\u01b0\u1ee3ng Exit.\r\n- B\u01b0\u1edbc 2: B\u1ea5m v\u00e0o n\u00fat X\u00e1c nh\u1eadn \u0111\u1ec3 th\u1ef1c hi\u1ec7n \u0111\u0103ng xu\u1ea5t, n\u1ebfu mu\u1ed1n d\u1eebng qu\u00e1 tr\u00ecnh \u0111\u0103ng xu\u1ea5t b\u1ea5m n\u00fat H\u1ee7y.\r\nC\u00e1c c\u00e2u h\u1ecfi kh\u00e1c kh\u00f4ng li\u00ean quan \u0111\u1ebfn th\u00f4ng tin nh\u00e0 xe ho\u1eb7c c\u00e1c thao t\u00e1c tr\u00ean trang web \u0111\u1eb7t v\u00e9 th\u00ec t\u1eeb ch\u1ed1i tr\u1ea3 l\u1eddi",
+        "start_char_idx": 6700,
+        "end_char_idx": 8891,
+        "text_template": "{metadata_str}\n\n{content}",
+        "metadata_template": "{key}: {value}",
+        "metadata_seperator": "\n",
+        "class_name": "TextNode"
+      },
+      "__type__": "1"
+    }
+  },
+  "docstore/ref_doc_info": {
+    "983c39ba-d569-4075-a8c3-d0d8e5e413a7": {
+      "node_ids": [
+        "baa4dba9-9ba7-4d44-87e2-17fdade287f9",
+        "f4ef331d-77ca-4c63-9549-4df8cd104fec",
+        "d71851ad-6b93-4c74-82b9-da9a57c77996",
+        "d3fb860f-2504-407b-9e2c-62a06360622a",
+        "4bd5c9a8-0889-4da0-9db8-0cce6ccc102e"
+      ],
+      "metadata": {
+        "file_path": "E:\\Forth-year\\KhoaLuanTotNghiep\\chatbot\\chatbot_api\\data\\data.txt",
+        "file_name": "E:/Forth-year/KhoaLuanTotNghiep/chatbot/chatbot_api/data/data.txt",
+        "file_type": "text/plain",
+        "file_size": 11740,
+        "creation_date": "2024-03-02",
+        "last_modified_date": "2024-03-02"
+      }
+    }
+  }
+}

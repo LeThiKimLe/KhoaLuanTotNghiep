@@ -1,8 +1,12 @@
 import routeThunk from './route.service'
 import { createSlice } from '@reduxjs/toolkit'
+import storage from 'redux-persist/lib/storage'
+import { persistReducer } from 'redux-persist'
+import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 
 const initialState = {
     listRoute: [],
+    listOfficialRoute: [],
     loading: false,
     isUpdateRoute: false,
 }
@@ -60,10 +64,28 @@ const routeSlice = createSlice({
             .addCase(routeThunk.getRouteParents.rejected, (state) => {
                 state.loading = false
             })
+            .addCase(routeThunk.getOfficialRoute.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(routeThunk.getOfficialRoute.fulfilled, (state, action) => {
+                state.listOfficialRoute = action.payload
+                state.loading = false
+            })
     },
 })
 
 export const selectListRoute = (state) => state.route.listRoute
+export const selectListOfficialRoute = (state) => state.route.listOfficialRoute
 export const selectLoadingState = (state) => state.route.loading
 export const routeAction = routeSlice.actions
-export default routeSlice.reducer
+
+const routePersistConfig = {
+    key: 'route',
+    storage,
+    stateReconciler: autoMergeLevel2,
+    whitelist: ['listOfficialRoute'],
+}
+
+const routeReducer = persistReducer(routePersistConfig, routeSlice.reducer)
+
+export default routeReducer

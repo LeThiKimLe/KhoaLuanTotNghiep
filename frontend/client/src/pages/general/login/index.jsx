@@ -1,3 +1,4 @@
+import React from 'react'
 import styles from './styles.module.css'
 import './login.css'
 import FormInput from '../../../components/common/formInput'
@@ -17,6 +18,12 @@ import authThunk from '../../../feature/auth/auth.service'
 import { ClipLoader } from 'react-spinners';
 import { useMediaQuery } from 'react-responsive'
 import CountDownOTP from './CountDownOTP'
+import {useGoogleAuth} from './googleAuth'
+
+const GoogleLoginButton = () => {
+    const { signIn } = useGoogleAuth()
+    return <Button onClick={signIn} text="Đăng nhập với google"></Button>
+  }
 
 const Login = () => {
 
@@ -403,6 +410,7 @@ const Login = () => {
                                                     <FormInput key={input.id} {...input} value={valuesLogin[input.name]} onChange={onChangeLogin}></FormInput>
                                                 ))}
                                                 <Button text="Đăng nhập" className={styles.btnLogin} ></Button>
+                                                <GoogleLoginButton />
                                                 <a href="#" style={{ fontSize: '15px' }} onClick={() => {setIsGetPass(true); cancelRepass()}}>Quên mật khẩu</a>
                                                 <div className={styles.subLink}> <i> Chưa có tài khoản ? </i> <a href="#" onClick={()=> setSelectedTab(1)}> Đăng ký </a> </div>
                                             </form>
