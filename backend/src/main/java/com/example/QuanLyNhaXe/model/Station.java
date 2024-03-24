@@ -51,4 +51,8 @@ public class Station {
 
 	@OneToMany(mappedBy = "station")
 	private List<StopStation> stopStations;
+	
+	@ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    private BusCompany busCompany;
 }

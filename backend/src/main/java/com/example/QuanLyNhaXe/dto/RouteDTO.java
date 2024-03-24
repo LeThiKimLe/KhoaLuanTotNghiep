@@ -17,7 +17,7 @@ public class RouteDTO {
 	private Integer distance;
 	private LocationDTO departure;
 	private LocationDTO destination;
-	private Integer price;
+	
 	private String schedule;
 	private Integer parents;
 	private float hours;

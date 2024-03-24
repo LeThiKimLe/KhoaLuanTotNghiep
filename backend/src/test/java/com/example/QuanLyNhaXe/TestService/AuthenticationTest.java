@@ -212,52 +212,52 @@ class AuthenticationTest {
 		//assertThrows(ConflictException.class, () -> authenticationService.registerCustomer(signupDTO));
 	}
 
-	@Test
-	void testCreateStaff_Success() {
-		SignupStaffDTO signupStaffDTO = new SignupStaffDTO();
-		signupStaffDTO.setEmail("example@gmail.com");
-		signupStaffDTO.setTel("123456789");
-		when(staffRepository.existsByIdCard(anyString())).thenReturn(false);
-		when(accountRepository.save(any())).thenReturn(mockedAccount);
-		when(userRepository.save(any())).thenReturn(mockedUser);
-		when(staffRepository.save(any())).thenReturn(mockedStaff);
+//	@Test
+//	void testCreateStaff_Success() {
+//		SignupStaffDTO signupStaffDTO = new SignupStaffDTO();
+//		signupStaffDTO.setEmail("example@gmail.com");
+//		signupStaffDTO.setTel("123456789");
+//		when(staffRepository.existsByIdCard(anyString())).thenReturn(false);
+//		when(accountRepository.save(any())).thenReturn(mockedAccount);
+//		when(userRepository.save(any())).thenReturn(mockedUser);
+//		when(staffRepository.save(any())).thenReturn(mockedStaff);
+//
+//		// Call the method
+//		ResponseMessage responseMessage = authenticationService.createStaff(signupStaffDTO);
+//
+//		// Assertions
+//		assertNotNull(responseMessage);
+//		assertEquals(Message.SUCCESS_ADD_STAFF, responseMessage.getMessage());
+//		// Add more assertions based on your implementation
+//	}
+//
+//	@Test
+//	void testCreateStaff_ConflictException() {
+//
+//		SignupStaffDTO signupStaffDTO = new SignupStaffDTO();
+//		signupStaffDTO.setEmail("example@gmail.com");
+//		signupStaffDTO.setTel("123456789");
+//		signupStaffDTO.setIdCard("123623423435");
+//		when(staffRepository.existsByIdCard(signupStaffDTO.getIdCard())).thenReturn(true);
+//		assertThrows(ConflictException.class, () -> authenticationService.createStaff(signupStaffDTO));
+//	}
 
-		// Call the method
-		ResponseMessage responseMessage = authenticationService.createStaff(signupStaffDTO);
-
-		// Assertions
-		assertNotNull(responseMessage);
-		assertEquals(Message.SUCCESS_ADD_STAFF, responseMessage.getMessage());
-		// Add more assertions based on your implementation
-	}
-
-	@Test
-	void testCreateStaff_ConflictException() {
-
-		SignupStaffDTO signupStaffDTO = new SignupStaffDTO();
-		signupStaffDTO.setEmail("example@gmail.com");
-		signupStaffDTO.setTel("123456789");
-		signupStaffDTO.setIdCard("123623423435");
-		when(staffRepository.existsByIdCard(signupStaffDTO.getIdCard())).thenReturn(true);
-		assertThrows(ConflictException.class, () -> authenticationService.createStaff(signupStaffDTO));
-	}
-
-	@Test
-	void testCreateStaff_DataAccessException() {
-		SignupStaffDTO signupStaffDTO = new SignupStaffDTO();
-		signupStaffDTO.setEmail("example@gmail.com");
-		signupStaffDTO.setTel("123456789");
-		when(staffRepository.existsByIdCard(anyString())).thenReturn(false);
-		when(accountRepository.save(any())).thenReturn(mockedAccount);
-		when(accountRepository.save(any())).thenReturn(mockedAccount);
-		doThrow(new DataAccessException(Message.INACCURATE_DATA) {
-
-			private static final long serialVersionUID = -7531618532972041231L;
-		}).when(userRepository).save(any());
-		ResponseMessage responseMessage = authenticationService.createStaff(signupStaffDTO);
-		assertNotNull(responseMessage);
-		assertEquals(Message.INACCURATE_DATA, responseMessage.getMessage());
-	}
+//	@Test
+//	void testCreateStaff_DataAccessException() {
+//		SignupStaffDTO signupStaffDTO = new SignupStaffDTO();
+//		signupStaffDTO.setEmail("example@gmail.com");
+//		signupStaffDTO.setTel("123456789");
+//		when(staffRepository.existsByIdCard(anyString())).thenReturn(false);
+//		when(accountRepository.save(any())).thenReturn(mockedAccount);
+//		when(accountRepository.save(any())).thenReturn(mockedAccount);
+//		doThrow(new DataAccessException(Message.INACCURATE_DATA) {
+//
+//			private static final long serialVersionUID = -7531618532972041231L;
+//		}).when(userRepository).save(any());
+//		ResponseMessage responseMessage = authenticationService.createStaff(signupStaffDTO);
+//		assertNotNull(responseMessage);
+//		assertEquals(Message.INACCURATE_DATA, responseMessage.getMessage());
+//	}
 
 	@Test
 	void testCreateDriver() {

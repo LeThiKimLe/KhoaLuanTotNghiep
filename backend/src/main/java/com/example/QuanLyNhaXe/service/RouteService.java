@@ -86,10 +86,8 @@ public class RouteService {
 			}
 
 		}
-		Route route = Route.builder().departure(departure).destination(destination).parents(createRouteDTO.getParents())
-				.isActive(true)
-				.price(createRouteDTO.getPrice()).hours(createRouteDTO.getHours())
-				.schedule(createRouteDTO.getSchedule())
+		Route route = Route.builder().departure(departure).destination(destination).parents(createRouteDTO.getParents()).isActive(true)
+				.hours(createRouteDTO.getHours()).schedule(createRouteDTO.getSchedule())
 				.distance(createRouteDTO.getDistance()).busType(busType).build();
 		routeRepository.save(route);
 		return new ResponseMessage(Message.SUCCESS);
@@ -128,7 +126,7 @@ public class RouteService {
 		editRoute.setParents(parentRoute.getId());
 		editRoute.setDistance(editRouteDTO.getDistance());
 		editRoute.setHours(editRouteDTO.getHours());
-		editRoute.setPrice(editRouteDTO.getPrice());
+		
 		editRoute.setSchedule(editRouteDTO.getSchedule());
 		routeRepository.save(editRoute);
 		return new ResponseMessage(Message.UPDATE_SUCCESS);

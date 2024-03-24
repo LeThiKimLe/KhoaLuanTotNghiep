@@ -106,7 +106,7 @@ public class ScheduleService {
 			 consecutiveDates.add(date);            
 	        }
 		 for(Date scheduleDate: consecutiveDates) {
-			 Integer price=trip.getRoute().getPrice()+trip.getRoute().getBusType().getFee();
+			 Integer price=trip.getPrice()+trip.getRoute().getBusType().getFee();
 			 SpecialDay specialDay=null;
 			 if(specialDayTrue) {
 				 specialDay=specialDayRepository.findByDate(scheduleDate)

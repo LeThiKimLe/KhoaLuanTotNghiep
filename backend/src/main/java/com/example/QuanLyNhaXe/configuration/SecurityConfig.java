@@ -32,6 +32,7 @@ public class SecurityConfig {
     private static final String ADMIN = "ADMIN";
     private static final String DRIVER = "DRIVER";
     private static final String STAFF="STAFF";
+    private static final String MANAGER="MANAGER";
     
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -41,6 +42,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers("/manager/**").hasAuthority(MANAGER)
                         .requestMatchers("/admin/**").hasAuthority(ADMIN)
                 		.requestMatchers("/staff/**","user/tel").hasAnyAuthority(ADMIN,STAFF)     
                 		.requestMatchers("/driver/**").hasAnyAuthority(ADMIN,DRIVER)

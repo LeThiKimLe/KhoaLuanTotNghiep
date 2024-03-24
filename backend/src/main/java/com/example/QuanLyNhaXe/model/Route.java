@@ -34,8 +34,7 @@ public class Route {
     @JoinColumn(name = "destination", referencedColumnName = "id")
     private Location destination;
 
-    @Column(name = "price", nullable = false)
-    private Integer price;
+    
     
     @Column(name = "schedule", length = 250)
     private String schedule;
@@ -50,6 +49,10 @@ public class Route {
     private boolean isActive;
     
     
+    @Column(name = "route_code")
+    private String routeCode;
+    
+    
     @ManyToOne
     @JoinColumn(name="bus_type_id",referencedColumnName = "id")
     private BusType busType;
@@ -58,6 +61,9 @@ public class Route {
     
     @OneToMany(mappedBy = "route")
     private List<Trip> trips;
+    
+    @OneToMany(mappedBy = "route")
+    private List<RouteAssign> routeAssigns;
     
     
 }

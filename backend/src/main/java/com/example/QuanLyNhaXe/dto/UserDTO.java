@@ -19,5 +19,7 @@ public class UserDTO {
 	private DriverDTO driver;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private CustomerDTO customer;
+	@JsonInclude(JsonInclude.Include.NON_NULL)
+	private SystemManagerDTO systemManager;
 
 }

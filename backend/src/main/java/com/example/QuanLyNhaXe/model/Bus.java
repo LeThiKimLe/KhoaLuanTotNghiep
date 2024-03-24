@@ -55,6 +55,10 @@ public class Bus {
     
     @OneToMany(mappedBy = "bus")
     private List<Schedule> schedules;
+    
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    private BusCompany busCompany;
 
  
    

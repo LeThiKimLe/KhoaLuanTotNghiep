@@ -5,9 +5,11 @@ import java.sql.Date;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class SignupStaffDTO {
 	@NotEmpty(message = "Tên không được để trống")
 	private String name;
@@ -22,5 +24,5 @@ public class SignupStaffDTO {
 	private String address;
 	@NotNull(message = "Ngày bắt đầu công việc không được để trống")
 	private Date beginWorkDate;
-	private boolean admin;
+	
 }
