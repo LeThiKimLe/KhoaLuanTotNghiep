@@ -322,6 +322,7 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                             Hủy
                                         </CButton>
                                     )}
+                                    <CButton>Xuất lệnh vận chuyển</CButton>
                                 </CRow>
                             </CCardFooter>
                         </CCard>

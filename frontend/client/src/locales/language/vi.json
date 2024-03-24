@@ -7,7 +7,12 @@
                 "invoice": "Tra cứu hóa đơn",
                 "contact": "Liên hệ",
                 "about": "Về chúng tôi",
-                "other": "Khác"
+                "other": "Khác",
+                "become_partner": {
+                    "title": "Trở thành đối tác",
+                    "sold_ticket": "Mở bán vé",
+                    "transport_partner": "Đối tác vận chuyển"
+                }
             },
         "welcome": "Bạn muốn đi đến địa điểm nào ở Việt Nam? Hãy đặt Xe Kim Nguyên",
         "promo": "Tạo tài khoản và nhận được nhiều ưu đãi cho chuyến xe của bạn",

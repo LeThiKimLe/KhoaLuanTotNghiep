@@ -54,23 +54,22 @@ const Header = ({ type, active, listRoute }) => {
                                 to="/ticket"
                                 onClick={() => handleNavigate('ticket')}
                             >
-                                <FontAwesomeIcon icon={faTicket}/>
+                                <FontAwesomeIcon icon={faTicket} />
                                 <span>{t('header.menu.ticket')}</span>
                             </Link>
                             <Link className={`${styles.headerListItem} ${activeLink === 'bill' ? styles.active : ''}`}
                                 to="/bill"
                                 onClick={() => handleNavigate('bill')}
                             >
-                                <FontAwesomeIcon icon={faFileInvoice}/>
+                                <FontAwesomeIcon icon={faFileInvoice} />
                                 <span>{t('header.menu.invoice')}</span>
                             </Link>
                             <Link className={`${styles.headerListItem} ${activeLink === 'about' ? styles.active : ''}`}
                                 to="/about"
                                 onClick={() => handleNavigate('about')}>
-                               <FontAwesomeIcon icon={faUsers} />
+                                <FontAwesomeIcon icon={faUsers} />
                                 <span>{t('header.menu.about')}</span>
                             </Link>
-
                         </MediaQuery>
                         <MediaQuery maxWidth={878}>
                             <div className={`otherOption ${styles.headerListItem} ${activeLink === 'other' ? styles.active : ''}`}
@@ -107,9 +106,34 @@ const Header = ({ type, active, listRoute }) => {
                                 </ul>
                             </div>
                         </MediaQuery>
+                        <div className={`otherOption ${styles.headerListItem} ${activeLink === 'cooperate' ? styles.active : ''}`}
+                            onClick={() => handleNavigate('cooperate')}>
+                            <FontAwesomeIcon icon={faChevronDown} />
+                            <span>{t('header.menu.become_partner.title')}</span>
+                            <ul className={styles.subMenu}>
+                                <li>
+                                    <Link className={`${styles.subMenuItem} ${activeLink === 'sold_ticket' ? styles.active : ''}`}
+                                        to="/sold_ticket"
+                                        onClick={() => handleNavigate('sold_ticket')}
+                                    >
+                                        <FontAwesomeIcon icon={faTicket} />
+                                        <span>{t('header.menu.become_partner.sold_ticket')}</span>
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link className={`${styles.subMenuItem} ${activeLink === 'transport_partner' ? styles.active : ''}`}
+                                        to="/transport_partner"
+                                        onClick={() => handleNavigate('transport_partner')}
+                                    >
+                                        <FontAwesomeIcon icon={faFileInvoice} />
+                                        <span>{t('header.menu.become_partner.transport_partner')}</span>
+                                    </Link>
+                                </li>
+                            </ul>
+                        </div>
                     </div>
                     {type !== "list" && (
-                        <SearchBox listRoute = {listRoute} intro={true}></SearchBox>
+                        <SearchBox listRoute={listRoute} intro={true}></SearchBox>
                     )}
                 </div>
             </div>

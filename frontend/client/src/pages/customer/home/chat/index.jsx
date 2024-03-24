@@ -9,7 +9,7 @@ import {
     ConversationHeader,
     TypingIndicator,
 } from "@chatscope/chat-ui-kit-react";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import chatIcon from "../../../../assets/chat_icon.png"
 import mystyles from './styles.module.css'
 import Button from "../../../../components/common/button"
@@ -21,14 +21,37 @@ import chatThunk from "../../../../feature/chat/chat.service";
 import { useDispatch } from "react-redux";
 import axios from "axios";
 
-const OptionBox = ({ option, setOption, closeForm }) => {
+
+const OptionBox = ({ option, setOption, closeForm, setUserInfor }) => {
     const [userOption, setUserOption] = useState(option ? option : 'chatbot')
+    const [name, setName] = useState('')
+    const [email, setEmail] = useState('')
+    const [tel, setTel] = useState('')
+    const userInfor = useRef(null)
+    const handleStart = () => {
+        if (userOption === 'chatbot') {
+            setOption(userOption)
+        }
+        else {
+            if (userInfor.current.checkValidity()) {
+                setUserInfor({
+                    name: name,
+                    email: email,
+                    tel: tel
+                })
+                setOption(userOption)
+            }
+            else {
+                userInfor.current.reportValidity()
+            }
+        }
+    }
     return (
         <div className={mystyles.optionBox}>
             <div className={mystyles.header}>
-                <FontAwesomeIcon icon={faHeadset} size="2x"/>
+                <FontAwesomeIcon icon={faHeadset} size="2x" />
                 <i>Hỗ trợ khách hàng</i>
-                <FontAwesomeIcon icon={faXmark} size="2x" onClick={closeForm}/>
+                <FontAwesomeIcon icon={faXmark} size="2x" onClick={closeForm} />
             </div>
             <div className={mystyles.content}>
                 <div className={mystyles.optionInput}>
@@ -75,16 +98,36 @@ const OptionBox = ({ option, setOption, closeForm }) => {
                                     để chúng tôi thuận tiện hỗ trợ
                                 </i>
                             </h2>
-                            <form>
-                                <input placeholder="Họ và tên của bạn" id="name" type="text"></input>
+                            <form ref={userInfor}>
+                                <input
+                                    placeholder="Họ và tên của bạn"
+                                    id="name"
+                                    type="text"
+                                    required
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                >
+                                </input>
                                 <br></br>
-                                <input placeholder="Email của bạn" id="name" type="email"></input>
+                                <input
+                                    placeholder="Email của bạn"
+                                    id="name"
+                                    type="email"
+                                    required
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                >
+                                </input>
                                 <br></br>
                                 <input
                                     placeholder="Số điện thoại của bạn"
                                     id="tel"
                                     type="text"
-                                    pattern="^0[0-9]{9,10}$">
+                                    pattern="^0[0-9]{9,10}$"
+                                    required
+                                    value={tel}
+                                    onChange={(e) => setTel(e.target.value)}
+                                >
                                 </input>
                             </form>
                         </div>
@@ -93,7 +136,7 @@ const OptionBox = ({ option, setOption, closeForm }) => {
             </div>
             <div className={mystyles.chatBtn}>
                 <Button
-                    onClick={() => setOption(userOption)}
+                    onClick={handleStart}
                     text="Bắt đầu trò chuyện">
                 </Button>
             </div>
@@ -105,15 +148,18 @@ const Chat = () => {
     const [openBox, setOpenBox] = useState(false);
     const [option, setOption] = useState(null);
     const [currentInput, setCurrentInput] = useState('')
+    const [userInfor, setUserInfor] = useState({})
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
+    const connection = useRef(null)
+    const [enableChat, setEnableChat] = useState(true)
     const [listMessage, setlistMesssage] = useState([{
-            message: 'Xin chào. Tôi có thể giúp gì cho bạn?',
-            direction: 'incoming',
-            sender: 'assistant',
-        }])
+        message: 'Xin chào. Tôi có thể giúp gì cho bạn?',
+        direction: 'incoming',
+        sender: 'Assistant',
+    }])
 
-    const handleSendMessage = async () => {
+    const handleSendChatbotMessage = async () => {
         const newMessage = {
             message: currentInput,
             direction: 'outgoing',
@@ -123,24 +169,79 @@ const Chat = () => {
         const question = "Trả lời chi tiết bằng tiếng việt câu hỏi sau: " + currentInput
         setCurrentInput('')
         dispatch(chatThunk.sendChatbotQuery(question))
-        .unwrap()
-        .then((ans) => {
-            console.log(ans)
-            if (ans.data == '')
-                ans = 'Hệ thống đang bận. Bạn vui lòng thử lại sau.' 
-            const repMessage = {
-                message: ans,
-                direction: 'incoming',
-                sender: 'assistant',
-            }
-            setlistMesssage(prevArray => [...prevArray, repMessage])
-            setLoading(false)
-        })
-        .catch((err) => {
-            console.log(err)
-            setLoading(false)
-        })
+            .unwrap()
+            .then((ans) => {
+                console.log(ans)
+                if (ans.data == '')
+                    ans = 'Hệ thống đang bận. Bạn vui lòng thử lại sau.'
+                const repMessage = {
+                    message: ans,
+                    direction: 'incoming',
+                    sender: 'Assistant',
+                }
+                setlistMesssage(prevArray => [...prevArray, repMessage])
+                setLoading(false)
+            })
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+            })
     }
+
+    const handleSendMessageToStaff = () => {
+        const newMessage = {
+            message: currentInput,
+            direction: 'outgoing',
+            sender: 'customer',
+        }
+        setlistMesssage(prevArray => [...prevArray, newMessage])
+        // Gửi tin nhắn tới máy chủ WebSocket
+        connection.current.send(JSON.stringify({
+            senderInfor: userInfor,
+            message: currentInput,
+            sentTime: new Date().toISOString()
+        }));
+        setCurrentInput('')
+    };
+
+    const handleReceiveMessage = (data) => {
+        const chatData = JSON.parse(data)
+        const repMessage = {
+            message: chatData.message,
+            direction: 'incoming',
+            sender: chatData.sender,
+        }
+        setlistMesssage(prevArray => [...prevArray, repMessage])
+        setLoading(false)
+    }
+
+    useEffect(() => {
+        setEnableChat(true)
+        setlistMesssage([{
+            message: 'Xin chào. Tôi có thể giúp gì cho bạn?',
+            direction: 'incoming',
+            sender: 'Assistant',
+        }])
+        if (openBox && option === 'agent') {
+            // Tạo kết nối WebSocket khi component được mount
+            const socket = new WebSocket('ws://localhost:5000/api/socket');
+            // Listen for messages
+            socket.addEventListener("message", (event) => {
+                handleReceiveMessage(event.data)
+            })
+            //Listen for close connect
+            socket.addEventListener("close", (event) => {
+                setEnableChat(false)
+            })
+            connection.current = socket
+            return () => connection.current.close()
+        }
+    }, [openBox, option])
+
+    useEffect(() => {
+        setEnableChat(true)
+        setlistMesssage([])
+    }, [])
 
     return (
         <div style={{ width: 'fit-content' }}>
@@ -161,10 +262,10 @@ const Chat = () => {
                                         userName={option === 'chatbot' ? 'Trợ lý ảo' : 'Nhân viên tư vấn'}
                                     />
                                 </ConversationHeader>
-                                <MessageList 
-                                    typingIndicator={ loading && 
-                                        <TypingIndicator content={option === 'chatbot' ? 'Chatbot đang trả lời bạn' 
-                                    :'Nhân viên đang trả lời bạn'} />}>
+                                <MessageList
+                                    typingIndicator={loading &&
+                                        <TypingIndicator content={option === 'chatbot' ? 'Chatbot đang trả lời bạn'
+                                            : 'Nhân viên đang trả lời bạn'} />}>
                                     {
                                         listMessage.map((mess) => (
                                             <Message
@@ -175,27 +276,29 @@ const Chat = () => {
                                                     direction: mess.direction,
                                                     position: "single",
                                                 }}
-                                                avatarPosition = {mess.direction === "incoming" ? "tl" : "br"}
+                                                avatarPosition={mess.direction === "incoming" ? "tl" : "br"}
                                             >
                                                 <Avatar
                                                     name={mess.sender}
                                                     src={
                                                         mess.direction === 'incoming' ? (
-                                                            option === 'chatbot' ? chatbot 
-                                                            : 'https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg'
+                                                            option === 'chatbot' ? chatbot
+                                                                : 'https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg'
                                                         ) : guest
                                                     }
                                                 />
+                                                <Message.Header sender={mess.sender}></Message.Header>
                                             </Message>
                                         )
                                         )
                                     }
                                 </MessageList>
-                                <MessageInput 
-                                    value={currentInput} 
-                                    placeholder="Nhập tin nhắn ở đây" 
-                                    onChange={(e) => setCurrentInput(e)} 
-                                    onSend={handleSendMessage}
+                                <MessageInput
+                                    disabled={!enableChat}
+                                    value={currentInput}
+                                    placeholder={enableChat ? "Nhập tin nhắn ở đây" : "Nhân viên đã kết thúc cuộc trò chuyện"}
+                                    onChange={(e) => setCurrentInput(e)}
+                                    onSend={option === 'chatbot' ? handleSendChatbotMessage : handleSendMessageToStaff}
                                 />
                             </ChatContainer>
                         </MainContainer>
@@ -204,7 +307,13 @@ const Chat = () => {
             }
             {
                 openBox && !option && (
-                    <OptionBox option={option} setOption={setOption} closeForm={() => setOpenBox(false)}></OptionBox>
+                    <OptionBox
+                        option={option}
+                        setOption={setOption}
+                        closeForm={() => setOpenBox(false)}
+                        setUserInfor={setUserInfor}
+                    >
+                    </OptionBox>
                 )
             }
             <div className={mystyles.chatIcon} role="button" onClick={() => setOpenBox(!openBox)}>
