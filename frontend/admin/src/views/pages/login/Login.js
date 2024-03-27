@@ -43,7 +43,7 @@ const Login = () => {
 
     const handleLogin = (e) => {
         if (loginForm.current.checkValidity()) {
-            localStorage.removeItem('current_user')
+            localStorage.removeItem('admin_user')
             e.preventDefault()
             loginCount.current = loginCount.current + 1
             dispatch(

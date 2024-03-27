@@ -22,7 +22,7 @@ axiosClient.interceptors.request.use((req) => {
 })
 
 const getAccessToken = () => {
-    const user = JSON.parse(localStorage.getItem('current_user'))
+    const user = JSON.parse(localStorage.getItem('admin_user'))
     if (user && user.accessToken) {
         return user.accessToken
     } else {
@@ -31,7 +31,7 @@ const getAccessToken = () => {
 }
 
 const getRefreshToken = () => {
-    const user = JSON.parse(localStorage.getItem('current_user'))
+    const user = JSON.parse(localStorage.getItem('admin_user'))
     if (user && user.refreshToken) {
         return user.refreshToken
     } else return ''
@@ -65,13 +65,13 @@ const refreshAccessToken = () => {
             .post('/auth/refresh-token')
             .then((response) => {
                 // Xử lý phản hồi thành công
-                const user = JSON.parse(localStorage.getItem('current_user'))
+                const user = JSON.parse(localStorage.getItem('admin_user'))
                 const updatedUser = {
                     ...user,
                     accessToken: response.data.accessToken,
                     refreshToken: response.data.refreshToken,
                 }
-                localStorage.setItem('current_user', JSON.stringify(updatedUser))
+                localStorage.setItem('admin_user', JSON.stringify(updatedUser))
                 localStorage.setItem('validSession', 'true')
                 window.dispatchEvent(new Event('storage'))
                 resolve(response.data.accessToken)

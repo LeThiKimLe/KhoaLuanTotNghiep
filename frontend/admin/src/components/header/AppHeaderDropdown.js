@@ -37,7 +37,7 @@ const AppHeaderDropdown = () => {
     const loading = useSelector(selectLoading)
     const user = useSelector(selectUser)
     const navigate = useNavigate()
-    const [img, setImg] = useState(user.user.staff.img ? user.user.staff.img : '')
+    const [img, setImg] = useState(user.user.staff?.img ? user.user.staff.img : '')
     const handleLogout = () => {
         // dispatch(authActions.deleteUserInfor())
         dispatch(authThunk.logout())

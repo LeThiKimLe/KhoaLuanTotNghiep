@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 import authThunk from './auth.service'
 import { createSelector } from 'reselect'
 
-const login_user = JSON.parse(localStorage.getItem('current_user'))
+const login_user = JSON.parse(localStorage.getItem('driver_user'))
 
 const initialState = {
     user: login_user ? login_user : null,
@@ -28,7 +28,7 @@ const authSlice = createSlice({
             state.loggingOut = false
         },
         deleteUserInfor: (state) => {
-            localStorage.removeItem('current_user')
+            localStorage.removeItem('driver_user')
             state.isLoggedIn = false
             state.user = null
             state.loggingOut = false
@@ -64,7 +64,7 @@ const authSlice = createSlice({
                 state.message = action.payload
             })
             .addCase(authThunk.logout.fulfilled, (state) => {
-                localStorage.removeItem('current_user')
+                localStorage.removeItem('driver_user')
                 state.isLoggedIn = false
                 state.user = null
                 state.loggingOut = false
@@ -111,6 +111,7 @@ export const selectUserRoleId = createSelector([selectUser], (user) => {
         if (user.user.customer) return 1
         if (user.user.driver) return 4
         if (user.user.staff && user.user.staff.adminId) return 3
+        if (user.user.systemManager) return 5
         return 2
     }
     return 0

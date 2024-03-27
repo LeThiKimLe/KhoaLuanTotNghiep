@@ -43,7 +43,7 @@ const Login = () => {
 
     const handleLogin = (e) => {
         if (loginForm.current.checkValidity()) {
-            localStorage.removeItem('current_user')
+            localStorage.removeItem('driver_user')
             e.preventDefault()
             dispatch(
                 authThunk.login({

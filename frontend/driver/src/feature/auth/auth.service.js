@@ -4,7 +4,7 @@ import axiosClient from '../../api/axios'
 const login = createAsyncThunk('auth/login', async ({ username, password }, thunkAPI) => {
     try {
         const response = await axiosClient.post('auth/login', { username, password })
-        localStorage.setItem('current_user', JSON.stringify(response))
+        localStorage.setItem('driver_user', JSON.stringify(response))
         return response
     } catch (error) {
         const message =
@@ -67,9 +67,9 @@ const updateProfile = createAsyncThunk('profile/update', async ({ updatedInfor }
         }
 
         const response = await axiosClient.put('user/edit', formData, config)
-        const cur_user = JSON.parse(localStorage.getItem('current_user'))
+        const cur_user = JSON.parse(localStorage.getItem('driver_user'))
         cur_user.user = response
-        localStorage.setItem('current_user', JSON.stringify(cur_user))
+        localStorage.setItem('driver_user', JSON.stringify(cur_user))
         return cur_user
     } catch (error) {
         const message =

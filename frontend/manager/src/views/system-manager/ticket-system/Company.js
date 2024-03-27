@@ -24,7 +24,7 @@ import {
     CButtonGroup,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilTransfer, cilX, cilPlus } from '@coreui/icons'
+import { cilTransfer, cilX, cilPlus, cilCaretBottom } from '@coreui/icons'
 import { getLocationData } from 'src/utils/routeUtils'
 import CustomButton from 'src/views/customButton/CustomButton'
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs'
@@ -35,6 +35,7 @@ import 'react-date-range/dist/theme/default.css'
 import 'react-time-picker/dist/TimePicker.css'
 import 'react-clock/dist/Clock.css'
 import { convertTimeToInt } from 'src/utils/convertUtils'
+import { dayInWeekSum, dayInWeek } from 'src/utils/constants'
 
 const TimeBox = ({ time, removeTime, fix, turn }) => {
     const [showRemove, setShowRemove] = useState(false)
@@ -67,77 +68,146 @@ const TimeBox = ({ time, removeTime, fix, turn }) => {
 const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
     const [openTimer, setOpenTimer] = useState(false)
     const [curTime, setCurTime] = useState('07:00')
+    const [listRepeat, setListRepeat] = useState([])
+    const [openOption, setOpenOption] = useState(false)
+    const getRepeatSum = () => {
+        let sumString = ''
+        if (listRepeat.length === 7) sumString = 'Mỗi ngày'
+        else if (listRepeat.length === 0) sumString = 'Lặp lại'
+        else {
+            listRepeat.forEach((day) => {
+                sumString = sumString + dayInWeekSum[day - 2] + ', '
+            })
+            sumString = sumString.slice(0, -2)
+        }
+        return sumString
+    }
+    const changeRepeatOption = (e) => {
+        const value = parseInt(e.target.value)
+        if (listRepeat.includes(value)) {
+            setListRepeat((prev) => {
+                const newList = prev.filter((day) => day !== value)
+                return newList
+            })
+        } else {
+            setListRepeat((prev) => {
+                const newList = [...prev]
+                newList.sort((a, b) => (a < b ? -1 : 1))
+                newList.push(value)
+                return newList
+            })
+        }
+    }
+    const handleEveryDay = () => {
+        if (listRepeat.length === 7) setListRepeat([])
+        else setListRepeat([2, 3, 4, 5, 6, 7, 8])
+    }
     return (
         <CRow className="mb-3 justify-content-center">
             <CFormLabel htmlFor="maxSchedule" className="col-sm-2 col-form-label">
                 <b>{turn === 1 ? 'Lịch trình lượt đi' : 'Lịch trình lượt về'}</b>
             </CFormLabel>
             <CCol sm={5}>
-                <CCard style={{ height: '100px', overflow: 'auto' }}>
+                <CCard style={{ minHeight: '80px', maxHeight: '150px', overflow: 'auto' }}>
                     <CCardBody>
-                        {listTime.length > 0 && (
-                            <CRow
-                                style={{
-                                    height: 'fit-content',
-                                    width: '100%',
-                                }}
-                            >
-                                {listTime.map((timer, index) => (
-                                    <CCol key={index} xs="4">
-                                        <TimeBox
-                                            time={timer.time}
-                                            removeTime={removeTime}
-                                            fix={timer.fix}
-                                            turn={turn}
-                                        ></TimeBox>
-                                    </CCol>
-                                ))}
-                            </CRow>
-                        )}
+                        <CRow
+                            style={{
+                                height: 'fit-content',
+                                width: '100%',
+                                alignItems: 'center',
+                            }}
+                        >
+                            {listTime.map((timer, index) => (
+                                <CCol key={index} xs="4">
+                                    <TimeBox
+                                        time={timer.time}
+                                        removeTime={removeTime}
+                                        fix={timer.fix}
+                                        turn={turn}
+                                    ></TimeBox>
+                                </CCol>
+                            ))}
+                            <CCol xs="4">
+                                {!openTimer && (
+                                    <CButton
+                                        variant="outline"
+                                        id={turn === 1 ? 'go' : 'return'}
+                                        color="info"
+                                        onClick={() => setOpenTimer(!openTimer)}
+                                    >
+                                        <CIcon icon={cilPlus}></CIcon>
+                                    </CButton>
+                                )}
+                                {openTimer && (
+                                    <CCard
+                                        className="p-1"
+                                        style={{
+                                            width: '145px',
+                                            zIndex: 2,
+                                        }}
+                                    >
+                                        <CCardBody className="d-flex gap-1 align-items-center justify-content-center p-0">
+                                            <TimePicker
+                                                format="HH:mm"
+                                                onChange={setCurTime}
+                                                value={curTime}
+                                                clearIcon={null}
+                                                disableClock={true}
+                                            />
+                                            <CButton
+                                                id={turn === 1 ? 'add-go' : 'add-return'}
+                                                letiant="outline"
+                                                color="info"
+                                                onClick={() => {
+                                                    addTime(curTime, turn)
+                                                    setOpenTimer(false)
+                                                }}
+                                                style={{ width: 'fit-content', padding: '3px 5px' }}
+                                            >
+                                                OK
+                                            </CButton>
+                                        </CCardBody>
+                                    </CCard>
+                                )}
+                            </CCol>
+                        </CRow>
                     </CCardBody>
                 </CCard>
             </CCol>
             <CCol sm={3}>
-                <CButton
-                    id={turn === 1 ? 'go' : 'return'}
-                    color="info"
-                    onClick={() => setOpenTimer(!openTimer)}
-                >
-                    <CIcon icon={cilPlus}></CIcon>
-                    Thêm giờ
-                </CButton>
-                {openTimer && (
-                    <CCard
-                        className="mt-1"
-                        style={{
-                            width: '145px',
-                            zIndex: 2,
-                            position: 'absolute',
-                        }}
+                <div>
+                    <CButton
+                        className="w-100 d-flex gap-1 justify-content-between align-items-center"
+                        variant="outline"
+                        color="info"
+                        onClick={() => setOpenOption(!openOption)}
                     >
-                        <CCardBody>
-                            <TimePicker
-                                format="HH:mm"
-                                onChange={setCurTime}
-                                value={curTime}
-                                clearIcon={null}
-                                disableClock={true}
-                            />
-                            <CButton
-                                id={turn === 1 ? 'add-go' : 'add-return'}
-                                letiant="outline"
-                                color="info"
-                                onClick={() => addTime(curTime, turn)}
-                                style={{
-                                    width: 'fit-content',
-                                    marginTop: '10px',
-                                }}
-                            >
-                                OK
-                            </CButton>
-                        </CCardBody>
-                    </CCard>
-                )}
+                        <span>{getRepeatSum()}</span>
+                        <CIcon icon={cilCaretBottom} color="info"></CIcon>
+                    </CButton>
+                    {openOption && (
+                        <CCard className="position-absolute top-1">
+                            <CCardBody>
+                                <CFormCheck
+                                    id={0}
+                                    label="Mỗi ngày"
+                                    checked={listRepeat.length === 7}
+                                    onChange={handleEveryDay}
+                                ></CFormCheck>
+                                {dayInWeek.map((day, index) => (
+                                    <CFormCheck
+                                        key={index}
+                                        id={index + 2}
+                                        checked={listRepeat.includes(index + 2)}
+                                        value={index + 2}
+                                        label={day}
+                                        onChange={changeRepeatOption}
+                                    ></CFormCheck>
+                                ))}
+                            </CCardBody>
+                        </CCard>
+                    )}
+                </div>
             </CCol>
         </CRow>
     )
