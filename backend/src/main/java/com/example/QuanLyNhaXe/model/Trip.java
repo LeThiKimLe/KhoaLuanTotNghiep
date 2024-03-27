@@ -69,7 +69,10 @@ public class Trip {
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private BusCompany busCompany;
-	
+    
+    
+    @OneToMany(mappedBy = "trip")
+	private List<FixSchedule> fixSchedules;	
 
 	
 

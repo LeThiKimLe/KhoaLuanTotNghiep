@@ -29,12 +29,14 @@ import com.example.QuanLyNhaXe.dto.StatisticTripTicketsForYear;
 import com.example.QuanLyNhaXe.dto.StopStationDTO;
 import com.example.QuanLyNhaXe.dto.TripBusDriver;
 import com.example.QuanLyNhaXe.dto.TripDTO;
+import com.example.QuanLyNhaXe.dto.TripReponseDTO;
 import com.example.QuanLyNhaXe.dto.UserDTO;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Bus;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Route;
 import com.example.QuanLyNhaXe.model.Schedule;
@@ -45,6 +47,7 @@ import com.example.QuanLyNhaXe.model.Trip;
 import com.example.QuanLyNhaXe.model.Trip_Bus;
 import com.example.QuanLyNhaXe.model.Trip_Driver;
 import com.example.QuanLyNhaXe.model.User;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.BusRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.RouteRepository;
@@ -80,6 +83,7 @@ public class TripService {
 	private final BookingService bookingService;
 	private final JwtService jwtService;
 	private final UserRepository userRepository;
+	private final BusCompanyRepository busCompanyRepository;
 
 	public List<TripDTO> getAllTrips() {
 		List<Trip> trips = tripRepository.findAll();
@@ -247,14 +251,16 @@ public class TripService {
 				.orElseThrow(() -> new NotFoundException(Message.STATION_NOT_FOUND));
 		Station endStation = stationRepository.findById(createTrip.getEndStationId())
 				.orElseThrow(() -> new NotFoundException(Message.STATION_NOT_FOUND));
+		BusCompany busCompany=busCompanyRepository.findById(createTrip.getCompanyId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 
-		Trip trip = Trip.builder().startStation(startStation).endStation(endStation).route(route).isActive(true)
+		Trip trip = Trip.builder().startStation(startStation).endStation(endStation).route(route).price(createTrip.getPrice()).busCompany(busCompany).isActive(true)
 				.turn(true).build();
-		Trip returnTrip = Trip.builder().startStation(startStation).endStation(endStation).route(route).isActive(true)
+		Trip returnTrip = Trip.builder().startStation(startStation).endStation(endStation).price(createTrip.getPrice()).busCompany(busCompany).route(route).isActive(true)
 				.turn(false).build();
 		tripRepository.save(trip);
 		tripRepository.save(returnTrip);
-		return new ResponseMessage(Message.SUCCESS);
+		return TripReponseDTO.builder().trip(modelMapper.map(trip, TripDTO.class)).tripReturn(modelMapper.map(returnTrip, TripDTO.class)).build();
 
 	}
 
