@@ -3,6 +3,7 @@ package com.example.QuanLyNhaXe.controller;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -16,6 +17,7 @@ import com.example.QuanLyNhaXe.Request.LoginDTO;
 import com.example.QuanLyNhaXe.Request.ResetPassword;
 import com.example.QuanLyNhaXe.Request.SignupDTO;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
+import com.example.QuanLyNhaXe.service.GoogleVerifyService;
 import com.example.QuanLyNhaXe.service.TwilioService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +36,7 @@ import lombok.RequiredArgsConstructor;
 public class AuthenticationController {
 	private final AuthenticationService authenticationService;
 	private final TwilioService twilioService;
+	private final GoogleVerifyService googleVerifyService;
 
 	@PostMapping("/login")
 	public ResponseEntity<Object> login(@Valid @RequestBody LoginDTO loginDTO) {
@@ -92,6 +95,14 @@ public class AuthenticationController {
 			@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
 		return new ResponseEntity<>(authenticationService.resetPassword(password, authorization),
 				HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("/verify-google")
+	public ResponseEntity<Object> verifyAccountGoogle(@Parameter String googleToken){
+		return new ResponseEntity<>(googleVerifyService.verifyToken(googleToken),
+				HttpStatus.OK);
+	
 	}
 
 }

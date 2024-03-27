@@ -38,6 +38,9 @@ public class Account implements UserDetails{
     @Column(name = "refresh_token", nullable = true)
     private String refreshToken;
     
+    @Column(name = "oauth_id")
+    private String oauthId;
+    
     @ManyToOne
     @JoinColumn(name = "role_id",referencedColumnName = "id")
     private Role role;

@@ -25,4 +25,5 @@ public class SignupDTO {
 	@Email(message = "Email không hợp lệ")
 	private String email;
 	private Boolean gender;
+	private String oauthId;
 }

@@ -11,5 +11,6 @@ public class AccountDTO {
 	private String username;
 	private boolean isActive;
 	private String roleName;
+	private String oauthId;
 	
 }

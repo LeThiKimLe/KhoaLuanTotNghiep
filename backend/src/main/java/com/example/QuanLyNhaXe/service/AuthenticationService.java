@@ -87,6 +87,7 @@ public class AuthenticationService {
 	}
 
 	public User createUser(SignupDTO signupDTO, Integer roleId, String userName) {
+		String oauthId;
 		boolean checkExist = accountRepository.existsByUsername(userName);
 		if (checkExist) {
 			throw new ConflictException(Message.EXISTS_ACCOUNT);
@@ -94,8 +95,13 @@ public class AuthenticationService {
 		}
 		Role role = new Role();
 		role.setId(roleId);
+		if(signupDTO.getOauthId()!="") {
+			oauthId=signupDTO.getOauthId();
+		}
+		oauthId="";
 		Account account = Account.builder().username(userName).password(passwordEncoder.encode(signupDTO.getPassword()))
-				.isActive(true).role(role).build();
+				.isActive(true).role(role).oauthId(oauthId).build();
+		
 		return User.builder().name(signupDTO.getName()).email(signupDTO.getEmail()).tel(signupDTO.getTel())
 				.gender(signupDTO.getGender()).account(account).build();
 
