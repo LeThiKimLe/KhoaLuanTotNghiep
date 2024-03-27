@@ -147,12 +147,10 @@ const ListTicketHistory = ({ booking }) => {
                             <CCardHeader>{tk.seat}</CCardHeader>
                             <CCardBody>
                                 <CFormText>
-                                    <strong>
-                                        {`${tk.schedule.departTime.slice(
-                                            0,
-                                            -3,
-                                        )} - ${convertToDisplayDate(tk.schedule.departDate)}`}
-                                    </strong>
+                                    <strong>{`${tk.schedule.departTime.slice(
+                                        0,
+                                        -3,
+                                    )} - ${convertToDisplayDate(tk.schedule.departDate)}`}</strong>
                                 </CFormText>
                                 <CFormText
                                     style={{

@@ -13,13 +13,16 @@ import { persistor, store } from './store'
 import { PersistGate } from 'redux-persist/integration/react';
 import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
+import { GoogleAuthProvider } from './pages/general/login/googleAuth';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <Provider store={store}>
     <PersistGate loading={null} persistor={persistor}>
       <I18nextProvider i18n={i18n}>
+      <GoogleAuthProvider>
           <App />
+      </GoogleAuthProvider>    
       </I18nextProvider>
     </PersistGate>
   </Provider>

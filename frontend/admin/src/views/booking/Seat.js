@@ -140,11 +140,9 @@ const Seat = ({ seat, ticket, empty, isActive, chooseSeat }) => {
                             </CRow>
                             <CCardText>
                                 {ticket.booking.conductStaff ? (
-                                    <small className="text-medium-emphasis">
-                                        {`NV đặt vé: ${ticket.booking.conductStaff.nickname.slice(
-                                            3,
-                                        )}`}
-                                    </small>
+                                    <small className="text-medium-emphasis">{`NV đặt vé: ${ticket.booking.conductStaff.nickname.slice(
+                                        3,
+                                    )}`}</small>
                                 ) : (
                                     <small className="text-medium-emphasis">{`Đặt vé online`}</small>
                                 )}

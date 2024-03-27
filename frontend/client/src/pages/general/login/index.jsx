@@ -1,3 +1,4 @@
+import React from 'react'
 import styles from './styles.module.css'
 import './login.css'
 import FormInput from '../../../components/common/formInput'
@@ -17,6 +18,20 @@ import authThunk from '../../../feature/auth/auth.service'
 import { ClipLoader } from 'react-spinners';
 import { useMediaQuery } from 'react-responsive'
 import CountDownOTP from './CountDownOTP'
+import { GoogleLogin } from '@react-oauth/google';
+
+const GoogleLoginButton = () => {
+    return(
+        <GoogleLogin
+            onSuccess={credentialResponse => {
+                console.log(credentialResponse);
+            }}
+            onError={() => {
+                console.log('Login Failed');
+            }}
+        />
+    )
+  }
 
 const Login = () => {
 
@@ -403,6 +418,7 @@ const Login = () => {
                                                     <FormInput key={input.id} {...input} value={valuesLogin[input.name]} onChange={onChangeLogin}></FormInput>
                                                 ))}
                                                 <Button text="Đăng nhập" className={styles.btnLogin} ></Button>
+                                                <div className='d-flex justify-content-center'><GoogleLoginButton /></div>
                                                 <a href="#" style={{ fontSize: '15px' }} onClick={() => {setIsGetPass(true); cancelRepass()}}>Quên mật khẩu</a>
                                                 <div className={styles.subLink}> <i> Chưa có tài khoản ? </i> <a href="#" onClick={()=> setSelectedTab(1)}> Đăng ký </a> </div>
                                             </form>

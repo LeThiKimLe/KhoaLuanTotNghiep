@@ -724,9 +724,7 @@ const TicketDetail = ({ ticket, visible, handleShow }) => {
                                                     </CButton>
                                                 </CPopover>
                                             </CTableDataCell>
-                                            <CTableDataCell>
-                                                {`KH. ${ticket.booking.name}`}
-                                            </CTableDataCell>
+                                            <CTableDataCell>{`KH. ${ticket.booking.name}`}</CTableDataCell>
                                         </CTableRow>
                                     )}
                                     {ticket.histories.map((his) => (

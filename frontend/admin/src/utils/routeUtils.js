@@ -91,3 +91,32 @@ export const getDesandDep = (listRoute, depName, desName) => {
     const destination = desOptions.filter((option) => option.label === desName)[0]
     return { departure, destination }
 }
+
+export const getLocationData = (listOfficialRroute) => {
+    const listLocation = []
+    let tempDep = -1
+    let tempDes = -1
+    listOfficialRroute.forEach((route) => {
+        tempDes = listLocation.findIndex((location) => location.name === route.departure)
+        if (tempDes === -1) {
+            listLocation.push({
+                name: route.departure,
+                listStation: [route.startStation],
+            })
+        } else {
+            if (listLocation[tempDes].listStation.includes(route.startStation) === false)
+                listLocation[tempDes].listStation.push(route.startStation)
+        }
+        tempDep = listLocation.findIndex((location) => location.name === route.destination)
+        if (tempDep === -1) {
+            listLocation.push({
+                name: route.destination,
+                listStation: [route.endStation],
+            })
+        } else {
+            if (listLocation[tempDep].listStation.includes(route.endStation) === false)
+                listLocation[tempDep].listStation.push(route.endStation)
+        }
+    })
+    return listLocation
+}

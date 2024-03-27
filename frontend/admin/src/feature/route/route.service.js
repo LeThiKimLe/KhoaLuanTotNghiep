@@ -14,6 +14,19 @@ const getRoute = createAsyncThunk('route/get', async (_, thunkAPI) => {
     }
 })
 
+const getOfficialRoute = createAsyncThunk('route/get/data', async (_, thunkAPI) => {
+    try {
+        const listRoute = await axiosClient.get('routes/data')
+        return listRoute
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const addRoute = createAsyncThunk('admin/routes/add', async ({ routeInfor }, thunkAPI) => {
     try {
         const route = await axiosClient.post('admin/routes', {
@@ -94,5 +107,5 @@ const getRouteParents = createAsyncThunk(
     },
 )
 
-const routeThunk = { getRoute, addRoute, editRoute, activeRoute, getRouteParents }
+const routeThunk = { getRoute, addRoute, editRoute, activeRoute, getRouteParents, getOfficialRoute }
 export default routeThunk
