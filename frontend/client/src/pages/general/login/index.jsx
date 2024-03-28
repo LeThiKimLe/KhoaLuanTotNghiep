@@ -20,6 +20,7 @@ import { useMediaQuery } from 'react-responsive'
 import CountDownOTP from './CountDownOTP'
 import { GoogleLogin } from '@react-oauth/google';
 import { set } from 'date-fns'
+import { use } from 'i18next'
 
 const GoogleLoginButton = ({authenGoogleToken}) => {
     const dispatch = useDispatch();
@@ -216,8 +217,10 @@ const Login = () => {
     const dispatch = useDispatch();
 
     const handleLogin = (e) => {
-        e.preventDefault();
-        dispatch(authThunk.login({ username: valuesLogin.username, password: valuesLogin.password }))
+        if (e) e.preventDefault();
+        const usernameInfo = valuesLogin.username !== "" ? valuesLogin.username : valuesSignup.telnum
+        const passwordInfo = valuesLogin.password !== "" ? valuesLogin.password : valuesSignup.password
+        dispatch(authThunk.login({ username: usernameInfo, password: passwordInfo }))
             .unwrap()
             .then(() => {
                 dispatch(authActions.reset());
@@ -227,11 +230,13 @@ const Login = () => {
     }
 
     const authenGoogleToken = (credentialResponse) => {
+        cancelSignup()
         dispatch(authThunk.authenGoogleToken(credentialResponse))
             .unwrap()
             .then((res) => {
                 if (res.accessToken) {
                     localStorage.setItem("current_user", JSON.stringify(res))
+                    dispatch(authActions.confirmLogin(res))
                     navigate('/')
                 } else {
                     setSelectedTab(1)
@@ -262,8 +267,13 @@ const Login = () => {
         localStorage.setItem('signUpInfor', JSON.stringify(valuesSignup));
         if (valuesSignup.telnum === "" && valuesSignup.process !== 0) {
             setValuesSignup(preInfo => ({ ...preInfo, process: 0 }))
-        }
+        } 
     }, [valuesSignup])
+
+    useEffect(() => {
+        if (!(valuesSignup.process == 2 || valuesGetNewPwd.process === 2 ))
+            localStorage.removeItem('temp_access_token'); 
+    }, [valuesGetNewPwd, valuesSignup])
 
     const onChangeLogin = (e) => {
         setValuesLogin({ ...valuesLogin, [e.target.name]: e.target.value })
@@ -323,7 +333,11 @@ const Login = () => {
             .then(() => {
                 if (!valuesSignup.oauthId || valuesSignup.oauthId == ""){
                     cancelSignup()
-                    setSelectedTab(0)
+                    setValuesLogin({
+                        username: valuesSignup.telnum,
+                        password: valuesSignup.password
+                    })
+                    setTimeout(() => handleLogin())
                 } else {
                     authenGoogleToken(googleToken)
                 }

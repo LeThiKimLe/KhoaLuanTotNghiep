@@ -97,6 +97,11 @@ const refreshAccessToken = () => {
                 localStorage.setItem('validSession', 'false')
                 window.dispatchEvent(new Event('storage'))
                 console.error(error)
+                if (error.response && error.response.status === 400) {
+                    localStorage.removeItem('current_user')
+                    localStorage.removeItem('temp_access_token')
+                    window.location.href = '/login'
+                }
                 reject(error)
             })
     })

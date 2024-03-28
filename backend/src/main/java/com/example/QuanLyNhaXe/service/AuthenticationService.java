@@ -95,11 +95,10 @@ public class AuthenticationService {
 		}
 		Role role = new Role();
 		role.setId(roleId);
-		if(signupDTO.getOauthId().equals("")) {
+		if(!signupDTO.getOauthId().equals("")) {
 			oauthId=signupDTO.getOauthId();
 		}else {
 			oauthId="";
-			
 		}
 		
 		Account account = Account.builder().username(userName).password(passwordEncoder.encode(signupDTO.getPassword()))

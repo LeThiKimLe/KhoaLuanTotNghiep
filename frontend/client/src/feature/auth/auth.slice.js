@@ -36,7 +36,11 @@ const authSlice = createSlice({
         },
         saveGoogleToken: (state, action) => {
             state.googleToken = action.payload
-        }
+        },
+        confirmLogin: (state, action) => {
+            state.isLoggedIn = true
+            state.user = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -48,6 +52,7 @@ const authSlice = createSlice({
                 state.isLoggedIn = true
                 state.user = action.payload
                 localStorage.setItem('validSession', 'true');
+                localStorage.removeItem('temp_access_token');
             })
             .addCase(authThunk.login.rejected, (state, action) => {
                 state.error = true
@@ -60,12 +65,14 @@ const authSlice = createSlice({
             .addCase(authThunk.register.fulfilled, (state, action) => {
                 state.loading = false
                 state.message = action.payload.message || "Đăng ký thành công. Hãy đăng nhập lại"
+                localStorage.removeItem('temp_access_token');
                 state.error = false
             })
             .addCase(authThunk.register.rejected, (state, action) => {
                 state.error = true
                 state.loading = false
                 state.message = action.payload
+                localStorage.removeItem('temp_access_token');
             })
             .addCase(authThunk.logout.fulfilled, (state) => {
                 localStorage.removeItem("current_user")
@@ -143,6 +150,13 @@ const authSlice = createSlice({
                 state.error = true
                 state.loading = false
                 state.message = action.payload
+            })
+            .addCase(authThunk.authenGoogleToken.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(authThunk.authenGoogleToken.fulfilled, (state) => {
+                state.loading = false
+                localStorage.setItem('validSession', 'true');
             })
 
     }
