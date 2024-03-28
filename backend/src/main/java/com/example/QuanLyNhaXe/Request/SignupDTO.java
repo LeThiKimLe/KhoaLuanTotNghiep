@@ -17,7 +17,7 @@ public class SignupDTO {
 	@NotEmpty(message = "Số điện thoại không được để trống")
 	private String tel;
 	@NotEmpty(message = "Mật khẩu không được để trống")
-	@Size(min = 6, max = 20, message = "Mật khẩu phải từ 6 đến 20 ký tự")
+	@Size(min = 6, max = 100, message = "Mật khẩu phải từ 6 đến 100 ký tự")
 	private String password;
 	@NotEmpty(message = "Tên không được để trống")
 	private String name;

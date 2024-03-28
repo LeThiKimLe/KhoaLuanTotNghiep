@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.ChangePasswordDTO;
+import com.example.QuanLyNhaXe.Request.GoogleSignInDTO;
 import com.example.QuanLyNhaXe.Request.LoginDTO;
 import com.example.QuanLyNhaXe.Request.ResetPassword;
 import com.example.QuanLyNhaXe.Request.SignupDTO;
@@ -97,12 +98,10 @@ public class AuthenticationController {
 				HttpStatus.OK);
 	}
 	
-	
-	@GetMapping("/verify-google")
-	public ResponseEntity<Object> verifyAccountGoogle(@Parameter String googleToken){
-		return new ResponseEntity<>(googleVerifyService.verifyToken(googleToken),
+	@PostMapping("/verify-google")
+	public ResponseEntity<Object> verifyAccountGoogle(@RequestBody GoogleSignInDTO googleToken){
+		return new ResponseEntity<>(googleVerifyService.verifyToken(googleToken.getGoogleToken()),
 				HttpStatus.OK);
-	
 	}
 
 }

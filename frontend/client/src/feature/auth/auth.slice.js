@@ -11,6 +11,7 @@ const initialState = {
     loading: false,
     loggingOut: false,
     otpSessionTime: null,
+    googleToken: "",
 }
 
 const authSlice = createSlice({
@@ -32,6 +33,9 @@ const authSlice = createSlice({
             state.isLoggedIn = false
             state.user = null
             state.loggingOut = false
+        },
+        saveGoogleToken: (state, action) => {
+            state.googleToken = action.payload
         }
     },
     extraReducers: (builder) => {
@@ -98,7 +102,6 @@ const authSlice = createSlice({
                 state.error = true
                 state.loading = false
                 state.message = action.payload
-                localStorage.removeItem('temp_access_token');
             })
             .addCase(authThunk.updateProfile.pending, (state) => {
                 state.loading = true
@@ -152,6 +155,7 @@ export const selectMessage = (state) => state.auth.message
 export const selectError = (state) => state.auth.error
 export const selectLogout = (state) => state.auth.loggingOut
 export const selectUser = (state) => state.auth.user
+export const selectGoogleToken = (state) => state.auth.googleToken
 export const selectUserRoleId = (state) => {
     if (state.auth.user && state.auth.user.user)
     {

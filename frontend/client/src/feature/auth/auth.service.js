@@ -30,9 +30,9 @@ const logout = createAsyncThunk('auth/logout', async (_,thunkAPI) => {
         return thunkAPI.rejectWithValue(message);
     }
 })
-const register = createAsyncThunk('auth/signup', async({tel, name, email, password}, thunkAPI) => {
+const register = createAsyncThunk('auth/signup', async({tel, name, email, password, oauthId}, thunkAPI) => {
     try{
-        const response = await axiosClient.post('auth/signup', {tel, name, email, password, gender:true})
+        const response = await axiosClient.post('auth/signup', {tel, name, email, password, gender:true, oauthId: oauthId})
         return response
     }
     catch (error){
@@ -150,6 +150,22 @@ const changePassword = createAsyncThunk('auth/password-change', async({oldPasswo
     }
 })
 
+const authenGoogleToken = createAsyncThunk('auth/authen-google', async(tokenId, thunkAPI) => {
+    try{
+        const response = await axiosClient.post('auth/verify-google', {
+            googleToken: tokenId
+        })
+        return response
+    }
+    catch(error){
+        const message = 'Đăng nhập thất bại' ||
+        (error.response && error.response.data && error.response.data.message) ||
+        error.message ||
+        error.toString();
+        return thunkAPI.rejectWithValue(message);
+    }
+})
+
 const authThunk = {
     register,
     login,
@@ -159,6 +175,7 @@ const authThunk = {
     updateProfile,
     changePassword,
     resetPass,
+    authenGoogleToken,
 }
 
 export default authThunk

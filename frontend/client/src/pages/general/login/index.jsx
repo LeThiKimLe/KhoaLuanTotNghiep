@@ -12,19 +12,22 @@ import Message from "../../../components/message"
 import { useNavigate } from 'react-router-dom'
 import Button, { OptionButton } from '../../../components/common/button'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectLoading, selectMessage, selectError } from '../../../feature/auth/auth.slice'
+import { selectLoading, selectMessage, selectError, selectGoogleToken } from '../../../feature/auth/auth.slice'
 import { authActions } from '../../../feature/auth/auth.slice'
 import authThunk from '../../../feature/auth/auth.service'
 import { ClipLoader } from 'react-spinners';
 import { useMediaQuery } from 'react-responsive'
 import CountDownOTP from './CountDownOTP'
 import { GoogleLogin } from '@react-oauth/google';
+import { set } from 'date-fns'
 
-const GoogleLoginButton = () => {
+const GoogleLoginButton = ({authenGoogleToken}) => {
+    const dispatch = useDispatch();
     return(
         <GoogleLogin
             onSuccess={credentialResponse => {
-                console.log(credentialResponse);
+                dispatch(authActions.saveGoogleToken(credentialResponse.credential))
+                authenGoogleToken(credentialResponse.credential);
             }}
             onError={() => {
                 console.log('Login Failed');
@@ -41,7 +44,7 @@ const Login = () => {
     const error = useSelector(selectError)
     const [showCountDown, setShowCountDown] = useState(false)
     const [showTimeOff, setShowTimeOff] = useState(false)
-
+    const googleToken = useSelector(selectGoogleToken)
     const [valuesLogin, setValuesLogin] = useState({
         username: "",
         password: ""
@@ -67,6 +70,7 @@ const Login = () => {
         name: "",
         email: "",
         otp: "",
+        oauthId: "",
         process: 0
     })
 
@@ -222,6 +226,31 @@ const Login = () => {
             .catch((error) => {})
     }
 
+    const authenGoogleToken = (credentialResponse) => {
+        dispatch(authThunk.authenGoogleToken(credentialResponse))
+            .unwrap()
+            .then((res) => {
+                if (res.accessToken) {
+                    localStorage.setItem("current_user", JSON.stringify(res))
+                    navigate('/')
+                } else {
+                    setSelectedTab(1)
+                    setValuesSignup(preInfor => ({
+                        ...preInfor,
+                        email: res.email,
+                        name: res.name,
+                        oauthId: res.account?.oauthId,
+                        password: res.email,
+                    }))
+                }
+            })
+            .catch((error) => {})
+    }
+
+    const removeSignUpInfo = () => {
+        localStorage.removeItem('signUpInfor')
+    }
+
     useEffect(() => {
         const signUpInfor = localStorage.getItem('signUpInfor')
         if (signUpInfor) {
@@ -231,6 +260,9 @@ const Login = () => {
 
     useEffect(() => {
         localStorage.setItem('signUpInfor', JSON.stringify(valuesSignup));
+        if (valuesSignup.telnum === "" && valuesSignup.process !== 0) {
+            setValuesSignup(preInfo => ({ ...preInfo, process: 0 }))
+        }
     }, [valuesSignup])
 
     const onChangeLogin = (e) => {
@@ -265,8 +297,12 @@ const Login = () => {
         dispatch(authThunk.validateOTP({telno: valuesSignup.telnum, otp:valuesSignup.otp}))
             .unwrap()
             .then(() => {
-                setValuesSignup({ ...valuesSignup, process: 2 })
-                dispatch(authActions.reset())
+                if (!valuesSignup.oauthId || valuesSignup.oauthId == ""){
+                    setValuesSignup({ ...valuesSignup, process: 2 })
+                    dispatch(authActions.reset())
+                } else {
+                    handleSignUp()
+                }
             })
             .catch((error) => {
                 console.log(error)
@@ -274,17 +310,24 @@ const Login = () => {
     }
 
     const handleSignUp = (e) => {
-        e.preventDefault()
+        if (e)
+            e.preventDefault()
         dispatch(authThunk.register({
             tel: valuesSignup.telnum,
             name: valuesSignup.name,
             email: valuesSignup.email,
-            password: valuesSignup.password
+            password: valuesSignup.password,
+            oauthId: valuesSignup.oauthId
         }))
         .unwrap()
             .then(() => {
-                cancelSignup()
-                setSelectedTab(0)
+                if (!valuesSignup.oauthId || valuesSignup.oauthId == ""){
+                    cancelSignup()
+                    setSelectedTab(0)
+                } else {
+                    authenGoogleToken(googleToken)
+                }
+                removeSignUpInfo()
             })
             .catch((error) => {
                 console.log(error)
@@ -299,6 +342,7 @@ const Login = () => {
             name: "",
             email: "",
             otp: "",
+            oauthId: "",
             process: 0
         }
         );
@@ -306,7 +350,7 @@ const Login = () => {
 
     const cancelForget = () => {
         setIsGetPass(false)
-        setValuesSignup({
+        setValuesGetNewPwd({
             telnum: "",
             password: "",
             repass: "",
@@ -338,7 +382,7 @@ const Login = () => {
         e.preventDefault();
         dispatch(authThunk.validateOTP({telno: valuesGetNewPwd.telnum, otp: valuesGetNewPwd.otp}))
             .unwrap()
-            .then(() => {
+            .then((res) => {
                 setValuesGetNewPwd({ ...valuesGetNewPwd, process: 2 })
                 dispatch(authActions.reset())
             })
@@ -418,7 +462,7 @@ const Login = () => {
                                                     <FormInput key={input.id} {...input} value={valuesLogin[input.name]} onChange={onChangeLogin}></FormInput>
                                                 ))}
                                                 <Button text="Đăng nhập" className={styles.btnLogin} ></Button>
-                                                <div className='d-flex justify-content-center'><GoogleLoginButton /></div>
+                                                <div className='d-flex justify-content-center'><GoogleLoginButton  authenGoogleToken={authenGoogleToken}/></div>
                                                 <a href="#" style={{ fontSize: '15px' }} onClick={() => {setIsGetPass(true); cancelRepass()}}>Quên mật khẩu</a>
                                                 <div className={styles.subLink}> <i> Chưa có tài khoản ? </i> <a href="#" onClick={()=> setSelectedTab(1)}> Đăng ký </a> </div>
                                             </form>
