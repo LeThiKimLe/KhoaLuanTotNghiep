@@ -39,6 +39,15 @@ services:
     volumes:
       - webdata-admin:/build
 
+  driver-frontend:
+    build:
+      context: ./frontend/driver
+      dockerfile: Dockerfile
+    depends_on:
+      - backend
+    volumes:
+      - webdata-driver:/build
+
   manager-frontend:
     build:
       context: ./frontend/manager
@@ -51,7 +60,7 @@ services:
   web-server:
     image: nginx:1.25.4-alpine
     ports:
-      - 10041:80
+      - 80:80
       - 443:443
     volumes:
       - ./nginx/conf/nginx.conf:/etc/nginx/conf.d/nginx.conf

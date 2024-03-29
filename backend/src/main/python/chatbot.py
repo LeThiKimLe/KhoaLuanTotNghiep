@@ -10,6 +10,7 @@ os.environ["OPENAI_API_KEY"] = "sk-UKxyUip2iDu6Do1L50q3T3BlbkFJB47kRvvR9h6rclsvR
 
 class Chatbot:
     def __init__(self):
+        print('Start chatbot')
         if os.path.exists("./storage") and len(os.listdir("./storage")) != 0:
             # rebuild storage context
             storage_context = StorageContext.from_defaults(persist_dir="./storage")

@@ -36,9 +36,9 @@ COPY src/main/python/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 # Copy and run the Python application
-WORKDIR /app/src/main/python
-CMD ["sh", "-c", "source /venv/bin/activate && python chatbot.py"]
+# WORKDIR /app/src/main/python
+# CMD ["sh", "-c", "source /venv/bin/activate && python /app/src/main/python/chatbot.py"]
 
 # Execute the application
-WORKDIR /app
+# WORKDIR /app
 ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.QuanLyNhaXe.QuanLyNhaXeApplication"]
