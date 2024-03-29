@@ -19,8 +19,6 @@ import { ClipLoader } from 'react-spinners';
 import { useMediaQuery } from 'react-responsive'
 import CountDownOTP from './CountDownOTP'
 import { GoogleLogin } from '@react-oauth/google';
-import { set } from 'date-fns'
-import { use } from 'i18next'
 
 const GoogleLoginButton = ({authenGoogleToken}) => {
     const dispatch = useDispatch();

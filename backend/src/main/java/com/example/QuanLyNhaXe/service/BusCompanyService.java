@@ -17,9 +17,11 @@ import com.example.QuanLyNhaXe.Request.CreateBusCompany;
 import com.example.QuanLyNhaXe.Request.EditBusCompany;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.dto.BusCompanyDTO;
+import com.example.QuanLyNhaXe.dto.BusDTO;
 import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Admin;
+import com.example.QuanLyNhaXe.model.Bus;
 import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Route;
 import com.example.QuanLyNhaXe.model.RouteAssign;
@@ -28,7 +30,6 @@ import com.example.QuanLyNhaXe.repository.RouteAssignRepository;
 import com.example.QuanLyNhaXe.repository.RouteRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
-
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -41,6 +42,14 @@ public class BusCompanyService {
 	private final UserService userService;
 	private final RouteAssignRepository routeAssignRepository;
 	private final RouteRepository routeRepository;
+
+	public Object getAllBusCompany() {
+		List<BusCompany> busCompanyLists = busCompanyRepository.findAll();
+		if (busCompanyLists.isEmpty()) {
+			throw new NotFoundException(Message.BUSTYPE_NOT_FOUND);
+		}
+		return busCompanyLists.stream().map(busCompanyList -> modelMapper.map(busCompanyList, BusCompanyDTO.class)).toList();
+	}
 
 	@Transactional
 	public Object createBusCompany(CreateBusCompany createBusCompany) {
@@ -82,8 +91,7 @@ public class BusCompanyService {
 		}
 		
 		return modelMapper.map(busCompany, BusCompanyDTO.class);
-		
-		
+	
 	}
 	
 	@Transactional
@@ -113,9 +121,5 @@ public class BusCompanyService {
 		
 		return new ResponseMessage(Message.UPDATE_SUCCESS);
 		
-		
 	}
-	
-	
-	
 }

@@ -17,6 +17,9 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 @RestController
 @RequestMapping("/manager/company")
@@ -26,6 +29,11 @@ import lombok.RequiredArgsConstructor;
 public class BusCompanyController {
 
 	private final BusCompanyService busCompanyService;
+
+	@GetMapping
+	public ResponseEntity<Object> getAllBusCompany() {
+		return new ResponseEntity<>(busCompanyService.getAllBusCompany(), HttpStatus.CREATED);
+	}
 
 	@PostMapping
 	public ResponseEntity<Object> createBusCompany(@Valid @RequestBody CreateBusCompany createBusCompany) {
@@ -42,5 +50,4 @@ public class BusCompanyController {
 		return new ResponseEntity<>(busCompanyService.routeAssign(assignRoute), HttpStatus.CREATED);
 	}
 	
-
 }

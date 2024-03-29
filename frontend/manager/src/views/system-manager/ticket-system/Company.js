@@ -22,6 +22,13 @@ import {
     CFormSelect,
     CModalFooter,
     CButtonGroup,
+    CCollapse,
+    CTable,
+    CTableHead,
+    CTableBody,
+    CTableHeaderCell,
+    CTableDataCell,
+    CTableRow,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilTransfer, cilX, cilPlus, cilCaretBottom } from '@coreui/icons'
@@ -36,6 +43,7 @@ import 'react-time-picker/dist/TimePicker.css'
 import 'react-clock/dist/Clock.css'
 import { convertTimeToInt } from 'src/utils/convertUtils'
 import { dayInWeekSum, dayInWeek } from 'src/utils/constants'
+import { selectListRequest } from 'src/feature/bus-company/busCompany.slice'
 
 const TimeBox = ({ time, removeTime, fix, turn }) => {
     const [showRemove, setShowRemove] = useState(false)
@@ -521,10 +529,10 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
 const OpenForm = ({ visible, setVisible, preInfo }) => {
     const listOfficialRoute = useSelector(selectListOfficialRoute)
     const [companyInfo, setCompanyInfo] = useState({
-        firmName: preInfo?.firmName,
-        representName: preInfo?.representName,
+        firmName: preInfo?.businessName,
+        representName: preInfo?.name,
         email: preInfo?.email,
-        telephone: preInfo?.telephone,
+        telephone: preInfo?.tel,
         businessLicense: preInfo?.businessLicense,
     })
     const [error, setError] = useState('')
@@ -857,6 +865,9 @@ const Company = () => {
     const dispatch = useDispatch()
     const listRoute = useSelector(selectListOfficialRoute)
     const [openAddForm, setOpenAddForm] = useState(false)
+    const [openListRequest, setOpenListRequest] = useState(false)
+    const listRequest = useSelector(selectListRequest)
+    const [currentRequest, setCurrentRequest] = useState(null)
     const [preInfo, setPreInfo] = useState({
         firmName: 'Xe Nguyễn Hưng',
         representName: 'Nguyễn Hưng',
@@ -875,8 +886,56 @@ const Company = () => {
         <div>
             <CButton onClick={() => setOpenAddForm(true)}>Thêm nhà xe</CButton>
             {openAddForm && (
-                <OpenForm visible={openAddForm} setVisible={setOpenAddForm} preInfo={preInfo} />
+                <OpenForm
+                    visible={openAddForm}
+                    setVisible={setOpenAddForm}
+                    preInfo={currentRequest}
+                />
             )}
+            <CButton variant="outline" onClick={() => setOpenListRequest(!openListRequest)}>
+                Danh sách yêu cầu mở bán vé
+            </CButton>
+            <CCollapse visible={openListRequest} className="p-2">
+                <CTable>
+                    <CTableHead>
+                        <CTableRow>
+                            <CTableHeaderCell scope="col">#</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Tên nhà xe</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Chủ nhà xe</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Số điện thoại</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+                            <CTableHeaderCell scope="col">Hành động</CTableHeaderCell>
+                        </CTableRow>
+                    </CTableHead>
+                    <CTableBody>
+                        {listRequest.map((item, index) => (
+                            <CTableRow key={index}>
+                                <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                                <CTableDataCell>{item.businessName}</CTableDataCell>
+                                <CTableDataCell>{item.name}</CTableDataCell>
+                                <CTableDataCell>{item.tel}</CTableDataCell>
+                                <CTableDataCell>{item.email}</CTableDataCell>
+                                <CTableDataCell>
+                                    <CButton
+                                        variant="outline"
+                                        color="success"
+                                        onClick={() => {
+                                            setCurrentRequest(item)
+                                            setOpenAddForm(true)
+                                        }}
+                                    >
+                                        Hoàn tất hồ sơ
+                                    </CButton>
+                                    <span>{` / `}</span>
+                                    <CButton variant="outline" color="danger">
+                                        Xóa yêu cầu
+                                    </CButton>
+                                </CTableDataCell>
+                            </CTableRow>
+                        ))}
+                    </CTableBody>
+                </CTable>
+            </CCollapse>
         </div>
     )
 }

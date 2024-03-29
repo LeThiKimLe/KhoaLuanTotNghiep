@@ -30,9 +30,10 @@ import CustomLink from 'src/views/base/navlink/CustomNavLink'
 import CustomNotice from 'src/views/notifications/customNotice/CustomNotice'
 import { useDispatch } from 'react-redux'
 import authThunk from 'src/feature/auth/auth.service'
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { authActions, selectLoading, selectUser } from 'src/feature/auth/auth.slice'
 import { useSelector } from 'react-redux'
+
 const AppHeaderDropdown = () => {
     const dispatch = useDispatch()
     const [openLogoutForm, setOpenLogoutForm] = useState(false)

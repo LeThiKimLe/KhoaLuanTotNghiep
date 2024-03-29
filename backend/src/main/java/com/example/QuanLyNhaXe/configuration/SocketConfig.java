@@ -9,18 +9,20 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
-import com.example.QuanLyNhaXe.service.SocketService;
+import com.example.QuanLyNhaXe.service.ManageNotifyService;
+import com.example.QuanLyNhaXe.service.ChatService;
 import com.example.QuanLyNhaXe.util.AuthHandshakeInterceptor;
 
 @Configuration
 @EnableWebSocket
-public class WebSocketConfig implements WebSocketConfigurer{
+public class SocketConfig implements WebSocketConfigurer{
     
     @Autowired
     private AuthHandshakeInterceptor authHandshakeInterceptor;
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new SocketService(), "/socket").addInterceptors(authHandshakeInterceptor).setAllowedOrigins("*");
+        registry.addHandler(new ChatService(), "/socket").addInterceptors(authHandshakeInterceptor).setAllowedOrigins("*");
+        registry.addHandler(new ManageNotifyService(), "/notice").setAllowedOrigins("*");
     }
 }

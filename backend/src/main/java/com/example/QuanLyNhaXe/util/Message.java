@@ -44,8 +44,6 @@ public class Message {
     public static final String REVIEW_NOT_FOUND = "Không tìm thấy đánh giá nào";
     public static final String COMPANY_NOT_FOUND = "Không tìm thấy nhà xe";
     public static final String FIXEDSCHEDULE_NOT_FOUND = "Không tìm thấy nhà xe";
-   
-    
-    
+    public static final String REGISTER_INFO_SENT = "Đã gửi thông tin đăng ký thành công";
     
 }

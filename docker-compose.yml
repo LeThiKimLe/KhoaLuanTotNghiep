@@ -5,7 +5,7 @@ services:
       - MYSQL_ROOT_PASSWORD=Conchosu@1
     volumes:
       - ./data:/var/lib/mysql
-      - ./backupfile.sql:/docker-entrypoint-initdb.d/backup.sql
+      - ./backupv2.sql:/docker-entrypoint-initdb.d/backup.sql
     command: --init-file /docker-entrypoint-initdb.d/backup.sql
 
   backend:
@@ -39,14 +39,14 @@ services:
     volumes:
       - webdata-admin:/build
 
-  driver-frontend:
+  manager-frontend:
     build:
-      context: ./frontend/driver
+      context: ./frontend/manager
       dockerfile: Dockerfile
     depends_on:
       - backend
     volumes:
-      - webdata-driver:/build
+      - webdata-manager:/build
 
   web-server:
     image: nginx:1.25.4-alpine
@@ -59,13 +59,16 @@ services:
       - webdata-client:/usr/share/nginx/html/client
       - webdata-admin:/usr/share/nginx/html/admin
       - webdata-driver:/usr/share/nginx/html/driver
+      - webdata-manager:/usr/share/nginx/html/manager
     depends_on:
       - client-frontend
       - admin-frontend
       - driver-frontend
+      - manager-frontend
 
 volumes:
   mydata:
   webdata-client:
   webdata-admin:
   webdata-driver:
+  webdata-manager:

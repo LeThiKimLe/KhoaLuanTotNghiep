@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import styles from './styles.module.css'
 import Navbar from '../../../components/navbar'
 import Header from '../../../components/header'
 import SectionTitle from '../../../components/common/sectionTitle'
 import Footer from '../../../components/footer'
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import FormInput from '../../../components/common/formInput';
 import Button from '../../../components/common/button';
 import joinImg from '../../../assets/join.png'
@@ -13,6 +13,10 @@ import assistImg from '../../../assets/assist.png'
 import bussinessImg from '../../../assets/business-insights.png'
 import exclusiveImg from '../../../assets/exclusive-1.png'
 import worthinessImg from '../../../assets/worthiness.png'
+import { useDispatch } from 'react-redux';
+import busCompanyThunk from '../../../feature/bus-company/busCompany.service';
+import SessionTimeoutDialog from './TimeoutDialog/SessionTimeoutDialog';
+import { useNavigate } from 'react-router-dom';
 
 const StepBox = ({ index, title, content }) => {
     return (
@@ -39,7 +43,11 @@ const TicketSignup = () => {
         const formDataSection = document.getElementById('form-data');
         formDataSection.scrollIntoView({ behavior: 'smooth', block: 'center'});
     };
-
+    const navigate = useNavigate()
+    const [showTimeoutDialog, setShowTimeoutDialog] = useState(false)
+    const dispatch = useDispatch()
+    const formRegister = useRef(null)
+    const [loading, setLoading] = useState(false)
     const [companyInfo, setCompanyInfo] = useState({
         firmName: "",
         representName: "",
@@ -47,7 +55,6 @@ const TicketSignup = () => {
         telephone: "",
         businessLicense: "",
     })
-
     const companyInput = [
         {
             id: 1,
@@ -100,12 +107,26 @@ const TicketSignup = () => {
             required: true,
         }
     ]
-
     const onChangeCompanyInfo = (e) => {
         setCompanyInfo({ ...companyInfo, [e.target.name]: e.target.value })
     }
-
-
+    const handleRegister = (e) => {
+        e.preventDefault();
+        setLoading(true)
+        dispatch(busCompanyThunk.registerBusCompany(companyInfo))
+        .unwrap()
+        .then((res) => {
+            setShowTimeoutDialog(true)
+            setLoading(false)
+        })
+        .catch((error) => {
+            console.log(error)
+            setLoading(false)
+        })
+    }
+    const returnToHome = () => {
+        navigate('/')
+    }
     return (
         <div >
             <Navbar></Navbar>
@@ -124,7 +145,7 @@ const TicketSignup = () => {
                             <div className='col-6'>
                                 <div id="form-data">
                                     <h2>Hãy trở thành thành viên của nền tảng bán vé xe khách trực tuyến của chúng tôi</h2>
-                                    <form>
+                                    <form ref={formRegister} onSubmit={handleRegister}>
                                         {companyInput.map((input) => (
                                             <FormInput
                                                 key={input.id} {...input}
@@ -133,7 +154,7 @@ const TicketSignup = () => {
                                             </FormInput>
                                         ))}
                                         <br></br>
-                                        <Button text="Đăng ký mở bán"></Button>
+                                        <Button text="Đăng ký mở bán" loading={loading}></Button>
                                     </form>
                                 </div>
                             </div>
@@ -229,6 +250,9 @@ const TicketSignup = () => {
                     </div>
                 </div>
             </div>
+            {
+                showTimeoutDialog && <SessionTimeoutDialog onBack={returnToHome} timerout={15}></SessionTimeoutDialog>
+            }
         </div>
     );
 };

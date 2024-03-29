@@ -21,6 +21,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.Request.CreateBookingDTO;
+import com.example.QuanLyNhaXe.Request.CreateBusCompany;
 import com.example.QuanLyNhaXe.dto.BookingDTO;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.model.Booking;
@@ -179,6 +180,20 @@ public class EmailService {
 	          
 	            + "</body></html>";
 		sendEmail(booking.getEmail(), subject, emailContent);
+	}
+
+	public void sendRegisterDataForBusCompany(CreateBusCompany createBusCompany) {
+		String subject = "Đăng ký hợp tác bán vé";
+		String emailContent = "<html><body>" + "<p>Xin Chào, <strong>" + createBusCompany.getBusinessName() + "</strong></p><br>"
+				+ "<p>Cảm ơn bạn đã quan tâm đến dịch vụ bán vé của chúng tôi. Chúng tôi sẽ liên hệ với bạn trong thời gian sớm nhất.</p><br>"
+				+ "<p>Thông tin đăng ký của bạn: </p>"
+				+ "<p>Tên doanh nghiệp: " + createBusCompany.getBusinessName() + "</p>"
+				+ "<p>Địa chỉ: " + createBusCompany.getAddress() + "</p>"
+				+ "<p>Số điện thoại: " + createBusCompany.getTel() + "</p>"
+				+ "<p>Email: " + createBusCompany.getEmail() + "</p>"
+				+ "<p>Mã số thuế: " + createBusCompany.getBusinessLicense() + "</p>"
+				+ "</body></html>";
+		sendEmail(createBusCompany.getEmail(), subject, emailContent);
 	}
 
 }

@@ -26,5 +26,19 @@ COPY --from=build ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 
+# Install Python and create a virtual environment
+RUN apk add --no-cache python3 && \
+    python3 -m venv /venv
+
+# Activate the virtual environment and install dependencies
+ENV PATH="/venv/bin:$PATH"
+COPY src/main/python/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy and run the Python application
+WORKDIR /app/src/main/python
+CMD ["sh", "-c", "source /venv/bin/activate && python chatbot.py"]
+
 # Execute the application
+WORKDIR /app
 ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.QuanLyNhaXe.QuanLyNhaXeApplication"]
