@@ -21,7 +21,7 @@ public class RouteDTO {
 	private String schedule;
 	private Integer parents;
 	private float hours;
-	private BusTypeDTO busType;
+	
 	private boolean isActive;
 
 }

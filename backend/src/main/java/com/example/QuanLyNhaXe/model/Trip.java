@@ -32,12 +32,12 @@ public class Trip {
 
 	@Column(name = "turn")
 	private boolean turn;
-	
+
 	@Column(name = "price")
-    private Integer price;
-	
+	private Integer price;
+
 	@Column(name = "is_active")
-    private boolean isActive;
+	private boolean isActive;
 
 	@ManyToOne
 	@JoinColumn(name = "start_station", referencedColumnName = "id")
@@ -48,34 +48,33 @@ public class Trip {
 	private Station endStation;
 
 	@ManyToOne
+	@JoinColumn(name = "bus_type_id", referencedColumnName = "id")
+	private BusType busType;
+
+	@ManyToOne
 	@JoinColumn(name = "route_id", referencedColumnName = "id")
 	private Route route;
-	
+
 	@OneToMany(mappedBy = "trip")
 	private List<Schedule> schedules;
-	
+
 	@OneToMany(mappedBy = "trip")
 	private List<Booking> bookings;
-	
+
 	@OneToMany(mappedBy = "trip")
 	private List<StopStation> stopStations;
-	
-	@OneToMany(mappedBy = "trip")
-    private List<Trip_Driver> tripDriver;
-	
-	@OneToMany(mappedBy = "trip")
-    private List<Trip_Bus> tripBus;
-    
-    @ManyToOne
-    @JoinColumn(name = "company_id", referencedColumnName = "id")
-    private BusCompany busCompany;
-    
-    
-    @OneToMany(mappedBy = "trip")
-	private List<FixSchedule> fixSchedules;	
 
-	
+	@OneToMany(mappedBy = "trip")
+	private List<Trip_Driver> tripDriver;
 
-	
+	@OneToMany(mappedBy = "trip")
+	private List<Trip_Bus> tripBus;
+
+	@ManyToOne
+	@JoinColumn(name = "company_id", referencedColumnName = "id")
+	private BusCompany busCompany;
+
+	@OneToMany(mappedBy = "trip")
+	private List<FixSchedule> fixSchedules;
 
 }

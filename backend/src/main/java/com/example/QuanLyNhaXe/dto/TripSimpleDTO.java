@@ -17,6 +17,7 @@ public class TripSimpleDTO {
 	private boolean turn;
 	private StationDTO startStation;
 	private StationDTO endStation;
+	private BusTypeDTO busType;
 	private boolean isActive;
 
 }

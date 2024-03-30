@@ -43,5 +43,5 @@ public class BusType {
     private List<Bus> buses;
     
     @OneToMany(mappedBy = "busType")
-    private List<Route> routes;
+    private List<Trip> trips;
 }

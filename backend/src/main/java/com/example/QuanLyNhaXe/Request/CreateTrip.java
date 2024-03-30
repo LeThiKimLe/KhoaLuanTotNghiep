@@ -9,5 +9,6 @@ public class CreateTrip {
 	private Integer endStationId;
 	private Integer price;
 	private Integer companyId;
+	private Integer busType;
 
 }

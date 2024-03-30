@@ -12,6 +12,6 @@ public class CreateRouteDTO {
 	private String schedule;
 	private Integer parents;
 	private float hours;
-	private Integer busType;
+	
 
 }

@@ -90,7 +90,7 @@ public class ScheduleService {
 		 Trip trip=tripRepository.findById(createSchedules.getTripId())
 				 .orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
 		 String note=createSchedules.getNote();
-		 Integer avaiability=trip.getRoute().getBusType().getCapacity();
+		 Integer avaiability=trip.getBusType().getCapacity();
 		 List<Date> consecutiveDates = new ArrayList<>();
 		 List<Schedule> schedules=new ArrayList<>();
 		 Date departDate=createSchedules.getDateSchedule();
@@ -106,7 +106,7 @@ public class ScheduleService {
 			 consecutiveDates.add(date);            
 	        }
 		 for(Date scheduleDate: consecutiveDates) {
-			 Integer price=trip.getPrice()+trip.getRoute().getBusType().getFee();
+			 Integer price=trip.getPrice()+trip.getBusType().getFee();
 			 SpecialDay specialDay=null;
 			 if(specialDayTrue) {
 				 specialDay=specialDayRepository.findByDate(scheduleDate)
