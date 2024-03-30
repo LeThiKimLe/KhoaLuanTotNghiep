@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
-import { CButton } from '@coreui/react'
+import { CButton, CCardTitle } from '@coreui/react'
 import { useDispatch, useSelector } from 'react-redux'
 import routeThunk from 'src/feature/route/route.service'
 import { selectListOfficialRoute } from 'src/feature/route/route.slice'
@@ -43,7 +43,16 @@ import 'react-time-picker/dist/TimePicker.css'
 import 'react-clock/dist/Clock.css'
 import { convertTimeToInt } from 'src/utils/convertUtils'
 import { dayInWeekSum, dayInWeek } from 'src/utils/constants'
-import { selectListRequest } from 'src/feature/bus-company/busCompany.slice'
+import {
+    companyActions,
+    selectListRequest,
+    selectOpenListRequest,
+    selectListCompany,
+} from 'src/feature/bus-company/busCompany.slice'
+import { COLOR } from 'src/utils/constants'
+import locationThunk from 'src/feature/location/location.service'
+import { selectListLocation } from 'src/feature/location/location.slice'
+import { selectListRoute } from 'src/feature/route/route.slice'
 
 const TimeBox = ({ time, removeTime, fix, turn }) => {
     const [showRemove, setShowRemove] = useState(false)
@@ -114,6 +123,11 @@ const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
         <CRow className="mb-3 justify-content-center">
             <CFormLabel htmlFor="maxSchedule" className="col-sm-2 col-form-label">
                 <b>{turn === 1 ? 'Lịch trình lượt đi' : 'Lịch trình lượt về'}</b>
+                <p>
+                    <a href="/">
+                        <i>Thêm lượt</i>
+                    </a>
+                </p>
             </CFormLabel>
             <CCol sm={5}>
                 <CCard style={{ minHeight: '80px', maxHeight: '150px', overflow: 'auto' }}>
@@ -527,13 +541,14 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
 }
 
 const OpenForm = ({ visible, setVisible, preInfo }) => {
-    const listOfficialRoute = useSelector(selectListOfficialRoute)
     const [companyInfo, setCompanyInfo] = useState({
         firmName: preInfo?.businessName,
         representName: preInfo?.name,
         email: preInfo?.email,
+        idCard: preInfo.idCard ? preInfo.idCard : '',
         telephone: preInfo?.tel,
         businessLicense: preInfo?.businessLicense,
+        address: preInfo.address ? preInfo.address : '',
     })
     const [error, setError] = useState('')
     const [validated, setValidated] = useState(false)
@@ -542,11 +557,14 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     const toaster = useRef('')
     const dispatch = useDispatch()
     const [activeTab, setActiveTab] = useState(0)
+    const listStation = useSelector(selectListLocation)
+    const listRoute = useSelector(selectListRoute)
     const [listCompanyRoute, setListCompanyRoute] = useState([
         {
             route: null,
             listTimeGo: [],
             listTimeReturn: [],
+            price: 0,
         },
     ])
     const companyInput = {
@@ -580,8 +598,18 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
             required: true,
         },
-        telephone: {
+        idCard: {
             id: 4,
+            name: 'idCard',
+            type: 'text',
+            placeholder: 'Nhập số CCCD',
+            errorMessage: 'CCCD không hợp lệ',
+            label: 'CCCD',
+            pattern: '^[0-9]{9,12}$',
+            required: true,
+        },
+        telephone: {
+            id: 5,
             name: 'telephone',
             type: 'text',
             placeholder: 'Nhập số điện thoại',
@@ -591,12 +619,22 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             required: true,
         },
         businessLicense: {
-            id: 5,
+            id: 6,
             name: 'businessLicense',
             type: 'text',
             placeholder: 'Nhập số giấy phép kinh doanh',
             errorMessage: 'Số giấy phép không để trống',
             label: 'Số GPKD',
+            pattern: '^.+$',
+            required: true,
+        },
+        address: {
+            id: 6,
+            name: 'address',
+            type: 'text',
+            placeholder: 'Nhập địa chỉ',
+            errorMessage: 'Địa chỉ không được để trống',
+            label: 'Địa chỉ',
             pattern: '^.+$',
             required: true,
         },
@@ -617,11 +655,12 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             businessLicense: '',
         })
     }
-    const updateCompanyRoute = (index, route, listGo, listReturn) => {
+    const updateCompanyRoute = (index, route, listGo, listReturn, price = 0) => {
         const routeData = {
             route: route,
             listTimeGo: listGo,
             listTimeReturn: listReturn,
+            price: price,
         }
         setListCompanyRoute((prevRoutes) => {
             const newRoutes = [...prevRoutes]
@@ -637,6 +676,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 route: null,
                 listTimeGo: [],
                 listTimeReturn: [],
+                price: 0,
             })
             return newRoutes
         })
@@ -650,6 +690,91 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         })
         setActiveTab(index)
     }
+    const handleAddLocation = async (name) => {
+        //check if location is already in list
+        const location = listStation.find((location) => location.name === name)
+        if (location) return location.id
+        else {
+            //add location to list
+            await dispatch(locationThunk.addLocation({ name: name }))
+                .unwrap()
+                .then((res) => {
+                    return res.id
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+    }
+    const handleAddRoute = async (route) => {
+        const departureId = await handleAddLocation(route.departure)
+        const destinationId = await handleAddLocation(route.destination)
+        //check if route is already in list
+        const routeData = listRoute.find(
+            (r) =>
+                (r.departure.id === departureId && r.destination.id === destinationId) ||
+                (r.departure.id === destinationId && r.destination.id === departureId),
+        )
+        if (routeData) return routeData.id
+        else {
+            const routeData = {
+                distance: route.distance,
+                departureId: departureId,
+                destinationId: destinationId,
+                schedule: route.journey,
+                parents: 0,
+                hours: 0,
+            }
+            //add route to list
+            await dispatch(routeThunk.addRoute({ routeData }))
+                .unwrap()
+                .then((res) => {
+                    return res.id
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+    }
+    const handleAddTrip = async (route, price) => {
+        const companyId = await handleAddCompany()
+        const routeId = await handleAddRoute(route)
+        const tripInfor = {
+            routeId: routeId,
+            startStationId: route.startStation,
+            endStationId: route.endStation,
+            price: price,
+            companyId: companyId,
+        }
+        await dispatch(companyActions.addTrip({ tripInfor }))
+    }
+    const handleAddCompany = async () => {
+        const companyData = {
+            name: companyInfo.representName,
+            email: companyInfo.email,
+            tel: companyInfo.telephone,
+            gender: true,
+            idCard: companyInfo.idCard,
+            address: companyInfo.address,
+            beginWorkDate: new Date(),
+            businessName: companyInfo.firmName,
+            businessLicense: companyInfo.businessLicense,
+        }
+        await dispatch(companyActions.addCompany({ companyData }))
+            .unwrap()
+            .then((res) => {
+                return res.id
+            })
+            .catch((err) => {
+                setError(err)
+                return 0
+            })
+    }
+
+    useEffect(() => {
+        if (listStation.length === 0) dispatch(locationThunk.getLocations())
+        if (listRoute.length === 0) dispatch(routeThunk.getRoute())
+    }, [])
     return (
         <CModal
             alignment="center"
@@ -861,12 +986,28 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     )
 }
 
+const BusCompany = ({ companyInfo }) => {
+    //get random color from list
+    const randomColor = COLOR[Math.floor(Math.random() * COLOR.length)]
+    return (
+        <CCard>
+            <CCardHeader color={randomColor}>
+                <b>{companyInfo.businessName}</b>
+            </CCardHeader>
+            <CCardBody>
+                <CCardTitle>{`SĐT: ${companyInfo.tel}`}</CCardTitle>
+            </CCardBody>
+        </CCard>
+    )
+}
+
 const Company = () => {
     const dispatch = useDispatch()
     const listRoute = useSelector(selectListOfficialRoute)
     const [openAddForm, setOpenAddForm] = useState(false)
-    const [openListRequest, setOpenListRequest] = useState(false)
+    const openListRequest = useSelector(selectOpenListRequest)
     const listRequest = useSelector(selectListRequest)
+    const listCompany = useSelector(selectListCompany)
     const [currentRequest, setCurrentRequest] = useState(null)
     const [preInfo, setPreInfo] = useState({
         firmName: 'Xe Nguyễn Hưng',
@@ -884,7 +1025,6 @@ const Company = () => {
     }, [])
     return (
         <div>
-            <CButton onClick={() => setOpenAddForm(true)}>Thêm nhà xe</CButton>
             {openAddForm && (
                 <OpenForm
                     visible={openAddForm}
@@ -892,10 +1032,20 @@ const Company = () => {
                     preInfo={currentRequest}
                 />
             )}
-            <CButton variant="outline" onClick={() => setOpenListRequest(!openListRequest)}>
-                Danh sách yêu cầu mở bán vé
-            </CButton>
-            <CCollapse visible={openListRequest} className="p-2">
+            <div className="d-flex justify-content-between align-items-center">
+                <b>DANH SÁCH CÁC NHÀ XE</b>
+                <CButton
+                    variant="outline"
+                    onClick={() => dispatch(companyActions.setOpenListRequest(!openListRequest))}
+                >
+                    Danh sách yêu cầu mở bán vé
+                </CButton>
+            </div>
+            <CCollapse
+                visible={openListRequest}
+                className="p-2 border-bottom"
+                style={{ borderBottom: '4px solid' }}
+            >
                 <CTable>
                     <CTableHead>
                         <CTableRow>
@@ -936,6 +1086,13 @@ const Company = () => {
                     </CTableBody>
                 </CTable>
             </CCollapse>
+            <CRow>
+                {listCompany.map((company, index) => (
+                    <CCol key={index} sm="4">
+                        <BusCompany companyInfo={company}></BusCompany>
+                    </CCol>
+                ))}
+            </CRow>
         </div>
     )
 }

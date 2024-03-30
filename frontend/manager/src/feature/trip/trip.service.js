@@ -7,6 +7,9 @@ const addTrip = createAsyncThunk('admin/trips', async (tripInfor, thunkAPI) => {
             routeId: tripInfor.routeId,
             startStationId: tripInfor.startStationId,
             endStationId: tripInfor.endStationId,
+            price: tripInfor.price,
+            companyId: tripInfor.companyId,
+            busType: null,
         })
         return trip
     } catch (error) {

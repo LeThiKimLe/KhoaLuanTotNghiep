@@ -38,9 +38,14 @@ const AppHeader = () => {
     const listRequest = useSelector(selectListRequest)
     const [openList, setOpenList] = useState(false)
 
+    const handleNavToCompany = () => {
+        window.location.href = '#/ticket-system/bus-companies'
+    }
+
     useEffect(() => {
         // Kết nối tới máy chủ WebSocket
-        const hostname = window.location.hostname
+        const host = process.env.REACT_APP_SOCKET_URL
+        const hostname = host ? host : window.location.hostname
         let connectionString = `ws://${hostname}/api/notice`
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
@@ -63,7 +68,7 @@ const AppHeader = () => {
         // Cleanup: Đóng kết nối khi component unmount
         return () => connection.current.close()
     }, [])
-    console.log(listRequest)
+
     return (
         <CHeader position="sticky" className="mb-4">
             <CContainer fluid>
@@ -119,7 +124,11 @@ const AppHeader = () => {
                                 <CListGroup>
                                     {listRequest.map((item, index) => (
                                         <Notification
-                                            onClick={() => setOpenList(false)}
+                                            onClick={() => {
+                                                setOpenList(false)
+                                                dispatch(companyActions.setOpenListRequest(true))
+                                                handleNavToCompany()
+                                            }}
                                             key={index}
                                             title={item.businessName + ' đã đăng ký bán vé'}
                                         >

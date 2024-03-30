@@ -222,7 +222,9 @@ const Chat = () => {
             direction: 'incoming',
             sender: 'Assistant',
         }])
-        const hostname = window.location.hostname
+        const host = process.env.REACT_APP_SOCKET_URL
+        console.log(host)
+        const hostname = host ? host : window.location.hostname
         if (openBox && option === 'agent') {
             // Tạo kết nối WebSocket khi component được mount
             const socket = new WebSocket(`ws://${hostname}/api/socket`);
