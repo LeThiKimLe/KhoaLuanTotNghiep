@@ -41,7 +41,7 @@ const AppHeader = () => {
     useEffect(() => {
         // Kết nối tới máy chủ WebSocket
         const hostname = window.location.hostname
-        let connectionString = `ws://${hostname}/api/notice`
+        let connectionString = `wss://${hostname}/api/notice`
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
 

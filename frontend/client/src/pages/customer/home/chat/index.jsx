@@ -225,7 +225,7 @@ const Chat = () => {
         const hostname = window.location.hostname
         if (openBox && option === 'agent') {
             // Tạo kết nối WebSocket khi component được mount
-            const socket = new WebSocket(`ws://${hostname}/api/socket`);
+            const socket = new WebSocket(`wss://${hostname}/api/socket`);
             // Listen for messages
             socket.addEventListener("message", (event) => {
                 handleReceiveMessage(event.data)

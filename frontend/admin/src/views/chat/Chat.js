@@ -400,8 +400,8 @@ const Chat = () => {
         if (user && user.accessToken) authorizationString = user.accessToken
         let connectionString =
             authorizationString == ''
-                ? `ws://${hostname}/api/socket`
-                : `ws://${hostname}/api/socket?authorization=Bearer%20` + user.accessToken
+                ? `wss://${hostname}/api/socket`
+                : `wss://${hostname}/api/socket?authorization=Bearer%20` + user.accessToken
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
 
