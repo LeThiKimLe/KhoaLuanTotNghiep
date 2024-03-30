@@ -222,9 +222,10 @@ const Chat = () => {
             direction: 'incoming',
             sender: 'Assistant',
         }])
+        const hostname = window.location.hostname
         if (openBox && option === 'agent') {
             // Tạo kết nối WebSocket khi component được mount
-            const socket = new WebSocket('ws://localhost:5000/api/socket');
+            const socket = new WebSocket(`ws://${hostname}/api/socket`);
             // Listen for messages
             socket.addEventListener("message", (event) => {
                 handleReceiveMessage(event.data)

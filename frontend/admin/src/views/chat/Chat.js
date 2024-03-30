@@ -395,12 +395,13 @@ const Chat = () => {
 
     useEffect(() => {
         // Kết nối tới máy chủ WebSocket
+        const hostname = window.location.hostname
         let authorizationString = ''
         if (user && user.accessToken) authorizationString = user.accessToken
         let connectionString =
             authorizationString == ''
-                ? 'ws://localhost:5000/api/socket'
-                : 'ws://localhost:5000/api/socket?authorization=Bearer%20' + user.accessToken
+                ? `ws://${hostname}/api/socket`
+                : `ws://${hostname}/api/socket?authorization=Bearer%20` + user.accessToken
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
 

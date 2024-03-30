@@ -27,18 +27,28 @@ COPY --from=build ${DEPENDENCY}/META-INF /app/META-INF
 COPY --from=build ${DEPENDENCY}/BOOT-INF/classes /app
 
 # Install Python and create a virtual environment
+RUN apk update && apk add --no-cache build-base
+RUN apk add gcc python3-dev musl-dev linux-headers
 RUN apk add --no-cache python3 && \
-    python3 -m venv /venv
+    python3 -m venv myenv
 
 # Activate the virtual environment and install dependencies
-ENV PATH="/venv/bin:$PATH"
+ENV PATH="/myenv/bin:$PATH"
 COPY src/main/python/requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
+# COPY python app
+COPY src/main/python .
+
 # Copy and run the Python application
 # WORKDIR /app/src/main/python
-# CMD ["sh", "-c", "source /venv/bin/activate && python /app/src/main/python/chatbot.py"]
+# CMD ["sh", "-c", "source /myenv/bin/activate && python chatbot.py"]
 
 # Execute the application
 # WORKDIR /app
-ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.QuanLyNhaXe.QuanLyNhaXeApplication"]
+# ENTRYPOINT ["java","-cp","app:app/lib/*","com.example.QuanLyNhaXe.QuanLyNhaXeApplication"]
+ENTRYPOINT ["/bin/sh", "-c", "\
+    source myenv/bin/activate && \
+    python chatbot.py & \
+    java -cp app:app/lib/* com.example.QuanLyNhaXe.QuanLyNhaXeApplication \
+"]
