@@ -248,8 +248,14 @@ public class TripService {
 						createTrip.getStartStationId())) {
 			throw new ConflictException(Message.TRIP_EXISTS);
 		}
-		BusType busType=busTypeRepository.findById(createTrip.getBusType())
-				.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
+		BusType busType=null;
+		if(createTrip.getBusType()!=0 &&createTrip.getBusType()!=null) {
+			busType=busTypeRepository.findById(createTrip.getBusType())
+					.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
+			
+		}
+		
+		
 		Route route = routeRepository.findById(createTrip.getRouteId())
 				.orElseThrow(() -> new NotFoundException(Message.ROUTE_NOT_FOUND));
 		Station startStation = stationRepository.findById(createTrip.getStartStationId())
