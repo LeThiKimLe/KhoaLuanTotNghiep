@@ -19,6 +19,7 @@ public class TripDTO {
 	private List<ScheduleDTO> schedules;
 	private List<StopStationDTO> stopStations;
 	private RouteDTO route;
+	private BusTypeDTO busType;
 	private BusCompanyDTO busCompany;
 	private boolean isActive;
 

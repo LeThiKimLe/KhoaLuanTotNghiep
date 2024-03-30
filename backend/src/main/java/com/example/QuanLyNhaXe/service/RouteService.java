@@ -1,11 +1,18 @@
 package com.example.QuanLyNhaXe.service;
 
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.Request.CreateRouteDTO;
@@ -17,27 +24,16 @@ import com.example.QuanLyNhaXe.dto.RouteFullDTO;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
-import com.example.QuanLyNhaXe.model.BusType;
 import com.example.QuanLyNhaXe.model.Location;
+import com.example.QuanLyNhaXe.model.OfficialRoute;
 import com.example.QuanLyNhaXe.model.Route;
 import com.example.QuanLyNhaXe.model.Trip;
-import com.example.QuanLyNhaXe.repository.BusTypeRepository;
 import com.example.QuanLyNhaXe.repository.LocationRepository;
 import com.example.QuanLyNhaXe.repository.RouteRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
-import com.example.QuanLyNhaXe.model.OfficialRoute;
 
 import lombok.RequiredArgsConstructor;
-
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVRecord;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 
 
 @Service
@@ -46,7 +42,7 @@ public class RouteService {
 	private final RouteRepository routeRepository;
 	private final ModelMapper modelMapper;
 	private final LocationRepository locationRepository;
-	private final BusTypeRepository busTypeRepository;
+	
 	private final TripService tripService;
 	private final ResourceLoader resourceLoader;
 
@@ -73,8 +69,7 @@ public class RouteService {
 		Location destination = locationRepository.findById(createRouteDTO.getDestinationId())
 				.orElseThrow(() -> new NotFoundException(Message.DES_NOT_FOUND));
 
-		BusType busType = busTypeRepository.findById(createRouteDTO.getBusType())
-				.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
+		
 
 		List<Route> routes = routeRepository.findByDepartureIdOrDestinationId(createRouteDTO.getDepartureId(),
 				createRouteDTO.getDestinationId());
@@ -88,7 +83,7 @@ public class RouteService {
 		}
 		Route route = Route.builder().departure(departure).destination(destination).parents(createRouteDTO.getParents()).isActive(true)
 				.hours(createRouteDTO.getHours()).schedule(createRouteDTO.getSchedule())
-				.distance(createRouteDTO.getDistance()).busType(busType).build();
+				.distance(createRouteDTO.getDistance()).build();
 		routeRepository.save(route);
 		return new ResponseMessage(Message.SUCCESS);
 
@@ -106,8 +101,7 @@ public class RouteService {
 
 	public Object editRoute(EditRouteDTO editRouteDTO) {
 
-		BusType busType = busTypeRepository.findById(editRouteDTO.getBusType())
-				.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
+		
 		Route parentRoute = routeRepository.findById(editRouteDTO.getParents())
 				.orElseThrow(() -> new NotFoundException(Message.ROUTE_NOT_FOUND));
 		Route editRoute = routeRepository.findById(editRouteDTO.getId())
@@ -122,7 +116,7 @@ public class RouteService {
 			}
 
 		}
-		editRoute.setBusType(busType);
+		
 		editRoute.setParents(parentRoute.getId());
 		editRoute.setDistance(editRouteDTO.getDistance());
 		editRoute.setHours(editRouteDTO.getHours());
