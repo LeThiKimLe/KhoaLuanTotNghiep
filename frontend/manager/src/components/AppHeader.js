@@ -40,7 +40,8 @@ const AppHeader = () => {
 
     useEffect(() => {
         // Kết nối tới máy chủ WebSocket
-        let connectionString = 'ws://localhost:5000/api/notice'
+        const hostname = window.location.hostname
+        let connectionString = `ws://${hostname}/api/notice`
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
 
