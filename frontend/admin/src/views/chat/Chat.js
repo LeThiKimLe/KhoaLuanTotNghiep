@@ -395,7 +395,9 @@ const Chat = () => {
 
     useEffect(() => {
         // Kết nối tới máy chủ WebSocket
-        const hostname = window.location.hostname
+        const host = process.env.REACT_APP_SOCKET_URL
+        console.log(host)
+        const hostname = host ? host : window.location.hostname
         let authorizationString = ''
         if (user && user.accessToken) authorizationString = user.accessToken
         let connectionString =

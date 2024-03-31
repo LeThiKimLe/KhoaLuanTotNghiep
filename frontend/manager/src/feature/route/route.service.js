@@ -33,11 +33,9 @@ const addRoute = createAsyncThunk('admin/routes/add', async ({ routeInfor }, thu
             distance: routeInfor.distance,
             departureId: routeInfor.departure,
             destinationId: routeInfor.destination,
-            price: routeInfor.price,
             schedule: routeInfor.schedule,
-            parents: routeInfor.parents,
+            parents: 0,
             hours: routeInfor.hours,
-            busType: routeInfor.busType,
         })
         return route
     } catch (error) {

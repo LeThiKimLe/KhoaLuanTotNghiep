@@ -5,6 +5,7 @@ const initialState = {
     loading: false,
     listRequest: [],
     listBusCompany: [],
+    openListRequest: false,
 }
 
 const companySlice = createSlice({
@@ -16,6 +17,9 @@ const companySlice = createSlice({
         },
         addRequest: (state, action) => {
             state.listRequest = [...state.listRequest, action.payload]
+        },
+        setOpenListRequest: (state, action) => {
+            state.openListRequest = action.payload
         },
     },
     extraReducers: (builder) => {
@@ -34,6 +38,7 @@ const companySlice = createSlice({
 })
 export const selectListCompany = (state) => state.company.listBusCompany
 export const selectListRequest = (state) => state.company.listRequest
+export const selectOpenListRequest = (state) => state.company.openListRequest
 
 export const companyActions = companySlice.actions
 
