@@ -1,80 +1,78 @@
-.container{
-    padding: 10px 0 70px 0;
-    font-size: 17px;
-    height: 100%;
+.container {
+  padding: 10px 0 70px 0;
+  font-size: 17px;
+  height: 100%;
 }
 
-.nextBtn{
-    margin: 20px 0 0 0;
-    float: right;
+.nextBtn {
+  margin: 20px 0 0 0;
+  float: right;
 }
 
-
-.inforTitle{
-    font-weight: 600;
-    color: grey
+.inforTitle {
+  font-weight: 600;
+  color: grey;
 }
 
-.inforValue{
-    font-weight: 700;
+.inforValue {
+  font-weight: 700;
 }
 
-.ticketContainer{
-    display: flex;
-    gap: 30px;
-    /* justify-content: center; */
+.ticketContainer {
+  display: flex;
+  gap: 30px;
+  /* justify-content: center; */
 }
 
-.ticketCover{
-    background-color: var(--primary-color);
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    min-width: 100px;
+.ticketCover {
+  background-color: var(--primary-color);
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  min-width: 100px;
 }
 
-.ticketItem{
-    padding: 10px;
-    border-radius: 10px 40px 10px 10px;
-    background-color: white;
-    border: 1px solid #ccc;
+.ticketItem {
+  padding: 10px;
+  border-radius: 10px 40px 10px 10px;
+  background-color: white;
+  border: 1px solid #ccc;
 }
 
-.resultContainer{
-    margin-top: 10px;
-    min-width: 700px;
-    height: 500px;
-    overflow-y: scroll ;
-    display: flex;
-    /* align-items: center; */
+.resultContainer {
+  margin-top: 10px;
+  min-width: 700px;
+  height: 500px;
+  overflow-y: scroll;
+  display: flex;
+  /* align-items: center; */
 }
 
-.searchBox{
-    display: flex;
-    gap: 30px;
-    align-items: center;
+.searchBox {
+  display: flex;
+  gap: 30px;
+  align-items: center;
 }
 
-.searchBox button{
-    margin: 0;
-
+.searchBox button {
+  margin: 0;
 }
 
-.notfound{
-    width: 100%;
-    text-align: center;
-    padding-top: 40px;
+.notfound {
+  width: 100%;
+  text-align: center;
+  padding-top: 40px;
 }
 
-.notfound img{
-    max-width: 400px;
+.notfound img {
+  max-width: 400px;
 }
 
-.notfound p{
-    font-size: 20px;
-    font-weight: 600;
-    margin: 0
+.notfound p {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0;
 }
 
-.listResult{
-    width: 100%;
+.listResult {
+  width: 100%;
 }

@@ -1,11 +1,11 @@
-.container{
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
+.container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
 
-.wrapper{
-    width: 100%;
-    max-width: 1024px;
-    padding: 5px;
+.wrapper {
+  width: 100%;
+  max-width: 1024px;
+  padding: 5px;
 }

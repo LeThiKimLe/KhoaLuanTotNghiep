@@ -29,6 +29,7 @@ import {
     CTableHeaderCell,
     CTableDataCell,
     CTableRow,
+    CToaster,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
 import { cilTransfer, cilX, cilPlus, cilCaretBottom } from '@coreui/icons'
@@ -53,6 +54,10 @@ import { COLOR } from 'src/utils/constants'
 import locationThunk from 'src/feature/location/location.service'
 import { selectListLocation } from 'src/feature/location/location.slice'
 import { selectListRoute } from 'src/feature/route/route.slice'
+import companyThunk from 'src/feature/bus-company/busCompany.service'
+import tripThunk from 'src/feature/trip/trip.service'
+import scheduleThunk from 'src/feature/schedule/schedule.service'
+import { CustomToast } from 'src/views/customToast/CustomToast'
 
 const TimeBox = ({ time, removeTime, fix, turn }) => {
     const [showRemove, setShowRemove] = useState(false)
@@ -82,10 +87,20 @@ const TimeBox = ({ time, removeTime, fix, turn }) => {
     )
 }
 
-const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
+const ScheduleBox = ({
+    index,
+    listTime,
+    listRepeat,
+    addTime,
+    removeTime,
+    changeRepeat,
+    turn,
+    end,
+    addTurn,
+    removeTurn,
+}) => {
     const [openTimer, setOpenTimer] = useState(false)
     const [curTime, setCurTime] = useState('07:00')
-    const [listRepeat, setListRepeat] = useState([])
     const [openOption, setOpenOption] = useState(false)
     const getRepeatSum = () => {
         let sumString = ''
@@ -102,32 +117,26 @@ const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
     const changeRepeatOption = (e) => {
         const value = parseInt(e.target.value)
         if (listRepeat.includes(value)) {
-            setListRepeat((prev) => {
-                const newList = prev.filter((day) => day !== value)
-                return newList
-            })
+            changeRepeat(
+                index,
+                listRepeat.filter((day) => day !== value),
+                turn,
+            )
         } else {
-            setListRepeat((prev) => {
-                const newList = [...prev]
-                newList.sort((a, b) => (a < b ? -1 : 1))
-                newList.push(value)
-                return newList
-            })
+            const newRepeat = [...listRepeat]
+            newRepeat.sort((a, b) => (a < b ? -1 : 1))
+            newRepeat.push(value)
+            changeRepeat(index, newRepeat, turn)
         }
     }
     const handleEveryDay = () => {
-        if (listRepeat.length === 7) setListRepeat([])
-        else setListRepeat([2, 3, 4, 5, 6, 7, 8])
+        if (listRepeat.length === 7) changeRepeat(index, [], turn)
+        else changeRepeat(index, [2, 3, 4, 5, 6, 7, 8], turn)
     }
     return (
         <CRow className="mb-3 justify-content-center">
             <CFormLabel htmlFor="maxSchedule" className="col-sm-2 col-form-label">
                 <b>{turn === 1 ? 'Lịch trình lượt đi' : 'Lịch trình lượt về'}</b>
-                <p>
-                    <a href="/">
-                        <i>Thêm lượt</i>
-                    </a>
-                </p>
             </CFormLabel>
             <CCol sm={5}>
                 <CCard style={{ minHeight: '80px', maxHeight: '150px', overflow: 'auto' }}>
@@ -143,7 +152,7 @@ const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
                                 <CCol key={index} xs="4">
                                     <TimeBox
                                         time={timer.time}
-                                        removeTime={removeTime}
+                                        removeTime={() => removeTime(index, timer.time, turn)}
                                         fix={timer.fix}
                                         turn={turn}
                                     ></TimeBox>
@@ -181,7 +190,7 @@ const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
                                                 letiant="outline"
                                                 color="info"
                                                 onClick={() => {
-                                                    addTime(curTime, turn)
+                                                    addTime(index, curTime, turn)
                                                     setOpenTimer(false)
                                                 }}
                                                 style={{ width: 'fit-content', padding: '3px 5px' }}
@@ -207,6 +216,14 @@ const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
                         <span>{getRepeatSum()}</span>
                         <CIcon icon={cilCaretBottom} color="info"></CIcon>
                     </CButton>
+                    {end && (
+                        <span role="button" onClick={() => addTurn(turn)}>
+                            <i>+ Thêm </i>
+                        </span>
+                    )}
+                    <span role="button" onClick={() => removeTurn(index, turn)}>
+                        <i>{` / - Xóa`}</i>
+                    </span>
                     {openOption && (
                         <CCard className="position-absolute top-1">
                             <CCardBody>
@@ -235,7 +252,7 @@ const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
     )
 }
 
-const CompanyRoute = ({ id, addCompanyRoute }) => {
+const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
     const listLocation = useRef([])
     const listOfficialRoute = useSelector(selectListOfficialRoute)
     const [listDeparture, setListDeparture] = useState([])
@@ -247,45 +264,62 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
     const [curDestination, setCurDestination] = useState(-1)
     const [curStartStation, setCurStartStation] = useState(-1)
     const [curEndStation, setCurEndStation] = useState(-1)
+    const [error, setError] = useState('')
     const [curJourney, setCurJourney] = useState(-1)
-    const [listTimeGo, setListTimeGo] = useState([])
-    const [listTimeReturn, setListTimeReturn] = useState([])
-    const [listCompanyRoute, setListCompanyRoute] = useState([])
-    const [curRoute, setCurRoute] = useState(null)
-    const getListDestination = useCallback(() => {
-        if (curDeparture === -1) return []
+    const [isBackup, setIsBackup] = useState(false)
+    const [listTimeGo, setListTimeGo] = useState(
+        companyRoute.listTimeGo
+            ? companyRoute.listTimeGo
+            : [
+                  {
+                      listTime: [],
+                      listRepeat: [],
+                  },
+              ],
+    )
+    const [listTimeReturn, setListTimeReturn] = useState(
+        companyRoute.listTimeReturn
+            ? companyRoute.listTimeReturn
+            : [
+                  {
+                      listTime: [],
+                      listRepeat: [],
+                  },
+              ],
+    )
+    const [curRoute, setCurRoute] = useState(companyRoute.route ? companyRoute.route : null)
+
+    const getNewListDestination = (departure) => {
         const listDestinationNew = []
-        const departure = listDeparture[curDeparture]
         listOfficialRoute.forEach((route) => {
             if (
-                route.departure === departure.name &&
+                route.departure === departure &&
                 listDestinationNew.findIndex((location) => location.name === route.destination) ===
                     -1
             ) {
                 listDestinationNew.push(
-                    listDeparture.find((location) => location.name === route.destination),
+                    listLocation.current.find((location) => location.name === route.destination),
                 )
             }
             if (
-                route.destination === departure.name &&
+                route.destination === departure &&
                 listDestinationNew.findIndex((location) => location.name === route.departure) === -1
             ) {
                 listDestinationNew.push(
-                    listDeparture.find((location) => location.name === route.departure),
+                    listLocation.current.find((location) => location.name === route.departure),
                 )
             }
         })
         return listDestinationNew
+    }
+
+    const getListDestination = useCallback(() => {
+        if (curDeparture === -1) return []
+        const departure = listDeparture[curDeparture]
+        return getNewListDestination(departure.name)
     }, [curDeparture])
 
-    const getListStation = useCallback(() => {
-        if (curDeparture === -1 || curDestination === -1)
-            return {
-                listStartStation: [],
-                listEndStation: [],
-            }
-        const departure = listDeparture[curDeparture]
-        const destination = listDestination[curDestination]
+    const getNewListStation = (departure, destination) => {
         const listAvaiRoute = listOfficialRoute.filter(
             (route) =>
                 (route.departure === departure.name && route.destination === destination.name) ||
@@ -310,49 +344,66 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
             return false
         })
         return { listStartStation: listStartStationNew, listEndStation: listEndStationNew }
+    }
+
+    const getListStation = useCallback(() => {
+        if (curDeparture === -1 || curDestination === -1)
+            return {
+                listStartStation: [],
+                listEndStation: [],
+            }
+        const departure = listDeparture[curDeparture]
+        const destination = listDestination[curDestination]
+        return getNewListStation(departure, destination)
     }, [curDeparture, curDestination])
 
-    const getListAvaiRoute = () => {
+    const getListAvaiRoute = (dep, des, startSta, endSta) => {
         return listOfficialRoute.filter(
             (route) =>
-                (route.departure === listDeparture[curDeparture].name &&
-                    route.destination === listDestination[curDestination].name &&
-                    route.startStation === listStartStation[curStartStation] &&
-                    route.endStation === listEndStation[curEndStation]) ||
-                (route.departure === listDestination[curDestination].name &&
-                    route.destination === listDeparture[curDeparture].name &&
-                    route.startStation === listEndStation[curEndStation] &&
-                    route.endStation === listStartStation[curStartStation]),
+                (route.departure === dep &&
+                    route.destination === des &&
+                    route.startStation === startSta &&
+                    route.endStation === endSta) ||
+                (route.departure === des &&
+                    route.destination === dep &&
+                    route.startStation === endSta &&
+                    route.endStation === startSta),
         )
     }
 
     const getListJourney = useCallback(() => {
         if (curEndStation === -1) return []
         const listJourneyNew = []
-        const listAvaiRoute = getListAvaiRoute()
+        const listAvaiRoute = getListAvaiRoute(
+            listDeparture[curDeparture].name,
+            listDestination[curDestination].name,
+            listStartStation[curStartStation],
+            listEndStation[curEndStation],
+        )
         listAvaiRoute.forEach((route) => {
             listJourneyNew.push(route.journey)
         })
         return listJourneyNew
     }, [curEndStation])
 
-    const addTime = (time, turn) => {
+    const addTime = (index, time, turn) => {
         if (turn === 1) {
-            if (listTimeGo.findIndex((timer) => timer.time === time) !== -1) return
+            if (listTimeGo[index].listTime.findIndex((timer) => timer.time === time) !== -1) return
             setListTimeGo((prev) => {
                 const newTime = [...prev]
-                newTime.push({ time: time, fix: false })
-                newTime.sort((a, b) =>
+                newTime[index].listTime.push({ time: time, fix: false })
+                newTime[index].listTime.sort((a, b) =>
                     convertTimeToInt(a.time) < convertTimeToInt(b.time) ? -1 : 1,
                 )
                 return newTime
             })
         } else {
-            if (listTimeReturn.findIndex((timer) => timer.time === time) !== -1) return
+            if (listTimeReturn[index].listTime.findIndex((timer) => timer.time === time) !== -1)
+                return
             setListTimeReturn((prev) => {
                 const newTime = [...prev]
-                newTime.push({ time: time, fix: false })
-                newTime.sort((a, b) =>
+                newTime[index].listTime.push({ time: time, fix: false })
+                newTime[index].listTime.sort((a, b) =>
                     convertTimeToInt(a.time) < convertTimeToInt(b.time) ? -1 : 1,
                 )
                 return newTime
@@ -360,18 +411,155 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
         }
     }
 
-    const removeTime = (time, turn) => {
+    const removeTime = (index, time, turn) => {
         if (turn === 1) {
             setListTimeGo((prev) => {
-                const newTime = prev.filter((timer) => timer.time !== time)
+                const newTime = [...prev]
+                const newList = newTime[index].listTime.filter((timer) => timer.time !== time)
+                return newList
+            })
+        } else {
+            setListTimeReturn((prev) => {
+                const newTime = [...prev]
+                const newList = newTime[index].listTime.filter((timer) => timer.time !== time)
+                return newList
+            })
+        }
+    }
+
+    const changeRepeat = (index, listRepeat, turn) => {
+        if (turn === 1) {
+            setListTimeGo((prev) => {
+                const newTime = [...prev]
+                newTime[index].listRepeat = listRepeat
                 return newTime
             })
         } else {
             setListTimeReturn((prev) => {
-                const newTime = prev.filter((timer) => timer.time !== time)
+                const newTime = [...prev]
+                newTime[index].listRepeat = listRepeat
                 return newTime
             })
         }
+    }
+
+    const addTurn = (turn) => {
+        if (turn === 1) {
+            setListTimeGo((prev) => {
+                const newTime = [...prev]
+                newTime.push({ listTime: [], listRepeat: [] })
+                return newTime
+            })
+        } else {
+            setListTimeReturn((prev) => {
+                const newTime = [...prev]
+                newTime.push({ listTime: [], listRepeat: [] })
+                return newTime
+            })
+        }
+    }
+
+    const removeTurn = (index, turn) => {
+        if (turn === 1) {
+            if (listTimeGo.length === 1) return
+            setListTimeGo((prev) => {
+                const newTime = [...prev]
+                const newList = newTime.filter((timer, i) => i !== index)
+                return newList
+            })
+        } else {
+            if (listTimeReturn.length === 1) return
+            setListTimeReturn((prev) => {
+                const newTime = [...prev]
+                const newList = newTime.filter((timer, i) => i !== index)
+                return newList
+            })
+        }
+    }
+
+    const findCommonElements = (array1, array2) => {
+        var commonElements = []
+        for (var i = 0; i < array1.length; i++) {
+            if (array2.includes(array1[i])) {
+                commonElements.push(array1[i])
+            }
+        }
+        return commonElements
+    }
+
+    const checkRepeat = (turn) => {
+        let listTimeIn = turn === 1 ? listTimeGo : listTimeReturn
+        let commonTime, commonRepeat
+        for (let i = 0; i < listTimeIn.length - 1; i++) {
+            commonTime = findCommonElements(
+                listTimeIn[i].listTime.map((time) => time.time),
+                listTimeIn[i + 1].listTime.map((time) => time.time),
+            )
+            commonRepeat = findCommonElements(
+                listTimeIn[i].listRepeat,
+                listTimeIn[i + 1].listRepeat,
+            )
+            if (commonTime.length > 0 && commonRepeat.length > 0) {
+                return `Trùng lịch trình lượt ${
+                    turn === 1 ? 'Lượt đi' : 'Lượt về'
+                } ${commonTime.toString()} vào ${commonRepeat
+                    .map((repeat) => dayInWeek[repeat - 2])
+                    .toString()}`
+            }
+        }
+        return ''
+    }
+    const checkEmpty = (turn) => {
+        let listTimeIn = turn === 1 ? listTimeGo : listTimeReturn
+        for (let i = 0; i < listTimeIn.length; i++) {
+            if (listTimeIn[i].listTime.length === 0) {
+                return `Lịch trình lượt ${turn === 1 ? 'lượt đi' : 'lượt về'} thứ ${
+                    i + 1
+                } không được để trống`
+            }
+            if (listTimeIn[i].listRepeat.length === 0) {
+                return `Vui lòng chọn lịch lặp lại cho lịch trình ${
+                    turn === 1 ? 'lượt đi' : 'lượt về'
+                } thứ ${i + 1}`
+            }
+        }
+        return ''
+    }
+
+    const handleBackUp = () => {
+        const initDep = listLocation.current.findIndex(
+            (location) => location.name === companyRoute.route.departure,
+        )
+        const listDes = getNewListDestination(listLocation.current[initDep].name)
+        const initDes = listDes.findIndex(
+            (location) => location.name === companyRoute.route.destination,
+        )
+        const listSta = getNewListStation(listLocation.current[initDep], listDes[initDes])
+        const initStaStation = listSta.listStartStation.findIndex(
+            (station) => station === companyRoute.route.startStation,
+        )
+        const initEndStation = listSta.listEndStation.findIndex(
+            (station) => station === companyRoute.route.endStation,
+        )
+        const listAvaiRoute = getListAvaiRoute(
+            listLocation.current[initDep].name,
+            listDes[initDes].name,
+            listSta.listStartStation[initStaStation],
+            listSta.listEndStation[initEndStation],
+        ).map((route) => route.journey)
+        const initJourney = listAvaiRoute.findIndex(
+            (journey) => journey === companyRoute.route.journey,
+        )
+        setCurDeparture(initDep)
+        setListDestination(listDes)
+        setCurDestination(initDes)
+        setListStartStation(listSta.listStartStation)
+        setListEndStation(listSta.listEndStation)
+        setCurStartStation(initStaStation)
+        setCurEndStation(initEndStation)
+        setListJourney(listAvaiRoute)
+        setCurJourney(initJourney)
+        setTimeout(() => setIsBackup(false), 1000)
     }
 
     useEffect(() => {
@@ -379,9 +567,24 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
             listLocation.current = getLocationData(listOfficialRoute)
             setListDeparture(listLocation.current)
         }
+        if (companyRoute.route) {
+            setIsBackup(true)
+            setTimeout(() => handleBackUp(), 100)
+        }
     }, [])
+
     useEffect(() => {
-        if (curDeparture !== -1) {
+        const error1 = checkRepeat(1)
+        if (error1 !== '') setError(error1)
+        else {
+            const error2 = checkRepeat(0)
+            if (error2 !== '') setError(error2)
+            else setError('')
+        }
+    }, [listTimeGo, listTimeReturn])
+
+    useEffect(() => {
+        if (curDeparture !== -1 && isBackup === false) {
             setListDestination(getListDestination())
             setCurDestination(-1)
             setCurStartStation(-1)
@@ -389,7 +592,7 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
         }
     }, [curDeparture])
     useEffect(() => {
-        if (curDestination !== -1) {
+        if (curDestination !== -1 && isBackup === false) {
             const newStation = getListStation()
             setListStartStation(newStation.listStartStation)
             setListEndStation(newStation.listEndStation)
@@ -398,31 +601,49 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
         }
     }, [curDestination])
     useEffect(() => {
-        setCurJourney(-1)
-        setListJourney(getListJourney())
+        if (isBackup === false) {
+            setCurJourney(-1)
+            setListJourney(getListJourney())
+        }
     }, [curEndStation, curStartStation])
     useEffect(() => {
-        if (curJourney !== -1)
+        if (curJourney !== -1 && isBackup === false)
             setCurRoute(
-                getListAvaiRoute().find((route) => route.journey === listJourney[curJourney]),
+                getListAvaiRoute(
+                    listDeparture[curDeparture].name,
+                    listDestination[curDestination].name,
+                    listStartStation[curStartStation],
+                    listEndStation[curEndStation],
+                ).find((route) => route.journey === listJourney[curJourney]),
             )
     }, [curJourney])
     useEffect(() => {
         if (
-            curDeparture === -1 ||
-            curDestination === -1 ||
-            curStartStation === -1 ||
-            curEndStation === -1 ||
-            curJourney === -1
+            (curDeparture === -1 ||
+                curDestination === -1 ||
+                curStartStation === -1 ||
+                curEndStation === -1 ||
+                curJourney === -1) &&
+            isBackup === false
         )
             setCurRoute(null)
     }, [curDeparture, curDestination, curStartStation, curEndStation, curJourney])
 
     useEffect(() => {
-        if (curRoute && listTimeGo.length !== 0 && listTimeReturn.length !== 0) {
+        console.log('ren')
+        console.log(listTimeGo)
+        if (
+            curRoute &&
+            checkEmpty(1) === '' &&
+            checkEmpty(0) === '' &&
+            error === '' &&
+            isBackup === false
+        ) {
+            console.log('addCompanyRoute')
             addCompanyRoute(id, curRoute, listTimeGo, listTimeReturn)
         }
     }, [curRoute, listTimeGo, listTimeReturn])
+    console.log(companyRoute)
     return (
         <>
             <CRow className="mb-3 justify-content-center align-items-center">
@@ -522,20 +743,48 @@ const CompanyRoute = ({ id, addCompanyRoute }) => {
                     </CFormSelect>
                 </CCol>
             </CRow>
-
-            <ScheduleBox
-                listTime={listTimeGo}
-                addTime={addTime}
-                removeTime={removeTime}
-                turn={1}
-            ></ScheduleBox>
-
-            <ScheduleBox
-                listTime={listTimeReturn}
-                addTime={addTime}
-                removeTime={removeTime}
-                turn={0}
-            ></ScheduleBox>
+            <CRow className="mb-3 justify-content-center align-items-center">
+                <CCol sm={10} className="border-bottom my-2 border-3"></CCol>
+            </CRow>
+            {listTimeGo.map((time, index) => (
+                <ScheduleBox
+                    key={index}
+                    index={index}
+                    listTime={time.listTime}
+                    listRepeat={time.listRepeat}
+                    changeRepeat={changeRepeat}
+                    addTime={addTime}
+                    removeTime={removeTime}
+                    turn={1}
+                    end={index === listTimeGo.length - 1}
+                    addTurn={addTurn}
+                    removeTurn={removeTurn}
+                ></ScheduleBox>
+            ))}
+            <CRow className="mb-3 justify-content-center align-items-center">
+                <CCol sm={10} className="border-bottom my-2 border-3"></CCol>
+            </CRow>
+            {listTimeReturn.map((time, index) => (
+                <ScheduleBox
+                    key={index}
+                    listTime={time.listTime}
+                    index={index}
+                    listRepeat={time.listRepeat}
+                    changeRepeat={changeRepeat}
+                    addTime={addTime}
+                    removeTime={removeTime}
+                    turn={0}
+                    end={index === listTimeReturn.length - 1}
+                    addTurn={addTurn}
+                    removeTurn={removeTurn}
+                ></ScheduleBox>
+            ))}
+            <CRow className="mb-3 justify-content-center align-items-center">
+                <CCol sm={10} className="border-bottom my-2 border-3"></CCol>
+                <CCol sm={10}>
+                    <i style={{ color: 'red' }}>{error}</i>
+                </CCol>
+            </CRow>
         </>
     )
 }
@@ -559,11 +808,22 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     const [activeTab, setActiveTab] = useState(0)
     const listStation = useSelector(selectListLocation)
     const listRoute = useSelector(selectListRoute)
+    const dataForm = useRef(null)
     const [listCompanyRoute, setListCompanyRoute] = useState([
         {
             route: null,
-            listTimeGo: [],
-            listTimeReturn: [],
+            listTimeGo: [
+                {
+                    listTime: [],
+                    listRepeat: [],
+                },
+            ],
+            listTimeReturn: [
+                {
+                    listTime: [],
+                    listRepeat: [],
+                },
+            ],
             price: 0,
         },
     ])
@@ -642,10 +902,6 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     const handleChangeCompanyInfo = (e) => {
         setCompanyInfo({ ...companyInfo, [e.target.name]: e.target.value })
     }
-    const handleAddBus = (e) => {
-        e.preventDefault()
-        setLoading(true)
-    }
     const reset = () => {
         setCompanyInfo({
             firmName: '',
@@ -674,8 +930,18 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             newRoutes = [...prevRoutes]
             newRoutes.push({
                 route: null,
-                listTimeGo: [],
-                listTimeReturn: [],
+                listTimeGo: [
+                    {
+                        listTime: [],
+                        listRepeat: [],
+                    },
+                ],
+                listTimeReturn: [
+                    {
+                        listTime: [],
+                        listRepeat: [],
+                    },
+                ],
                 price: 0,
             })
             return newRoutes
@@ -715,7 +981,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 (r.departure.id === departureId && r.destination.id === destinationId) ||
                 (r.departure.id === destinationId && r.destination.id === departureId),
         )
-        if (routeData) return routeData.id
+        if (routeData) return routeData
         else {
             const routeData = {
                 distance: route.distance,
@@ -729,24 +995,46 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             await dispatch(routeThunk.addRoute({ routeData }))
                 .unwrap()
                 .then((res) => {
-                    return res.id
+                    return res
                 })
                 .catch((err) => {
                     console.log(err)
+                    return null
                 })
         }
     }
-    const handleAddTrip = async (route, price) => {
-        const companyId = await handleAddCompany()
-        const routeId = await handleAddRoute(route)
+    const handleAssignRoute = async (companyId, listRouteId) => {
+        await dispatch(
+            companyThunk.assignRouteForCompany({
+                listRoute: listRouteId,
+                companyId: companyId,
+            }),
+        )
+            .unwrap()
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+    const handleAddTrip = async (route, companyId) => {
         const tripInfor = {
-            routeId: routeId,
-            startStationId: route.startStation,
-            endStationId: route.endStation,
-            price: price,
+            routeId: route.id,
+            startStationId: route.startStation.id,
+            endStationId: route.endStation.id,
+            price: 0,
             companyId: companyId,
         }
-        await dispatch(companyActions.addTrip({ tripInfor }))
+        await dispatch(tripThunk.addTrip({ tripInfor }))
+            .unwrap()
+            .then((res) => {
+                return res.map((trip) => trip.id)
+            })
+            .catch((err) => {
+                console.error(err)
+                return []
+            })
     }
     const handleAddCompany = async () => {
         const companyData = {
@@ -771,218 +1059,333 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             })
     }
 
+    const handleAddFixSchedule = async (tripId, listTime, listRepeat) => {
+        await dispatch(
+            scheduleThunk.addFixedSchedule({
+                tripId: tripId,
+                listTime: listTime,
+                listRepeat: listRepeat,
+            }),
+        )
+            .unwrap()
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((err) => {
+                console.error(err)
+            })
+    }
+
+    const handleSaveInfo = async () => {
+        if (dataForm.current.checkValidity() === true && listCompanyRoute.length > 0) {
+            setValidated(true)
+            console.log(listCompanyRoute)
+            const companyId = await handleAddCompany()
+            let route = null
+            let listTrip = []
+            const listRouteId = []
+            for (let i = 0; i < listCompanyRoute.length; i++) {
+                route = await handleAddRoute(listCompanyRoute[i].route)
+                if (route) {
+                    listTrip = await handleAddTrip(route, companyId)
+                    if (listTrip.length === 2) {
+                        await handleAddFixSchedule(
+                            listTrip[0],
+                            listCompanyRoute[i].listTimeGo.listTime,
+                            listCompanyRoute[i].listTimeGo.listRepeat,
+                        )
+                        await handleAddFixSchedule(
+                            listTrip[1],
+                            listCompanyRoute[i].listTimeReturn.listTime,
+                            listCompanyRoute[i].listTimeReturn.listRepeat,
+                        )
+                    }
+                }
+                listRouteId.push(route.id)
+            }
+            await handleAssignRoute(companyId, listRouteId)
+        } else {
+            setValidated(true)
+            addToast(() => CustomToast({ message: 'Một số thông tin chưa hợp lệ', type: 'error' }))
+            return
+        }
+    }
+
     useEffect(() => {
         if (listStation.length === 0) dispatch(locationThunk.getLocations())
         if (listRoute.length === 0) dispatch(routeThunk.getRoute())
     }, [])
     return (
-        <CModal
-            alignment="center"
-            backdrop="static"
-            scrollable
-            visible={visible}
-            size="lg"
-            onClose={() => setVisible(false)}
-        >
-            <CModalHeader>
-                <CModalTitle>Thêm nhà xe</CModalTitle>
-            </CModalHeader>
-            <CModalBody className="p-4">
-                <CRow>
-                    <CCard className="w-100 p-0">
-                        <CCardHeader className="bg-info">
-                            <b>Thông tin nhà xe</b>
-                        </CCardHeader>
-                        <CCardBody>
-                            <Tabs
-                                className="tabStyle"
-                                selectedIndex={activeTab}
-                                onSelect={(index) => setActiveTab(index)}
-                            >
-                                <TabList>
-                                    <Tab>Liên hệ</Tab>
-                                    {listCompanyRoute.map((route, index) => (
-                                        <Tab key={index}>{`Tuyến xe ${index + 1}`}</Tab>
-                                    ))}
-                                </TabList>
-                                <TabPanel>
-                                    <CForm
-                                        className="w-100"
-                                        noValidate
-                                        validated={validated}
-                                        onSubmit={handleAddBus}
-                                    >
-                                        <CRow className="mb-3 justify-content-center align-items-center">
-                                            <CFormLabel
-                                                htmlFor="name"
-                                                className="col-sm-2 col-form-label"
-                                            >
-                                                <b>Tên nhà xe</b>
-                                            </CFormLabel>
-                                            <CCol sm={8}>
-                                                <CFormInput
-                                                    type="text"
-                                                    id="firmName"
-                                                    name={companyInput.firmName.name}
-                                                    pattern={companyInput.firmName.pattern}
-                                                    required={companyInput.firmName.required}
-                                                    value={companyInfo.firmName}
-                                                    onChange={handleChangeCompanyInfo}
-                                                />
-                                                <CFormFeedback invalid>
-                                                    {companyInput.firmName.errorMessage}
-                                                </CFormFeedback>
-                                            </CCol>
-                                        </CRow>
-                                        <CRow className="mb-3 justify-content-center align-items-center">
-                                            <CFormLabel
-                                                htmlFor="name"
-                                                className="col-sm-2 col-form-label"
-                                            >
-                                                <b>Đại diện</b>
-                                            </CFormLabel>
-                                            <CCol sm={3}>
-                                                <CFormInput
-                                                    type="text"
-                                                    id="representName"
-                                                    name={companyInput.representName.name}
-                                                    pattern={companyInput.representName.pattern}
-                                                    value={companyInfo.representName}
-                                                    onChange={handleChangeCompanyInfo}
-                                                />
-                                                <CFormFeedback invalid>
-                                                    {companyInput.representName.errorMessage}
-                                                </CFormFeedback>
-                                            </CCol>
-                                            <CFormLabel
-                                                htmlFor="color"
-                                                className="col-sm-2 col-form-label"
-                                            >
-                                                <b>Số điện thoại</b>
-                                            </CFormLabel>
-                                            <CCol sm={3}>
-                                                <CFormInput
-                                                    type="text"
-                                                    id="telephone"
-                                                    required={companyInput.telephone.required}
-                                                    pattern={companyInput.telephone.pattern}
-                                                    value={companyInfo.telephone}
-                                                    onChange={handleChangeCompanyInfo}
-                                                />
-                                                <CFormFeedback invalid>
-                                                    {companyInput.telephone.errorMessage}
-                                                </CFormFeedback>
-                                            </CCol>
-                                        </CRow>
-                                        <CRow className="mb-3 justify-content-center align-items-center">
-                                            <CFormLabel
-                                                htmlFor="color"
-                                                className="col-sm-2 col-form-label"
-                                            >
-                                                <b>Email</b>
-                                            </CFormLabel>
-                                            <CCol sm={8}>
-                                                <CFormInput
-                                                    type="text"
-                                                    id="email"
-                                                    required={companyInput.email.required}
-                                                    pattern={companyInput.email.pattern}
-                                                    value={companyInfo.email}
-                                                    onChange={handleChangeCompanyInfo}
-                                                />
-                                                <CFormFeedback invalid>
-                                                    {companyInput.email.errorMessage}
-                                                </CFormFeedback>
-                                            </CCol>
-                                        </CRow>
-
-                                        <CRow className="mb-3 justify-content-center align-items-center">
-                                            <CFormLabel
-                                                htmlFor="color"
-                                                className="col-sm-2 col-form-label"
-                                            >
-                                                <b>Số giấy phép kinh doanh</b>
-                                            </CFormLabel>
-                                            <CCol sm={8}>
-                                                <CFormInput
-                                                    type="text"
-                                                    id="businessLicense"
-                                                    required={companyInput.businessLicense.required}
-                                                    pattern={companyInput.businessLicense.pattern}
-                                                    value={companyInfo.businessLicense}
-                                                    onChange={handleChangeCompanyInfo}
-                                                />
-                                                <CFormFeedback invalid>
-                                                    {companyInput.businessLicense.errorMessage}
-                                                </CFormFeedback>
-                                            </CCol>
-                                        </CRow>
-                                        <CRow className="mb-3 justify-content-center align-items-center">
-                                            <CustomButton
-                                                text="Thêm"
-                                                type="submit"
-                                                loading={loading}
-                                                color="success"
-                                                style={{ width: '100px', marginRight: '10px' }}
-                                            ></CustomButton>
-                                            <CButton
-                                                variant="outline"
-                                                style={{ width: '100px' }}
-                                                color="danger"
-                                                onClick={reset}
-                                            >
-                                                Hủy
-                                            </CButton>
-                                        </CRow>
-                                    </CForm>
-                                </TabPanel>
-                                {listCompanyRoute.map((route, index) => (
-                                    <TabPanel key={index}>
-                                        <CForm>
-                                            <CompanyRoute
-                                                key={index}
-                                                id={index}
-                                                addCompanyRoute={updateCompanyRoute}
-                                            ></CompanyRoute>
-                                            <div className="d-flex justify-content-end">
-                                                <CButtonGroup role="group" aria-label="route">
-                                                    <CButton
-                                                        color="success"
-                                                        variant="outline"
-                                                        onClick={addRouteTab}
-                                                    >
-                                                        Thêm tuyến
-                                                    </CButton>
-                                                    {index > 0 && (
-                                                        <CButton
-                                                            color="danger"
-                                                            variant="outline"
-                                                            onClick={() => removeRouteTab(index)}
-                                                        >
-                                                            Xoá tuyến
-                                                        </CButton>
-                                                    )}
-                                                </CButtonGroup>
-                                            </div>
+        <>
+            <CModal
+                alignment="center"
+                backdrop="static"
+                scrollable
+                visible={visible}
+                size="lg"
+                onClose={() => setVisible(false)}
+            >
+                <CModalHeader>
+                    <CModalTitle>Thêm nhà xe</CModalTitle>
+                </CModalHeader>
+                <CModalBody className="p-4">
+                    <CRow>
+                        <CCard className="w-100 p-0">
+                            <CCardHeader className="bg-info">
+                                <b>Thông tin nhà xe</b>
+                            </CCardHeader>
+                            <CCardBody>
+                                <Tabs
+                                    className="tabStyle"
+                                    selectedIndex={activeTab}
+                                    onSelect={(index) => setActiveTab(index)}
+                                >
+                                    <TabList>
+                                        <Tab>Liên hệ</Tab>
+                                        {listCompanyRoute.map((route, index) => (
+                                            <Tab key={index}>{`Tuyến xe ${index + 1}`}</Tab>
+                                        ))}
+                                    </TabList>
+                                    <TabPanel>
+                                        <CForm
+                                            className="w-100"
+                                            noValidate
+                                            validated={validated}
+                                            ref={dataForm}
+                                        >
+                                            <CRow className="mb-3 justify-content-center align-items-center">
+                                                <CFormLabel
+                                                    htmlFor="name"
+                                                    className="col-sm-2 col-form-label"
+                                                >
+                                                    <b>Tên nhà xe</b>
+                                                </CFormLabel>
+                                                <CCol sm={8}>
+                                                    <CFormInput
+                                                        type="text"
+                                                        id="firmName"
+                                                        name={companyInput.firmName.name}
+                                                        pattern={companyInput.firmName.pattern}
+                                                        required={companyInput.firmName.required}
+                                                        value={companyInfo.firmName}
+                                                        onChange={handleChangeCompanyInfo}
+                                                    />
+                                                    <CFormFeedback invalid>
+                                                        {companyInput.firmName.errorMessage}
+                                                    </CFormFeedback>
+                                                </CCol>
+                                            </CRow>
+                                            <CRow className="mb-3 justify-content-center align-items-center">
+                                                <CFormLabel
+                                                    htmlFor="name"
+                                                    className="col-sm-2 col-form-label"
+                                                >
+                                                    <b>Đại diện</b>
+                                                </CFormLabel>
+                                                <CCol sm={3}>
+                                                    <CFormInput
+                                                        type="text"
+                                                        id="representName"
+                                                        name={companyInput.representName.name}
+                                                        pattern={companyInput.representName.pattern}
+                                                        value={companyInfo.representName}
+                                                        onChange={handleChangeCompanyInfo}
+                                                    />
+                                                    <CFormFeedback invalid>
+                                                        {companyInput.representName.errorMessage}
+                                                    </CFormFeedback>
+                                                </CCol>
+                                                <CFormLabel
+                                                    htmlFor="color"
+                                                    className="col-sm-2 col-form-label"
+                                                >
+                                                    <b>Số điện thoại</b>
+                                                </CFormLabel>
+                                                <CCol sm={3}>
+                                                    <CFormInput
+                                                        type="text"
+                                                        id="telephone"
+                                                        name="telephone"
+                                                        required={companyInput.telephone.required}
+                                                        pattern={companyInput.telephone.pattern}
+                                                        value={companyInfo.telephone}
+                                                        onChange={handleChangeCompanyInfo}
+                                                    />
+                                                    <CFormFeedback invalid>
+                                                        {companyInput.telephone.errorMessage}
+                                                    </CFormFeedback>
+                                                </CCol>
+                                            </CRow>
+                                            <CRow className="mb-3 justify-content-center align-items-center">
+                                                <CFormLabel
+                                                    htmlFor="color"
+                                                    className="col-sm-2 col-form-label"
+                                                >
+                                                    <b>CCCD</b>
+                                                </CFormLabel>
+                                                <CCol sm={8}>
+                                                    <CFormInput
+                                                        type="text"
+                                                        id="idCard"
+                                                        name="idCard"
+                                                        required={companyInput.idCard.required}
+                                                        pattern={companyInput.idCard.pattern}
+                                                        value={companyInfo.idCard}
+                                                        onChange={handleChangeCompanyInfo}
+                                                    />
+                                                    <CFormFeedback invalid>
+                                                        {companyInput.idCard.errorMessage}
+                                                    </CFormFeedback>
+                                                </CCol>
+                                            </CRow>
+                                            <CRow className="mb-3 justify-content-center align-items-center">
+                                                <CFormLabel
+                                                    htmlFor="color"
+                                                    className="col-sm-2 col-form-label"
+                                                >
+                                                    <b>Email</b>
+                                                </CFormLabel>
+                                                <CCol sm={8}>
+                                                    <CFormInput
+                                                        type="text"
+                                                        id="email"
+                                                        name="email"
+                                                        required={companyInput.email.required}
+                                                        pattern={companyInput.email.pattern}
+                                                        value={companyInfo.email}
+                                                        onChange={handleChangeCompanyInfo}
+                                                    />
+                                                    <CFormFeedback invalid>
+                                                        {companyInput.email.errorMessage}
+                                                    </CFormFeedback>
+                                                </CCol>
+                                            </CRow>
+                                            <CRow className="mb-3 justify-content-center align-items-center">
+                                                <CFormLabel
+                                                    htmlFor="color"
+                                                    className="col-sm-2 col-form-label"
+                                                >
+                                                    <b>Địa chỉ</b>
+                                                </CFormLabel>
+                                                <CCol sm={8}>
+                                                    <CFormInput
+                                                        type="text"
+                                                        id="address"
+                                                        name="address"
+                                                        required={companyInput.address.required}
+                                                        pattern={companyInput.address.pattern}
+                                                        value={companyInfo.address}
+                                                        onChange={handleChangeCompanyInfo}
+                                                    />
+                                                    <CFormFeedback invalid>
+                                                        {companyInput.address.errorMessage}
+                                                    </CFormFeedback>
+                                                </CCol>
+                                            </CRow>
+                                            <CRow className="mb-3 justify-content-center align-items-center">
+                                                <CFormLabel
+                                                    htmlFor="color"
+                                                    className="col-sm-2 col-form-label"
+                                                >
+                                                    <b>Số giấy phép kinh doanh</b>
+                                                </CFormLabel>
+                                                <CCol sm={8}>
+                                                    <CFormInput
+                                                        type="text"
+                                                        id="businessLicense"
+                                                        name="businessLicense"
+                                                        required={
+                                                            companyInput.businessLicense.required
+                                                        }
+                                                        pattern={
+                                                            companyInput.businessLicense.pattern
+                                                        }
+                                                        value={companyInfo.businessLicense}
+                                                        onChange={handleChangeCompanyInfo}
+                                                    />
+                                                    <CFormFeedback invalid>
+                                                        {companyInput.businessLicense.errorMessage}
+                                                    </CFormFeedback>
+                                                </CCol>
+                                            </CRow>
                                         </CForm>
                                     </TabPanel>
-                                ))}
-                            </Tabs>
-                        </CCardBody>
-                        <CCardFooter className="bg-light">{error !== '' ? error : ''}</CCardFooter>
-                    </CCard>
-                </CRow>
-            </CModalBody>
-            <CModalFooter>
-                <CButton
-                    color="secondary"
-                    onClick={() => setVisible(false)}
-                    style={{ width: 'fit-content' }}
-                >
-                    Đóng
-                </CButton>
-            </CModalFooter>
-        </CModal>
+                                    {listCompanyRoute.map((route, index) => (
+                                        <TabPanel key={index}>
+                                            <CForm>
+                                                <CompanyRoute
+                                                    key={index}
+                                                    id={index}
+                                                    addCompanyRoute={updateCompanyRoute}
+                                                    companyRoute={route}
+                                                ></CompanyRoute>
+                                                <div className="d-flex justify-content-end">
+                                                    <CButtonGroup role="group" aria-label="route">
+                                                        <CButton
+                                                            color="success"
+                                                            variant="outline"
+                                                            onClick={addRouteTab}
+                                                        >
+                                                            Thêm tuyến
+                                                        </CButton>
+                                                        {index > 0 && (
+                                                            <CButton
+                                                                color="danger"
+                                                                variant="outline"
+                                                                onClick={() =>
+                                                                    removeRouteTab(index)
+                                                                }
+                                                            >
+                                                                Xoá tuyến
+                                                            </CButton>
+                                                        )}
+                                                    </CButtonGroup>
+                                                </div>
+                                            </CForm>
+                                        </TabPanel>
+                                    ))}
+                                </Tabs>
+                            </CCardBody>
+                            <CCardFooter className="bg-light">
+                                {error !== '' ? error : ''}
+                            </CCardFooter>
+                        </CCard>
+                    </CRow>
+                </CModalBody>
+                <CModalFooter style={{ justifyContent: 'flex-start' }}>
+                    <CRow className="w-100 justify-content-between align-items-center">
+                        <CCol className="d-flex" sm={10}>
+                            <CustomButton
+                                text="Lưu thông tin"
+                                type="submit"
+                                onClick={handleSaveInfo}
+                                loading={loading}
+                                color="success"
+                                style={{ marginRight: '10px' }}
+                            ></CustomButton>
+                            <CButton
+                                variant="outline"
+                                style={{ width: '100px' }}
+                                color="danger"
+                                onClick={reset}
+                            >
+                                Hủy
+                            </CButton>
+                        </CCol>
+                        <CCol className="d-flex justify-content-end" sm={2}>
+                            <CButton
+                                color="secondary"
+                                onClick={() => setVisible(false)}
+                                style={{ width: 'fit-content' }}
+                            >
+                                Đóng
+                            </CButton>
+                        </CCol>
+                    </CRow>
+                </CModalFooter>
+            </CModal>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+        </>
     )
 }
 

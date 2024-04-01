@@ -1,101 +1,96 @@
-.pick_container{
-    margin: 20px 0 20px 20px;
-    flex: 1;
-    padding-right: 10px;
+.pick_container {
+  margin: 20px 0 20px 20px;
+  flex: 1;
+  padding-right: 10px;
 }
 
-.pick_container h3{
-    font-size: 19px;
+.pick_container h3 {
+  font-size: 19px;
 }
 
-.pick_separate{
-    position: relative
+.pick_separate {
+  position: relative;
 }
 
-.pick_separate::after{
-    position: absolute;
-    content: "";
-    height: 90%;
-    border-left: 1px solid #ccc;
-    right: -10px;
-    top: 50%;
-    transform: translateY(-50%);
+.pick_separate::after {
+  position: absolute;
+  content: "";
+  height: 90%;
+  border-left: 1px solid #ccc;
+  right: -10px;
+  top: 50%;
+  transform: translateY(-50%);
 }
-
 
 @media only screen and (max-width: 700px) {
-    .pick_separate::after{
-        display: none;
-    }
-    .pick_separate::before{
-        content: "";
-        width: 90%;
-        position: absolute;
-        border-top: 1px solid #ccc;
-        bottom: -15px;
-        transform: translateX(-50%);
-        left: 50%;
-    }
-    
+  .pick_separate::after {
+    display: none;
+  }
+  .pick_separate::before {
+    content: "";
+    width: 90%;
+    position: absolute;
+    border-top: 1px solid #ccc;
+    bottom: -15px;
+    transform: translateX(-50%);
+    left: 50%;
+  }
 }
 
-
-.pick_title{
-    color: #696767;
-    font-weight: 500;
-    margin-bottom: 10px;
-    text-decoration: underline;
+.pick_title {
+  color: #696767;
+  font-weight: 500;
+  margin-bottom: 10px;
+  text-decoration: underline;
 }
 
-.list_locations{
-    max-height: 300px;
-    overflow-y: auto;
-    
+.list_locations {
+  max-height: 300px;
+  overflow-y: auto;
 }
 
-.pick_location{
-    margin: 20px 0;
+.pick_location {
+  margin: 20px 0;
 }
 
-.location_label{
-    margin-bottom: 5px;
-    color: #717070;
+.location_label {
+  margin-bottom: 5px;
+  color: #717070;
 }
 
 .selected {
-    color: rgb(85, 188, 248) !important;
-    font-weight: 700;
-  }
-  
+  color: rgb(85, 188, 248) !important;
+  font-weight: 700;
+}
+
 .selected input[type="radio"] {
-    border-color: rgb(85, 188, 248);
-    border: 2px solid #000;
+  border-color: rgb(85, 188, 248);
+  border: 2px solid #000;
 }
 
-.pick_radio{
-    transform: scale(1.5);
-    margin: 0 10px;
+.pick_radio {
+  transform: scale(1.5);
+  margin: 0 10px;
 }
 
-.location_time{
-    font-weight: 700;
+.location_time {
+  font-weight: 700;
 }
 
-.location_name{
-    font-weight: 400;
+.location_name {
+  font-weight: 400;
 }
 
-.location_addr{
-    display: flex;
-    font-size: 13px;
-    margin: 5px 5px 0 30px;
+.location_addr {
+  display: flex;
+  font-size: 13px;
+  margin: 5px 5px 0 30px;
 }
 
-.location_addr span{
-    margin-left: 5px;
+.location_addr span {
+  margin-left: 5px;
 }
 
-.location_addr a{
-    margin-left: 5px;
+.location_addr a {
+  margin-left: 5px;
 }
-

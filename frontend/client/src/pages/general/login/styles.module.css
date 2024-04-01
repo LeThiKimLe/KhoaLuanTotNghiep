@@ -1,40 +1,39 @@
-.container{
-    margin: 20px 0px 100px 0px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+.container {
+  margin: 20px 0px 100px 0px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.loginContainer{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 80px;
-    margin: 20px 0;
-    width: 100%;
-    max-width: 1024px;
+.loginContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 80px;
+  margin: 20px 0;
+  width: 100%;
+  max-width: 1024px;
 }
 
-.loginImg img{
-    width: 400px;
-    height: 400px;
-    object-fit:cover;
+.loginImg img {
+  width: 400px;
+  height: 400px;
+  object-fit: cover;
 }
 
-.formContainerBig
-{
-    width: 100%;
+.formContainerBig {
+  width: 100%;
 }
 
-.formContainerSmall{
-    width: 85%;
+.formContainerSmall {
+  width: 85%;
 }
 
-.formInfor{
+.formInfor {
   text-align: center;
 }
 
-.btnLogin{
+.btnLogin {
   margin-top: 30px;
   margin-bottom: 30px;
 }
@@ -43,19 +42,17 @@
   position: relative;
 }
 
-.loading_icon{
+.loading_icon {
   margin-top: 15px;
 }
 
-.subLink{
+.subLink {
   display: none;
   font-size: 14px;
 }
 
-@media only screen and (max-width: 754px){
-
-  .subLink{
-    display: block
+@media only screen and (max-width: 754px) {
+  .subLink {
+    display: block;
   }
-
 }

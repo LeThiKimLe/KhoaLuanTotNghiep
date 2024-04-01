@@ -1,213 +1,205 @@
-.trip_container{
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
+.trip_container {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
 }
 
-.trip_wrapper{
-    width: 100%;
-    max-width: 1024px;
-    display: flex;
-    gap: 20px;
+.trip_wrapper {
+  width: 100%;
+  max-width: 1024px;
+  display: flex;
+  gap: 20px;
 }
 
 @media only screen and (min-width: 930px) {
-    .trip_wrapper{
-        flex-direction: row;
-    }
+  .trip_wrapper {
+    flex-direction: row;
+  }
 }
 
-.trip_infor{
-    flex: 3
+.trip_infor {
+  flex: 3;
 }
 
-.trip_sum_container{
-    position: sticky;
-    top: 10px;
-    flex: 1;
-    height: max-content;
+.trip_sum_container {
+  position: sticky;
+  top: 10px;
+  flex: 1;
+  height: max-content;
 }
 
-.trip_sum{
-    border: 1px solid #ccc;
-    border-radius: 10px;
-    padding: 10px;
-    height: max-content;
-    background-color: rgb(246, 240, 130);
-    margin-bottom: 10px;
+.trip_sum {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  height: max-content;
+  background-color: rgb(246, 240, 130);
+  margin-bottom: 10px;
 }
 
 @media only screen and (max-width: 930px) {
-    .trip_wrapper{
-        flex-direction: column;
-        gap: 0;
-    }
+  .trip_wrapper {
+    flex-direction: column;
+    gap: 0;
+  }
 
-    .trip_sum{
-        margin-bottom: 40px;
-    }
- 
+  .trip_sum {
+    margin-bottom: 40px;
+  }
 }
 
-.infor_segment{
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    padding: 20px;
-    box-shadow: 0px 10px 8px #ccc;
-    margin-bottom: 10px;
+.infor_segment {
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  padding: 20px;
+  box-shadow: 0px 10px 8px #ccc;
+  margin-bottom: 10px;
 }
 
-.infor_segment h2{
-    color: #5a5858;
-    font-size: 20px;
-    font-weight: 700;
-    margin: 0;
+.infor_segment h2 {
+  color: #5a5858;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
 }
 
-.pick_area{
-    display: flex;
-    justify-content: center;
-    gap: 20px;
+.pick_area {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
 }
 
-.sum_title{
-    text-align: center;
-    font-size: 18px;
-    font-weight: 700;
+.sum_title {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 700;
 }
-.sum_infor{
-    display: flex;
-    gap: 30px;
-    margin-bottom: 20px;
+.sum_infor {
+  display: flex;
+  gap: 30px;
+  margin-bottom: 20px;
 }
-.sum_infor_title{
-    font-weight: 600;
-    min-width: 100px;
-
+.sum_infor_title {
+  font-weight: 600;
+  min-width: 100px;
 }
-.sum_infor_value{
-    font-weight: 400;
-}
-
-.user_infor_container{
-    display: flex;
-    gap: 20px;
+.sum_infor_value {
+  font-weight: 400;
 }
 
-.infor_box{
-    flex: 1;
-    margin-left: 20px;
+.user_infor_container {
+  display: flex;
+  gap: 20px;
 }
 
-.infor_box h2{
-    margin: 20px 0;
+.infor_box {
+  flex: 1;
+  margin-left: 20px;
 }
 
-.personal_infor{
-    text-align: center;
-    position: relative;
-
+.infor_box h2 {
+  margin: 20px 0;
 }
 
-.personal_infor::after{
-    content: "";
-    height: 80%;
-    position: absolute;
-    right: -10px;
-    border-left: 1px solid #ccc;
-    top: 50%;
-    transform: translateY(-50%);
+.personal_infor {
+  text-align: center;
+  position: relative;
 }
 
-.personal_infor::before{
-    display: none;
-    content: "";
-    width: 100%;
-    position: absolute;
-    border-top: 1px solid #ccc;
-    bottom: -5px;
-    transform: translateX(-50%);
-    left: 50%;
+.personal_infor::after {
+  content: "";
+  height: 80%;
+  position: absolute;
+  right: -10px;
+  border-left: 1px solid #ccc;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.personal_infor::before {
+  display: none;
+  content: "";
+  width: 100%;
+  position: absolute;
+  border-top: 1px solid #ccc;
+  bottom: -5px;
+  transform: translateX(-50%);
+  left: 50%;
 }
 
 @media only screen and (max-width: 700px) {
-    .user_infor_container{
-        flex-direction: column;
-        gap: 0px;
-    }
+  .user_infor_container {
+    flex-direction: column;
+    gap: 0px;
+  }
 
-    .personal_infor::after{
-        display: none
-    }
+  .personal_infor::after {
+    display: none;
+  }
 
-    .personal_infor::before{
-        display: block
-    }
+  .personal_infor::before {
+    display: block;
+  }
 
-    .pick_area{
-        flex-direction: column;
-        gap: 0;
-    }
-
+  .pick_area {
+    flex-direction: column;
+    gap: 0;
+  }
 }
 
-
-.policy_infor h2{
-    text-align: center;
-    
+.policy_infor h2 {
+  text-align: center;
 }
 
-.policy_content{
-    padding: 10px;
-
+.policy_content {
+  padding: 10px;
 }
 
-.infor_confirm{
-    margin-left: 26px;
+.infor_confirm {
+  margin-left: 26px;
 }
 
-.infor_confirm input{
-    transform: scale(2);
-    margin-right: 10px;
+.infor_confirm input {
+  transform: scale(2);
+  margin-right: 10px;
 }
 
-.inputContain{
-    width: 87% !important;
+.inputContain {
+  width: 87% !important;
 }
 
-.payment_direct{
-    border: 1px solid #ccc;
-    padding: 10px;
-    border-radius: 10px;
-    display: flex;
-    justify-content: space-between;
-    margin: 20px 0 40px 0;
-    align-items: center;
-    min-height: 100px;
-    gap: 30px;
+.payment_direct {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  margin: 20px 0 40px 0;
+  align-items: center;
+  min-height: 100px;
+  gap: 30px;
 }
 
-.btnCheckout{
-    margin: 0;
+.btnCheckout {
+  margin: 0;
 }
 
-
-.payment_direct span:first-child{
-    font-size: 20px;
-    font-weight: 700;
+.payment_direct span:first-child {
+  font-size: 20px;
+  font-weight: 700;
 }
 
 @keyframes linearAppear {
-    from {
-        height: 0;
-    }
+  from {
+    height: 0;
+  }
 
-    to {
-        height: max-content;
-    }
+  to {
+    height: max-content;
+  }
 }
 
-.tabStyle{
-    transition: all 0.3s ease-in-out;
-    animation: linearAppear 0.3 forwards;
+.tabStyle {
+  transition: all 0.3s ease-in-out;
+  animation: linearAppear 0.3 forwards;
 }
