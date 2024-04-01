@@ -1048,7 +1048,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             businessName: companyInfo.firmName,
             businessLicense: companyInfo.businessLicense,
         }
-        await dispatch(companyActions.addCompany({ companyData }))
+        await dispatch(companyThunk.addCompany({ companyInfor: companyData }))
             .unwrap()
             .then((res) => {
                 return res.id
@@ -1077,38 +1077,47 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     }
 
     const handleSaveInfo = async () => {
-        if (dataForm.current.checkValidity() === true && listCompanyRoute.length > 0) {
-            setValidated(true)
-            console.log(listCompanyRoute)
-            const companyId = await handleAddCompany()
-            let route = null
-            let listTrip = []
-            const listRouteId = []
-            for (let i = 0; i < listCompanyRoute.length; i++) {
-                route = await handleAddRoute(listCompanyRoute[i].route)
-                if (route) {
-                    listTrip = await handleAddTrip(route, companyId)
-                    if (listTrip.length === 2) {
-                        await handleAddFixSchedule(
-                            listTrip[0],
-                            listCompanyRoute[i].listTimeGo.listTime,
-                            listCompanyRoute[i].listTimeGo.listRepeat,
-                        )
-                        await handleAddFixSchedule(
-                            listTrip[1],
-                            listCompanyRoute[i].listTimeReturn.listTime,
-                            listCompanyRoute[i].listTimeReturn.listRepeat,
-                        )
+        if (activeTab !== 0) {
+            setActiveTab(0)
+        }
+        setTimeout(async () => {
+            if (dataForm.current.checkValidity() === true && listCompanyRoute.length > 0) {
+                setValidated(true)
+                console.log(listCompanyRoute)
+                setLoading(true)
+                const companyId = await handleAddCompany()
+                let route = null
+                let listTrip = []
+                const listRouteId = []
+                for (let i = 0; i < listCompanyRoute.length; i++) {
+                    route = await handleAddRoute(listCompanyRoute[i].route)
+                    if (route) {
+                        listTrip = await handleAddTrip(route, companyId)
+                        if (listTrip.length === 2) {
+                            await handleAddFixSchedule(
+                                listTrip[0],
+                                listCompanyRoute[i].listTimeGo.listTime,
+                                listCompanyRoute[i].listTimeGo.listRepeat,
+                            )
+                            await handleAddFixSchedule(
+                                listTrip[1],
+                                listCompanyRoute[i].listTimeReturn.listTime,
+                                listCompanyRoute[i].listTimeReturn.listRepeat,
+                            )
+                        }
+                        listRouteId.push(route.id)
                     }
                 }
-                listRouteId.push(route.id)
+                await handleAssignRoute(companyId, listRouteId)
+                setLoading(false)
+            } else {
+                setValidated(true)
+                addToast(() =>
+                    CustomToast({ message: 'Một số thông tin chưa hợp lệ', type: 'error' }),
+                )
+                return
             }
-            await handleAssignRoute(companyId, listRouteId)
-        } else {
-            setValidated(true)
-            addToast(() => CustomToast({ message: 'Một số thông tin chưa hợp lệ', type: 'error' }))
-            return
-        }
+        }, 500)
     }
 
     useEffect(() => {
