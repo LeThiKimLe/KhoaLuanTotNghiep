@@ -5,29 +5,28 @@ import { persistReducer } from "redux-persist";
 import autoMergeLevel2 from "redux-persist/es/stateReconciler/autoMergeLevel2";
 
 const initialState = {
-    seatMap: null
-}
+  seatMap: null,
+};
 
 const seatSlice = createSlice({
-    name: 'seat',
-    initialState,
-    extraReducers: (builder) => {
-        builder
-        .addCase(seatThunk.getSeatMap.fulfilled, (state, action) => {
-            state.seatMap = action.payload
-        })
-    }
-})
+  name: "seat",
+  initialState,
+  extraReducers: (builder) => {
+    builder.addCase(seatThunk.getSeatMap.fulfilled, (state, action) => {
+      state.seatMap = action.payload;
+    });
+  },
+});
 
-export const selectSeatMap = state => state.seat.seatMap
+export const selectSeatMap = (state) => state.seat.seatMap;
 
 const seatPersistConfig = {
-    key: 'seatmap',
-    storage,
-    stateReconciler: autoMergeLevel2,
-    whitelist: ['seatMap']
-}
+  key: "seatmap",
+  storage,
+  stateReconciler: autoMergeLevel2,
+  whitelist: ["seatMap"],
+};
 
-const seatReducer = persistReducer(seatPersistConfig, seatSlice.reducer)
+const seatReducer = persistReducer(seatPersistConfig, seatSlice.reducer);
 
-export default seatReducer
+export default seatReducer;

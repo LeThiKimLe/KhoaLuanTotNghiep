@@ -1,5 +1,5 @@
 @media only screen and (max-width: 878px) {
-    .about.d-flex{
-        flex-direction: column;
-    }
+  .about.d-flex {
+    flex-direction: column;
+  }
 }

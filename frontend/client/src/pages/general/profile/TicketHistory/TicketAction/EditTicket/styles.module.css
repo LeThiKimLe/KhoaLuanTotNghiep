@@ -1,26 +1,25 @@
-.container{
-    padding: 10px 0 70px 0;
-    font-size: 17px;
-    height: 100%;
-    min-width: 700px;
+.container {
+  padding: 10px 0 70px 0;
+  font-size: 17px;
+  height: 100%;
+  min-width: 700px;
 }
 
-.nextBtn{
-    margin: 20px 0;
-    float: right;
+.nextBtn {
+  margin: 20px 0;
+  float: right;
 }
 
-.inforTitle{
-    font-weight: 600;
-    color: grey
+.inforTitle {
+  font-weight: 600;
+  color: grey;
 }
 
-.inforValue{
-    font-weight: 700;
+.inforValue {
+  font-weight: 700;
 }
 
-
-.tabStyle{
-    transition: all 0.3s ease-in-out;
-    animation: linearAppear 0.3 forwards;
+.tabStyle {
+  transition: all 0.3s ease-in-out;
+  animation: linearAppear 0.3 forwards;
 }

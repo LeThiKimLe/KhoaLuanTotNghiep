@@ -1,72 +1,96 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import axiosClient from "../../api/axios";
-import { parse, format } from 'date-fns';
+import { parse, format } from "date-fns";
 
-const getTripsGo = createAsyncThunk('search/trip/go', async (searchInfor, thunkAPI) => {
+const getTripsGo = createAsyncThunk(
+  "search/trip/go",
+  async (searchInfor, thunkAPI) => {
     try {
-        const response = await axiosClient.get('trips', {
-            params: {
-                "routeId": searchInfor.searchRoute.id,
-                "availability": searchInfor.numberTicket,
-                "departDate": format(parse(searchInfor.departDate, 'dd/MM/yyyy', new Date()), 'yyyy-MM-dd'),
-                "turn": searchInfor.turn
-            }
-        })
-        return response
+      const response = await axiosClient.get("trips", {
+        params: {
+          routeId: searchInfor.searchRoute.id,
+          availability: searchInfor.numberTicket,
+          departDate: format(
+            parse(searchInfor.departDate, "dd/MM/yyyy", new Date()),
+            "yyyy-MM-dd",
+          ),
+          turn: searchInfor.turn,
+        },
+      });
+      return response;
+    } catch (error) {
+      const message =
+        "Không tìm thấy chuyến xe" ||
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
     }
-    catch (error) {
-        const message = 'Không tìm thấy chuyến xe' ||
-            (error.response && error.response.data && error.response.data.message) ||
-            error.message ||
-            error.toString();
-        return thunkAPI.rejectWithValue(message);
-    }
-})
+  },
+);
 
-const getTripsReturn = createAsyncThunk('search/trip/return', async (searchInfor, thunkAPI) => {
+const getTripsReturn = createAsyncThunk(
+  "search/trip/return",
+  async (searchInfor, thunkAPI) => {
     try {
-        const response = await axiosClient.get('trips', {
-            params: {
-                "routeId": searchInfor.searchRoute.id,
-                "availability": searchInfor.numberTicket,
-                "departDate": format(parse(searchInfor.arrivalDate, 'dd/MM/yyyy', new Date()), 'yyyy-MM-dd'),
-                "turn": !searchInfor.turn
-            }
-        })
-        return response
+      const response = await axiosClient.get("trips", {
+        params: {
+          routeId: searchInfor.searchRoute.id,
+          availability: searchInfor.numberTicket,
+          departDate: format(
+            parse(searchInfor.arrivalDate, "dd/MM/yyyy", new Date()),
+            "yyyy-MM-dd",
+          ),
+          turn: !searchInfor.turn,
+        },
+      });
+      return response;
+    } catch (error) {
+      const message =
+        "Không tìm thấy chuyến xe" ||
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
     }
-    catch (error) {
-        const message = 'Không tìm thấy chuyến xe' ||
-            (error.response && error.response.data && error.response.data.message) ||
-            error.message ||
-            error.toString();
-        return thunkAPI.rejectWithValue(message);
-    }
-})
+  },
+);
 
-const getSameTrips = createAsyncThunk('trips/same-trip', async ({tripId, departDate}, thunkAPI) => {
+const getSameTrips = createAsyncThunk(
+  "trips/same-trip",
+  async ({ tripId, departDate }, thunkAPI) => {
     try {
-        const response = await axiosClient.get('trips/same-trip', {
-            params: {
-                "tripId": tripId,
-                "departDate": format(parse(departDate, 'dd/MM/yyyy', new Date()), 'yyyy-MM-dd'),
-            }
-        })
-        return response
+      const response = await axiosClient.get("trips/same-trip", {
+        params: {
+          tripId: tripId,
+          departDate: format(
+            parse(departDate, "dd/MM/yyyy", new Date()),
+            "yyyy-MM-dd",
+          ),
+        },
+      });
+      return response;
+    } catch (error) {
+      const message =
+        "Không tìm thấy chuyến xe" ||
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
     }
-    catch (error) {
-        const message = 'Không tìm thấy chuyến xe' ||
-            (error.response && error.response.data && error.response.data.message) ||
-            error.message ||
-            error.toString();
-        return thunkAPI.rejectWithValue(message);
-    }
-})
+  },
+);
 
 const searchThunk = {
-    getTripsGo,
-    getSameTrips,
-    getTripsReturn,
-}
+  getTripsGo,
+  getSameTrips,
+  getTripsReturn,
+};
 
-export default searchThunk
+export default searchThunk;

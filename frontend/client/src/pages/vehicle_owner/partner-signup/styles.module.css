@@ -1,50 +1,50 @@
-.container{
-    display: flex;
-    justify-content: center;
-    margin: 20px 0;
+.container {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
 }
 
-.wrapper{
-    width: 100%;
-    max-width: 1024px;
-    padding: 20px;
+.wrapper {
+  width: 100%;
+  max-width: 1024px;
+  padding: 20px;
 }
 
-.signup{
-    padding: 20px;
-    border-radius: 10px;
-    background-color: rgba(116, 229, 249, 0.651);
+.signup {
+  padding: 20px;
+  border-radius: 10px;
+  background-color: rgba(116, 229, 249, 0.651);
 }
 
-.props img{
-    width: 25px;
-    height: 25px;
-    margin-right: 10px;
+.props img {
+  width: 25px;
+  height: 25px;
+  margin-right: 10px;
 }
 
-.intro{
-    border-radius: 10px;
-    border: 1px solid #a19f9f;
-    box-shadow: 0 0 10px #a19f9f;
-    padding: 10px;
+.intro {
+  border-radius: 10px;
+  border: 1px solid #a19f9f;
+  box-shadow: 0 0 10px #a19f9f;
+  padding: 10px;
 }
 
-.step{
-    border-radius: 10px;
-    border: 1px solid #a19f9f;
-    box-shadow: 0 0 10px #a19f9f;
-    padding: 10px;
-    min-height: 250px;
+.step {
+  border-radius: 10px;
+  border: 1px solid #a19f9f;
+  box-shadow: 0 0 10px #a19f9f;
+  padding: 10px;
+  min-height: 250px;
 }
 
-.step .round{
-    border-radius: 50%;
-    width: 50px;
-    height: 50px;
-    background-color: var(--primary-color);
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-bottom: 10px;
+.step .round {
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  background-color: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
 }
