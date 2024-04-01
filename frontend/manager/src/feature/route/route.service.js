@@ -27,9 +27,9 @@ const getOfficialRoute = createAsyncThunk('route/get/data', async (_, thunkAPI) 
     }
 })
 
-const addRoute = createAsyncThunk('admin/routes/add', async ({ routeInfor }, thunkAPI) => {
+const addRoute = createAsyncThunk('manager/routes/add', async ({ routeInfor }, thunkAPI) => {
     try {
-        const route = await axiosClient.post('admin/routes', {
+        const route = await axiosClient.post('manager/routes', {
             distance: routeInfor.distance,
             departureId: routeInfor.departure,
             destinationId: routeInfor.destination,
@@ -47,9 +47,9 @@ const addRoute = createAsyncThunk('admin/routes/add', async ({ routeInfor }, thu
     }
 })
 
-const editRoute = createAsyncThunk('admin/routes/edit', async ({ routeInfor }, thunkAPI) => {
+const editRoute = createAsyncThunk('manager/routes/edit', async ({ routeInfor }, thunkAPI) => {
     try {
-        const route = await axiosClient.put('admin/routes', {
+        const route = await axiosClient.put('manager/routes', {
             id: routeInfor.id,
             distance: routeInfor.distance,
             price: routeInfor.price,
@@ -68,9 +68,9 @@ const editRoute = createAsyncThunk('admin/routes/edit', async ({ routeInfor }, t
     }
 })
 
-const activeRoute = createAsyncThunk('admin/routes/active', async ({ id, active }, thunkAPI) => {
+const activeRoute = createAsyncThunk('manager/routes/active', async ({ id, active }, thunkAPI) => {
     try {
-        const route = await axiosClient.put('admin/routes/active', {
+        const route = await axiosClient.put('manager/routes/active', {
             id: id,
             active: active,
         })
@@ -85,10 +85,10 @@ const activeRoute = createAsyncThunk('admin/routes/active', async ({ id, active 
 })
 
 const getRouteParents = createAsyncThunk(
-    'admin/routes/parent',
+    'manager/routes/parent',
     async ({ departureId, destinationId }, thunkAPI) => {
         try {
-            const route = await axiosClient.get('admin/routes/parent', {
+            const route = await axiosClient.get('manager/routes/parent', {
                 params: {
                     departureId: departureId,
                     destinationId: destinationId,
