@@ -151,7 +151,7 @@ public class AuthenticationService {
 			throw new ConflictException("Nhân viên đã tồn tại trong hệ thống");
 		}
 		SignupDTO signupDTO = SignupDTO.builder().email(signupStaffDTO.getEmail()).tel(signupStaffDTO.getTel())
-				.name(signupStaffDTO.getName()).gender(signupStaffDTO.getGender()).password("@12345678@").build();
+				.name(signupStaffDTO.getName()).gender(signupStaffDTO.getGender()).oauthId("").password("@12345678@").build();
 		String userName = signupStaffDTO.getEmail();
 
 		user = createUser(signupDTO, roleId, userName);
@@ -183,7 +183,7 @@ public class AuthenticationService {
 		}
 
 		SignupDTO signupDTO = SignupDTO.builder().email(signupDriverDTO.getEmail()).tel(signupDriverDTO.getTel())
-				.name(signupDriverDTO.getName()).gender(signupDriverDTO.getGender()).password("@123456@").build();
+				.name(signupDriverDTO.getName()).gender(signupDriverDTO.getGender()).oauthId("").password("@123456@").build();
 		String userName = signupDriverDTO.getEmail();
 		User user = createUser(signupDTO, 3, userName);
 
