@@ -242,10 +242,10 @@ public class TripService {
 	}
 
 	public Object createTrip(CreateTrip createTrip) {
-		if (tripRepository.existsByStartStationIdAndEndStationId(createTrip.getStartStationId(),
-				createTrip.getEndStationId())
-				|| tripRepository.existsByStartStationIdAndEndStationId(createTrip.getEndStationId(),
-						createTrip.getStartStationId())) {
+		if (tripRepository.existsByStartStationIdAndEndStationIdAndBusCompanyId(createTrip.getStartStationId(),
+				createTrip.getEndStationId(),createTrip.getCompanyId())
+				|| tripRepository.existsByStartStationIdAndEndStationIdAndBusCompanyId(createTrip.getEndStationId(),
+						createTrip.getStartStationId(),createTrip.getCompanyId())) {
 			throw new ConflictException(Message.TRIP_EXISTS);
 		}
 		BusType busType=null;
