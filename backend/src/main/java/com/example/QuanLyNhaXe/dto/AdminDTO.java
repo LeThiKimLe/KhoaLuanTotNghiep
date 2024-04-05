@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class AdminDTO {
-	private Integer adminId;
-	private StaffDTO staff;
+	
+	private UserDTO staffUser;
 }

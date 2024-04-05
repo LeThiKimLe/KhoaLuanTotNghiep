@@ -50,4 +50,9 @@ public class BusCompanyController {
 		return new ResponseEntity<>(busCompanyService.routeAssign(assignRoute), HttpStatus.CREATED);
 	}
 	
+	@GetMapping("/assign-company")
+	public ResponseEntity<Object> getAllBusCompanyAsignRoute() {
+		return new ResponseEntity<>(busCompanyService.getRouteAssign(), HttpStatus.CREATED);
+	}
+	
 }

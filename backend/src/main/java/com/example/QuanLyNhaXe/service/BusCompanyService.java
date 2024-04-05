@@ -18,6 +18,7 @@ import com.example.QuanLyNhaXe.Request.EditBusCompany;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.dto.BusCompanyDTO;
 import com.example.QuanLyNhaXe.dto.BusDTO;
+import com.example.QuanLyNhaXe.dto.CompanyRouteDTO;
 import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Admin;
@@ -46,7 +47,7 @@ public class BusCompanyService {
 	public Object getAllBusCompany() {
 		List<BusCompany> busCompanyLists = busCompanyRepository.findAll();
 		if (busCompanyLists.isEmpty()) {
-			throw new NotFoundException(Message.BUSTYPE_NOT_FOUND);
+			throw new NotFoundException(Message.COMPANY_NOT_FOUND);
 		}
 		return busCompanyLists.stream().map(busCompanyList -> modelMapper.map(busCompanyList, BusCompanyDTO.class)).toList();
 	}
@@ -120,6 +121,16 @@ public class BusCompanyService {
 		}
 		
 		return new ResponseMessage(Message.UPDATE_SUCCESS);
+		
+	}
+	 public Object getRouteAssign() {
+		 
+		 List<RouteAssign> routeAssigns=routeAssignRepository.findAll();
+			if (routeAssigns.isEmpty()) {
+				throw new NotFoundException(Message.ROUTEASSIGN_NOT_FOUND);
+			}
+			return routeAssigns.stream().map(routeAssign -> modelMapper.map(routeAssign, CompanyRouteDTO.class)).toList();
+		 
 		
 	}
 }
