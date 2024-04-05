@@ -17,6 +17,7 @@ import { useDispatch } from 'react-redux';
 import busCompanyThunk from '../../../feature/bus-company/busCompany.service';
 import SessionTimeoutDialog from './TimeoutDialog/SessionTimeoutDialog';
 import { useNavigate } from 'react-router-dom';
+import Message from '../../../components/message';
 
 const StepBox = ({ index, title, content }) => {
     return (
@@ -43,6 +44,7 @@ const TicketSignup = () => {
         const formDataSection = document.getElementById('form-data');
         formDataSection.scrollIntoView({ behavior: 'smooth', block: 'center'});
     };
+    const [message, setMessage] = useState('')
     const navigate = useNavigate()
     const [showTimeoutDialog, setShowTimeoutDialog] = useState(false)
     const dispatch = useDispatch()
@@ -122,6 +124,10 @@ const TicketSignup = () => {
         .catch((error) => {
             console.log(error)
             setLoading(false)
+            setMessage(error)
+            setTimeout(() => {
+                setMessage('')
+            }, 3000)
         })
     }
     const returnToHome = () => {
@@ -129,6 +135,7 @@ const TicketSignup = () => {
     }
     return (
         <div >
+            {message !== '' && <Message message={message} messagetype={2} repeat={Date.now()}/>}
             <Navbar></Navbar>
             <Header type="list" active="cooperate" />
             <div className={styles.container}>

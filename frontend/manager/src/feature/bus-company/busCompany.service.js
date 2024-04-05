@@ -17,14 +17,14 @@ const getCompany = createAsyncThunk('manager/company/get', async (_, thunkAPI) =
 const addCompany = createAsyncThunk('manager/company/add', async ({ companyInfor }, thunkAPI) => {
     try {
         const response = await axiosClient.post('manager/company', {
-            name: companyInfor.representName,
+            name: companyInfor.name,
             email: companyInfor.email,
-            tel: companyInfor.telephone,
+            tel: companyInfor.tel,
             gender: true,
             idCard: companyInfor.idCard,
             address: companyInfor.address,
-            beginWorkDate: new Date(),
-            businessName: companyInfor.firmName,
+            beginWorkDate: new Date().toISOString().slice(0, 10),
+            businessName: companyInfor.businessName,
             businessLicense: companyInfor.businessLicense,
         })
         return response
@@ -68,7 +68,7 @@ const assignRouteForCompany = createAsyncThunk(
     'manager/company/assign-route',
     async ({ listRoute, companyId }, thunkAPI) => {
         try {
-            const response = await axiosClient.put('manager/company/assign-company', {
+            const response = await axiosClient.post('manager/company/assign-company', {
                 routeIds: listRoute,
                 companyId: companyId,
             })

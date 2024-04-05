@@ -14,6 +14,7 @@ import com.example.QuanLyNhaXe.Request.EditStationDTO;
 import com.example.QuanLyNhaXe.Request.EditStopStation;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO.StationOfLocation;
+import com.example.QuanLyNhaXe.dto.StationDTO;
 import com.example.QuanLyNhaXe.dto.StopStationDTO;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.ConflictException;
@@ -55,7 +56,10 @@ public class StationService {
 			stations.add(createStation);
 		}
 		stationRepository.saveAll(stations);
-		return new ResponseMessage(Message.SUCCESS);
+		// return new ResponseMessage(Message.SUCCESS);
+		// return list station model mapper with StationDTO
+		return stations.stream().map(station -> modelMapper.map(station, StationDTO.class));
+		
 	}
 
 	public Object editStation(EditStationDTO editStationDTO) {

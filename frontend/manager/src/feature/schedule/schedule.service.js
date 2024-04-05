@@ -123,7 +123,7 @@ const addFixedSchedule = createAsyncThunk(
         try {
             const response = await axiosClient.post('manager/fixed-schedule', {
                 tripId: tripId,
-                times: listTime,
+                times: listTime.map((time) => time + ':00'),
                 dayOfWeeks: listRepeat,
             })
             return response

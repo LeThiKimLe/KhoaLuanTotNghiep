@@ -85,7 +85,8 @@ public class RouteService {
 				.hours(createRouteDTO.getHours()).schedule(createRouteDTO.getSchedule())
 				.distance(createRouteDTO.getDistance()).build();
 		routeRepository.save(route);
-		return new ResponseMessage(Message.SUCCESS);
+		// return new ResponseMessage(Message.SUCCESS);
+		return modelMapper.map(route, RouteFullDTO.class);
 
 	}
 

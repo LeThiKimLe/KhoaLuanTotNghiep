@@ -30,6 +30,7 @@ import { companyActions } from 'src/feature/bus-company/busCompany.slice'
 import { selectListRequest } from 'src/feature/bus-company/busCompany.slice'
 import { useEffect, useRef, useState } from 'react'
 import Notification from 'src/views/notifications/Notification'
+import { socketAction } from 'src/feature/socket/socket.slice'
 
 const AppHeader = () => {
     const dispatch = useDispatch()
@@ -59,14 +60,17 @@ const AppHeader = () => {
             } else {
                 dispatch(companyActions.addRequest(data))
             }
-            console.log(data)
         })
         //Listen for errors
         connection.current.addEventListener('error', (event) => {
             console.log('Error:', event)
         })
+        dispatch(socketAction.setConnection(connection.current))
         // Cleanup: Đóng kết nối khi component unmount
-        return () => connection.current.close()
+        return () => {
+            dispatch(socketAction.removeConnection())
+            connection.current.close()
+        }
     }, [])
 
     return (

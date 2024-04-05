@@ -27,15 +27,15 @@ const getOfficialRoute = createAsyncThunk('route/get/data', async (_, thunkAPI) 
     }
 })
 
-const addRoute = createAsyncThunk('manager/routes/add', async ({ routeInfor }, thunkAPI) => {
+const addRoute = createAsyncThunk('manager/routes/add', async ({ routeData }, thunkAPI) => {
     try {
         const route = await axiosClient.post('manager/routes', {
-            distance: routeInfor.distance,
-            departureId: routeInfor.departure,
-            destinationId: routeInfor.destination,
-            schedule: routeInfor.schedule,
+            distance: routeData.distance,
+            departureId: routeData.departureId,
+            destinationId: routeData.destinationId,
+            schedule: routeData.schedule,
             parents: 0,
-            hours: routeInfor.hours,
+            hours: routeData.hours,
         })
         return route
     } catch (error) {

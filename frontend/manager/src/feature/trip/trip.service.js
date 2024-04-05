@@ -9,7 +9,7 @@ const addTrip = createAsyncThunk('manager/trips', async (tripInfor, thunkAPI) =>
             endStationId: tripInfor.endStationId,
             price: tripInfor.price,
             companyId: tripInfor.companyId,
-            busType: null,
+            busType: 0,
         })
         return trip
     } catch (error) {

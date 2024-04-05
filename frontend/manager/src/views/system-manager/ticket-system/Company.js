@@ -58,7 +58,11 @@ import companyThunk from 'src/feature/bus-company/busCompany.service'
 import tripThunk from 'src/feature/trip/trip.service'
 import scheduleThunk from 'src/feature/schedule/schedule.service'
 import { CustomToast } from 'src/views/customToast/CustomToast'
-
+import { th } from 'date-fns/locale'
+import mapThunk from 'src/feature/map/map.service'
+import stationThunk from 'src/feature/station/station.service'
+import { selectConnection } from 'src/feature/socket/socket.slice'
+import { convertToDisplayDate } from 'src/utils/convertUtils'
 const TimeBox = ({ time, removeTime, fix, turn }) => {
     const [showRemove, setShowRemove] = useState(false)
     const handleRemove = () => {
@@ -806,9 +810,12 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     const toaster = useRef('')
     const dispatch = useDispatch()
     const [activeTab, setActiveTab] = useState(0)
-    const listStation = useSelector(selectListLocation)
-    const listRoute = useSelector(selectListRoute)
+    const listLocationIn = useSelector(selectListLocation)
+    const listLocation = useRef(listLocationIn)
+    const listRouteIn = useSelector(selectListRoute)
+    const listRoute = useRef(listRouteIn)
     const dataForm = useRef(null)
+    const socketConnect = useSelector(selectConnection)
     const [listCompanyRoute, setListCompanyRoute] = useState([
         {
             route: null,
@@ -957,51 +964,117 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         setActiveTab(index)
     }
     const handleAddLocation = async (name) => {
-        //check if location is already in list
-        const location = listStation.find((location) => location.name === name)
-        if (location) return location.id
-        else {
+        const location = listLocation.current.find((location) => location.name === name)
+        if (location) {
+            return Promise.resolve(location.id)
+        } else {
             //add location to list
-            await dispatch(locationThunk.addLocation({ name: name }))
+            return await dispatch(locationThunk.addLocation(name))
                 .unwrap()
-                .then((res) => {
-                    return res.id
+                .then(async (res) => {
+                    //update list location
+                    return await dispatch(locationThunk.getLocations())
+                        .unwrap()
+                        .then((listLocal) => {
+                            listLocation.current = listLocal
+                            return res.id
+                        })
                 })
                 .catch((err) => {
-                    console.log(err)
+                    throw err
                 })
         }
     }
     const handleAddRoute = async (route) => {
-        const departureId = await handleAddLocation(route.departure)
-        const destinationId = await handleAddLocation(route.destination)
-        //check if route is already in list
-        const routeData = listRoute.find(
-            (r) =>
-                (r.departure.id === departureId && r.destination.id === destinationId) ||
-                (r.departure.id === destinationId && r.destination.id === departureId),
-        )
-        if (routeData) return routeData
-        else {
-            const routeData = {
-                distance: route.distance,
-                departureId: departureId,
-                destinationId: destinationId,
-                schedule: route.journey,
-                parents: 0,
-                hours: 0,
+        let departureId = -1
+        let destinationId = -1
+        return await handleAddLocation(route.departure)
+            .then(async (res) => {
+                departureId = res
+                return await handleAddLocation(route.destination)
+                    .then(async (res1) => {
+                        destinationId = res1
+                        if (departureId === -1 || destinationId === -1)
+                            return Promise.reject(new Error('Invalid ID'))
+                        let routeData = listRoute.current.find(
+                            (r) =>
+                                (r.departure.id === departureId &&
+                                    r.destination.id === destinationId) ||
+                                (r.departure.id === destinationId &&
+                                    r.destination.id === departureId),
+                        )
+                        if (routeData) return Promise.resolve(routeData)
+                        else {
+                            routeData = {
+                                distance: route.distance,
+                                departureId: departureId,
+                                destinationId: destinationId,
+                                schedule: route.journey,
+                                parents: 0,
+                                hours: 0,
+                            }
+                            //add route to list
+                            return await dispatch(routeThunk.addRoute({ routeData }))
+                                .unwrap()
+                                .then(async (res) => {
+                                    return await dispatch(routeThunk.getRoute())
+                                        .unwrap()
+                                        .then((listNewRoute) => {
+                                            listRoute.current = listNewRoute
+                                            return res
+                                        })
+                                })
+                                .catch((err) => {
+                                    throw err
+                                })
+                        }
+                    })
+                    .catch((err) => {
+                        throw err
+                    })
+            })
+            .catch((err) => {
+                throw err
+            })
+    }
+    const handleAddStation = async (locationId, station) => {
+        const location = listLocation.current.find((location) => location.id === locationId)
+        const listStation = location.stations
+        const stationF = listStation.find((sta) => sta.name === station)
+        if (!stationF) {
+            const stationName = 'Bến xe ' + station + ', ' + location.name
+            let stationInfo = {
+                name: station,
+                address: stationName,
+                latitude: 0,
+                longitude: 0,
             }
-            //add route to list
-            await dispatch(routeThunk.addRoute({ routeData }))
+            await dispatch(mapThunk.getStationInfo(stationName))
+                .unwrap()
+                .then(async (res) => {
+                    stationInfo = {
+                        name: station,
+                        address: res.address,
+                        latitude: res.latitude,
+                        longitude: res.longitude,
+                    }
+                })
+                .catch((err) => {})
+            return await dispatch(
+                stationThunk.addStation({
+                    locationId: location.id,
+                    listStation: [stationInfo],
+                }),
+            )
                 .unwrap()
                 .then((res) => {
-                    return res
+                    console.log(res)
+                    return res[0].id
                 })
                 .catch((err) => {
-                    console.log(err)
-                    return null
+                    throw err
                 })
-        }
+        } else return Promise.resolve(stationF.id)
     }
     const handleAssignRoute = async (companyId, listRouteId) => {
         await dispatch(
@@ -1012,28 +1085,28 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         )
             .unwrap()
             .then((res) => {
-                console.log(res)
+                addToast(() => CustomToast({ message: 'Thêm nhà xe thành công', type: 'success' }))
             })
             .catch((err) => {
-                console.log(err)
+                throw err
             })
     }
-    const handleAddTrip = async (route, companyId) => {
+    const handleAddTrip = async (route, startStationId, endStationId, companyId) => {
+        console.log(route, startStationId, endStationId, companyId)
         const tripInfor = {
             routeId: route.id,
-            startStationId: route.startStation.id,
-            endStationId: route.endStation.id,
+            startStationId: startStationId,
+            endStationId: endStationId,
             price: 0,
             companyId: companyId,
         }
-        await dispatch(tripThunk.addTrip({ tripInfor }))
+        return await dispatch(tripThunk.addTrip(tripInfor))
             .unwrap()
             .then((res) => {
-                return res.map((trip) => trip.id)
+                return [res.trip.id, res.tripReturn.id]
             })
             .catch((err) => {
-                console.error(err)
-                return []
+                throw err
             })
     }
     const handleAddCompany = async () => {
@@ -1048,14 +1121,14 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             businessName: companyInfo.firmName,
             businessLicense: companyInfo.businessLicense,
         }
-        await dispatch(companyThunk.addCompany({ companyInfor: companyData }))
+        return await dispatch(companyThunk.addCompany({ companyInfor: companyData }))
             .unwrap()
             .then((res) => {
                 return res.id
             })
             .catch((err) => {
                 setError(err)
-                return 0
+                throw err
             })
     }
 
@@ -1072,7 +1145,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 console.log(res)
             })
             .catch((err) => {
-                console.error(err)
+                throw err
             })
     }
 
@@ -1081,49 +1154,148 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             setActiveTab(0)
         }
         setTimeout(async () => {
-            if (dataForm.current.checkValidity() === true && listCompanyRoute.length > 0) {
+            if (
+                dataForm.current.checkValidity() === true &&
+                listCompanyRoute.length > 0 &&
+                listCompanyRoute.every((route) => route.route)
+            ) {
                 setValidated(true)
-                console.log(listCompanyRoute)
                 setLoading(true)
-                const companyId = await handleAddCompany()
-                let route = null
-                let listTrip = []
-                const listRouteId = []
-                for (let i = 0; i < listCompanyRoute.length; i++) {
-                    route = await handleAddRoute(listCompanyRoute[i].route)
-                    if (route) {
-                        listTrip = await handleAddTrip(route, companyId)
-                        if (listTrip.length === 2) {
-                            await handleAddFixSchedule(
-                                listTrip[0],
-                                listCompanyRoute[i].listTimeGo.listTime,
-                                listCompanyRoute[i].listTimeGo.listRepeat,
-                            )
-                            await handleAddFixSchedule(
-                                listTrip[1],
-                                listCompanyRoute[i].listTimeReturn.listTime,
-                                listCompanyRoute[i].listTimeReturn.listRepeat,
-                            )
+                let companyId = -1
+                await handleAddCompany()
+                    .then(async (res) => {
+                        companyId = res
+                        if (companyId != -1) {
+                            let route = null
+                            let listTrip = []
+                            const listRouteId = []
+                            for (let i = 0; i < listCompanyRoute.length; i++) {
+                                await handleAddRoute(listCompanyRoute[i].route)
+                                    .then(async (res) => {
+                                        route = res
+                                        let startStationId = -1
+                                        let endStationId = -1
+                                        if (route) {
+                                            await handleAddStation(
+                                                route.departure.id,
+                                                listCompanyRoute[i].route.departure ===
+                                                    route.departure.name
+                                                    ? listCompanyRoute[i].route.startStation
+                                                    : listCompanyRoute[i].route.endStation,
+                                            ).then((res) => (startStationId = res))
+                                            await handleAddStation(
+                                                route.destination.id,
+                                                listCompanyRoute[i].route.destination ===
+                                                    route.destination.name
+                                                    ? listCompanyRoute[i].route.endStation
+                                                    : listCompanyRoute[i].route.startStation,
+                                            ).then((res) => (endStationId = res))
+                                            if (startStationId === -1 || endStationId === -1) {
+                                                throw new Error('Invalid ID')
+                                            }
+                                            await handleAddTrip(
+                                                route,
+                                                startStationId,
+                                                endStationId,
+                                                companyId,
+                                            ).then(async (res) => {
+                                                listTrip = res
+                                                if (listTrip.length === 2) {
+                                                    for (
+                                                        let j = 0;
+                                                        j < listCompanyRoute[i].listTimeGo.length;
+                                                        j++
+                                                    ) {
+                                                        await handleAddFixSchedule(
+                                                            listTrip[0],
+                                                            listCompanyRoute[i].listTimeGo[
+                                                                j
+                                                            ].listTime.map((time) => time.time),
+                                                            listCompanyRoute[i].listTimeGo[j]
+                                                                .listRepeat,
+                                                        )
+                                                    }
+                                                    for (
+                                                        let j = 0;
+                                                        j <
+                                                        listCompanyRoute[i].listTimeReturn.length;
+                                                        j++
+                                                    ) {
+                                                        await handleAddFixSchedule(
+                                                            listTrip[1],
+                                                            listCompanyRoute[i].listTimeReturn[
+                                                                j
+                                                            ].listTime.map((time) => time.time),
+                                                            listCompanyRoute[i].listTimeReturn[j]
+                                                                .listRepeat,
+                                                        )
+                                                    }
+                                                }
+                                            })
+                                            listRouteId.push(route.id)
+                                            if (listRouteId.length === listCompanyRoute.length)
+                                                await handleAssignRoute(
+                                                    companyId,
+                                                    listRouteId,
+                                                ).then(() => {
+                                                    setLoading(false)
+                                                    setTimeout(() => {
+                                                        solveCompany(preInfo.tel)
+                                                        setVisible(false)
+                                                    }, 1000)
+                                                })
+                                        }
+                                    })
+                                    .catch((err) => {
+                                        console.log(err)
+                                        setLoading(false)
+                                    })
+                            }
                         }
-                        listRouteId.push(route.id)
-                    }
-                }
-                await handleAssignRoute(companyId, listRouteId)
-                setLoading(false)
+                    })
+                    .catch((err) => {
+                        addToast(() => CustomToast({ message: err, type: 'error' }))
+                        setLoading(false)
+                    })
             } else {
                 setValidated(true)
                 addToast(() =>
-                    CustomToast({ message: 'Một số thông tin chưa hợp lệ', type: 'error' }),
+                    CustomToast({
+                        message:
+                            'Một số thông tin chưa hợp lệ. Cần điền đủ thông tin nhà xe và tuyến xe',
+                        type: 'error',
+                    }),
                 )
                 return
             }
         }, 500)
     }
 
+    const solveCompany = (companyTel) => {
+        const newMessage = {
+            type: 'remove',
+            tel: companyTel,
+        }
+        try {
+            // Gửi tin nhắn tới máy chủ WebSocket
+            if (socketConnect) {
+                console.log('send message')
+                socketConnect.send(JSON.stringify(newMessage))
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
     useEffect(() => {
-        if (listStation.length === 0) dispatch(locationThunk.getLocations())
-        if (listRoute.length === 0) dispatch(routeThunk.getRoute())
+        dispatch(locationThunk.getLocations())
+        dispatch(routeThunk.getRoute())
     }, [])
+    useEffect(() => {
+        listLocation.current = listLocationIn
+        listRoute.current = listRouteIn
+    }, [listLocationIn, listRouteIn])
+
     return (
         <>
             <CModal
@@ -1400,14 +1572,21 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
 
 const BusCompany = ({ companyInfo }) => {
     //get random color from list
-    const randomColor = COLOR[Math.floor(Math.random() * COLOR.length)]
+    const randomColor = COLOR[Math.floor(Math.random() * (COLOR.length - 1))]
     return (
-        <CCard>
-            <CCardHeader color={randomColor}>
-                <b>{companyInfo.businessName}</b>
+        <CCard
+            textColor="dark"
+            className={`mb-3 border-top-${randomColor} border-top-3`}
+            style={{ maxWidth: '20rem', minHeight: '10rem' }}
+            role="button"
+        >
+            <CCardHeader className={`border-${randomColor}`}>
+                <b>{companyInfo.name}</b>
             </CCardHeader>
             <CCardBody>
-                <CCardTitle>{`SĐT: ${companyInfo.tel}`}</CCardTitle>
+                <small>{`SĐT: ${companyInfo.tel}`}</small>
+                <br></br>
+                <small>{`Ngày hợp tác: ${convertToDisplayDate(companyInfo.coopDay)}`}</small>
             </CCardBody>
         </CCard>
     )
@@ -1434,7 +1613,9 @@ const Company = () => {
                 .unwrap()
                 .then(() => {})
                 .catch(() => {})
+        dispatch(companyThunk.getCompany())
     }, [])
+    console.log(listCompany)
     return (
         <div>
             {openAddForm && (
@@ -1458,47 +1639,53 @@ const Company = () => {
                 className="p-2 border-bottom"
                 style={{ borderBottom: '4px solid' }}
             >
-                <CTable>
-                    <CTableHead>
-                        <CTableRow>
-                            <CTableHeaderCell scope="col">#</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Tên nhà xe</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Chủ nhà xe</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Số điện thoại</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Email</CTableHeaderCell>
-                            <CTableHeaderCell scope="col">Hành động</CTableHeaderCell>
-                        </CTableRow>
-                    </CTableHead>
-                    <CTableBody>
-                        {listRequest.map((item, index) => (
-                            <CTableRow key={index}>
-                                <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                                <CTableDataCell>{item.businessName}</CTableDataCell>
-                                <CTableDataCell>{item.name}</CTableDataCell>
-                                <CTableDataCell>{item.tel}</CTableDataCell>
-                                <CTableDataCell>{item.email}</CTableDataCell>
-                                <CTableDataCell>
-                                    <CButton
-                                        variant="outline"
-                                        color="success"
-                                        onClick={() => {
-                                            setCurrentRequest(item)
-                                            setOpenAddForm(true)
-                                        }}
-                                    >
-                                        Hoàn tất hồ sơ
-                                    </CButton>
-                                    <span>{` / `}</span>
-                                    <CButton variant="outline" color="danger">
-                                        Xóa yêu cầu
-                                    </CButton>
-                                </CTableDataCell>
+                {listRequest.length === 0 ? (
+                    <div className="d-flex justify-content-center align-items-center">
+                        <b>Không có yêu cầu mở bán vé nào</b>
+                    </div>
+                ) : (
+                    <CTable>
+                        <CTableHead>
+                            <CTableRow>
+                                <CTableHeaderCell scope="col">#</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Tên nhà xe</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Chủ nhà xe</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Số điện thoại</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Email</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Hành động</CTableHeaderCell>
                             </CTableRow>
-                        ))}
-                    </CTableBody>
-                </CTable>
+                        </CTableHead>
+                        <CTableBody>
+                            {listRequest.map((item, index) => (
+                                <CTableRow key={index}>
+                                    <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                                    <CTableDataCell>{item.businessName}</CTableDataCell>
+                                    <CTableDataCell>{item.name}</CTableDataCell>
+                                    <CTableDataCell>{item.tel}</CTableDataCell>
+                                    <CTableDataCell>{item.email}</CTableDataCell>
+                                    <CTableDataCell>
+                                        <CButton
+                                            variant="outline"
+                                            color="success"
+                                            onClick={() => {
+                                                setCurrentRequest(item)
+                                                setOpenAddForm(true)
+                                            }}
+                                        >
+                                            Hoàn tất hồ sơ
+                                        </CButton>
+                                        <span>{` / `}</span>
+                                        <CButton variant="outline" color="danger">
+                                            Xóa yêu cầu
+                                        </CButton>
+                                    </CTableDataCell>
+                                </CTableRow>
+                            ))}
+                        </CTableBody>
+                    </CTable>
+                )}
             </CCollapse>
-            <CRow>
+            <CRow className="my-3">
                 {listCompany.map((company, index) => (
                     <CCol key={index} sm="4">
                         <BusCompany companyInfo={company}></BusCompany>
