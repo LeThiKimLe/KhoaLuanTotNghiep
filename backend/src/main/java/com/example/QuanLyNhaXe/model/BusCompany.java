@@ -32,10 +32,10 @@ public class BusCompany {
 	@Column(name = "id")
 	private Integer id;
 
-	@Column(name = "name", length = 45)
+	@Column(name = "name")
 	private String name;
 
-	@Column(name = "business_license", length = 45)
+	@Column(name = "business_license")
 	private String businessLicense;
 
 	@OneToOne
@@ -66,4 +66,9 @@ public class BusCompany {
 	@OneToMany(mappedBy = "busCompany")
 	private List<Station> stations;
 
+	@OneToMany(mappedBy = "busCompany")
+	private List<BusType> busTypes;
+	
+	@OneToMany(mappedBy = "busCompany")
+	private List<Driver> drivers;
 }

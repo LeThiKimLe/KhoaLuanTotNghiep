@@ -44,4 +44,11 @@ public class BusType {
     
     @OneToMany(mappedBy = "busType")
     private List<Trip> trips;
+    
+    @ManyToOne
+	@JoinColumn(name = "company_id", referencedColumnName = "id")
+	private BusCompany busCompany;
+    
+    @Column(name = "is_active")
+	private boolean isActive;
 }

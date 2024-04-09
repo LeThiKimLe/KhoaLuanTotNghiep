@@ -151,22 +151,35 @@ public class UserService {
 		return modelMapper.map(user, UserDTO.class);
 	}
 
-	public Object getAllStaffs() {
+	public Object getAllStaffs(String authorizationHeader) {
+		User user=getUserByAuthorizationHeader(authorizationHeader);
+		
 		List<Staff> staffs = staffRepository.findAll();
 		if (staffs.isEmpty()) {
 			throw new NotFoundException(Message.STAFF_NOT_FOUND);
 		}
-		return staffs.stream().filter(staff -> staff.getAdmin() == null)
+		if(user.getStaff().getAdmin().getBusCompany().getId()==null) {
+			throw new NotFoundException("Không tìm thấy công ty của quản trị viên này");
+			
+		}
+		return staffs.stream().filter(staff -> staff.getBusCompany().getId().equals(user.getStaff().getAdmin().getBusCompany().getId()))
 				.map(staff -> modelMapper.map(staff.getUser(), UserDTO.class)).toList();
 
 	}
 
-	public Object getAllDrivers() {
+	public Object getAllDrivers(String authorizationHeader) {
 		List<Driver> drivers = driverRepository.findAll();
+		User user=getUserByAuthorizationHeader(authorizationHeader);
 		if (drivers.isEmpty()) {
 			throw new NotFoundException(Message.DRIVER_NOT_FOUND);
 		}
-		return drivers.stream().map(driver -> modelMapper.map(driver.getUser(), UserDTO.class)).toList();
+		if(user.getStaff().getAdmin().getBusCompany().getId()==null) {
+			throw new NotFoundException("Không tìm thấy công ty của quản trị viên này");
+			
+		}
+		return drivers.stream()
+				.filter(driver-> driver.getBusCompany().getId().equals(user.getStaff().getAdmin().getBusCompany().getId()))
+				.map(driver -> modelMapper.map(driver.getUser(), UserDTO.class)).toList();
 	}
 	
 	public Object getAllAdmins() {

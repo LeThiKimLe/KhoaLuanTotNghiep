@@ -3,6 +3,7 @@ package com.example.QuanLyNhaXe.model;
 import jakarta.persistence.*;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Seat {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +36,7 @@ public class Seat {
     @ManyToOne
     @JoinColumn(name = "seatmap_id", referencedColumnName = "id")
     private SeatMap seatMap;
+    
+    @Column(name = "is_active")
+	private boolean isActive;
 }
