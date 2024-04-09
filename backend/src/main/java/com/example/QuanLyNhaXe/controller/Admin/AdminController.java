@@ -49,13 +49,13 @@ public class AdminController {
 	}
 	
 	@GetMapping("/drivers")
-	public ResponseEntity<Object> getAllDrivers() {
-		return new ResponseEntity<>(userService.getAllDrivers(), HttpStatus.OK);
+	public ResponseEntity<Object> getAllDrivers(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+		return new ResponseEntity<>(userService.getAllDrivers(authorization), HttpStatus.OK);
 	}
 	
 	@GetMapping("/staffs")
-	public ResponseEntity<Object> getAllStaffs() {
-		return new ResponseEntity<>(userService.getAllStaffs(), HttpStatus.OK);
+	public ResponseEntity<Object> getAllStaffs(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+		return new ResponseEntity<>(userService.getAllStaffs(authorization), HttpStatus.OK);
 	}
 	
 	@PutMapping("/staffs")
@@ -73,10 +73,7 @@ public class AdminController {
 		return new ResponseEntity<>(userService.editStateAccount(editActiveDTO), HttpStatus.OK);
 	}
 	
-	@GetMapping("/admins")
-	public ResponseEntity<Object> getAllAdmins() {
-		return new ResponseEntity<>(userService.getAllAdmins(), HttpStatus.OK);
-	}
+	
 	
 	
 	@GetMapping("/drivers/not-distribute")

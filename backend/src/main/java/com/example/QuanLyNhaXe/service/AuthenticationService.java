@@ -37,6 +37,7 @@ import com.example.QuanLyNhaXe.model.SystemManager;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.AccountRepository;
 import com.example.QuanLyNhaXe.repository.AdminRepository;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.CustomerRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.StaffRepository;
@@ -68,6 +69,7 @@ public class AuthenticationService {
 	private static final String DEFAULT_IMG = "https://bookingupfile.s3.amazonaws.com/Image/1700527483380-anh-chipi-16.jpg";
 	private final TwilioService twilioService;
 	private final SystemManagerRepository managerRepository;
+	private final BusCompanyRepository busCompanyRepository;
 
 	public TokenDTO login(LoginDTO loginDTO) {
 
@@ -142,8 +144,9 @@ public class AuthenticationService {
 	}
 
 	@Transactional
-	public Staff createStaff(SignupStaffDTO signupStaffDTO, Integer roleId) {
+	public Staff createStaff(SignupStaffDTO signupStaffDTO, Integer roleId,BusCompany busCompany) {
 		User user = null;
+		
 
 		boolean checkExist1 = userRepository.existsByTel(signupStaffDTO.getTel());
 		boolean checkExist2 = staffRepository.existsByIdCard(signupStaffDTO.getIdCard());
@@ -158,7 +161,7 @@ public class AuthenticationService {
 
 		Staff staff = Staff.builder().address(signupStaffDTO.getAddress())
 				.beginWorkDate(signupStaffDTO.getBeginWorkDate()).idCard(signupStaffDTO.getIdCard()).img(DEFAULT_IMG)
-				.nickname("NV: " + signupStaffDTO.getName()).user(user).build();
+				.nickname("NV: " + signupStaffDTO.getName()).busCompany(busCompany).user(user).build();
 		try {
 			accountRepository.save(user.getAccount());
 			userRepository.save(user);
@@ -341,22 +344,17 @@ public class AuthenticationService {
 	public ResponseMessage createNewStaff(SignupStaffDTO signupStaffDTO, String authentication) {
 		User adminUser = userService.getUserByAuthorizationHeader(authentication);
 		BusCompany busCompany = adminUser.getStaff().getAdmin().getBusCompany();
-		Staff staff = createStaff(signupStaffDTO, 2);
-		staff.setBusCompany(busCompany);
-		try {
-			staffRepository.save(staff);
-
-		} catch (DataAccessException e) {
-			return new ResponseMessage(Message.INACCURATE_DATA);
-		}
+		createStaff(signupStaffDTO, 2,busCompany);
+		
 		return new ResponseMessage(Message.SUCCESS_ADD_STAFF);
 
 	}
 
 	@Transactional
-	public Admin createNewAdmin(SignupStaffDTO signupStaffDTO) {
+	public Admin createNewAdmin(SignupStaffDTO signupStaffDTO, BusCompany busCompany) {
 		try {
-			Staff staff = createStaff(signupStaffDTO, 1);
+			Staff staff = createStaff(signupStaffDTO, 1,busCompany);
+			
 			Admin admin = Admin.builder().staff(staff).build();
 			adminRepository.save(admin);
 			return admin;

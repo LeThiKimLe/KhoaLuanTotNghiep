@@ -19,6 +19,7 @@ public class BusDTO {
 	private LocationDTO currentPosition;
 	private BusQualityDTO state;
 	private BusTypeDTO type;
+	private Integer busCompanyId;
 
 	
 

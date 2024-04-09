@@ -60,7 +60,7 @@ public class BusCompanyService {
 		Date date =  Date.valueOf(coopDate);
 		SignupStaffDTO signupStaffDTO=SignupStaffDTO.builder().name(createBusCompany.getName()).tel(createBusCompany.getTel()).email(createBusCompany.getEmail()).idCard(createBusCompany.getIdCard()).address(createBusCompany.getAddress()).gender(createBusCompany.getGender()).beginWorkDate(date).build();
 		BusCompany busCompany=BusCompany.builder().name(createBusCompany.getBusinessName()).coopDay(coopDate).businessLicense(createBusCompany.getBusinessLicense()).isActive(true).build();
-		Admin admin=authenticationService.createNewAdmin(signupStaffDTO);
+		Admin admin=authenticationService.createNewAdmin(signupStaffDTO,busCompany);
 		busCompany.setAdmin(admin);
 		try {
 			busCompanyRepository.save(busCompany);
