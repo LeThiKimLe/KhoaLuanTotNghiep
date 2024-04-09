@@ -112,6 +112,79 @@ export const UPDATE_INFOR = [
     },
 ]
 
+export const companyInput = {
+    firmName: {
+        id: 1,
+        name: 'firmName',
+        type: 'text',
+        placeholder: 'Nhập tên hãng xe',
+        errorMessage: 'Tên hãng xe không được để trống',
+        label: 'Tên hãng xe',
+        pattern: '^.+$',
+        required: true,
+    },
+    representName: {
+        id: 2,
+        name: 'representName',
+        type: 'text',
+        placeholder: 'Nhập tên người đại diện',
+        errorMessage: 'Tên người đại diện không được để trống',
+        label: 'Tên người đại diện',
+        pattern: '^.{6,}$',
+        required: true,
+    },
+    email: {
+        id: 3,
+        name: 'email',
+        type: 'email',
+        placeholder: 'Nhập email',
+        errorMessage: 'Email không hợp lệ',
+        label: 'Email',
+        pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+        required: true,
+    },
+    idCard: {
+        id: 4,
+        name: 'idCard',
+        type: 'text',
+        placeholder: 'Nhập số CCCD',
+        errorMessage: 'CCCD không hợp lệ',
+        label: 'CCCD',
+        pattern: '^[0-9]{9,12}$',
+        required: true,
+    },
+    telephone: {
+        id: 5,
+        name: 'telephone',
+        type: 'text',
+        placeholder: 'Nhập số điện thoại',
+        errorMessage: 'Số điện thoại không hợp lệ',
+        label: 'Nhập số điện thoại',
+        pattern: '^[0-9]{10,11}$',
+        required: true,
+    },
+    businessLicense: {
+        id: 6,
+        name: 'businessLicense',
+        type: 'text',
+        placeholder: 'Nhập số giấy phép kinh doanh',
+        errorMessage: 'Số giấy phép không để trống',
+        label: 'Số GPKD',
+        pattern: '^.+$',
+        required: true,
+    },
+    address: {
+        id: 6,
+        name: 'address',
+        type: 'text',
+        placeholder: 'Nhập địa chỉ',
+        errorMessage: 'Địa chỉ không được để trống',
+        label: 'Địa chỉ',
+        pattern: '^.+$',
+        required: true,
+    },
+}
+
 export const COLOR_STATE = {
     success: 'green',
     pending: '#9a9a0f',
@@ -147,3 +220,30 @@ export const MONTH_IN_YEAR = [
 ]
 
 export const COLOR = ['info', 'warning', 'success', 'danger', 'dark', 'light']
+
+export const TIME_TABLE = {
+    morning: {
+        label: 'Sáng',
+        from: 6,
+        to: 12,
+        color: 'success',
+    },
+    afternoon: {
+        label: 'Chiều',
+        from: 12,
+        to: 18,
+        color: 'primary',
+    },
+    evening: {
+        label: 'Tối',
+        from: 18,
+        to: 24,
+        color: 'infor',
+    },
+    late: {
+        label: 'Khuya',
+        from: 0,
+        to: 6,
+        color: 'warning',
+    },
+}

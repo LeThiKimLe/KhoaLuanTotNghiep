@@ -163,7 +163,7 @@ const StatisticsWidget = () => {
                             </span>
                         </>
                     }
-                    title="Doanh thu hôm nay"
+                    title="Số vé bán ra hôm nay"
                     action={
                         <CDropdown alignment="end">
                             <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -256,7 +256,7 @@ const StatisticsWidget = () => {
                             </span>
                         </>
                     }
-                    title="Số vé bán ra hôm nay"
+                    title="Lượt truy cập hôm nay"
                     action={
                         <CDropdown alignment="end">
                             <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -348,7 +348,7 @@ const StatisticsWidget = () => {
                             </span>
                         </>
                     }
-                    title="Doanh thu tháng này"
+                    title="Khách hàng mới hôm nay"
                     action={
                         <CDropdown alignment="end">
                             <CDropdownToggle color="transparent" caret={false} className="p-0">
@@ -427,7 +427,7 @@ const StatisticsWidget = () => {
                             </span>
                         </>
                     }
-                    title="Số vé bán ra tháng này"
+                    title="Đối tác mới hôm nay"
                     action={
                         <CDropdown alignment="end">
                             <CDropdownToggle color="transparent" caret={false} className="p-0">

@@ -49,6 +49,7 @@ import {
     selectListRequest,
     selectOpenListRequest,
     selectListCompany,
+    selectListAssign,
 } from 'src/feature/bus-company/busCompany.slice'
 import { COLOR } from 'src/utils/constants'
 import locationThunk from 'src/feature/location/location.service'
@@ -58,11 +59,13 @@ import companyThunk from 'src/feature/bus-company/busCompany.service'
 import tripThunk from 'src/feature/trip/trip.service'
 import scheduleThunk from 'src/feature/schedule/schedule.service'
 import { CustomToast } from 'src/views/customToast/CustomToast'
-import { th } from 'date-fns/locale'
 import mapThunk from 'src/feature/map/map.service'
 import stationThunk from 'src/feature/station/station.service'
 import { selectConnection } from 'src/feature/socket/socket.slice'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
+import { companyInput } from 'src/utils/constants'
+import { getRouteJourney } from 'src/utils/tripUtils'
+
 const TimeBox = ({ time, removeTime, fix, turn }) => {
     const [showRemove, setShowRemove] = useState(false)
     const handleRemove = () => {
@@ -84,7 +87,7 @@ const TimeBox = ({ time, removeTime, fix, turn }) => {
                         visibility: showRemove && fix === false ? '' : 'hidden',
                         color: 'black',
                     }}
-                    onClick={handleRemove}
+                    onClick={removeTime}
                 ></CIcon>
             </CCardBody>
         </CCard>
@@ -152,8 +155,8 @@ const ScheduleBox = ({
                                 alignItems: 'center',
                             }}
                         >
-                            {listTime.map((timer, index) => (
-                                <CCol key={index} xs="4">
+                            {listTime.map((timer, idx) => (
+                                <CCol key={idx} xs="4">
                                     <TimeBox
                                         time={timer.time}
                                         removeTime={() => removeTime(index, timer.time, turn)}
@@ -256,7 +259,7 @@ const ScheduleBox = ({
     )
 }
 
-const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
+export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
     const listLocation = useRef([])
     const listOfficialRoute = useSelector(selectListOfficialRoute)
     const [listDeparture, setListDeparture] = useState([])
@@ -417,16 +420,21 @@ const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
 
     const removeTime = (index, time, turn) => {
         if (turn === 1) {
+            console.log(listTimeGo)
+            console.log(index)
             setListTimeGo((prev) => {
                 const newTime = [...prev]
                 const newList = newTime[index].listTime.filter((timer) => timer.time !== time)
-                return newList
+                newTime[index].listTime = newList
+                console.log(newTime)
+                return newTime
             })
         } else {
             setListTimeReturn((prev) => {
                 const newTime = [...prev]
                 const newList = newTime[index].listTime.filter((timer) => timer.time !== time)
-                return newList
+                newTime[index].listTime = newList
+                return newTime
             })
         }
     }
@@ -834,78 +842,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             price: 0,
         },
     ])
-    const companyInput = {
-        firmName: {
-            id: 1,
-            name: 'firmName',
-            type: 'text',
-            placeholder: 'Nhập tên hãng xe',
-            errorMessage: 'Tên hãng xe không được để trống',
-            label: 'Tên hãng xe',
-            pattern: '^.+$',
-            required: true,
-        },
-        representName: {
-            id: 2,
-            name: 'representName',
-            type: 'text',
-            placeholder: 'Nhập tên người đại diện',
-            errorMessage: 'Tên người đại diện không được để trống',
-            label: 'Tên người đại diện',
-            pattern: '^.{6,}$',
-            required: true,
-        },
-        email: {
-            id: 3,
-            name: 'email',
-            type: 'email',
-            placeholder: 'Nhập email',
-            errorMessage: 'Email không hợp lệ',
-            label: 'Email',
-            pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
-            required: true,
-        },
-        idCard: {
-            id: 4,
-            name: 'idCard',
-            type: 'text',
-            placeholder: 'Nhập số CCCD',
-            errorMessage: 'CCCD không hợp lệ',
-            label: 'CCCD',
-            pattern: '^[0-9]{9,12}$',
-            required: true,
-        },
-        telephone: {
-            id: 5,
-            name: 'telephone',
-            type: 'text',
-            placeholder: 'Nhập số điện thoại',
-            errorMessage: 'Số điện thoại không hợp lệ',
-            label: 'Nhập số điện thoại',
-            pattern: '^[0-9]{10,11}$',
-            required: true,
-        },
-        businessLicense: {
-            id: 6,
-            name: 'businessLicense',
-            type: 'text',
-            placeholder: 'Nhập số giấy phép kinh doanh',
-            errorMessage: 'Số giấy phép không để trống',
-            label: 'Số GPKD',
-            pattern: '^.+$',
-            required: true,
-        },
-        address: {
-            id: 6,
-            name: 'address',
-            type: 'text',
-            placeholder: 'Nhập địa chỉ',
-            errorMessage: 'Địa chỉ không được để trống',
-            label: 'Địa chỉ',
-            pattern: '^.+$',
-            required: true,
-        },
-    }
+
     const handleChangeCompanyInfo = (e) => {
         setCompanyInfo({ ...companyInfo, [e.target.name]: e.target.value })
     }
@@ -1500,8 +1437,12 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                                                     addCompanyRoute={updateCompanyRoute}
                                                     companyRoute={route}
                                                 ></CompanyRoute>
-                                                <div className="d-flex justify-content-end">
-                                                    <CButtonGroup role="group" aria-label="route">
+                                                <div className="row justify-content-start">
+                                                    <CButtonGroup
+                                                        role="group"
+                                                        aria-label="route"
+                                                        className="col-3 offset-1"
+                                                    >
                                                         <CButton
                                                             color="success"
                                                             variant="outline"
@@ -1572,19 +1513,62 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
 
 const BusCompany = ({ companyInfo }) => {
     //get random color from list
-    const randomColor = COLOR[Math.floor(Math.random() * (COLOR.length - 1))]
+    const listRoute = useSelector(selectListRoute)
+    const listAssign = useSelector(selectListAssign)
+    const curAssign = listAssign.filter((assign) => assign.busCompanyId === companyInfo.id)
+    const [randomColor, setRandomColor] = useState(
+        COLOR[Math.floor(Math.random() * (COLOR.length - 1))],
+    )
+    const dispatch = useDispatch()
+    const [isHover, setIsHover] = useState(false)
+    const openDetailPage = () => {
+        console.log('open detail')
+        dispatch(companyActions.setCurCompany(companyInfo))
+        setTimeout(() => {
+            window.location.href = '#/ticket-system/bus-companies/company-detail'
+        }, 500)
+    }
+    const handleHover = () => {
+        setIsHover(true)
+    }
+    const handleLeave = () => {
+        setIsHover(false)
+    }
     return (
         <CCard
             textColor="dark"
-            className={`mb-3 border-top-${randomColor} border-top-3`}
+            className={`mb-3 border-top-${randomColor} border-top-3 ${isHover ? 'shadow' : ''}`}
             style={{ maxWidth: '20rem', minHeight: '10rem' }}
             role="button"
+            onMouseEnter={handleHover}
+            onMouseLeave={handleLeave}
+            onClick={openDetailPage}
         >
             <CCardHeader className={`border-${randomColor}`}>
                 <b>{companyInfo.name}</b>
             </CCardHeader>
             <CCardBody>
-                <small>{`SĐT: ${companyInfo.tel}`}</small>
+                <small>Tuyến xe: </small>
+                <br></br>
+                <div style={{ height: '50px', overflow: 'auto' }}>
+                    {curAssign.length > 0 ? (
+                        curAssign.map((route, index) => (
+                            <div key={index}>
+                                <small>
+                                    <i>{`${index + 1}. `}</i>
+                                    <i>
+                                        {getRouteJourney(
+                                            listRoute.find((r) => r.id === route.routeId),
+                                        )}
+                                    </i>
+                                </small>
+                            </div>
+                        ))
+                    ) : (
+                        <small>Chưa có tuyến xe</small>
+                    )}
+                </div>
+                <small>{`SĐT: ${companyInfo.admin.staffUser.tel}`}</small>
                 <br></br>
                 <small>{`Ngày hợp tác: ${convertToDisplayDate(companyInfo.coopDay)}`}</small>
             </CCardBody>
@@ -1600,22 +1584,17 @@ const Company = () => {
     const listRequest = useSelector(selectListRequest)
     const listCompany = useSelector(selectListCompany)
     const [currentRequest, setCurrentRequest] = useState(null)
-    const [preInfo, setPreInfo] = useState({
-        firmName: 'Xe Nguyễn Hưng',
-        representName: 'Nguyễn Hưng',
-        email: 'hung@gmail.com',
-        telephone: '0583094584',
-        businessLicense: '123456789',
-    })
     useEffect(() => {
         if (listRoute.length === 0)
             dispatch(routeThunk.getOfficialRoute())
                 .unwrap()
                 .then(() => {})
                 .catch(() => {})
+        dispatch(companyThunk.getAssignedRouteForCompany())
         dispatch(companyThunk.getCompany())
+        dispatch(routeThunk.getRoute())
+        console.log('log new')
     }, [])
-    console.log(listCompany)
     return (
         <div>
             {openAddForm && (

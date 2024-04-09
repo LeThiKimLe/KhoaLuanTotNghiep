@@ -6,6 +6,8 @@ const initialState = {
     listRequest: [],
     listBusCompany: [],
     openListRequest: false,
+    curCompany: null,
+    listAssign: [],
 }
 
 const companySlice = createSlice({
@@ -21,6 +23,9 @@ const companySlice = createSlice({
         setOpenListRequest: (state, action) => {
             state.openListRequest = action.payload
         },
+        setCurCompany: (state, action) => {
+            state.curCompany = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -34,11 +39,16 @@ const companySlice = createSlice({
             .addCase(companyThunk.getCompany.rejected, (state) => {
                 state.loading = false
             })
+            .addCase(companyThunk.getAssignedRouteForCompany.fulfilled, (state, action) => {
+                state.listAssign = action.payload
+            })
     },
 })
 export const selectListCompany = (state) => state.company.listBusCompany
 export const selectListRequest = (state) => state.company.listRequest
 export const selectOpenListRequest = (state) => state.company.openListRequest
+export const selectCurCompany = (state) => state.company.curCompany
+export const selectListAssign = (state) => state.company.listAssign
 
 export const companyActions = companySlice.actions
 

@@ -39,7 +39,7 @@ const addCompany = createAsyncThunk('manager/company/add', async ({ companyInfor
 
 const editCompanyInfor = createAsyncThunk(
     'manager/company/edit',
-    async ({ companyInfor }, thunkAPI) => {
+    async (companyInfor, thunkAPI) => {
         try {
             const response = await axiosClient.put('manager/company', {
                 id: companyInfor.id,
@@ -83,11 +83,28 @@ const assignRouteForCompany = createAsyncThunk(
     },
 )
 
+const getAssignedRouteForCompany = createAsyncThunk(
+    'manager/company/assign-route/get',
+    async (_, thunkAPI) => {
+        try {
+            const response = await axiosClient.get('manager/company/assign-company')
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const companyThunk = {
     getCompany,
     addCompany,
     editCompanyInfor,
     assignRouteForCompany,
+    getAssignedRouteForCompany,
 }
 
 export default companyThunk

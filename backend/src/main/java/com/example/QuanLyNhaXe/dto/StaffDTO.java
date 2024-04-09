@@ -14,5 +14,4 @@ public class StaffDTO {
 	private Date beginWorkDate;
 	@JsonInclude(JsonInclude.Include.NON_NULL)
 	private Integer adminId;
-
 }
