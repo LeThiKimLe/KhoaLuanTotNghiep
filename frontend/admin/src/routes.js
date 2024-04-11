@@ -36,11 +36,15 @@ const TripDistribute = React.lazy(() => import('./views/schedule/TripDistribute'
 //Chat
 const Chat = React.lazy(() => import('./views/chat/Chat'))
 
+//Company Info
+const CompanyInfor = React.lazy(() => import('./views/profile/company/CompanyInfor'))
+
 const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
     { path: '/profile/infor', name: 'Thông tin nhân viên', element: UserProfile },
     { path: '/profile/change-password', name: 'Đổi mật khẩu', element: ChangePassword },
+    { path: '/company/infor', name: 'Thông tin nhà xe', element: CompanyInfor },
     { path: '/booking', name: 'Đặt vé', element: Booking },
     { path: '/search-ticket', name: 'Tìm vé', element: SearchTicket },
     { path: '/confirm-cancel', name: 'Duyệt hủy vé', element: ConfirmCancel },

@@ -43,7 +43,6 @@ const authSlice = createSlice({
                 state.loading = false
                 state.isLoggedIn = true
                 state.user = action.payload
-                console.log('allow')
                 localStorage.setItem('validSession', 'true')
             })
             .addCase(authThunk.login.rejected, (state, action) => {
