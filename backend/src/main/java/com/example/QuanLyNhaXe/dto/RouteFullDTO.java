@@ -21,6 +21,7 @@ public class RouteFullDTO {
 	private Integer parents;
 	private float hours;
 	private List<TripSimpleDTO> trips;
+	private String routeCode;
 	
 	private boolean isActive;
 

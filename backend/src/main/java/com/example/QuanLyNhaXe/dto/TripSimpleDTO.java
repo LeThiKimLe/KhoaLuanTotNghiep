@@ -1,9 +1,5 @@
 package com.example.QuanLyNhaXe.dto;
 
-import java.util.List;
-
-import com.example.QuanLyNhaXe.model.BusCompany;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,9 +16,9 @@ public class TripSimpleDTO {
 	private StationDTO startStation;
 	private StationDTO endStation;
 	private BusTypeDTO busType;
-	private boolean isActive;
 	private Integer price;
-	private BusCompanyDTO busCompany;
+	private Integer busCompanyId;
+	private boolean isActive;
 	
 
 }
