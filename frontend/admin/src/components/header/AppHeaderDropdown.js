@@ -19,6 +19,7 @@ import {
     cilSettings,
     cilTask,
     cilUser,
+    cilGarage,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import male from './../../assets/images/avatars/male.svg'
@@ -87,6 +88,10 @@ const AppHeaderDropdown = () => {
                     <CDropdownHeader className="bg-light fw-semibold py-2">
                         Tài khoản
                     </CDropdownHeader>
+                    <CDropdownItem href="#/company/infor">
+                        <CIcon icon={cilGarage} className="me-2" />
+                        Thông tin nhà xe
+                    </CDropdownItem>
                     <CDropdownItem href="#/profile/infor">
                         <CIcon icon={cilUser} className="me-2" />
                         Thông tin tài khoản

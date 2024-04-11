@@ -19,6 +19,7 @@ import {
     cilSettings,
     cilTask,
     cilUser,
+    cilGarage,
 } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 

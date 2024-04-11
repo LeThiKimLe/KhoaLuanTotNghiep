@@ -20,6 +20,7 @@ import scheduleReducer from './feature/schedule/schedule.slice'
 import statisticsReducer from './feature/statistics/statistics.slice'
 import specialReducer from './feature/special-day/specialDay.slice'
 import reviewReducer from './feature/review/review.slice'
+import companyReducer from './feature/bus-company/busCompany.slice'
 
 const rootPersistConfig = {
     key: 'root',
@@ -46,6 +47,7 @@ const rootReducer = combineReducers({
     statistics: statisticsReducer,
     special: specialReducer,
     review: reviewReducer,
+    company: companyReducer,
 })
 
 const persitedReducer = persistReducer(rootPersistConfig, rootReducer)
