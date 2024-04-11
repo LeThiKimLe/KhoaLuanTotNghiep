@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,12 +47,12 @@ public class AdminBusController {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<Object> createBus(CreateBusDTO createBusDTO) {
+	public ResponseEntity<Object> createBus(@RequestBody  CreateBusDTO createBusDTO) {
 		return new ResponseEntity<>(busService.createBus(createBusDTO), HttpStatus.OK);
 	}
 	
 	@PutMapping()
-	public ResponseEntity<Object> editBus(EditBusDTO editBusDTO) {
+	public ResponseEntity<Object> editBus(@RequestBody  EditBusDTO editBusDTO) {
 		return new ResponseEntity<>(busService.editBus(editBusDTO), HttpStatus.OK);
 	}
 	
@@ -62,42 +63,42 @@ public class AdminBusController {
 	}
 	
 	@PostMapping("/type")
-	public ResponseEntity<Object> createBusType(CreateBusType createBusType,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+	public ResponseEntity<Object> createBusType(@RequestBody  CreateBusType createBusType,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
 		return new ResponseEntity<>(busService.createBusType(createBusType, authorization), HttpStatus.OK);
 	}
 	
 	@PutMapping("/type")
-	public ResponseEntity<Object> editBusType(EditBusType editBusType) {
+	public ResponseEntity<Object> editBusType(@RequestBody  EditBusType editBusType) {
 		return new ResponseEntity<>(busService.editBusType(editBusType), HttpStatus.OK);
 	}
 	
 	@PostMapping("/seat-map")
-	public ResponseEntity<Object> createSeatMap(CreateSeatMap createSeatMap) {
+	public ResponseEntity<Object> createSeatMap(@RequestBody  CreateSeatMap createSeatMap) {
 		return new ResponseEntity<>(busService.createSeatMap(createSeatMap), HttpStatus.OK);
 	}
 	
 	@PutMapping("/seat-map")
-	public ResponseEntity<Object> editSeatMap(EditSeatMap editSeatMap) {
+	public ResponseEntity<Object> editSeatMap(@RequestBody EditSeatMap editSeatMap) {
 		return new ResponseEntity<>(busService.editSeatMap(editSeatMap), HttpStatus.OK);
 	}
 	
 	@PutMapping("type/state")
-	public ResponseEntity<Object> editBusType(EditActiveDTO editActiveDTO) {
+	public ResponseEntity<Object> editBusType(@RequestBody  EditActiveDTO editActiveDTO) {
 		return new ResponseEntity<>(busService.editStateBusType(editActiveDTO), HttpStatus.OK);
 	}
 	
 	@PostMapping("/seat")
-	public ResponseEntity<Object> createSeat(CreateSeat createSeat) {
+	public ResponseEntity<Object> createSeat(@RequestBody CreateSeat createSeat) {
 		return new ResponseEntity<>(busService.createSeat(createSeat), HttpStatus.OK);
 	}
 	
 	@PutMapping("/seat")
-	public ResponseEntity<Object> editSeat(EditSeat editSeat) {
+	public ResponseEntity<Object> editSeat(@RequestBody  EditSeat editSeat) {
 		return new ResponseEntity<>(busService.editSeat(editSeat), HttpStatus.OK);
 	}
 	
 	@PutMapping("/seat/state")
-	public ResponseEntity<Object> editSeatState(EditSeat editSeat) {
+	public ResponseEntity<Object> editSeatState(@RequestBody  EditSeat editSeat) {
 		return new ResponseEntity<>(busService.editSeat(editSeat), HttpStatus.OK);
 	}
 	

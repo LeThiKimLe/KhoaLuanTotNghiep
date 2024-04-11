@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.antlr.v4.runtime.misc.TestRig;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import com.example.QuanLyNhaXe.model.Bus;
 import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Route;
 import com.example.QuanLyNhaXe.model.RouteAssign;
+import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.RouteAssignRepository;
 import com.example.QuanLyNhaXe.repository.RouteRepository;
@@ -123,12 +125,25 @@ public class BusCompanyService {
 		return new ResponseMessage(Message.UPDATE_SUCCESS);
 		
 	}
-	 public Object getRouteAssign() {
+	 public Object getRouteAssign(String authentication) {
+		 User user = userService.getUserByAuthorizationHeader(authentication);
 		 
 		 List<RouteAssign> routeAssigns=routeAssignRepository.findAll();
+		 
 			if (routeAssigns.isEmpty()) {
 				throw new NotFoundException(Message.ROUTEASSIGN_NOT_FOUND);
 			}
+			
+			if (user.getAccount().getRole().getRoleName().equals("ADMIN")) {
+				if (user.getStaff().getAdmin().getBusCompany().getId() == null) {
+					throw new NotFoundException("Không tìm thấy công ty của quản trị viên này");
+				}
+				return routeAssigns.stream()
+						.filter(routeAssign -> routeAssign.getBusCompany().getId()
+								.equals(user.getStaff().getAdmin().getBusCompany().getId()))
+						.map(routeAssign -> modelMapper.map(routeAssign, CompanyRouteDTO.class)).toList();
+			}
+			
 			return routeAssigns.stream().map(routeAssign -> modelMapper.map(routeAssign, CompanyRouteDTO.class)).toList();
 		 
 		

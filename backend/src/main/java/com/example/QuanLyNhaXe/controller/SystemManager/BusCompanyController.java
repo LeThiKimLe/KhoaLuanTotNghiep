@@ -1,10 +1,12 @@
 package com.example.QuanLyNhaXe.controller.SystemManager;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -13,6 +15,7 @@ import com.example.QuanLyNhaXe.Request.CreateBusCompany;
 import com.example.QuanLyNhaXe.Request.EditBusCompany;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -51,8 +54,8 @@ public class BusCompanyController {
 	}
 	
 	@GetMapping("/assign-company")
-	public ResponseEntity<Object> getAllBusCompanyAsignRoute() {
-		return new ResponseEntity<>(busCompanyService.getRouteAssign(), HttpStatus.CREATED);
+	public ResponseEntity<Object> getAllBusCompanyAsignRoute(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+		return new ResponseEntity<>(busCompanyService.getRouteAssign(authorization), HttpStatus.CREATED);
 	}
 	
 }
