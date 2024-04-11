@@ -105,6 +105,11 @@ const _nav = [
             },
             {
                 component: CNavItem,
+                name: 'Quản lý loại xe',
+                to: '/system-manage/bus-types',
+            },
+            {
+                component: CNavItem,
                 name: 'Quản lý xe',
                 to: '/system-manage/buses',
             },

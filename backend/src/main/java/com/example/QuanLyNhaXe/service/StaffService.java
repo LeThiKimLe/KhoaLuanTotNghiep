@@ -24,8 +24,6 @@ public class StaffService {
 	private final StaffRepository staffRepository;
     private final ModelMapper modelMapper;
     
-   
-    
     public List<StaffDTO> getAllStaffs() {
         List<Staff> staffs = staffRepository.findAll();
         if (staffs.isEmpty()){
