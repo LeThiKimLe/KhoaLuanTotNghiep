@@ -275,7 +275,7 @@ public class BusService {
 	public Object createSeat(CreateSeat createSeat) {
 		List<Seat> seats = new ArrayList<>();
 
-		SeatMap seatMap = seatMapRepository.findById(createSeat.getSaetMapId())
+		SeatMap seatMap = seatMapRepository.findById(createSeat.getSeatMapId())
 				.orElseThrow(() -> new NotFoundException(Message.SEATMAP_NOT_FOUND));
 		for (SeatInfor seatInfor : createSeat.getSeatInfors()) {
 			if (seatRepository.existsByNameAndSeatMapId(seatInfor.getName(), seatMap.getId())) {

@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class CreateSeat {
-	private Integer saetMapId;
+	private Integer seatMapId;
 	private List<SeatInfor> seatInfors;
 	@Data
 	public class SeatInfor{
