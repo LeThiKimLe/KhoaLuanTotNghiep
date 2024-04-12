@@ -189,6 +189,70 @@ const getTripBus = createAsyncThunk('trip/get-bus', async (tripId, thunkAPI) => 
     }
 })
 
+const addSeatMap = createAsyncThunk('admin/seatmap/add', async (busSeatMap, thunkAPI) => {
+    try {
+        const result = await axiosClient.post('admin/bus/seat-map', null, {
+            params: {
+                rowNo: busSeatMap.rowNo,
+                floorNo: busSeatMap.floorNo,
+                colNo: busSeatMap.colNo,
+            },
+        })
+        return result
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+const addListSeat = createAsyncThunk(
+    'admin/bus/type/seat/add',
+    async ({ seatMapId, seatInfors }, thunkAPI) => {
+        try {
+            const result = await axiosClient.post('admin/bus/type/seat', null, {
+                params: {
+                    saetMapId: seatMapId,
+                    seatInfors: seatInfors,
+                },
+            })
+            return result
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
+const addBusType = createAsyncThunk(
+    'admin/bus/type/add',
+    async ({ busType, seatMapId }, thunkAPI) => {
+        try {
+            const result = await axiosClient.post('admin/bus/type', null, {
+                params: {
+                    name: busType.name,
+                    capacity: busType.capacity,
+                    fee: busType.fee,
+                    description: busType.description,
+                    seatMapId: seatMapId,
+                },
+            })
+            return result
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const busThunk = {
     getBus,
     addBus,
@@ -200,5 +264,8 @@ const busThunk = {
     getSchedules,
     getTripBus,
     deleteDistributeBus,
+    addSeatMap,
+    addListSeat,
+    addBusType,
 }
 export default busThunk

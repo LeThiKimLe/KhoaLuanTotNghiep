@@ -1534,6 +1534,7 @@ const BusCompany = ({ companyInfo }) => {
     const handleLeave = () => {
         setIsHover(false)
     }
+    console.log(curAssign)
     return (
         <CCard
             textColor="dark"
@@ -1557,9 +1558,11 @@ const BusCompany = ({ companyInfo }) => {
                                 <small>
                                     <i>{`${index + 1}. `}</i>
                                     <i>
-                                        {getRouteJourney(
-                                            listRoute.find((r) => r.id === route.routeId),
-                                        )}
+                                        {listRoute.find((r) => r.id === route.routeId)
+                                            ? getRouteJourney(
+                                                  listRoute.find((r) => r.id === route.routeId),
+                                              )
+                                            : 'Không có'}
                                     </i>
                                 </small>
                             </div>
