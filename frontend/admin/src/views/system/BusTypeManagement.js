@@ -35,6 +35,7 @@ import seat_hover from '../../assets/items/seat_hover.svg'
 import busThunk from 'src/feature/bus/bus.service'
 import { selectListBus, selectListBusType } from 'src/feature/bus/bus.slice'
 import { useDispatch, useSelector } from 'react-redux'
+import CustomButton from '../customButton/CustomButton'
 
 const Seat = ({ seat, empty, changeSeat, size = 'sm' }) => {
     const [isHover, setIsHover] = useState(false)
@@ -234,8 +235,204 @@ const SeatMap = ({ seatMap, changeSeatMap, explain = true }) => {
     )
 }
 
+const AutoName = ({ seatMap, setListSeat }) => {
+    const [listApplyRule, setListApplyRule] = useState([])
+    const [rule, setRule] = useState(null)
+    const ruleOption = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J']
+    const listRule = {
+        seat: {
+            value: 'seat',
+            label: 'Theo ghế',
+            active: false,
+            startIndex: 0,
+        },
+        floor: {
+            value: 'floor',
+            label: 'Theo tầng',
+            active: false,
+            options:
+                seatMap.floorNo == 2
+                    ? [
+                          {
+                              label: 'Tầng dưới',
+                              value: 'bottom',
+                              rule: 'A',
+                              startIndex: 1,
+                          },
+                          {
+                              label: 'Tầng trên',
+                              value: 'top',
+                              rule: 'B',
+                              startIndex: 1,
+                          },
+                      ]
+                    : [
+                          {
+                              label: 'Tầng dưới',
+                              value: 'bottom',
+                              rule: 'A',
+                              startIndex: 1,
+                          },
+                      ],
+        },
+        col: {
+            value: 'col',
+            label: 'Theo dãy',
+            active: false,
+            options: Array.from({ length: seatMap.colNo }, (_, index) => index).map((col) => {
+                return {
+                    label: `Dãy ${col + 1}`,
+                    value: col,
+                    rule: ruleOption[col],
+                    startIndex: 1,
+                }
+            }),
+        },
+    }
+    const handleRuleSelect = (e) => {
+        setRule(listRule[e.target.value])
+    }
+
+    const handleSetRuleDetail = (optionIndex, optionName, optionValue) => {
+        //edit options of rule
+        if (optionIndex !== 'seat') {
+            setRule({
+                ...rule,
+                options: rule.options.map((option) => {
+                    if (option.value === optionIndex) {
+                        return {
+                            ...option,
+                            [optionName]: optionValue,
+                        }
+                    }
+                    return option
+                }),
+            })
+        } else {
+            setRule({
+                ...rule,
+                [optionName]: optionValue,
+            })
+        }
+    }
+
+    console.log(rule)
+
+    const handleSetSeatName = () => {
+        let listIndex =
+            rule && rule.value !== 'seat' ? rule.options.map((op) => op.startIndex - 1) : []
+        const newListSeat = seatMap.seats.map((seat, index) => {
+            if (rule.value === 'seat') {
+                return {
+                    ...seat,
+                    name: `${(rule.startIndex + index).toString().padStart(2, '0')}`,
+                }
+            }
+            if (rule.value === 'floor') {
+                listIndex[seat.floor - 1] = listIndex[seat.floor - 1] + 1
+                return {
+                    ...seat,
+                    name: `${rule.options[seat.floor - 1].rule}${listIndex[seat.floor - 1]
+                        .toString()
+                        .padStart(2, '0')}`,
+                }
+            }
+            if (rule.value === 'col') {
+                listIndex[seat.col] = listIndex[seat.col] + 1
+                return {
+                    ...seat,
+                    name: `${rule.options[seat.col].rule}${listIndex[seat.col]
+                        .toString()
+                        .padStart(2, '0')}`,
+                }
+            }
+        })
+        setListSeat(newListSeat)
+    }
+
+    return (
+        <CRow>
+            <CCol md={4}>
+                <CInputGroup className="mb-3">
+                    <CInputGroupText id="rule_name">Đặt tên theo</CInputGroupText>
+                    <CFormSelect onChange={handleRuleSelect}>
+                        <option value={null}>Chọn ...</option>
+                        <option value="seat">Theo ghế</option>
+                        <option value="floor">Theo tầng</option>
+                        <option value="col">Theo dãy</option>
+                    </CFormSelect>
+                </CInputGroup>
+            </CCol>
+            <CCol md={8} className="d-flex gap-2">
+                <div className="col-8">
+                    {rule &&
+                        rule.options &&
+                        rule.options.map((option, index) => (
+                            <CInputGroup className="mb-3" key={index}>
+                                <CInputGroupText id="rule_option">{option.label}</CInputGroupText>
+                                <CFormSelect
+                                    value={option.rule}
+                                    name={'rule'}
+                                    onChange={(e) =>
+                                        handleSetRuleDetail(
+                                            option.value,
+                                            e.target.name,
+                                            e.target.value,
+                                        )
+                                    }
+                                >
+                                    {ruleOption.map((op, i) => (
+                                        <option value={op} key={i}>
+                                            {op}
+                                        </option>
+                                    ))}
+                                </CFormSelect>
+                                <CInputGroupText>Bắt đầu từ</CInputGroupText>
+                                <CFormInput
+                                    type="number"
+                                    value={option.startIndex}
+                                    name="startIndex"
+                                    onChange={(e) =>
+                                        handleSetRuleDetail(
+                                            option.value,
+                                            e.target.name,
+                                            e.target.value,
+                                        )
+                                    }
+                                ></CFormInput>
+                            </CInputGroup>
+                        ))}
+                    {rule && rule.value === 'seat' && (
+                        <CInputGroup className="mb-3">
+                            <CInputGroupText>Bắt đầu từ</CInputGroupText>
+                            <CFormInput
+                                type="number"
+                                name="startIndex"
+                                value={rule.startIndex}
+                                onChange={(e) =>
+                                    handleSetRuleDetail('seat', e.target.name, e.target.value)
+                                }
+                            ></CFormInput>
+                        </CInputGroup>
+                    )}
+                </div>
+                <CButton
+                    color="success"
+                    className="col-4"
+                    style={{ height: 'fit-content', width: 'fit-content' }}
+                    onClick={handleSetSeatName}
+                >
+                    Áp dụng
+                </CButton>
+            </CCol>
+        </CRow>
+    )
+}
+
 const AddForm = () => {
+    const dispatch = useDispatch()
     const [toast, addToast] = useState(0)
+    const [auto_name, setAutoName] = useState(false)
     const toaster = useRef('')
     const [typeInfo, setTypeInfo] = React.useState({
         name: '',
@@ -243,8 +440,10 @@ const AddForm = () => {
         floor: 1,
         col: 2,
         row: 3,
+        fee: 0,
     })
     const [seatMap, setSeatMap] = React.useState(null)
+    const [loading, setLoading] = React.useState(false)
     const handleChangeTypeInfo = (e) => {
         const { name, value } = e.target
         setTypeInfo({
@@ -294,6 +493,81 @@ const AddForm = () => {
             ...seatMap,
             seats: newSeats,
         })
+    }
+    const setListSeat = (newListSeat) => {
+        setSeatMap({
+            ...seatMap,
+            seats: newListSeat,
+        })
+    }
+    const handleAddBusType = () => {
+        //check every seat has name
+        const check = seatMap.seats.every((seat) => seat.name !== '')
+        //check no name is repeated
+        const nameList = seatMap.seats.map((seat) => seat.name)
+        const nameSet = new Set(nameList)
+        if (nameSet.size !== nameList.length) {
+            addToast(() => ({
+                message: 'Tên ghế không được trùng nhau',
+                type: 'error',
+            }))
+            return
+        }
+        if (!check) {
+            addToast(() =>
+                CustomToast({
+                    message: 'Vui lòng đặt tên cho tất cả ghế trước khi lưu',
+                    type: 'error',
+                }),
+            )
+        } else {
+            const listActiveSeat = seatMap.seats.filter((seat) => seat.active)
+            const listSeat = listActiveSeat.map((seat) => {
+                return {
+                    rowId: seat.row,
+                    colId: seat.col,
+                    floorId: seat.floor,
+                    name: seat.name,
+                }
+            })
+            const busSeatMap = {
+                rowNo: seatMap.rowNo,
+                colNo: seatMap.colNo,
+                floorNo: seatMap.floorNo,
+            }
+            //add seat map
+            setLoading(true)
+            dispatch(busThunk.addSeatMap(busSeatMap))
+                .unwrap()
+                .then(async (result) => {
+                    await dispatch(
+                        busThunk.addListSeat({ seatMapId: result.id, seatInfors: listSeat }),
+                    )
+                        .unwrap()
+                        .then(() => {
+                            console.log('đã thêm map')
+                        })
+                    await dispatch(
+                        busThunk.addBusType({
+                            busType: {
+                                name: typeInfo.code,
+                                capacity: listActiveSeat.length,
+                                fee: typeInfo.fee,
+                                description: typeInfo.name,
+                            },
+                            seatMapId: result.id,
+                        }),
+                    )
+                        .unwrap()
+                        .then(() => {
+                            setLoading(false)
+                        })
+                })
+                .catch((err) => {
+                    setLoading(false)
+                    addToast(() => CustomToast({ message: err, type: 'error' }))
+                })
+        }
     }
     return (
         <>
@@ -370,6 +644,20 @@ const AddForm = () => {
                                     />
                                 </CInputGroup>
                             </CCol>
+                            <CCol md="12">
+                                <CInputGroup className="mb-3">
+                                    <CInputGroupText id="row-number">Phụ phí xe</CInputGroupText>
+                                    <CFormInput
+                                        id="fee"
+                                        type="number"
+                                        value={typeInfo.fee}
+                                        name="fee"
+                                        max={10000000}
+                                        min={0}
+                                        onChange={handleChangeTypeInfo}
+                                    />
+                                </CInputGroup>
+                            </CCol>
                             <CCol md="4">
                                 <CButton type="submit">Tạo map</CButton>
                             </CCol>
@@ -380,6 +668,23 @@ const AddForm = () => {
                             <CRow className="my-3 justify-content-center align-items-center">
                                 <CCol sm={12} className="border-bottom my-2 border-3"></CCol>
                             </CRow>
+                            <CRow>
+                                <CCol sm={2}>
+                                    <CFormCheck
+                                        checked={auto_name}
+                                        label="Đặt tên tự động"
+                                        onChange={() => setAutoName(!auto_name)}
+                                    ></CFormCheck>
+                                </CCol>
+                                <CCol sm={10}>
+                                    {auto_name && (
+                                        <AutoName
+                                            seatMap={seatMap}
+                                            setListSeat={setListSeat}
+                                        ></AutoName>
+                                    )}
+                                </CCol>
+                            </CRow>
                             <CRow className="mt-3">
                                 <SeatMap seatMap={seatMap} changeSeatMap={updateSeat}></SeatMap>
                             </CRow>
@@ -388,7 +693,11 @@ const AddForm = () => {
                             </CRow>
                             <CRow className="my-3 justify-content-center align-items-center">
                                 <CCol md="4" className="d-flex justify-content-center">
-                                    <CButton color="success">Lưu thông tin</CButton>
+                                    <CustomButton
+                                        color="success"
+                                        onClick={handleAddBusType}
+                                        text="Lưu thông tin"
+                                    ></CustomButton>
                                 </CCol>
                             </CRow>
                         </>

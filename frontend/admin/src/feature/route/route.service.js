@@ -107,5 +107,21 @@ const getRouteParents = createAsyncThunk(
     },
 )
 
+const getAssignedRouteForCompany = createAsyncThunk(
+    'manager/company/assign-route/get',
+    async (_, thunkAPI) => {
+        try {
+            const response = await axiosClient.get('manager/company/assign-company')
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const routeThunk = { getRoute, addRoute, editRoute, activeRoute, getRouteParents, getOfficialRoute }
 export default routeThunk
