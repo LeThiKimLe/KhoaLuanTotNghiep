@@ -281,7 +281,7 @@ public class BusService {
 			if (seatRepository.existsByNameAndSeatMapId(seatInfor.getName(), seatMap.getId())) {
 				throw new ConflictException("Tên ghế đã tồn tại");
 			}
-			Seat seat = Seat.builder().col(seatInfor.getColId()).row(seatInfor.getRowId()).floor(seatInfor.getFloorId())
+			Seat seat = Seat.builder().name(seatInfor.getName()).col(seatInfor.getColId()).row(seatInfor.getRowId()).floor(seatInfor.getFloorId())
 					.seatMap(seatMap).isActive(true).build();
 			seats.add(seat);
 		}

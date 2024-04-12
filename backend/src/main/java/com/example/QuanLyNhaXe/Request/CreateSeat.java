@@ -9,7 +9,7 @@ public class CreateSeat {
 	private Integer seatMapId;
 	private List<SeatInfor> seatInfors;
 	@Data
-	public class SeatInfor{
+	public static class SeatInfor{
 		private Integer rowId;
 		private Integer colId;
 		private Integer floorId;

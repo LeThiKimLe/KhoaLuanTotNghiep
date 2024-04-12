@@ -82,12 +82,10 @@ public class AuthenticationController {
 	
 	@PostMapping("/send-sms")
     public ResponseEntity<Object> sendOtp(@RequestParam String phoneNumber) {
-        try {
+       
         	return new ResponseEntity<>(twilioService.sendOtp(phoneNumber),HttpStatus.OK);
             
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to send OTP");
-        }
+        
     }
 	
 	@SecurityRequirement(name = "bearerAuth")

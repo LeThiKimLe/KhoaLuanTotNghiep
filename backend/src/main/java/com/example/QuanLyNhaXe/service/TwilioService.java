@@ -29,7 +29,7 @@ public class TwilioService {
     
 
     public Object sendOtp(String toPhoneNumber) {
-    	toPhoneNumber=phoneNumber;
+    	
         Twilio.init(accountSid, authToken);
 
         try {
@@ -42,7 +42,7 @@ public class TwilioService {
     }
 
     public boolean verifyOtp(String toPhoneNumber, String otp) {
-    	toPhoneNumber=phoneNumber;
+    	
         Twilio.init(accountSid, authToken);
 
         try {
