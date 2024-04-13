@@ -17,6 +17,7 @@ public class TripSimpleDTO {
 	private StationDTO endStation;
 	private BusTypeDTO busType;
 	private Integer price;
+	private String schedule;
 	private Integer busCompanyId;
 	private boolean isActive;
 	

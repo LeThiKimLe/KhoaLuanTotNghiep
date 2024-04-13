@@ -17,11 +17,8 @@ public class RouteDTO {
 	private Integer distance;
 	private LocationDTO departure;
 	private LocationDTO destination;
-	
-	private String schedule;
 	private Integer parents;
-	private float hours;
-	
+	private float hours;	
 	private boolean isActive;
 
 }
