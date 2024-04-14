@@ -27,7 +27,6 @@ const Route = ({route, reverse}) => {
                     ? {...route, 
                         departure: route.destination,
                         destination: route.departure,
-                        schedule: reverseSchedule(route.schedule)
                     } : route
     
     const handleSearch = () => {
@@ -73,21 +72,21 @@ const Route = ({route, reverse}) => {
                 <div className={styles.infor_title}>Khoảng cách: </div>
                 <span>{cusRoute.distance} km</span>
             </div>
-            <div className={styles.infor}>
+            {/* <div className={styles.infor}>
                 <div className={styles.infor_title}>Lộ trình: </div>
                 <span>{cusRoute.schedule}</span>
-            </div>
-            <div className={styles.infor}>
+            </div> */}
+            {/* <div className={styles.infor}>
                 <div className={styles.infor_title}>
                     Giá vé: 
                 </div>
                 <span>{`${cusRoute.price.toLocaleString()} VND`}</span>
-            </div>
+            </div> */}
             <div className={styles.searchArea}>
                 <i className={styles.note}>* Giá vé chưa bao gồm phụ phí xe, dịp lễ</i>
                 <OptionButton text="Tìm chuyến xe" className={styles.findBtn} onClick={handleSearch}></OptionButton>
             </div>
-            </div>  
+            </div>
         </div>
     )
 }

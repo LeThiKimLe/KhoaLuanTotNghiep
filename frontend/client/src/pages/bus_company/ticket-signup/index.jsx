@@ -93,9 +93,9 @@ const TicketSignup = () => {
             name: "telephone",
             type: "text",
             placeholder: "Nhập số điện thoại",
-            errorMessage: "Số điện thoại không hợp lệ",
+            errorMessage: "Số điện thoại dạng 0xxx... hoặc +xxx...",
             label: "Nhập số điện thoại",
-            pattern: "^[0-9]{10,11}$",
+            pattern: "^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$",
             required: true,
         },
         {

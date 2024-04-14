@@ -76,3 +76,11 @@ export const getTripEndStation = (trip) => {
         if (trip.turn === 1) return trip.endStation.name
         else return trip.startStation.name
 }
+
+export const reverseString = (text, separator) => {
+    if (text !== '') {
+        const splited = text.split(` ${separator} `)
+        return splited.reverse().join(` ${separator} `)
+    }
+    return text
+}

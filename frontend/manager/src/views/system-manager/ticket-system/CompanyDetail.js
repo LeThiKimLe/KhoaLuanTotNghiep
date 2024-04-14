@@ -217,7 +217,7 @@ const RouteInfo = ({ route, fixSchedule }) => {
                             <b>Lộ trình</b>
                         </CFormLabel>
                         <CCol sm={8}>
-                            <CFormInput readOnly value={route.schedule}></CFormInput>
+                            <CFormInput readOnly value={tripGo.schedule}></CFormInput>
                         </CCol>
                     </CRow>
                 </TabPanel>
@@ -247,14 +247,15 @@ const CompanyDetail = () => {
             return schedule.trip.busCompany.id === curCompany.id
         else return false
     })
+    const { busCompany, admin } = curCompany ? curCompany : { busCompany: null, admin: null }
     const [companyInfo, setCompanyInfo] = useState({
-        firmName: curCompany ? curCompany.name : '',
-        representName: curCompany ? curCompany.admin.staffUser.name : '',
-        email: curCompany ? curCompany.admin.staffUser.email : '',
-        idCard: curCompany ? curCompany.admin.staffUser.staff.idCard : '',
-        telephone: curCompany ? curCompany.admin.staffUser.tel : '',
-        businessLicense: curCompany ? curCompany.businessLicense : '',
-        address: curCompany ? curCompany.admin.staffUser.staff.address : '',
+        firmName: busCompany ? busCompany.name : '',
+        representName: admin ? admin.staffUser.name : '',
+        email: admin ? admin.staffUser.email : '',
+        idCard: admin ? admin.staffUser.staff.idCard : '',
+        telephone: admin ? admin.staffUser.tel : '',
+        businessLicense: busCompany ? busCompany.businessLicense : '',
+        address: admin ? admin.staffUser.staff.address : '',
     })
     const listAssign = useSelector(selectListAssign)
     const curAssign = listAssign.filter((assign) => assign.busCompanyId === curCompany.id)
@@ -311,18 +312,19 @@ const CompanyDetail = () => {
     const handleCancel = () => {
         setIsUpdate(false)
         setCompanyInfo({
-            firmName: curCompany ? curCompany.name : '',
-            representName: curCompany ? curCompany.admin.staffUser.name : '',
-            email: curCompany ? curCompany.admin.staffUser.email : '',
-            idCard: curCompany ? curCompany.admin.staffUser.staff.idCard : '',
-            telephone: curCompany ? curCompany.admin.staffUser.tel : '',
-            businessLicense: curCompany ? curCompany.businessLicense : '',
-            address: curCompany ? curCompany.admin.staffUser.staff.address : '',
+            firmName: busCompany ? busCompany.name : '',
+            representName: admin ? admin.staffUser.name : '',
+            email: admin ? admin.staffUser.email : '',
+            idCard: admin ? admin.staffUser.staff.idCard : '',
+            telephone: admin ? admin.staffUser.tel : '',
+            businessLicense: busCompany ? busCompany.businessLicense : '',
+            address: admin ? admin.staffUser.staff.address : '',
         })
     }
     useEffect(() => {
         dispatch(scheduleThunk.getFixSchedule())
     }, [])
+    console.log(listFixSchedule)
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />

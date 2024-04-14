@@ -74,11 +74,11 @@ const TripSum = ({trip, turn}) => {
 }
 
 const List = () => {
-
     const [loading, setLoading] = useState(true)
     const dispatch = useDispatch()
     const listRoute = useSelector(selectListRoute)
     const {listTripGo, listTripReturn} = useSelector(selectSearchResult)
+    console.log(listTripGo, listTripReturn)
     const [selectedTab, setSelectedTab] = useState(0)
     const [search, setSearch] = useState(true)
     const seatMap = useSelector(selectSeatMap)

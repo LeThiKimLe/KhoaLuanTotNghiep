@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axiosClient from 'src/api/axios'
+import { reverseString } from 'src/utils/tripUtils'
 
 const addTrip = createAsyncThunk('manager/trips', async (tripInfor, thunkAPI) => {
     try {
@@ -10,6 +11,8 @@ const addTrip = createAsyncThunk('manager/trips', async (tripInfor, thunkAPI) =>
             price: tripInfor.price,
             companyId: tripInfor.companyId,
             busType: 0,
+            schedule: tripInfor.schedule,
+            scheduleReturn: reverseString(tripInfor.schedule, '-'),
         })
         return trip
     } catch (error) {

@@ -219,7 +219,7 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                                         <CFormInput
                                             type="text"
                                             id="tel"
-                                            patterns="^0[0-9]{9,10}$"
+                                            patterns="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
                                             value={tel}
                                             onChange={(e) => setTel(e.target.value)}
                                             required

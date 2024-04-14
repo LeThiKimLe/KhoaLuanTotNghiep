@@ -63,7 +63,6 @@ export const getTripJourney = (trip) => {
 }
 
 export const tripProcess = (listRoute) => {
-    console.log(listRoute)
     const listTrip = []
     let temp = -1
     listRoute.forEach((route) => {
@@ -74,7 +73,8 @@ export const tripProcess = (listRoute) => {
                 (item) =>
                     item.startStation.id === trip.startStation.id &&
                     item.endStation.id === trip.endStation.id &&
-                    item.schedule === trip.schedule,
+                    (item.schedule === trip.schedule ||
+                        item.schedule === reverseString(trip.schedule)),
             )
             if (temp != -1) {
                 listTrip[temp] = {
@@ -91,6 +91,13 @@ export const tripProcess = (listRoute) => {
             }
         })
     })
-    console.log(listTrip)
     return listTrip
+}
+
+export const reverseString = (text, separator = '-') => {
+    if (text !== '') {
+        const splited = text.split(` ${separator} `)
+        return splited.reverse().join(` ${separator} `)
+    }
+    return text
 }

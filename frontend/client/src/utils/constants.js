@@ -66,7 +66,7 @@ export const UPDATE_INFOR = [
     placeholder: "Số điện thoại",
     errorMessage: "Sai số điện thoại",
     label: "Số điện thoại",
-    pattern: "^0[0-9]{9,10}$",
+    pattern: "^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$",
     required: false,
     role: [1, 2, 3, 4],
     editable: [1],
@@ -169,7 +169,7 @@ export const TICKET_INFOR = [
     placeholder: "Số điện thoại",
     errorMessage: "Sai số điện thoại",
     label: "Số điện thoại",
-    pattern: "^0[0-9]{9,10}$",
+    pattern: "^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$",
     required: true,
   },
   {

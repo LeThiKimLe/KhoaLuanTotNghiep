@@ -280,7 +280,7 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
             : [
                   {
                       listTime: [],
-                      listRepeat: [],
+                      listRepeat: [2, 3, 4, 5, 6, 7, 8],
                   },
               ],
     )
@@ -290,7 +290,7 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
             : [
                   {
                       listTime: [],
-                      listRepeat: [],
+                      listRepeat: [2, 3, 4, 5, 6, 7, 8],
                   },
               ],
     )
@@ -535,6 +535,7 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
                 } thứ ${i + 1}`
             }
         }
+        console.log('check ok')
         return ''
     }
 
@@ -619,7 +620,7 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
         }
     }, [curEndStation, curStartStation])
     useEffect(() => {
-        if (curJourney !== -1 && isBackup === false)
+        if (curJourney !== -1 && isBackup === false) {
             setCurRoute(
                 getListAvaiRoute(
                     listDeparture[curDeparture].name,
@@ -628,6 +629,7 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
                     listEndStation[curEndStation],
                 ).find((route) => route.journey === listJourney[curJourney]),
             )
+        }
     }, [curJourney])
     useEffect(() => {
         if (
@@ -642,8 +644,6 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
     }, [curDeparture, curDestination, curStartStation, curEndStation, curJourney])
 
     useEffect(() => {
-        console.log('ren')
-        console.log(listTimeGo)
         if (
             curRoute &&
             checkEmpty(1) === '' &&
@@ -651,11 +651,9 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
             error === '' &&
             isBackup === false
         ) {
-            console.log('addCompanyRoute')
             addCompanyRoute(id, curRoute, listTimeGo, listTimeReturn)
         }
     }, [curRoute, listTimeGo, listTimeReturn])
-    console.log(companyRoute)
     return (
         <>
             <CRow className="mb-3 justify-content-center align-items-center">
@@ -830,19 +828,18 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             listTimeGo: [
                 {
                     listTime: [],
-                    listRepeat: [],
+                    listRepeat: [2, 3, 4, 5, 6, 7, 8],
                 },
             ],
             listTimeReturn: [
                 {
                     listTime: [],
-                    listRepeat: [],
+                    listRepeat: [2, 3, 4, 5, 6, 7, 8],
                 },
             ],
             price: 0,
         },
     ])
-
     const handleChangeCompanyInfo = (e) => {
         setCompanyInfo({ ...companyInfo, [e.target.name]: e.target.value })
     }
@@ -870,27 +867,36 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     }
     const addRouteTab = () => {
         let newRoutes = []
-        setListCompanyRoute((prevRoutes) => {
-            newRoutes = [...prevRoutes]
-            newRoutes.push({
-                route: null,
-                listTimeGo: [
-                    {
-                        listTime: [],
-                        listRepeat: [],
-                    },
-                ],
-                listTimeReturn: [
-                    {
-                        listTime: [],
-                        listRepeat: [],
-                    },
-                ],
-                price: 0,
+        if (listCompanyRoute.every((route) => route.route !== null)) {
+            setListCompanyRoute((prevRoutes) => {
+                newRoutes = [...prevRoutes]
+                newRoutes.push({
+                    route: null,
+                    listTimeGo: [
+                        {
+                            listTime: [],
+                            listRepeat: [2, 3, 4, 5, 6, 7, 8],
+                        },
+                    ],
+                    listTimeReturn: [
+                        {
+                            listTime: [],
+                            listRepeat: [2, 3, 4, 5, 6, 7, 8],
+                        },
+                    ],
+                    price: 0,
+                })
+                return newRoutes
             })
-            return newRoutes
-        })
-        setActiveTab(newRoutes.length)
+            setActiveTab(newRoutes.length)
+        } else {
+            addToast(() =>
+                CustomToast({
+                    message: 'Vui lòng hoàn tất các thông tin của tuyến này',
+                    type: 'error',
+                }),
+            )
+        }
     }
     const removeRouteTab = (index) => {
         if (listCompanyRoute.length === 1) return
@@ -946,7 +952,6 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                                 distance: route.distance,
                                 departureId: departureId,
                                 destinationId: destinationId,
-                                schedule: route.journey,
                                 parents: 0,
                                 hours: 0,
                             }
@@ -1028,12 +1033,12 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 throw err
             })
     }
-    const handleAddTrip = async (route, startStationId, endStationId, companyId) => {
-        console.log(route, startStationId, endStationId, companyId)
+    const handleAddTrip = async (route, startStationId, endStationId, companyId, journey) => {
         const tripInfor = {
             routeId: route.id,
             startStationId: startStationId,
             endStationId: endStationId,
+            schedule: journey,
             price: 0,
             companyId: companyId,
         }
@@ -1061,7 +1066,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         return await dispatch(companyThunk.addCompany({ companyInfor: companyData }))
             .unwrap()
             .then((res) => {
-                return res.id
+                return res?.busCompany?.id
             })
             .catch((err) => {
                 setError(err)
@@ -1135,6 +1140,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                                                 startStationId,
                                                 endStationId,
                                                 companyId,
+                                                listCompanyRoute[i].route.journey,
                                             ).then(async (res) => {
                                                 listTrip = res
                                                 if (listTrip.length === 2) {
@@ -1178,6 +1184,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                                                     setLoading(false)
                                                     setTimeout(() => {
                                                         solveCompany(preInfo.tel)
+                                                        dispatch(companyThunk.getCompany())
                                                         setVisible(false)
                                                     }, 1000)
                                                 })
@@ -1216,7 +1223,6 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         try {
             // Gửi tin nhắn tới máy chủ WebSocket
             if (socketConnect) {
-                console.log('send message')
                 socketConnect.send(JSON.stringify(newMessage))
             }
         } catch (error) {
@@ -1232,7 +1238,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         listLocation.current = listLocationIn
         listRoute.current = listRouteIn
     }, [listLocationIn, listRouteIn])
-
+    console.log(listCompanyRoute)
     return (
         <>
             <CModal
@@ -1512,17 +1518,17 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
 }
 
 const BusCompany = ({ companyInfo }) => {
+    const { busCompany, admin } = companyInfo
     //get random color from list
     const listRoute = useSelector(selectListRoute)
     const listAssign = useSelector(selectListAssign)
-    const curAssign = listAssign.filter((assign) => assign.busCompanyId === companyInfo.id)
+    const curAssign = listAssign.filter((assign) => assign.busCompanyId === busCompany.id)
     const [randomColor, setRandomColor] = useState(
         COLOR[Math.floor(Math.random() * (COLOR.length - 1))],
     )
     const dispatch = useDispatch()
     const [isHover, setIsHover] = useState(false)
     const openDetailPage = () => {
-        console.log('open detail')
         dispatch(companyActions.setCurCompany(companyInfo))
         setTimeout(() => {
             window.location.href = '#/ticket-system/bus-companies/company-detail'
@@ -1546,7 +1552,7 @@ const BusCompany = ({ companyInfo }) => {
             onClick={openDetailPage}
         >
             <CCardHeader className={`border-${randomColor}`}>
-                <b>{companyInfo.name}</b>
+                <b>{busCompany?.name}</b>
             </CCardHeader>
             <CCardBody>
                 <small>Tuyến xe: </small>
@@ -1571,9 +1577,9 @@ const BusCompany = ({ companyInfo }) => {
                         <small>Chưa có tuyến xe</small>
                     )}
                 </div>
-                <small>{`SĐT: ${companyInfo.admin.staffUser.tel}`}</small>
+                <small>{`SĐT: ${admin?.staffUser?.tel}`}</small>
                 <br></br>
-                <small>{`Ngày hợp tác: ${convertToDisplayDate(companyInfo.coopDay)}`}</small>
+                <small>{`Ngày hợp tác:${busCompany?.coopDay}`}</small>
             </CCardBody>
         </CCard>
     )
@@ -1596,7 +1602,6 @@ const Company = () => {
         dispatch(companyThunk.getAssignedRouteForCompany())
         dispatch(companyThunk.getCompany())
         dispatch(routeThunk.getRoute())
-        console.log('log new')
     }, [])
     return (
         <div>
