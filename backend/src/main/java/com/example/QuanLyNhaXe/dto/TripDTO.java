@@ -16,6 +16,8 @@ public class TripDTO {
 	private Integer id;
 	private boolean turn;
 	private Integer price;
+	private Integer distance;
+	private float hours;
 	private String schedule;
 	private StationDTO startStation;
 	private StationDTO endStation;

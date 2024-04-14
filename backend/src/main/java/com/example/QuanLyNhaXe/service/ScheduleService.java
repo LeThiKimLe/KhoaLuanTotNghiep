@@ -9,21 +9,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.Request.CreateSchedules;
-import com.example.QuanLyNhaXe.Request.CreateStopStation;
 import com.example.QuanLyNhaXe.Request.DistributeSchedule;
 import com.example.QuanLyNhaXe.dto.MaximumScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleDTO;
-import com.example.QuanLyNhaXe.dto.TripDTO;
 import com.example.QuanLyNhaXe.enumration.BusAvailability;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
-import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Bus;
 import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.SpecialDay;
 import com.example.QuanLyNhaXe.model.Trip;
-import com.example.QuanLyNhaXe.model.Trip_Bus;
 import com.example.QuanLyNhaXe.repository.BusRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.ScheduleRepository;
@@ -57,8 +53,8 @@ public class ScheduleService {
 		}
 		long busCount=tripBusRepository.countByTripIdAndBusAvailability(tripId,BusAvailability.AVAILABLE.getLabel());
 		long driverCount=tripDriverRepository.countByTripIdAndDriverUserAccountIsActive(tripId,true);
-		Integer max1=(int) Math.floor((12 / (trip.getRoute().getHours()+1))*busCount);
-		Integer max2=(int) Math.floor((10*driverCount)/(2*trip.getRoute().getHours()));
+		Integer max1=(int) Math.floor((12 / (trip.getHours()+1))*busCount);
+		Integer max2=(int) Math.floor((10*driverCount)/(2*trip.getHours()));
 		int smallerNumber = Math.min(max1, max2);
 		
 		return MaximumScheduleDTO.builder().driverCount(driverCount).busCount(busCount).maxSchedule(smallerNumber).build();
