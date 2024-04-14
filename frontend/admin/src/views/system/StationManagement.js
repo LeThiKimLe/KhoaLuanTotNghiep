@@ -42,8 +42,181 @@ import CustomButton from '../customButton/CustomButton'
 import { CustomToast } from '../customToast/CustomToast'
 import stationThunk from 'src/feature/station/station.service'
 import axios from 'axios'
-const apiKey = process.env.REACT_APP_GOOGLE_MAP_API_KEY
-const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
+import { MapContainer, Marker, TileLayer, Popup, useMap, useMapEvents } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import Leaflet from 'leaflet'
+
+Leaflet.Icon.Default.imagePath = '../node_modules/leaflet'
+
+delete Leaflet.Icon.Default.prototype._getIconUrl
+
+Leaflet.Icon.Default.mergeOptions({
+    iconRetinaUrl: require('leaflet/dist/images/marker-icon-2x.png'),
+    iconUrl: require('leaflet/dist/images/marker-icon.png'),
+    shadowUrl: require('leaflet/dist/images/marker-shadow.png'),
+})
+
+function ChangeView({ center, zoom }) {
+    const map = useMap()
+    map.setView(center, zoom)
+    return null
+}
+
+const Map = ({ location, setLocation }) => {
+    const handleMapClick = (e) => {
+        fetchData(e.latlng.lat, e.latlng.lng)
+    }
+    const MapClickHandler = () => {
+        useMapEvents({
+            click: handleMapClick,
+        })
+        return null
+    }
+    const fetchData = async (latitude, longitude) => {
+        try {
+            const response = await axios.get(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+            )
+            const data = response.data
+            setLocation({
+                lat: latitude,
+                lng: longitude,
+                address: data.display_name,
+                name: data.name,
+            })
+        } catch (error) {
+            console.error('Error fetching location data:', error)
+        }
+    }
+
+    const { lat, lng, address } = location
+    const marker = useRef(null)
+    useEffect(() => {
+        if (marker.current) {
+            marker.current.setLatLng([lat, lng])
+            marker.current.openPopup()
+        }
+    }, [location])
+    return (
+        <MapContainer center={[lat, lng]} zoom={13} style={{ height: '400px', width: '100%' }}>
+            <ChangeView center={[lat, lng]} zoom={13} />
+            <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+            <MapClickHandler />
+            <Marker position={[lat, lng]} ref={marker}>
+                <Popup>
+                    <div>
+                        <p>{address}</p>
+                    </div>
+                </Popup>
+            </Marker>
+        </MapContainer>
+    )
+}
+
+const SearchBox = ({ onSearch, onConfirm, preLocation }) => {
+    const [address, setAddress] = useState(preLocation ? preLocation.address : '')
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
+    const [loading, setLoading] = useState(false)
+    const [location, setLocation] = useState({
+        lat: preLocation ? preLocation.lat : 0,
+        lng: preLocation ? preLocation.lng : 0,
+        address: preLocation ? preLocation.address : '',
+        name: preLocation ? preLocation.name : '',
+    })
+
+    const handleSearch = () => {
+        setLoading(true)
+        axios
+            .get(
+                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
+                    address,
+                )}&format=json`,
+            )
+            .then((response) => {
+                if (response.data && response.data.length > 0) {
+                    const { lat, lon, display_name, name } = response.data[0]
+                    setLoading(false)
+                    setLocation({ lat: lat, lng: lon, address: display_name, name: name })
+                    onSearch({ lat: lat, lng: lon, address: display_name, name: name })
+                } else {
+                    addToast(() =>
+                        CustomToast({
+                            message: 'Không tìm thấy địa chỉ',
+                            type: 'error',
+                        }),
+                    )
+                    setLoading(false)
+                }
+            })
+            .catch((error) => {
+                console.error('Error retrieving coordinates:', error)
+                addToast(() =>
+                    CustomToast({
+                        message: 'Không tìm thấy địa chỉ',
+                        type: 'error',
+                    }),
+                )
+                setLoading(false)
+            })
+    }
+    useEffect(() => {
+        if (preLocation) onSearch(preLocation)
+    }, [])
+
+    useEffect(() => {
+        setLocation({
+            lat: preLocation ? preLocation.lat : 0,
+            lng: preLocation ? preLocation.lng : 0,
+            address: preLocation ? preLocation.address : '',
+            name: preLocation ? preLocation.name : '',
+        })
+        setAddress(preLocation ? preLocation.address : '')
+    }, [preLocation])
+
+    return (
+        <CRow className="my-3">
+            <CCol md="8">
+                <CInputGroup>
+                    <CInputGroupText>Địa điểm</CInputGroupText>
+                    <CFormInput
+                        type="text"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                    />
+                </CInputGroup>
+            </CCol>
+            <CCol md="2" className="d-flex justify-content-end">
+                <CustomButton
+                    style={{ width: '100%' }}
+                    onClick={handleSearch}
+                    text="Tìm kiếm"
+                    loading={loading}
+                ></CustomButton>
+            </CCol>
+            <CCol md="2" className="d-flex justify-content-end">
+                <CButton style={{ width: '100%' }} color="success" onClick={onConfirm}>
+                    Xác nhận
+                </CButton>
+            </CCol>
+            <CCol md="5" className="my-2">
+                <CInputGroup>
+                    <CInputGroupText>Kinh độ</CInputGroupText>
+                    <CFormInput readOnly type="text" value={location.lng} />
+                </CInputGroup>
+            </CCol>
+            <CCol md="5" className="my-2">
+                <CInputGroup>
+                    <CInputGroupText>Vĩ độ</CInputGroupText>
+                    <CFormInput readOnly type="text" value={location.lat} />
+                </CInputGroup>
+            </CCol>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+        </CRow>
+    )
+}
+
+export const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
     const [visible, setVisible] = useState(false)
     const handleShowInfor = () => {
         setVisible(!visible)
@@ -55,13 +228,23 @@ const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
     const [address, setAddress] = useState(station ? station.address : '')
     const [latitude, setLatitude] = useState(station ? station.latitude : 0)
     const [longitude, setLongitude] = useState(station ? station.longitude : 0)
-    const [stable, setStable] = useState(true)
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const dispatch = useDispatch()
     const [showDel, setShowDel] = useState(false)
     const [showConfirm, setShowConfirm] = useState(false)
     const [showConfirmOpen, setShowConfirmOpen] = useState(false)
+    const [openMap, setOpenMap] = useState(false)
+    const [location, setLocation] = useState({
+        lat: latitude,
+        lng: longitude,
+        address: address,
+        name: name,
+    })
+    const [viewMap, setViewMap] = useState(false)
+    const handleSearch = (newLocation) => {
+        setLocation(newLocation)
+    }
     const updateListLocation = () => {
         dispatch(locationThunk.getLocations())
             .unwrap()
@@ -74,52 +257,23 @@ const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
     const handleMouseLeave = () => {
         setShowDel(false)
     }
-
-    const getCoordinates = () => {
-        axios
-            .get(
-                `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(
-                    address,
-                )}&format=json`,
-            )
-            .then((response) => {
-                if (response.data && response.data.length > 0) {
-                    const { lat, lon } = response.data[0]
-                    setLatitude(lat)
-                    setLongitude(lon)
-                    setStable(true)
-                } else {
-                    addToast(() => CustomToast({ message: 'Địa chỉ không hợp lệ', type: 'error' }))
-                    setStable(false)
-                }
-            })
-            .catch((error) => {
-                console.error('Error retrieving coordinates:', error)
-                setStable(false)
-                addToast(() =>
-                    CustomToast({ message: 'Đã xảy ra lỗi. Vui lòng thử lại sau', type: 'error' }),
-                )
-            })
-    }
     const handleOnChange = (e) => {
         setAddress(e.target.value)
-        if (stable === true) setStable(false)
     }
     const cancelEdit = () => {
         setIsUpdate(false)
         setAddress(station.address)
         setName(station.name)
-        setStable(true)
     }
     const handleUpdate = () => {
         if (isUpdate === false) {
             curInput.current.focus()
             setIsUpdate(true)
         } else {
-            if (stable === false) {
+            if (name === '' || address === '' || latitude === 0 || longitude === 0) {
                 addToast(() =>
                     CustomToast({
-                        message: 'Địa chỉ chưa được xác minh. Vui lòng thử lại',
+                        message: 'Vui lòng hoàn thành các thông tin chính xác',
                         type: 'error',
                     }),
                 )
@@ -219,10 +373,25 @@ const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
                 setShowConfirmOpen(false)
             })
     }
+    const handleViewMap = () => {
+        setOpenMap(true)
+        setLocation({ lat: latitude, lng: longitude, address: address })
+        setViewMap(true)
+    }
+    const handleSearchStation = () => {
+        setOpenMap(true)
+        setViewMap(false)
+    }
+    const handleConfirmStation = () => {
+        setOpenMap(false)
+        setLatitude(location.lat)
+        setLongitude(location.lng)
+        setAddress(location.address)
+        setName(location.name)
+    }
     useEffect(() => {
         if (empty) {
             nameInput.current.focus()
-            setStable(false)
         }
     }, [])
     if (!empty)
@@ -279,39 +448,78 @@ const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
                     <CCollapse visible={visible}>
                         <CCard className="p-2" style={{ fontSize: '13px' }}>
                             <CRow className="mb-2">
-                                <span>Địa chỉ:</span>
                                 <CCol sm={12}>
-                                    <CFormTextarea
-                                        type="text"
-                                        readOnly={!isUpdate}
-                                        plainText
-                                        value={address}
-                                        className="border-0"
-                                        id="station-address"
-                                        onChange={handleOnChange}
-                                        ref={curInput}
-                                    />
-                                    {stable === false && (
+                                    <CInputGroup>
+                                        <CInputGroupText className="col-2">Địa chỉ</CInputGroupText>
+                                        <CFormInput
+                                            type="text"
+                                            readOnly={!isUpdate}
+                                            value={address}
+                                            onChange={handleOnChange}
+                                            ref={curInput}
+                                        />
+                                    </CInputGroup>
+                                    <CInputGroup className="my-2">
+                                        <CInputGroupText className="col-2">Kinh độ</CInputGroupText>
+                                        <CFormInput
+                                            type="text"
+                                            placeholder="Kinh độ"
+                                            value={longitude}
+                                            readOnly={!isUpdate}
+                                            onChange={(e) => setLongitude(e.target.value)}
+                                        ></CFormInput>
+                                        <CInputGroupText>Vĩ độ</CInputGroupText>
+                                        <CFormInput
+                                            type="text"
+                                            placeholder="Vĩ độ"
+                                            value={latitude}
+                                            readOnly={!isUpdate}
+                                            onChange={(e) => setLatitude(e.target.value)}
+                                        ></CFormInput>
+                                    </CInputGroup>
+                                    {isUpdate && (
                                         <CButton
-                                            onClick={getCoordinates}
+                                            onClick={handleSearchStation}
                                             variant="outline"
                                             color="success"
                                             style={{ scale: '0.8' }}
                                         >
-                                            Load vị trí
+                                            Tra vị trí
                                         </CButton>
                                     )}
-                                    {stable === true && (
-                                        <i>
-                                            <a
-                                                href={`https://www.google.com/maps?q=${latitude},${longitude}`}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                            >
-                                                Xem vị trí
-                                            </a>
-                                        </i>
+                                    {!isUpdate && (
+                                        <CButton
+                                            variant="outline"
+                                            color="warning"
+                                            onClick={handleViewMap}
+                                            style={{ transform: 'scale(0.8)' }}
+                                        >
+                                            Xem vị trí
+                                        </CButton>
                                     )}
+                                    <CModal
+                                        backdrop="static"
+                                        visible={openMap}
+                                        onClose={() => setOpenMap(false)}
+                                        size="xl"
+                                    >
+                                        <CModalHeader>Bản đồ</CModalHeader>
+                                        <CModalBody>
+                                            <div>
+                                                {!viewMap && (
+                                                    <SearchBox
+                                                        onSearch={handleSearch}
+                                                        onConfirm={handleConfirmStation}
+                                                        preLocation={location}
+                                                    />
+                                                )}
+                                                <Map
+                                                    location={location}
+                                                    setLocation={setLocation}
+                                                />
+                                            </div>
+                                        </CModalBody>
+                                    </CModal>
                                 </CCol>
                                 <CCol style={{ textAlign: 'right' }}>
                                     <CButton
@@ -401,38 +609,73 @@ const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
                     <CCollapse visible={true}>
                         <CCard className="p-2" style={{ fontSize: '13px' }}>
                             <CRow className="mb-2">
-                                <span>Địa chỉ:</span>
                                 <CCol sm={12}>
-                                    <CFormTextarea
-                                        type="text"
-                                        plainText
-                                        value={address}
-                                        onChange={handleOnChange}
-                                        placeholder="Nhập địa chỉ"
-                                        ref={curInput}
-                                    />
-                                    {stable === false && (
+                                    <CInputGroup>
+                                        <CInputGroupText className="col-2">Địa chỉ</CInputGroupText>
+                                        <CFormInput
+                                            type="text"
+                                            readOnly={!isUpdate}
+                                            value={address}
+                                            onChange={handleOnChange}
+                                            ref={curInput}
+                                        />
+                                    </CInputGroup>
+                                    <CInputGroup className="my-2">
+                                        <CInputGroupText className="col-2">Kinh độ</CInputGroupText>
+                                        <CFormInput
+                                            type="text"
+                                            placeholder="Kinh độ"
+                                            value={longitude}
+                                            readOnly={!isUpdate}
+                                            onChange={(e) => setLongitude(e.target.value)}
+                                        ></CFormInput>
+                                        <CInputGroupText>Vĩ độ</CInputGroupText>
+                                        <CFormInput
+                                            type="text"
+                                            placeholder="Vĩ độ"
+                                            value={latitude}
+                                            readOnly={!isUpdate}
+                                            onChange={(e) => setLatitude(e.target.value)}
+                                        ></CFormInput>
+                                    </CInputGroup>
+                                    {isUpdate && (
                                         <CButton
-                                            onClick={getCoordinates}
+                                            onClick={handleSearchStation}
                                             variant="outline"
                                             color="success"
-                                            disabled={address === ''}
                                             style={{ scale: '0.8' }}
                                         >
-                                            Load vị trí
+                                            Tra vị trí
                                         </CButton>
                                     )}
-                                    {stable === true && (
-                                        <i>
-                                            <a
-                                                href={`https://www.google.com/maps?q=${latitude},${longitude}`}
-                                                target="_blank"
-                                                rel="noreferrer"
-                                            >
-                                                Xem vị trí
-                                            </a>
-                                        </i>
+                                    {!isUpdate && (
+                                        <CButton
+                                            variant="outline"
+                                            color="warning"
+                                            onClick={handleViewMap}
+                                            style={{ transform: 'scale(0.8)' }}
+                                        >
+                                            Xem vị trí
+                                        </CButton>
                                     )}
+                                    <CModal
+                                        visible={openMap}
+                                        onClose={() => setOpenMap(false)}
+                                        size="xl"
+                                    >
+                                        <CModalHeader>Bản đồ</CModalHeader>
+                                        <CModalBody>
+                                            <div>
+                                                {!viewMap && (
+                                                    <SearchBox
+                                                        onSearch={handleSearch}
+                                                        onConfirm={handleConfirmStation}
+                                                    />
+                                                )}
+                                                <Map location={location} />
+                                            </div>
+                                        </CModalBody>
+                                    </CModal>
                                 </CCol>
                                 <CCol style={{ textAlign: 'right' }}>
                                     <CButton
@@ -442,7 +685,12 @@ const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
                                         style={{ width: 'fit-content', scale: '0.8' }}
                                         onClick={handleAdd}
                                         className="mr-1"
-                                        disabled={name === '' || address === '' || stable === false}
+                                        disabled={
+                                            name === '' ||
+                                            address === '' ||
+                                            latitude === 0 ||
+                                            longitude === 0
+                                        }
                                     >
                                         <CIcon icon={cilSave}></CIcon>
                                     </CButton>

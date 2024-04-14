@@ -429,7 +429,7 @@ const AutoName = ({ seatMap, setListSeat }) => {
     )
 }
 
-const AddForm = () => {
+const AddForm = ({ handleComplete }) => {
     const dispatch = useDispatch()
     const [toast, addToast] = useState(0)
     const [auto_name, setAutoName] = useState(false)
@@ -560,7 +560,11 @@ const AddForm = () => {
                     )
                         .unwrap()
                         .then(() => {
+                            addToast(() =>
+                                CustomToast({ message: 'Đã thêm loại xe mới', type: 'success' }),
+                            )
                             setLoading(false)
+                            handleComplete()
                         })
                 })
                 .catch((err) => {
@@ -903,6 +907,10 @@ const BusTypeManagement = () => {
     const [openAdd, setOpenAdd] = useState(false)
     const listBusType = useSelector(selectListBusType)
     const dispatch = useDispatch()
+    const handleAddSuccess = () => {
+        setOpenAdd(false)
+        dispatch(busThunk.getBusType())
+    }
     useEffect(() => {
         dispatch(busThunk.getBusType())
         dispatch(busThunk.getBus())
@@ -918,7 +926,7 @@ const BusTypeManagement = () => {
                 </CCol>
             </CRow>
             <CCollapse visible={openAdd}>
-                <AddForm></AddForm>
+                <AddForm handleComplete={handleAddSuccess}></AddForm>
             </CCollapse>
             <CAccordion>
                 {listBusType.map((busType, index) => (

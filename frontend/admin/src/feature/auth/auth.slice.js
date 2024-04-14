@@ -107,6 +107,10 @@ export const selectMessage = (state) => state.auth.message
 export const selectError = (state) => state.auth.error
 export const selectLogout = (state) => state.auth.loggingOut
 export const selectUser = (state) => state.auth.user
+export const selectCompanyId = createSelector([selectUser], (user) => {
+    return user?.user?.staff?.busCompanyId
+})
+
 export const selectUserRoleId = createSelector([selectUser], (user) => {
     if (user) {
         if (user.user.customer) return 1

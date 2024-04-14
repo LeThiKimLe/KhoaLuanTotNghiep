@@ -28,6 +28,7 @@ const RouteManagement = React.lazy(() => import('./views/system/RouteManagement'
 const SpecialDayManagement = React.lazy(() => import('./views/schedule/SpecialDayManage'))
 const ReviewManagement = React.lazy(() => import('./views/system/ReviewManagement'))
 const BusTypeManagement = React.lazy(() => import('./views/system/BusTypeManagement'))
+const TripManagement = React.lazy(() => import('./views/system/TripManagement'))
 
 //ScheduleManagement
 const ScheduleManagement = React.lazy(() => import('./views/schedule/ScheduleManagement'))
@@ -85,6 +86,12 @@ const routes = [
         name: 'Quản lý hệ thống',
         element: StationManagement,
         exact: true,
+        protected: true,
+    },
+    {
+        path: '/system-manage/trips',
+        name: 'Quản lý tuyến xe',
+        element: TripManagement,
         protected: true,
     },
     {
