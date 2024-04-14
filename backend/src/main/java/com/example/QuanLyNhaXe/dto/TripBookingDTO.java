@@ -1,7 +1,5 @@
 package com.example.QuanLyNhaXe.dto;
 
-import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +12,8 @@ public class TripBookingDTO {
 	private Integer id;
 	private boolean turn;
 	private Integer price;
+	private Integer distance;
+	private float hours;
 	private StationDTO startStation;
 	private StationDTO endStation;	
 	private RouteDTO route;

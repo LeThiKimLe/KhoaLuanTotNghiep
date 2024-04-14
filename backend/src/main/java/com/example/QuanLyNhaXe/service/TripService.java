@@ -266,9 +266,9 @@ public class TripService {
 				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 
 		Trip trip = Trip.builder().startStation(startStation).endStation(endStation).route(route).price(createTrip.getPrice()).busCompany(busCompany).isActive(true)
-				.turn(true).busType(busType).schedule(createTrip.getSchedule()).build();
+				.turn(true).busType(busType).schedule(createTrip.getSchedule()).distance(createTrip.getDistance()).hours(createTrip.getHours()).build();
 		Trip returnTrip = Trip.builder().startStation(startStation).endStation(endStation).price(createTrip.getPrice()).busCompany(busCompany).route(route).isActive(true)
-				.turn(false).busType(busType).schedule(createTrip.getScheduleReturn()).build();
+				.turn(false).busType(busType).schedule(createTrip.getScheduleReturn()).distance(createTrip.getDistance()).hours(createTrip.getHours()).build();
 		tripRepository.save(trip);
 		tripRepository.save(returnTrip);
 		return TripReponseDTO.builder().trip(modelMapper.map(trip, TripDTO.class)).tripReturn(modelMapper.map(returnTrip, TripDTO.class)).build();

@@ -13,11 +13,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class RouteFullDTO {
 	private Integer id;
-	private Integer distance;
+
 	private LocationDTO departure;
 	private LocationDTO destination;
 	private Integer parents;
-	private float hours;
+
 	private List<TripSimpleDTO> trips;
 	private String routeCode;
 	

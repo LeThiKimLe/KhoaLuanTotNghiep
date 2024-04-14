@@ -38,6 +38,13 @@ public class Trip {
 	
 	@Column(name = "schedule", length = 250)
 	private String schedule;
+	
+	
+	@Column(name = "hours")
+	private float hours;
+	
+	@Column(name = "distance", nullable = false)
+	private Integer distance;
 
 	@Column(name = "is_active")
 	private boolean isActive;
