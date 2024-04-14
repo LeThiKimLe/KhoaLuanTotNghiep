@@ -31,12 +31,14 @@ import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Route;
 import com.example.QuanLyNhaXe.model.RouteAssign;
 import com.example.QuanLyNhaXe.model.User;
+import com.example.QuanLyNhaXe.repository.AdminRepository;
 import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.RouteAssignRepository;
 import com.example.QuanLyNhaXe.repository.RouteRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
 import lombok.RequiredArgsConstructor;
+import com.example.QuanLyNhaXe.model.Admin;;
 
 @Service
 @RequiredArgsConstructor
@@ -48,14 +50,22 @@ public class BusCompanyService {
 	private final UserService userService;
 	private final RouteAssignRepository routeAssignRepository;
 	private final RouteRepository routeRepository;
+	private final AdminRepository adminRepository;
 
 	public Object getAllBusCompany() {
+		List<CompanyReponse> companyReponses=new  ArrayList<>();
 		List<BusCompany> busCompanyLists = busCompanyRepository.findAll();
 		if (busCompanyLists.isEmpty()) {
 			throw new NotFoundException(Message.COMPANY_NOT_FOUND);
 		}
-		return busCompanyLists.stream().map(busCompanyList -> modelMapper.map(busCompanyList, BusCompanyDTO.class))
-				.toList();
+		for(BusCompany company:busCompanyLists) {
+			Admin admin=adminRepository.findById(company.getAdminId())
+					.orElseThrow(() -> new NotFoundException(Message.USER_NOT_FOUND));
+			
+			CompanyReponse com =CompanyReponse.builder().admin(modelMapper.map(admin,AdminDTO.class)).busCompany(modelMapper.map(company, BusCompanyDTO.class)).build();
+			companyReponses.add(com);
+		}
+	  return companyReponses;
 	}
 
 	@Transactional
