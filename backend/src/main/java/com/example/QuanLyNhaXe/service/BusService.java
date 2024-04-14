@@ -38,6 +38,7 @@ import com.example.QuanLyNhaXe.model.Seat;
 import com.example.QuanLyNhaXe.model.SeatMap;
 import com.example.QuanLyNhaXe.model.Trip_Bus;
 import com.example.QuanLyNhaXe.model.User;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.BusQualityRepository;
 import com.example.QuanLyNhaXe.repository.BusRepository;
 import com.example.QuanLyNhaXe.repository.BusTypeRepository;
@@ -60,6 +61,7 @@ public class BusService {
 	private final SeatMapRepository seatMapRepository;
 	private final UserService userService;
 	private final SeatRepository seatRepository;
+	private final BusCompanyRepository busCompanyRepository;
 
 	public Object getAllBusType(String authentication) {
 		User user = userService.getUserByAuthorizationHeader(authentication);
@@ -68,13 +70,12 @@ public class BusService {
 			throw new NotFoundException(Message.BUSTYPE_NOT_FOUND);
 		}
 		if (user.getAccount().getRole().getRoleName().equals("ADMIN")) {
-			if (user.getStaff().getAdmin().getBusCompany().getId() == null) {
-				throw new NotFoundException("Không tìm thấy công ty của quản trị viên này");
-			}
+			BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+					.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 
 			return busTypes.stream()
 					.filter(busType -> busType.getBusCompany().getId()
-							.equals(user.getStaff().getAdmin().getBusCompany().getId()))
+							.equals(busCompany.getId()))
 					.map(busType -> modelMapper.map(busType, BusTypeDTO.class)).toList();
 		}
 		return busTypes.stream().filter(null).map(busType -> modelMapper.map(busType, BusTypeDTO.class)).toList();
@@ -88,13 +89,12 @@ public class BusService {
 			throw new NotFoundException(Message.BUSTYPE_NOT_FOUND);
 		}
 		if (user.getAccount().getRole().getRoleName().equals("ADMIN")) {
-			if (user.getStaff().getAdmin().getBusCompany().getId() == null) {
-				throw new NotFoundException("Không tìm thấy công ty của quản trị viên này");
-			}
+			BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+					.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 
 			return busLists.stream()
 					.filter(busList -> busList.getBusCompany().getId()
-							.equals(user.getStaff().getAdmin().getBusCompany().getId()))
+							.equals(busCompany.getId()))
 					.map(busList -> modelMapper.map(busList, BusDTO.class)).toList();
 		}
 		return busLists.stream()
@@ -189,7 +189,7 @@ public class BusService {
 		SeatMap seatMap = seatMapRepository.findById(createBusType.getSeatMapId())
 				.orElseThrow(() -> new NotFoundException(Message.SEATMAP_NOT_FOUND));
 		User adminUser = userService.getUserByAuthorizationHeader(authentication);
-		BusCompany busCompany = adminUser.getStaff().getAdmin().getBusCompany();
+		BusCompany busCompany = adminUser.getStaff().getBusCompany();
 
 		BusType busType = BusType.builder().name(createBusType.getName()).seatMap(seatMap)
 				.capacity(createBusType.getCapacity()).fee(createBusType.getFee())

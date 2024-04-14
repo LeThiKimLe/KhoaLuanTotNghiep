@@ -56,8 +56,6 @@ public class StationService {
 			stations.add(createStation);
 		}
 		stationRepository.saveAll(stations);
-		// return new ResponseMessage(Message.SUCCESS);
-		// return list station model mapper with StationDTO
 		return stations.stream().map(station -> modelMapper.map(station, StationDTO.class));
 		
 	}
@@ -118,7 +116,7 @@ public class StationService {
 	}
 
 	public Object createStopStation(CreateStopStation createStopStation) {
-		if(!createStopStation.getStationType().equals("pick")&&!createStopStation.getStationType().equals("drop")) {
+		if(!createStopStation.getStationType().equals("pick")&&!createStopStation.getStationType().equals("drop")&&!createStopStation.getStationType().equals("stop")) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
 		if(stopStationRepository.existsByTripIdAndStationId(createStopStation.getTripId(), createStopStation.getStationId())) {
@@ -135,7 +133,7 @@ public class StationService {
 	}
 	
 	public Object updateStopStation(EditStopStation editStopStation) {
-		if(!editStopStation.getStationType().equals("pick")&&!editStopStation.getStationType().equals("drop")) {
+		if(!editStopStation.getStationType().equals("pick")&&!editStopStation.getStationType().equals("drop")&&!editStopStation.getStationType().equals("stop")) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
 		if(stopStationRepository.existsByTripIdAndStationId(editStopStation.getTripId(),editStopStation.getStationId())) {

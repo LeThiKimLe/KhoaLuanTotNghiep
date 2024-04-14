@@ -15,12 +15,14 @@ import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Account;
 import com.example.QuanLyNhaXe.model.Admin;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Customer;
 import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Staff;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.AccountRepository;
 import com.example.QuanLyNhaXe.repository.AdminRepository;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.CustomerRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.StaffRepository;
@@ -42,6 +44,7 @@ public class UserService {
 	private final AccountRepository accountRepository;
 	private final S3Service s3Service;
 	private final AdminRepository adminRepository;
+	private final BusCompanyRepository busCompanyRepository;
 
 	private final JwtService jwtService;
 
@@ -158,11 +161,9 @@ public class UserService {
 		if (staffs.isEmpty()) {
 			throw new NotFoundException(Message.STAFF_NOT_FOUND);
 		}
-		if(user.getStaff().getAdmin().getBusCompany().getId()==null) {
-			throw new NotFoundException("Không tìm thấy công ty của quản trị viên này");
-			
-		}
-		return staffs.stream().filter(staff -> staff.getBusCompany().getId().equals(user.getStaff().getAdmin().getBusCompany().getId()))
+		BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		return staffs.stream().filter(staff -> staff.getBusCompany().getId().equals(busCompany.getId()))
 				.map(staff -> modelMapper.map(staff.getUser(), UserDTO.class)).toList();
 
 	}
@@ -173,12 +174,10 @@ public class UserService {
 		if (drivers.isEmpty()) {
 			throw new NotFoundException(Message.DRIVER_NOT_FOUND);
 		}
-		if(user.getStaff().getAdmin().getBusCompany().getId()==null) {
-			throw new NotFoundException("Không tìm thấy công ty của quản trị viên này");
-			
-		}
+		BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 		return drivers.stream()
-				.filter(driver-> driver.getBusCompany().getId().equals(user.getStaff().getAdmin().getBusCompany().getId()))
+				.filter(driver-> driver.getBusCompany().getId().equals(busCompany.getId()))
 				.map(driver -> modelMapper.map(driver.getUser(), UserDTO.class)).toList();
 	}
 	

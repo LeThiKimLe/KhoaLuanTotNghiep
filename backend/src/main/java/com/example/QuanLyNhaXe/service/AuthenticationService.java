@@ -343,7 +343,7 @@ public class AuthenticationService {
 	@Transactional
 	public ResponseMessage createNewStaff(SignupStaffDTO signupStaffDTO, String authentication) {
 		User adminUser = userService.getUserByAuthorizationHeader(authentication);
-		BusCompany busCompany = adminUser.getStaff().getAdmin().getBusCompany();
+		BusCompany busCompany = adminUser.getStaff().getBusCompany();
 		createStaff(signupStaffDTO, 2,busCompany);
 		
 		return new ResponseMessage(Message.SUCCESS_ADD_STAFF);

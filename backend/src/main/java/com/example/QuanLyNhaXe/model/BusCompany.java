@@ -38,9 +38,9 @@ public class BusCompany {
 	@Column(name = "business_license")
 	private String businessLicense;
 
-	@OneToOne
-	@JoinColumn(name = "admin_id", referencedColumnName = "admin_id")
-	private Admin admin;
+
+	@Column(name = "admin_id")
+	private Integer adminId;
 
 	@Column(name = "coop_day")
 	private LocalDate coopDay;

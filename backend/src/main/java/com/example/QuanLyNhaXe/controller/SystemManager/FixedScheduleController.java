@@ -2,12 +2,14 @@ package com.example.QuanLyNhaXe.controller.SystemManager;
 
 import java.util.List;
 
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -37,8 +39,8 @@ public class FixedScheduleController {
 	}
 	
 	@GetMapping
-	public ResponseEntity<Object> getAllFixedSchedule() {
-		return new ResponseEntity<>(fixedScheduleService.getFixedSchedules(), HttpStatus.CREATED);
+	public ResponseEntity<Object> getAllFixedSchedule(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+		return new ResponseEntity<>(fixedScheduleService.getFixedSchedules(authorization), HttpStatus.CREATED);
 	}
 	
 	@DeleteMapping
