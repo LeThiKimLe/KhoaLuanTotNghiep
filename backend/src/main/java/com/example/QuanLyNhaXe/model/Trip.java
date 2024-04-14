@@ -35,6 +35,9 @@ public class Trip {
 
 	@Column(name = "price")
 	private Integer price;
+	
+	@Column(name = "schedule", length = 250)
+	private String schedule;
 
 	@Column(name = "is_active")
 	private boolean isActive;

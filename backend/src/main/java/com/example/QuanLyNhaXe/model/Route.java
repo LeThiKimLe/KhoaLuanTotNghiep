@@ -34,8 +34,6 @@ public class Route {
 	@JoinColumn(name = "destination", referencedColumnName = "id")
 	private Location destination;
 
-	@Column(name = "schedule", length = 250)
-	private String schedule;
 
 	@Column(name = "parents")
 	private Integer parents;
