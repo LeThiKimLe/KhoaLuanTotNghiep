@@ -145,3 +145,30 @@ export const MONTH_IN_YEAR = [
 ]
 
 export const COLOR = ['info', 'warning', 'success', 'danger', 'dark', 'light']
+
+export const TIME_TABLE = {
+    morning: {
+        label: 'Sáng',
+        from: 6,
+        to: 12,
+        color: 'success',
+    },
+    afternoon: {
+        label: 'Chiều',
+        from: 12,
+        to: 18,
+        color: 'primary',
+    },
+    evening: {
+        label: 'Tối',
+        from: 18,
+        to: 24,
+        color: 'infor',
+    },
+    late: {
+        label: 'Khuya',
+        from: 0,
+        to: 6,
+        color: 'warning',
+    },
+}

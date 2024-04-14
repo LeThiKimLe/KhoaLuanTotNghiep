@@ -95,6 +95,11 @@ const _nav = [
         items: [
             {
                 component: CNavItem,
+                name: 'Quản lý tuyến xe',
+                to: '/system-manage/trips',
+            },
+            {
+                component: CNavItem,
                 name: 'Quản lý trạm xe',
                 to: '/system-manage/locations',
             },
