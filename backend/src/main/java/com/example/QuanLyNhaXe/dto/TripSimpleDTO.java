@@ -1,5 +1,7 @@
 package com.example.QuanLyNhaXe.dto;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,6 +22,7 @@ public class TripSimpleDTO {
 	private Integer distance;
 	private float hours;
 	private String schedule;
+	private List<StopStationDTO> stopStations;
 	private Integer busCompanyId;
 	private boolean isActive;
 	
