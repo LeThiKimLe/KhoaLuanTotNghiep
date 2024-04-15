@@ -25,7 +25,9 @@ const CompanyInfor = () => {
     const listCompany = useSelector(selectListCompany)
     const user = useSelector(selectUser)
     const [isUpdating, setIsUpdating] = useState(false)
-    const companyInfo = listCompany?.find((company) => company.id === user.user.staff.busCompanyId)
+    const companyInfo = listCompany?.find(
+        (company) => company.busCompany.id === user.user.staff.busCompanyId,
+    )
     useEffect(() => {
         if (listCompany.length === 0) {
             dispatch(companyThunk.getCompany())
@@ -95,7 +97,9 @@ const CompanyInfor = () => {
                                                             <CFormInput
                                                                 type="text"
                                                                 id="staticEmail"
-                                                                defaultValue={companyInfo.name}
+                                                                defaultValue={
+                                                                    companyInfo.busCompany.name
+                                                                }
                                                                 readOnly
                                                                 plainText
                                                             />
@@ -113,7 +117,8 @@ const CompanyInfor = () => {
                                                                 type="text"
                                                                 id="staticEmail"
                                                                 defaultValue={
-                                                                    companyInfo.businessLicense
+                                                                    companyInfo.busCompany
+                                                                        .businessLicense
                                                                 }
                                                                 readOnly
                                                                 plainText
@@ -132,7 +137,7 @@ const CompanyInfor = () => {
                                                                 type="text"
                                                                 id="staticEmail"
                                                                 defaultValue={convertToDisplayDate(
-                                                                    companyInfo.coopDay,
+                                                                    companyInfo.busCompany.coopDay,
                                                                 )}
                                                                 readOnly
                                                                 plainText
@@ -151,7 +156,8 @@ const CompanyInfor = () => {
                                                                 type="text"
                                                                 id="staticEmail"
                                                                 defaultValue={
-                                                                    companyInfo.admin.staffUser.name
+                                                                    companyInfo?.admin?.staffUser
+                                                                        ?.name
                                                                 }
                                                                 readOnly
                                                                 plainText
@@ -170,7 +176,8 @@ const CompanyInfor = () => {
                                                                 type="text"
                                                                 id="staticEmail"
                                                                 defaultValue={
-                                                                    companyInfo.admin.staffUser.tel
+                                                                    companyInfo?.admin?.staffUser
+                                                                        ?.tel
                                                                 }
                                                                 readOnly
                                                                 plainText
@@ -189,8 +196,8 @@ const CompanyInfor = () => {
                                                                 type="text"
                                                                 id="staticEmail"
                                                                 defaultValue={
-                                                                    companyInfo.admin.staffUser
-                                                                        .email
+                                                                    companyInfo?.admin?.staffUser
+                                                                        ?.email
                                                                 }
                                                                 readOnly
                                                                 plainText

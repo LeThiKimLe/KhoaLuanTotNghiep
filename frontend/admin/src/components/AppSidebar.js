@@ -23,7 +23,9 @@ const AppSidebar = () => {
     const sidebarShow = useSelector(selectSidebarUnfoldable)
     const listCompany = useSelector(selectListCompany)
     const user = useSelector(selectUser)
-    const companyInfo = listCompany?.find((company) => company.id === user.user.staff.busCompanyId)
+    const companyInfo = listCompany?.find(
+        (company) => company.busCompany.id === user.user.staff.busCompanyId,
+    )
     useEffect(() => {
         if (listCompany.length === 0) {
             dispatch(companyThunk.getCompany())
@@ -47,7 +49,7 @@ const AppSidebar = () => {
                         textTransform: 'uppercase',
                     }}
                 >
-                    {companyInfo ? companyInfo.name : 'Nhà xe'}
+                    {companyInfo ? companyInfo.busCompany.name : 'Nhà xe'}
                 </div>
                 {/* <CIcon className="sidebar-brand-full" icon={kimnguyenlogo} height={35} /> */}
                 <CIcon className="sidebar-brand-narrow" icon={sygnet} height={35} />

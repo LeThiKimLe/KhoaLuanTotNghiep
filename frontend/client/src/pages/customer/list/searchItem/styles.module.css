@@ -133,3 +133,19 @@
   cursor: pointer;
   box-shadow: 0 0 4px #727171;
 }
+
+.busImg {
+  width: 85%;
+  height: 85%;
+  object-fit: cover;
+  border: 1px solid #ccc;
+  border-radius: 5px,
+}
+
+.starCover{
+  background-color: #fac83f;
+  color: #3e3d3d;
+  font-weight: 500;
+  padding: 3px;
+  border-radius: 1px 3px;
+}

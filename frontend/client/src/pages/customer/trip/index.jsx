@@ -124,9 +124,9 @@ const Trip = ({ tabStyle }) => {
             name: "tel",
             type: "text",
             placeholder: "Số điện thoại",
-            errorMessage: "Sai số điện thoại",
+            errorMessage: "Số điện thoại dạng +xxx... hoặc 0xxx...",
             label: "Số điện thoại",
-            pattern: "^0[0-9]{9,10}$",
+            pattern: "^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$",
             required: true
 
         },

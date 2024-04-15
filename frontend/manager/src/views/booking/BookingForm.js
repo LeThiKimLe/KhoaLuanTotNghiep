@@ -161,7 +161,7 @@ const BookingForm = ({ visible, handleShow }) => {
                                         type="text"
                                         id="validationCustom02"
                                         required
-                                        pattern="^0[0-9]{9,10}$"
+                                        pattern="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
                                         name="tel"
                                         value={bookingInfor.bookingUser.tel}
                                         onChange={handleSetUserInfor}

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectListAssign } from 'src/feature/bus-company/busCompany.slice'
 import companyThunk from 'src/feature/bus-company/busCompany.service'
@@ -171,7 +171,7 @@ const TripManagement = () => {
                 trips: route.trips.filter((trip) => trip.busCompanyId === companyId),
             }
         })
-    const listTrip = tripProcess(listRouteAssign)
+    const [listTrip, setListTrip] = useState(tripProcess(listRouteAssign))
     const getFixSchedule = (trip) => {
         return listFixSchedule.filter(
             (schd) => schd.tripDd === trip.turnGo || schd.trip.id === trip.turnBack,
@@ -180,6 +180,7 @@ const TripManagement = () => {
     const getStation = (routeId) => {
         return listLocations.find((location) => location.id === routeId)?.stations
     }
+
     useEffect(() => {
         dispatch(routeThunk.getRoute())
         dispatch(companyThunk.getAssignedRouteForCompany())
@@ -187,6 +188,14 @@ const TripManagement = () => {
         dispatch(scheduleThunk.getFixSchedule())
         dispatch(locationThunk.getLocations())
     }, [])
+    useEffect(() => {
+        // if (listTrip.length !== 0){
+        //     const listTripIn = [...listTrip]
+        //     for (let i = 0; i < listTripIn.length; i++){
+        //         await dispatch(stationThunk.getStopStations(listTripIn[i].turnGo)).unwrap().then()
+        //     }
+        // }
+    }, [listTrip])
     return (
         <div>
             {listTrip.length > 0 ? (
@@ -264,10 +273,33 @@ const TripManagement = () => {
                                             <b>Lộ trình</b>
                                         </CFormLabel>
                                         <CCol sm={8}>
-                                            <CFormInput
-                                                readOnly
-                                                value={trip.route.schedule}
-                                            ></CFormInput>
+                                            <CFormInput readOnly value={trip.schedule}></CFormInput>
+                                        </CCol>
+                                    </CRow>
+                                    <CRow className="mb-3 justify-content-center align-items-center">
+                                        <CFormLabel
+                                            htmlFor="color"
+                                            className="col-sm-2 col-form-label"
+                                        >
+                                            <b>Khoảng cách</b>
+                                        </CFormLabel>
+                                        <CCol sm={3}>
+                                            <CInputGroup>
+                                                <CFormInput
+                                                    readOnly
+                                                    value={trip?.distance}
+                                                ></CFormInput>
+                                                <CInputGroupText>km</CInputGroupText>
+                                            </CInputGroup>
+                                        </CCol>
+                                        <CFormLabel
+                                            htmlFor="color"
+                                            className="col-sm-2 col-form-label text-center"
+                                        >
+                                            <b>Thời gian</b>
+                                        </CFormLabel>
+                                        <CCol sm={3}>
+                                            <CFormInput readOnly value={trip?.hour}></CFormInput>
                                         </CCol>
                                     </CRow>
                                 </CCardBody>

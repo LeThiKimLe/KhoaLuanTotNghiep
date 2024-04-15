@@ -8,14 +8,15 @@ import { faMagnifyingGlass, faArrowRightArrowLeft } from '@fortawesome/free-soli
 import Route from './route'
 import { useSelector } from 'react-redux'
 import { selectListRoute } from '../../../feature/route/route.slice'
+import { tripProcess } from '../../../utils/tripUtils'
 
 const Schedule = () => {
-    const listRoute = useSelector(selectListRoute)
-    const [filteredRoute, setFilteredRoute] = useState(listRoute)
+    const listRouteIO = useSelector(selectListRoute)
+    const [filteredRoute, setFilteredRoute] = useState(listRouteIO)
     const [exchange, setExchange] = useState(true)
     const [departure, setDeparture] = useState('')
     const [destination, setDestination] = useState('')
-    
+    const listRoute = tripProcess(listRouteIO)
     const handleExchange = () => {
         if (exchange)
             setExchange(false)

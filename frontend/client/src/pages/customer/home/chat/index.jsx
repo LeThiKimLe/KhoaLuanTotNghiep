@@ -123,7 +123,7 @@ const OptionBox = ({ option, setOption, closeForm, setUserInfor }) => {
                                     placeholder="Số điện thoại của bạn"
                                     id="tel"
                                     type="text"
-                                    pattern="^0[0-9]{9,10}$"
+                                    pattern="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
                                     required
                                     value={tel}
                                     onChange={(e) => setTel(e.target.value)}
