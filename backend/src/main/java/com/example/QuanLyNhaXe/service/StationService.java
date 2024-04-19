@@ -48,8 +48,12 @@ public class StationService {
 	public Object createStation(RequestStationDTO stationDTO) {
 		Location location = locationRepository.findById(stationDTO.getLocationId())
 				.orElseThrow(() -> new NotFoundException(Message.LOCATION_NOT_FOUND));
-		BusCompany busCompany=busCompanyRepository.findById(stationDTO.getCompanyId())
-				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		BusCompany busCompany=null;
+		if(stationDTO.getCompanyId()!=0) {
+			busCompany=busCompanyRepository.findById(stationDTO.getCompanyId())
+					.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		}
+		
 		List<Station> stations = new ArrayList<>();
 		for (StationOfLocation station : stationDTO.getStationOfLocations()) {
 			if (stationRepository.existsByName(station.getName())) {
