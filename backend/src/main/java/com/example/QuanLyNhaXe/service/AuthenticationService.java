@@ -79,6 +79,8 @@ public class AuthenticationService {
 				.orElseThrow(() -> new NotFoundException(Message.ACCOUNT_NOT_FOUND));
 		if (!account.isActive())
 			throw new BadRequestException(Message.ACCOUNT_DISABLED);
+		if((account.getRole().getId()==1||account.getRole().getId()==2)&&!account.getUser().getStaff().getBusCompany().isActive())
+			throw new BadRequestException(Message.COMPANY_NOT_FOUND);
 
 		UserDTO userDTO = userService.getUserInfor(account.getId());
 		String accessToken = jwtService.generateToken(account);
