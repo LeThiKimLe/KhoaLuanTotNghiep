@@ -11,6 +11,7 @@ import lombok.Data;
 public class RequestStationDTO {
 
 	private Integer locationId;
+	private Integer companyId;
 	List<StationOfLocation> stationOfLocations;
 	@Data
 	public static class StationOfLocation{
@@ -18,6 +19,7 @@ public class RequestStationDTO {
 		private String address;
 		private BigDecimal latitude;
 		private BigDecimal longitude;
+		
 	}
 	
 
