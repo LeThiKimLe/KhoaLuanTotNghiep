@@ -1,6 +1,6 @@
 import styles from './styles.module.css'
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faCircleDot, faLocationDot, faBusSimple, faStar } from "@fortawesome/free-solid-svg-icons"
+import { faCircleDot, faLocationDot, faBusSimple, faStar, faBullseye } from "@fortawesome/free-solid-svg-icons"
 import { useNavigate } from 'react-router-dom'
 import { convertToStamp, addHoursToTime, convertToDisplayDate } from '../../../../utils/unitUtils'
 import { selectSearchInfor } from '../../../../feature/search/search.slice'
@@ -17,6 +17,7 @@ import companyImg from '../../../../assets/busCompany.jpg'
 import { Tabs, Tab, TabList, TabPanel } from 'react-tabs'
 import { ListStation } from './ListStation'
 import { ListReview } from './ListReview'
+
 const SearchItem = ({ trip, sameTrip }) => {
     const [choose, setChoose] = useState(false)
     const round = useSelector(selectRound)
@@ -72,6 +73,7 @@ const SearchItem = ({ trip, sameTrip }) => {
                 navigate(`/trip/${trip.id}`)
         }
     }, [choose, currentTrip, returnTrip])
+    console.log(trip)
     return (
         <div className={`container ${styles.cover}`}>
             <div className={`row ${styles.searchResult}`}>
@@ -80,11 +82,11 @@ const SearchItem = ({ trip, sameTrip }) => {
                 </div>
                 <div className='col-8'>
                     <div className='d-flex gap-2 align-items-center'>
-                        <b>Xe An Phú</b>
+                        <b>{trip.tripInfor.busCompany.name}</b>
                         <div className={styles.starCover} role="button" onClick={openReview}>
                             <FontAwesomeIcon icon={faStar} />
-                            <i>{` 4.7 `}</i>
-                            <i>{` (1234) `}</i>
+                            <i>{` 5 `}</i>
+                            <i>{` (0) `}</i>
                         </div>
                     </div>
                     <div className={styles.routeTime}>
@@ -92,11 +94,11 @@ const SearchItem = ({ trip, sameTrip }) => {
                         <div className={styles.distanceRoute}>
                             <FontAwesomeIcon icon={faCircleDot} className={styles.startRoute} />
                             <div className={styles.dotDistance}></div>
-                            <div className={styles.hourRoute}>{convertToStamp(trip.tripInfor.route.hours)}</div>
+                            <div className={styles.hourRoute}>{convertToStamp(trip.tripInfor.hours)}</div>
                             <div className={styles.dotDistance}></div>
                             <FontAwesomeIcon icon={faLocationDot} className={styles.endRoute} />
                         </div>
-                        <div>{addHoursToTime(trip.departTime, trip.tripInfor.route.hours)}</div>
+                        <div>{addHoursToTime(trip.departTime, trip.tripInfor.hours)}</div>
                     </div>
                     <div className={styles.routeLocation}>
                         <div className={styles.routePoint}>{startStation.name}</div>
@@ -150,11 +152,9 @@ const SearchItem = ({ trip, sameTrip }) => {
                                     <Tab>Đánh giá</Tab>
                                 </TabList>
                                 <TabPanel>
-                                    Danh sách điểm đón - trả
-                                    <ListStation schedule={trip}></ListStation>
+                                    <ListStation trip={trip}></ListStation>
                                 </TabPanel>
                                 <TabPanel>
-                                    Danh sách các đánh giá
                                     <ListReview></ListReview>
                                 </TabPanel>
                             </Tabs>

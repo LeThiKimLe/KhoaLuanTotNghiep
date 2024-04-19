@@ -239,6 +239,8 @@ const List = () => {
         else
             setCurrentListTrip(listTripReturn)
     }, [selectedTab, listTripGo, listTripReturn])
+    
+    console.log(filterResult)
     return (
         <div>
             <Navbar></Navbar>

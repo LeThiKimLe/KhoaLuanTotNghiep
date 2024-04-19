@@ -16,7 +16,7 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
 
     const [listArrivalTime, setListArrivalTime] = useState(listLocation.map((local) => ({
         id: local.id,
-        arrivalTime: pick ? trip.departTime.slice(0, -3) : addHoursToTime(trip.departTime, trip.tripInfor.route.hours)
+        arrivalTime: pick ? trip.departTime.slice(0, -3) : addHoursToTime(trip.departTime, trip.tripInfor.hours)
     })))
 
     const copyArrival = useRef([...listArrivalTime])
@@ -77,7 +77,7 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
     }
 
     const getTimeDrop = () => {
-        const arrivalTime = addHoursToTime(trip.departTime, trip.tripInfor.route.hours)
+        const arrivalTime = addHoursToTime(trip.departTime, trip.tripInfor.hours)
         var count = 0
         var updateList = []
         const locationDep = trip.tripInfor.turn === true ? trip.tripInfor.endStation : trip.tripInfor.startStation

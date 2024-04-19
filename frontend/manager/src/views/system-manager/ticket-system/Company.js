@@ -1004,6 +1004,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 stationThunk.addStation({
                     locationId: location.id,
                     listStation: [stationInfo],
+                    companyId: 0,
                 }),
             )
                 .unwrap()
@@ -1047,7 +1048,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             price: 0,
             companyId: companyId,
             distance: distance,
-            hours: parseFloat((distance/75).toFixed(1)),
+            hours: parseFloat((distance / 75).toFixed(1)),
         }
         return await dispatch(tripThunk.addTrip(tripInfor))
             .unwrap()

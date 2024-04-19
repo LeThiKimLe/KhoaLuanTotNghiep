@@ -255,7 +255,7 @@ const Trip = ({ tabStyle }) => {
                                     <div className={styles.infor_segment}>
                                         <h2>Chọn ghế</h2>
                                         <SeatMap
-                                            seatMap={currentTrip.tripInfor.route.busType.seatMap}
+                                            seatMap={currentTrip.tripInfor.busType.seatMap}
                                             booked={currentTrip.tickets.filter((tk) => tk.state !== "Đã hủy" && tk.state !== "Chờ hủy")}
                                             selectedSeats={selectedSeats}
                                             handleSeatClick={handleSeatClick}
@@ -266,7 +266,7 @@ const Trip = ({ tabStyle }) => {
                                         {
                                             returnTrip && (
                                                 <SeatMap
-                                                    seatMap={returnTrip.tripInfor.route.busType.seatMap}
+                                                    seatMap={returnTrip.tripInfor.busType.seatMap}
                                                     booked={returnTrip.tickets.filter((tk) => tk.state !== "Đã hủy" && tk.state !== "Chờ hủy")}
                                                     selectedSeats={selectedReturnSeats}
                                                     handleSeatClick={handleSeatReturnClick}
@@ -373,7 +373,7 @@ const Trip = ({ tabStyle }) => {
                                         <div className={styles.infor_segment}>
                                             <h2>Chọn ghế</h2>
                                             <SeatMap
-                                                seatMap={currentTrip.tripInfor.route.busType.seatMap}
+                                                seatMap={currentTrip.tripInfor.busType.seatMap}
                                                 booked={currentTrip.tickets.filter((tk) => tk.state !== "Đã hủy" && tk.state !== "Chờ hủy")}
                                                 selectedSeats={selectedSeats}
                                                 handleSeatClick={handleSeatClick}
@@ -384,7 +384,7 @@ const Trip = ({ tabStyle }) => {
                                             {
                                                 returnTrip && (
                                                     <SeatMap
-                                                        seatMap={returnTrip.tripInfor.route.busType.seatMap}
+                                                        seatMap={returnTrip.tripInfor.busType.seatMap}
                                                         booked={returnTrip.tickets.filter((tk) => tk.state !== "Đã hủy" && tk.state !== "Chờ hủy")}
                                                         selectedSeats={selectedReturnSeats}
                                                         handleSeatClick={handleSeatReturnClick}
@@ -514,7 +514,7 @@ const Trip = ({ tabStyle }) => {
                         <Tab>Chọn ghế</Tab>
                     </TabList>
                     <TabPanel>
-                        <SeatMap seatMap={currentTrip.tripInfor.route.busType.seatMap}
+                        <SeatMap seatMap={currentTrip.tripInfor.busType.seatMap}
                             booked={currentTrip.tickets}
                             selectedSeats={selectedSeats}
                             handleSeatClick={handleSeatTabStyle}
