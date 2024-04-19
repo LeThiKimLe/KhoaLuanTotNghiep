@@ -45,7 +45,7 @@ import tripThunk from 'src/feature/trip/trip.service'
 import { cilMediaPlay, cilPlus, cilX } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import axios from 'axios'
-const StopStation = ({ trip, station, finishUpdate }) => {
+export const StopStation = ({ trip, station, finishUpdate }) => {
     const [showDel, setShowDel] = useState(false)
     const dispatch = useDispatch()
     const [showConfirmClose, setShowConfirmClose] = useState(false)

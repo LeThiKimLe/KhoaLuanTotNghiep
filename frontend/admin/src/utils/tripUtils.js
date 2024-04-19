@@ -68,7 +68,7 @@ export const tripProcess = (listRoute) => {
     listRoute.forEach((route) => {
         const { trips, ...routeInfo } = route
         trips.forEach((trip) => {
-            const { id, turn, ...tripInfo } = trip
+            const { id, turn, stopStations, ...tripInfo } = trip
             temp = listTrip.findIndex(
                 (item) =>
                     item.startStation.id === trip.startStation.id &&
@@ -79,13 +79,19 @@ export const tripProcess = (listRoute) => {
             if (temp != -1) {
                 listTrip[temp] = {
                     ...listTrip[temp],
-                    turnBack: trip.id,
+                    turnBack: {
+                        id: id,
+                        stopStations: stopStations,
+                    },
                 }
                 return
             } else {
                 listTrip.push({
                     ...tripInfo,
-                    turnGo: id,
+                    turnGo: {
+                        id: id,
+                        stopStations: stopStations,
+                    },
                     route: routeInfo,
                 })
             }

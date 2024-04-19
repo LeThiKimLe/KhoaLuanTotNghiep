@@ -42,7 +42,7 @@ import { convertToDisplayDate, convertToDisplayTimeStamp } from 'src/utils/conve
 import format from 'date-fns/format'
 import { cilPlus } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { selectListRoute } from 'src/feature/route/route.slice'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import { getRouteJourney, getTripJourney } from 'src/utils/tripUtils'
 import routeThunk from 'src/feature/route/route.service'
 import { convertTimeToInt } from 'src/utils/convertUtils'
@@ -1282,7 +1282,7 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
     const [manufactureYear, setManufactureYear] = useState('')
     const [color, setColor] = useState('')
     const [licensePlate, setLicensePlate] = useState('')
-    const [typeId, setTypeId] = useState(1)
+    const [typeId, setTypeId] = useState(0)
     const listBusType = useSelector(selectListBusType)
     const [error, setError] = useState('')
     const [validated, setValidated] = useState(false)
@@ -1292,7 +1292,7 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const dispatch = useDispatch()
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const handleDistribute = (busId) => {
         dispatch(busThunk.distributeBus({ tripId: curTrip, busId: busId }))
             .unwrap()
@@ -1301,24 +1301,30 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
     }
     const handleAddBus = (e) => {
         e.preventDefault()
-        setLoading(true)
-        const busType = {
-            year: manufactureYear,
-            color: color,
-            license: licensePlate,
-            typeId: typeId,
+        if (typeId != 0 && manufactureYear != '' && licensePlate != '' && color != '') {
+            setLoading(true)
+            const busType = {
+                year: manufactureYear,
+                color: color,
+                license: licensePlate,
+                typeId: typeId,
+            }
+            dispatch(busThunk.addBus(busType))
+                .unwrap()
+                .then((res) => {
+                    setLoading(false)
+                    setVisible(false)
+                    if (res.id) handleDistribute(res.id)
+                    setError('')
+                    finishAdd()
+                })
+                .catch((err) => {
+                    setLoading(false)
+                    setError(err)
+                })
+        } else {
+            setError('Vui lòng điền đủ các thông tin')
         }
-        dispatch(busThunk.addBus(busType))
-            .unwrap()
-            .then((res) => {
-                setLoading(false)
-                setVisible(false)
-                if (res.id) handleDistribute(res.id)
-                finishAdd()
-            })
-            .catch(() => {
-                setLoading(false)
-            })
     }
     const getListTrip = (routeId) => {
         const routeIn = listRoute.find((rt) => rt.id == routeId)
@@ -1449,6 +1455,11 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                                             value={typeId}
                                             onChange={(e) => setTypeId(e.target.value)}
                                         >
+                                            <option value="0">
+                                                {listBusType.length > 0
+                                                    ? 'Chọn loại xe'
+                                                    : 'Chưa có loại xe'}
+                                            </option>
                                             {listBusType.map((busType) => (
                                                 <option key={busType.id} value={busType.id}>
                                                     {busType.description}

@@ -42,7 +42,6 @@ public class ManageNotifyService implements WebSocketHandler{
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
         // Loại thông báo đã xử lý ra khỏi hệ thống
-        System.out.println("Nhân tin" + message.getPayload().toString());
         Gson gson = new Gson();
         JsonObject jsonObject = gson.fromJson(message.getPayload().toString(), JsonObject.class);
         if (jsonObject.get("type").getAsString().equals("remove")) {
@@ -68,7 +67,6 @@ public class ManageNotifyService implements WebSocketHandler{
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-        System.out.println("Session closed");
         managerSessions.remove(session);
     }
 
