@@ -19,10 +19,12 @@ import com.example.QuanLyNhaXe.dto.StopStationDTO;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Location;
 import com.example.QuanLyNhaXe.model.Station;
 import com.example.QuanLyNhaXe.model.StopStation;
 import com.example.QuanLyNhaXe.model.Trip;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.LocationRepository;
 import com.example.QuanLyNhaXe.repository.StationRepository;
 import com.example.QuanLyNhaXe.repository.StopStationRepository;
@@ -41,17 +43,20 @@ public class StationService {
 	private final TripService tripService;
 	private final  TripRepository tripRepository;
 	private final ModelMapper modelMapper;
+	private final BusCompanyRepository busCompanyRepository;
 
 	public Object createStation(RequestStationDTO stationDTO) {
 		Location location = locationRepository.findById(stationDTO.getLocationId())
 				.orElseThrow(() -> new NotFoundException(Message.LOCATION_NOT_FOUND));
+		BusCompany busCompany=busCompanyRepository.findById(stationDTO.getCompanyId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 		List<Station> stations = new ArrayList<>();
 		for (StationOfLocation station : stationDTO.getStationOfLocations()) {
 			if (stationRepository.existsByName(station.getName())) {
 				throw new ConflictException(Message.STATION_EXISTS);
 			}
 			Station createStation = Station.builder().name(station.getName()).address(station.getAddress())
-					.latitude(station.getLatitude()).longitude(station.getLongitude()).isActive(true).location(location)
+					.latitude(station.getLatitude()).longitude(station.getLongitude()).isActive(true).location(location).busCompany(busCompany)
 					.build();
 			stations.add(createStation);
 		}

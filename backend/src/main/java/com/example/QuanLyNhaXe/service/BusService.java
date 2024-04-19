@@ -107,6 +107,8 @@ public class BusService {
 		if (busRepository.existsByLicensePlate(createBusDTO.getLicensePlate())) {
 			throw new ConflictException("Giấy phép đã tồn tại");
 		}
+		BusCompany busCompany=busCompanyRepository.findById(createBusDTO.getCompanyId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 		BusType busType = busTypeRepository.findById(createBusDTO.getTypeId())
 				.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
 		String state = BusQualityStatus.GOOD.getLabel();
@@ -116,7 +118,7 @@ public class BusService {
 				.updatedAt(sqlDate).steering(state).lighting(state).mirror(state).fuel(state).airCondition(state)
 				.brake(state).electric(state).build();
 		Bus bus = Bus.builder().color(createBusDTO.getColor()).type(busType).state(busQuality)
-				.availability(BusAvailability.AVAILABLE.getLabel()).manufactureYear(createBusDTO.getManufactureYear())
+				.availability(BusAvailability.AVAILABLE.getLabel()).manufactureYear(createBusDTO.getManufactureYear()).busCompany(busCompany)
 				.licensePlate(createBusDTO.getLicensePlate()).build();
 		try {
 			busQualityRepository.save(busQuality);

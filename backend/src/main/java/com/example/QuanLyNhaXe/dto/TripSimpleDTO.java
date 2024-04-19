@@ -23,7 +23,7 @@ public class TripSimpleDTO {
 	private float hours;
 	private String schedule;
 	private List<StopStationDTO> stopStations;
-	private Integer busCompanyId;
+	private BusCompanyDTO busCompany;
 	private boolean isActive;
 	
 

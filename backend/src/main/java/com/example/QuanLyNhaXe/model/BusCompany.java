@@ -71,4 +71,7 @@ public class BusCompany {
 	
 	@OneToMany(mappedBy = "busCompany")
 	private List<Driver> drivers;
+	
+	@OneToMany(mappedBy = "busCompany")
+	private List<ServiceFee> serviceFees ;
 }

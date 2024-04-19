@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.Request.CreateTrip;
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
+import com.example.QuanLyNhaXe.Request.EditTrip;
 import com.example.QuanLyNhaXe.Request.GetSameTripDTO;
 import com.example.QuanLyNhaXe.Request.GetTripDTO;
 import com.example.QuanLyNhaXe.Request.TripAssignment;
@@ -471,6 +472,23 @@ public class TripService {
 			
 		}
 		
+	
+	}
+	
+	public Object editTrip(EditTrip editTrip) {
+		Trip trip = tripRepository.findById(editTrip.getTripId())
+				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
+		BusType busType=null;
+		if(editTrip.getBusTypeId()!=0 &&editTrip.getBusTypeId()!=null) {
+			busType=busTypeRepository.findById(editTrip.getBusTypeId())
+					.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
+			
+		}
+		trip.setBusType(busType);
+		trip.setPrice(editTrip.getPrice());
+		trip.setSchedule(editTrip.getSchedule());
+		tripRepository.save(trip);
+		return modelMapper.map(trip, TripDTO.class);
 	
 	}
 	

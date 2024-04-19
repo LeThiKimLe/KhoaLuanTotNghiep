@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.CreateTrip;
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
+import com.example.QuanLyNhaXe.Request.EditTrip;
 import com.example.QuanLyNhaXe.Request.TripAssignment;
 import com.example.QuanLyNhaXe.service.TripService;
 
@@ -36,6 +37,10 @@ public class AdminTripController {
 	}
 	
 	
+	@PutMapping()
+	public ResponseEntity<Object> editTrip(@RequestBody EditTrip editTrip) {
+		return new ResponseEntity<>(tripService.editTrip(editTrip), HttpStatus.OK);
+	}
 	
 	
 
