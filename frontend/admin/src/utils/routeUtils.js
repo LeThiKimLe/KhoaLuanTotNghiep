@@ -120,3 +120,15 @@ export const getLocationData = (listOfficialRroute) => {
     })
     return listLocation
 }
+
+export const getListAssignLocation = (listRoute) => {
+    const listLocation = []
+    for (let i = 0; i < listRoute.length; i++) {
+        const dep = listLocation.findIndex((loca) => loca.id === listRoute[i].departure.id)
+        const des = listLocation.findIndex((loca) => loca.id === listRoute[i].destination.id)
+        if (dep === -1) listLocation.push(listRoute[i].departure)
+        if (des === -1) listLocation.push(listRoute[i].destination)
+    }
+    console.log(listLocation)
+    return listLocation
+}

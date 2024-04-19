@@ -36,7 +36,6 @@ import { cilTransfer, cilX, cilPlus, cilCaretBottom } from '@coreui/icons'
 import { getLocationData } from 'src/utils/routeUtils'
 import CustomButton from 'src/views/customButton/CustomButton'
 import { Tab, TabList, TabPanel, Tabs } from 'react-tabs'
-import { add } from 'date-fns'
 import TimePicker from 'react-time-picker'
 import 'react-date-range/dist/styles.css'
 import 'react-date-range/dist/theme/default.css'
@@ -821,6 +820,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     const listRouteIn = useSelector(selectListRoute)
     const listRoute = useRef(listRouteIn)
     const dataForm = useRef(null)
+    const listCompany = useSelector(selectListCompany)
     const socketConnect = useSelector(selectConnection)
     const [listCompanyRoute, setListCompanyRoute] = useState([
         {
@@ -949,11 +949,9 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                         if (routeData) return Promise.resolve(routeData)
                         else {
                             routeData = {
-                                distance: route.distance,
                                 departureId: departureId,
                                 destinationId: destinationId,
                                 parents: 0,
-                                hours: 0,
                             }
                             //add route to list
                             return await dispatch(routeThunk.addRoute({ routeData }))
@@ -1033,7 +1031,14 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 throw err
             })
     }
-    const handleAddTrip = async (route, startStationId, endStationId, companyId, journey) => {
+    const handleAddTrip = async (
+        route,
+        startStationId,
+        endStationId,
+        companyId,
+        journey,
+        distance,
+    ) => {
         const tripInfor = {
             routeId: route.id,
             startStationId: startStationId,
@@ -1041,6 +1046,8 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             schedule: journey,
             price: 0,
             companyId: companyId,
+            distance: distance,
+            hours: parseFloat((distance/75).toFixed(1)),
         }
         return await dispatch(tripThunk.addTrip(tripInfor))
             .unwrap()
@@ -1052,25 +1059,41 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             })
     }
     const handleAddCompany = async () => {
-        const companyData = {
-            name: companyInfo.representName,
-            email: companyInfo.email,
-            tel: companyInfo.telephone,
-            gender: true,
-            idCard: companyInfo.idCard,
-            address: companyInfo.address,
-            beginWorkDate: new Date(),
-            businessName: companyInfo.firmName,
-            businessLicense: companyInfo.businessLicense,
-        }
-        return await dispatch(companyThunk.addCompany({ companyInfor: companyData }))
+        return await dispatch(companyThunk.getCompany())
             .unwrap()
             .then((res) => {
-                return res?.busCompany?.id
+                const preCompany = res.findIndex(
+                    (company) => company?.admin?.staffUser?.email === companyInfo.email,
+                )
+                if (preCompany !== -1) {
+                    return res[preCompany].busCompany.id
+                } else return -1
             })
-            .catch((err) => {
-                setError(err)
-                throw err
+            .then(async (res) => {
+                if (res !== -1) {
+                    return Promise.resolve(res)
+                } else {
+                    const companyData = {
+                        name: companyInfo.representName,
+                        email: companyInfo.email,
+                        tel: companyInfo.telephone,
+                        gender: true,
+                        idCard: companyInfo.idCard,
+                        address: companyInfo.address,
+                        beginWorkDate: new Date(),
+                        businessName: companyInfo.firmName,
+                        businessLicense: companyInfo.businessLicense,
+                    }
+                    return await dispatch(companyThunk.addCompany({ companyInfor: companyData }))
+                        .unwrap()
+                        .then((res) => {
+                            return res?.busCompany?.id
+                        })
+                        .catch((err) => {
+                            setError(err)
+                            throw err
+                        })
+                }
             })
     }
 
@@ -1091,6 +1114,27 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             })
     }
 
+    const handleAddStopStation = async (listTrip, startStationId, endStationId) => {
+        const stationType = ['pick', 'drop']
+        const stationId = [startStationId, endStationId]
+        for (let i = 0; i < listTrip.length; i++)
+            for (let j = 0; j < stationId.length; j++)
+                await dispatch(
+                    stationThunk.addStopStation({
+                        tripId: listTrip[i],
+                        stationId: stationId[j],
+                        stationType: stationType[Math.abs(i - j)],
+                    }),
+                )
+                    .unwrap()
+                    .then((res) => {
+                        console.log(res)
+                    })
+                    .catch((err) => {
+                        throw err
+                    })
+    }
+
     const handleSaveInfo = async () => {
         if (activeTab !== 0) {
             setActiveTab(0)
@@ -1107,6 +1151,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 await handleAddCompany()
                     .then(async (res) => {
                         companyId = res
+                        console.log(companyId)
                         if (companyId != -1) {
                             let route = null
                             let listTrip = []
@@ -1141,6 +1186,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                                                 endStationId,
                                                 companyId,
                                                 listCompanyRoute[i].route.journey,
+                                                listCompanyRoute[i].route.distance,
                                             ).then(async (res) => {
                                                 listTrip = res
                                                 if (listTrip.length === 2) {
@@ -1173,6 +1219,11 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                                                                 .listRepeat,
                                                         )
                                                     }
+                                                    handleAddStopStation(
+                                                        listTrip,
+                                                        startStationId,
+                                                        endStationId,
+                                                    )
                                                 }
                                             })
                                             listRouteId.push(route.id)
@@ -1238,7 +1289,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         listLocation.current = listLocationIn
         listRoute.current = listRouteIn
     }, [listLocationIn, listRouteIn])
-    console.log(listCompanyRoute)
+
     return (
         <>
             <CModal
@@ -1579,7 +1630,7 @@ const BusCompany = ({ companyInfo }) => {
                 </div>
                 <small>{`SĐT: ${admin?.staffUser?.tel}`}</small>
                 <br></br>
-                <small>{`Ngày hợp tác:${busCompany?.coopDay}`}</small>
+                <small>{`Ngày hợp tác: ${busCompany?.coopDay}`}</small>
             </CCardBody>
         </CCard>
     )

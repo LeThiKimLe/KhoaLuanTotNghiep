@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectListAssign } from 'src/feature/bus-company/busCompany.slice'
 import companyThunk from 'src/feature/bus-company/busCompany.service'
-import { selectListRoute } from 'src/feature/route/route.slice'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import routeThunk from 'src/feature/route/route.service'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
 import { Tabs, Tab, TabList, TabPanel } from 'react-tabs'
@@ -29,20 +29,26 @@ import {
     CAccordionBody,
     CAccordionItem,
     CAccordion,
+    CToaster,
+    CButton,
+    CCardFooter,
 } from '@coreui/react'
 import CIcon from '@coreui/icons-react'
-import { cilTransfer } from '@coreui/icons'
+import { cilTransfer, cilPlus } from '@coreui/icons'
 import { tripProcess } from 'src/utils/tripUtils'
 import scheduleThunk from 'src/feature/schedule/schedule.service'
 import { selectListFixSchedule } from 'src/feature/schedule/schedule.slice'
 import { TIME_TABLE, dayInWeek } from 'src/utils/constants'
-import { convertTimeToInt } from 'src/utils/convertUtils'
+import { convertTimeToInt, convertToDisplayTimeStamp, convertToStamp } from 'src/utils/convertUtils'
 import { selectListStation } from 'src/feature/station/station.slice'
 import stationThunk from 'src/feature/station/station.service'
 import locationThunk from 'src/feature/location/location.service'
-import { selectListLocation } from 'src/feature/location/location.slice'
+import { selectListCompanyLocation, selectListLocation } from 'src/feature/location/location.slice'
 import { Station } from './StationManagement'
 import CustomButton from '../customButton/CustomButton'
+import { StopStation } from './RouteManagement'
+import { CustomToast } from '../customToast/CustomToast'
+import tripThunk from 'src/feature/trip/trip.service'
 const ScheduleWrap = ({ schedule, turn }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
@@ -155,51 +161,176 @@ const TableSchedule = ({ listFixSchedule, tripGoId }) => {
     )
 }
 
-const TripManagement = () => {
+const ListStopStation = ({ trip, turn }) => {
     const dispatch = useDispatch()
-    const listRoute = useSelector(selectListRoute)
-    const listAllAssign = useSelector(selectListAssign)
-    const companyId = useSelector(selectCompanyId)
-    const listBusType = useSelector(selectListBusType)
-    const listFixSchedule = useSelector(selectListFixSchedule)
-    const listLocations = useSelector(selectListLocation)
-    const listRouteAssign = listRoute
-        .filter((route) => listAllAssign.find((assign) => assign.routeId === route.id))
-        .map((route) => {
-            return {
-                ...route,
-                trips: route.trips.filter((trip) => trip.busCompanyId === companyId),
-            }
-        })
-    const [listTrip, setListTrip] = useState(tripProcess(listRouteAssign))
-    const getFixSchedule = (trip) => {
-        return listFixSchedule.filter(
-            (schd) => schd.tripDd === trip.turnGo || schd.trip.id === trip.turnBack,
+    const [isAddStop, setIsAddStop] = useState(false)
+    const [newStation, setNewStation] = useState(0)
+    const listLocation = useSelector(selectListCompanyLocation)
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
+    const [loading, setLoading] = useState(false)
+    const listStation =
+        turn === true
+            ? trip?.turnGo.stopStations.filter((sta) => sta.stationType == 'pick')
+            : trip?.turnGo.stopStations.filter((sta) => sta.stationType == 'drop')
+    const getListAvaiStation = () => {
+        const locationId = turn === true ? trip.route.departure.id : trip.route.destination.id
+        const location = listLocation.find((loc) => loc.id === locationId)
+        return location.stations.filter(
+            (sta) => listStation.findIndex((item) => item.id === sta.id) === -1,
         )
     }
-    const getStation = (routeId) => {
-        return listLocations.find((location) => location.id === routeId)?.stations
+    const handleAddStopStation = () => {
+        if (newStation !== 0) {
+            setLoading(true)
+            dispatch(
+                stationThunk.addStopStation({
+                    tripId: turn === true ? trip.turnGo.id : trip.turnBack.id,
+                    stationId: newStation,
+                    stationType: 'pick',
+                }),
+            )
+                .unwrap()
+                .then(async () => {
+                    await dispatch(
+                        stationThunk.addStopStation({
+                            tripId: turn === true ? trip.turnBack.id : trip.turnGo.id,
+                            stationId: newStation,
+                            stationType: 'drop',
+                        }),
+                    )
+                        .unwrap()
+                        .then(() => {
+                            setLoading(false)
+                            addToast(() =>
+                                CustomToast({
+                                    message: 'Đã thêm trạm thành công',
+                                    type: 'success',
+                                }),
+                            )
+                            setIsAddStop(false)
+                            // setTimeout(() => window.location.reload(), 1000)
+                        })
+                        .catch((error) => {
+                            setLoading(false)
+                            addToast(() => CustomToast({ message: error, type: 'error' }))
+                        })
+                })
+                .catch((error) => {
+                    setLoading(false)
+                    addToast(() => CustomToast({ message: error, type: 'error' }))
+                })
+        }
     }
+    return (
+        <div>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+            {listStation.map((station, index) => (
+                <StopStation trip={trip} station={station} key={index}></StopStation>
+            ))}
+            {!isAddStop && trip.active === true && (
+                <CButton
+                    id="pick-add"
+                    variant="outline"
+                    color="dark"
+                    onClick={() => setIsAddStop(true)}
+                >
+                    <CIcon icon={cilPlus}></CIcon>
+                    Thêm
+                </CButton>
+            )}
+            {isAddStop && (
+                <CCard>
+                    <CCardHeader>
+                        <b>
+                            <i>Chọn trạm</i>
+                        </b>
+                    </CCardHeader>
+                    <CCardBody>
+                        <CFormSelect
+                            id="pick-select"
+                            value={newStation}
+                            onChange={(e) => setNewStation(parseInt(e.target.value))}
+                        >
+                            <option disabled value={0}>
+                                Chọn trạm
+                            </option>
+                            {getListAvaiStation().map((sta) => (
+                                <option
+                                    key={sta.id}
+                                    value={sta.id}
+                                >{`${sta.name} - ${sta.address}`}</option>
+                            ))}
+                        </CFormSelect>
+                    </CCardBody>
+                    <CCardFooter>
+                        <CRow>
+                            <CustomButton
+                                text="Thêm"
+                                loading={loading}
+                                onClick={handleAddStopStation}
+                                style={{
+                                    width: 'fit-content',
+                                    marginRight: '10px',
+                                }}
+                                color="success"
+                            ></CustomButton>
+                            <CButton
+                                variant="outline"
+                                color="danger"
+                                onClick={() => setIsAddStop(false)}
+                                style={{ width: 'fit-content' }}
+                            >
+                                Hủy
+                            </CButton>
+                        </CRow>
+                    </CCardFooter>
+                </CCard>
+            )}
+        </div>
+    )
+}
 
+const TripManagement = () => {
+    const dispatch = useDispatch()
+    const listBusType = useSelector(selectListBusType)
+    const listFixSchedule = useSelector(selectListFixSchedule)
+    const listRouteAssign = useSelector(selectListCompanyRoute)
+    const listCompanyLocation = useSelector(selectListCompanyLocation)
+    const listTrip = tripProcess(listRouteAssign)
+    const [activeTab, setActiveTab] = useState(0)
+    const [busType, setBusType] = useState(
+        listTrip.length > 0 ? listTrip[activeTab].busType?.id : 0,
+    )
+    const [price, setPrice] = useState(listTrip.length > 0 ? listTrip[activeTab].price : 0)
+    const getFixSchedule = (trip) => {
+        return listFixSchedule.filter(
+            (schd) => schd.trip.id === trip.turnGo.id || schd.trip.id === trip.turnBack.id,
+        )
+    }
+    const updateTripData = () => {
+        if (price != 0 && busType != 0) {
+            // dispatch(tripThunk.)
+        }
+    }
     useEffect(() => {
-        dispatch(routeThunk.getRoute())
-        dispatch(companyThunk.getAssignedRouteForCompany())
         dispatch(busThunk.getBusType())
         dispatch(scheduleThunk.getFixSchedule())
-        dispatch(locationThunk.getLocations())
     }, [])
     useEffect(() => {
-        // if (listTrip.length !== 0){
-        //     const listTripIn = [...listTrip]
-        //     for (let i = 0; i < listTripIn.length; i++){
-        //         await dispatch(stationThunk.getStopStations(listTripIn[i].turnGo)).unwrap().then()
-        //     }
-        // }
-    }, [listTrip])
+        if (listTrip.length > 0) {
+            setBusType(listTrip[activeTab].busType?.id)
+            setPrice(listTrip[activeTab].price)
+        }
+    }, [activeTab, listTrip])
     return (
         <div>
             {listTrip.length > 0 ? (
-                <Tabs className="tabStyle">
+                <Tabs
+                    className="tabStyle"
+                    selectedIndex={activeTab}
+                    onSelect={(index) => setActiveTab(index)}
+                >
                     <TabList>
                         {listTrip.map((trip, index) => (
                             <Tab key={index}>{getRouteJourney(trip.route)}</Tab>
@@ -207,7 +338,7 @@ const TripManagement = () => {
                     </TabList>
                     {listTrip.map((trip, index) => (
                         <TabPanel key={index}>
-                            <CCard>
+                            <CCard className={`mb-3 border-top-success border-top-3`}>
                                 <CCardHeader>
                                     <b>Thông tin tuyến xe</b>
                                 </CCardHeader>
@@ -299,18 +430,21 @@ const TripManagement = () => {
                                             <b>Thời gian</b>
                                         </CFormLabel>
                                         <CCol sm={3}>
-                                            <CFormInput readOnly value={trip?.hour}></CFormInput>
+                                            <CFormInput
+                                                readOnly
+                                                value={convertToStamp(trip?.hours)}
+                                            ></CFormInput>
                                         </CCol>
                                     </CRow>
                                 </CCardBody>
                             </CCard>
-                            <CCard className="mt-2">
+                            <CCard className="mt-2 mb-3 border-top-warning border-top-3">
                                 <CCardHeader>
                                     <b>Thông tin chi tiết</b>
                                 </CCardHeader>
                                 <CCardBody>
                                     <CRow>
-                                        <CCol md="6">
+                                        <CCol md="5">
                                             <CInputGroup className="mb-3 col-6">
                                                 <CInputGroupText
                                                     id="bus-type-num"
@@ -318,7 +452,17 @@ const TripManagement = () => {
                                                 >
                                                     Loại xe
                                                 </CInputGroupText>
-                                                <CFormSelect>
+                                                <CFormSelect
+                                                    value={busType}
+                                                    onChange={(e) =>
+                                                        setBusType(parseInt(e.target.value))
+                                                    }
+                                                >
+                                                    <option value="0">
+                                                        {listBusType.length > 0
+                                                            ? 'Chọn loại xe'
+                                                            : 'Chưa có loại xe'}
+                                                    </option>
                                                     {listBusType.map((busType) => (
                                                         <option key={busType.id} value={busType.id}>
                                                             {busType.description}
@@ -327,7 +471,7 @@ const TripManagement = () => {
                                                 </CFormSelect>
                                             </CInputGroup>
                                         </CCol>
-                                        <CCol md="6">
+                                        <CCol md="5">
                                             <CInputGroup className="mb-3 col-6">
                                                 <CInputGroupText
                                                     id="bus-type-num"
@@ -335,8 +479,34 @@ const TripManagement = () => {
                                                 >
                                                     Giá vé
                                                 </CInputGroupText>
-                                                <CFormInput></CFormInput>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="price"
+                                                    value={price.toLocaleString()}
+                                                    onChange={(e) =>
+                                                        setPrice(
+                                                            e.target.value !== ''
+                                                                ? parseFloat(
+                                                                      e.target.value.replace(
+                                                                          /,/g,
+                                                                          '',
+                                                                      ),
+                                                                  )
+                                                                : 0,
+                                                        )
+                                                    }
+                                                    aria-describedby="price"
+                                                />
+                                                <CInputGroupText id="money">VND</CInputGroupText>
                                             </CInputGroup>
+                                        </CCol>
+                                        <CCol md="2">
+                                            <CustomButton
+                                                color="success"
+                                                variant="outline"
+                                                text="Cập nhật"
+                                                style={{ width: '100%' }}
+                                            ></CustomButton>
                                         </CCol>
                                         <CCol md="12">
                                             <b>
@@ -355,37 +525,19 @@ const TripManagement = () => {
                                                             >
                                                                 <b>{trip.route.departure.name}</b>
                                                                 <div className="mt-3">
-                                                                    {getStation(
-                                                                        trip.route.departure.id,
-                                                                    )?.map((station, index) => (
-                                                                        <Station
-                                                                            key={index}
-                                                                            locationId={
-                                                                                trip.route.departure
-                                                                                    .id
-                                                                            }
-                                                                            station={station}
-                                                                            empty={false}
-                                                                        ></Station>
-                                                                    ))}
+                                                                    <ListStopStation
+                                                                        trip={trip}
+                                                                        turn={true}
+                                                                    ></ListStopStation>
                                                                 </div>
                                                             </CCol>
                                                             <CCol md="5">
                                                                 <b>{trip.route.destination.name}</b>
                                                                 <div className="mt-3">
-                                                                    {getStation(
-                                                                        trip.route.destination.id,
-                                                                    )?.map((station, index) => (
-                                                                        <Station
-                                                                            key={index}
-                                                                            locationId={
-                                                                                trip.route
-                                                                                    .destination.id
-                                                                            }
-                                                                            station={station}
-                                                                            empty={false}
-                                                                        ></Station>
-                                                                    ))}
+                                                                    <ListStopStation
+                                                                        trip={trip}
+                                                                        turn={false}
+                                                                    ></ListStopStation>
                                                                 </div>
                                                             </CCol>
                                                         </CRow>
@@ -401,20 +553,17 @@ const TripManagement = () => {
                                                 </CAccordionItem>
                                             </CAccordion>
                                         </CCol>
-                                        <CCol>
-                                            <CustomButton text="Lưu thông tin"></CustomButton>
-                                        </CCol>
                                     </CRow>
                                 </CCardBody>
                             </CCard>
-                            <CCard className="mt-2">
+                            <CCard className="mt-2 mb-3 border-top-info border-top-3">
                                 <CCardHeader>
                                     <b>Lịch trình cố định</b>
                                 </CCardHeader>
                                 <CCardBody>
                                     <TableSchedule
                                         listFixSchedule={getFixSchedule(trip)}
-                                        tripGoId={trip.turnGo}
+                                        tripGoId={trip.turnGo.id}
                                     ></TableSchedule>
                                 </CCardBody>
                             </CCard>

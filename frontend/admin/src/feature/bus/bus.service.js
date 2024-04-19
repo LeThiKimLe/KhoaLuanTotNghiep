@@ -29,13 +29,11 @@ const getBus = createAsyncThunk('admin/bus/get', async (_, thunkAPI) => {
 
 const addBus = createAsyncThunk('admin/bus/add', async (busInfor, thunkAPI) => {
     try {
-        const bus = await axiosClient.post('admin/bus', null, {
-            params: {
-                manufactureYear: busInfor.year,
-                color: busInfor.color,
-                licensePlate: busInfor.license,
-                typeId: busInfor.typeId,
-            },
+        const bus = await axiosClient.post('admin/bus', {
+            manufactureYear: busInfor.year,
+            color: busInfor.color,
+            licensePlate: busInfor.license,
+            typeId: busInfor.typeId,
         })
         return bus
     } catch (error) {

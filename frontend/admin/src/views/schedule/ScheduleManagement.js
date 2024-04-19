@@ -3,8 +3,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import routeThunk from 'src/feature/route/route.service'
 import { useState, useEffect, useRef } from 'react'
 import { CButton, CCardBody, CCardTitle, CFormSelect, CSpinner } from '@coreui/react'
-import { selectListRoute } from 'src/feature/route/route.slice'
-import { getRouteJourney, getTripJourney } from 'src/utils/tripUtils'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
+import { getRouteJourney, getTripJourney, tripProcess } from 'src/utils/tripUtils'
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs'
 import CustomButton from '../customButton/CustomButton'
 import {
@@ -46,6 +46,7 @@ import {
     selectCurrentTurn,
     selectCurrentListDriver,
     selectCurrentListBus,
+    selectListFixSchedule,
 } from 'src/feature/schedule/schedule.slice'
 import AddScheduleForm from './AddScheduleForm'
 import staffThunk from 'src/feature/staff/staff.service'
@@ -60,9 +61,8 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
     const [error, setError] = useState(false)
     const curTrip = useSelector(selectCurrentTrip)
     const curRoute = useSelector(selectCurrentRoute)
-    const curReverse = useSelector(selectCurrentReverse)
     const curTurn = useSelector(selectCurrentTurn)
-    const currentTrip = curTurn === 1 ? { ...curTrip } : { ...curReverse }
+    const currentTrip = curTrip
     const [loading, setLoading] = useState(false)
     const listDriver = useSelector(selectCurrentListDriver)
     const listBus = useSelector(selectCurrentListBus)
@@ -109,12 +109,6 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
         setLoading(false)
         setIsUpdate(false)
     }
-    // useEffect(() => {
-    //     if (visible === true) {
-    //         scanDriver()
-    //         scanBus()
-    //     }
-    // }, [visible])
     useEffect(() => {
         if (reload === true) {
             dispatch(
@@ -291,9 +285,9 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                                     id="price"
                                                     disabled
                                                     value={`${
-                                                        curRoute.busType.capacity -
+                                                        curRoute.busType?.capacity -
                                                         schedule.availability
-                                                    } / ${curRoute.busType.capacity}`}
+                                                    } / ${curRoute.busType?.capacity}`}
                                                 />
                                             </CCol>
                                         </CRow>
@@ -344,7 +338,8 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
 const Schedule = ({ schedule }) => {
     const [showDetail, setShowDetail] = useState(false)
     const getScheduleColor = () => {
-        if (schedule.bus && schedule.driverUser) return '#08ba41'
+        if (schedule.fixed) return '#ccc'
+        else if (schedule.bus && schedule.driverUser) return '#08ba41'
         else if (schedule.bus) return '#ebd764'
         else if (schedule.driverUser) return '#509de1'
         else return '#edc7c7'
@@ -365,11 +360,13 @@ const Schedule = ({ schedule }) => {
                     </CTableRow>
                 </CTableBody>
             </CTable>
-            <ScheduleInfor
-                visible={showDetail}
-                setVisible={setShowDetail}
-                inSchedule={schedule}
-            ></ScheduleInfor>
+            {!schedule.fixed && (
+                <ScheduleInfor
+                    visible={showDetail}
+                    setVisible={setShowDetail}
+                    inSchedule={schedule}
+                ></ScheduleInfor>
+            )}
         </>
     )
 }
@@ -382,6 +379,7 @@ const TimeTable = ({
     currentTrip,
     setCurrentDay,
     reload,
+    fixSchedule,
 }) => {
     const [listSchedule, setListSchedule] = useState([])
     const dispatch = useDispatch()
@@ -441,14 +439,32 @@ const TimeTable = ({
                         )
                         tempList.push({
                             date: dayStart.getDate() + i,
-                            schedules: filterSchedule,
+                            schedules: filterSchedule.map((schd) => {
+                                return {
+                                    ...schd,
+                                    fixed: false,
+                                }
+                            }),
                         })
                         setListSchedule([...tempList])
                     })
                     .catch((error) => {
                         tempList.push({
                             date: dayStart.getDate() + i,
-                            schedules: [],
+                            schedules: fixSchedule
+                                .filter((schd) => schd.dayOfWeek == i + 2)
+                                .map((schd) => {
+                                    const { time, ...schdInfo } = schd
+                                    return {
+                                        ...schdInfo,
+                                        departTime: time,
+                                        departDate: format(
+                                            new Date(dayStart.getTime() + i * 86400000),
+                                            'yyyy-MM-dd',
+                                        ),
+                                        fixed: true,
+                                    }
+                                }),
                         })
                         setListSchedule([...tempList])
                     })
@@ -626,7 +642,7 @@ const ScheduleManagement = () => {
         busCount: 0,
         driverCount: 0,
     })
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [currentRoute, setCurrentRoute] = useState(0)
     const [currentTrip, setCurrentTrip] = useState(0)
     const [currentDay, setCurrentDate] = useState(new Date())
@@ -641,45 +657,45 @@ const ScheduleManagement = () => {
     const countLoad = useRef(0)
     const [reload, setReload] = useState(0)
     const [selectedTab, setSelectedTab] = useState(0)
+    const listFixSchedule = useSelector(selectListFixSchedule)
     const setCurrentDay = (newDate) => {
         if (newDate instanceof Date) {
             // newDate is a Date object
             setCurrentDate(newDate)
         }
     }
-    const getListTrip = (routeId) => {
-        const routeIn = listRoute.find((rt) => rt.id == routeId)
-        var listTrip = []
-        var tempTrip = null
-        listReverse.current = []
-        routeIn.trips.forEach((trip) => {
-            tempTrip = listTrip.find(
-                (tp) =>
-                    (tp.startStation.id === trip.startStation.id &&
-                        tp.endStation.id === trip.endStation.id) ||
-                    (tp.startStation.id === trip.endStation.id &&
-                        tp.endStation.id === trip.startStation.id),
-            )
-            if (!tempTrip) listTrip.push(trip)
-            else {
-                listReverse.current.push({
-                    key: tempTrip.id,
-                    reverse: trip,
-                })
-            }
-        })
-        return listTrip.filter((tp) => tp.active === true)
-    }
+    // const getListTrip = (routeId) => {
+    //     const routeIn = listRoute.find((rt) => rt.id == routeId)
+    //     var listTrip = []
+    //     var tempTrip = null
+    //     listReverse.current = []
+    //     routeIn.trips.forEach((trip) => {
+    //         tempTrip = listTrip.find(
+    //             (tp) =>
+    //                 (tp.startStation.id === trip.startStation.id &&
+    //                     tp.endStation.id === trip.endStation.id) ||
+    //                 (tp.startStation.id === trip.endStation.id &&
+    //                     tp.endStation.id === trip.startStation.id),
+    //         )
+    //         if (!tempTrip) listTrip.push(trip)
+    //         else {
+    //             listReverse.current.push({
+    //                 key: tempTrip.id,
+    //                 reverse: trip,
+    //             })
+    //         }
+    //     })
+    //     return listTrip.filter((tp) => tp.active === true)
+    // }
+    const [listTrip, setListTrip] = useState([])
     const handleSelectRoute = (routeId) => {
         setCurrentRoute(routeId)
         const targetRoute = listRoute.find((rt) => rt.id == routeId)
         dispatch(scheduleAction.setCurrentRoute(targetRoute))
     }
-    const handleSelectTrip = (trip) => {
-        setCurrentTrip(trip.id)
+    const handleSelectTrip = (trip, index) => {
+        setCurrentTrip(index)
         dispatch(scheduleAction.setCurrentTrip(trip))
-        const reverseTrip = listReverse.current.find((tp) => tp.key == trip.id)
-        if (reverseTrip) dispatch(scheduleAction.setCurrentReverseTrip(reverseTrip.reverse))
     }
     const finishAdd = () => {
         setReload(reload + 1)
@@ -688,17 +704,23 @@ const ScheduleManagement = () => {
         setSelectedTab(index)
         dispatch(scheduleAction.setCurrentTurn(index === 1 ? 0 : 1))
     }
+    const getFixSchedule = (tripId) => {
+        return listFixSchedule.filter((schd) => schd.trip.id === tripId)
+    }
     useEffect(() => {
-        dispatch(routeThunk.getRoute())
-            .unwrap()
-            .then(() => {})
-            .catch(() => {})
+        dispatch(scheduleThunk.getFixSchedule())
     }, [])
     useEffect(() => {
-        setCurrentTrip(0)
+        setCurrentTrip(-1)
+        if (currentRoute != 0) {
+            const listTripIn = tripProcess(listRoute).filter(
+                (trip) => trip.route.id == currentRoute,
+            )
+            setListTrip(listTripIn)
+        }
     }, [currentRoute])
     useEffect(() => {
-        if (currentTrip !== 0) {
+        if (currentTrip !== -1) {
             dispatch(scheduleThunk.getMaxSchedules(currentTrip))
                 .unwrap()
                 .then((res) => {
@@ -716,7 +738,7 @@ const ScheduleManagement = () => {
         }
     }, [currentTrip])
     useEffect(() => {
-        if (currentTrip !== 0) {
+        if (currentTrip !== -1) {
             setLoading(true)
             countLoad.current = 0
             dispatch(
@@ -729,7 +751,7 @@ const ScheduleManagement = () => {
                 .unwrap()
                 .then((res) => {
                     const filterSchedule = res.filter(
-                        (schedule) => schedule.tripInfor.id == currentTrip,
+                        (schedule) => schedule.tripInfor.id == listTrip[currentTrip]?.tripGo?.id,
                     )
                     dispatch(scheduleAction.setCurrentDateScheduleGo(filterSchedule))
                     countLoad.current = countLoad.current + 1
@@ -748,15 +770,12 @@ const ScheduleManagement = () => {
             )
                 .unwrap()
                 .then((res) => {
-                    const reverseTrip = listReverse.current.find((trip) => trip.key === currentTrip)
-                    if (reverseTrip) {
-                        const filterSchedule = res.filter(
-                            (schedule) => schedule.tripInfor.id == reverseTrip.reverse.id,
-                        )
-                        dispatch(scheduleAction.setCurrentDateScheduleReturn(filterSchedule))
-                        countLoad.current = countLoad.current + 1
-                        if (countLoad.current === 2) setLoading(false)
-                    }
+                    const filterSchedule = res.filter(
+                        (schedule) => schedule.tripInfor.id == listTrip[currentTrip]?.tripBack?.id,
+                    )
+                    dispatch(scheduleAction.setCurrentDateScheduleReturn(filterSchedule))
+                    countLoad.current = countLoad.current + 1
+                    if (countLoad.current === 2) setLoading(false)
                 })
                 .catch(() => {
                     dispatch(scheduleAction.setCurrentDateScheduleReturn([]))
@@ -810,23 +829,23 @@ const ScheduleManagement = () => {
             </CRow>
             {currentRoute !== 0 && (
                 <div className="mt-3">
-                    {getListTrip(currentRoute).map((trip) => (
+                    {listTrip.map((trip, index) => (
                         <CFormCheck
                             inline
                             type="radio"
-                            key={trip.id}
+                            key={index}
                             name="tripOptions"
                             required
-                            id={trip.id}
-                            value={trip.id}
+                            id={index}
+                            value={index}
                             label={getTripJourney(trip)}
-                            checked={currentTrip == trip.id}
-                            onChange={() => handleSelectTrip(trip)}
+                            checked={currentTrip == index}
+                            onChange={() => handleSelectTrip(trip, index)}
                         />
                     ))}
                 </div>
             )}
-            {currentTrip !== 0 && (
+            {currentTrip !== -1 && (
                 <>
                     <div className="tabStyle">
                         <Tabs
@@ -842,10 +861,11 @@ const ScheduleManagement = () => {
                                     currentDay={currentDay}
                                     dayStart={startDate}
                                     currentRoute={currentRoute}
-                                    currentTrip={currentTrip}
+                                    currentTrip={listTrip[currentTrip]?.turnGo?.id}
                                     setCurrentDay={setCurrentDay}
                                     reload={reload}
                                     turn={1}
+                                    fixSchedule={getFixSchedule(listTrip[currentTrip]?.turnGo?.id)}
                                 ></TimeTable>
                             </TabPanel>
                             <TabPanel>
@@ -853,16 +873,13 @@ const ScheduleManagement = () => {
                                     currentDay={currentDay}
                                     dayStart={startDate}
                                     currentRoute={currentRoute}
-                                    currentTrip={
-                                        listReverse.current.find((trip) => trip.key === currentTrip)
-                                            ? listReverse.current.find(
-                                                  (trip) => trip.key === currentTrip,
-                                              ).reverse.id
-                                            : 0
-                                    }
+                                    currentTrip={listTrip[currentTrip]?.turnBack?.id}
                                     setCurrentDay={setCurrentDay}
                                     reload={reload}
                                     turn={0}
+                                    fixSchedule={getFixSchedule(
+                                        listTrip[currentTrip]?.turnBack?.id,
+                                    )}
                                 ></TimeTable>
                             </TabPanel>
                         </Tabs>
@@ -895,6 +912,9 @@ const ScheduleManagement = () => {
                             ></CustomButton>
                         </div>
                         <div className="d-flex gap-2">
+                            <CCard style={{ backgroundColor: '#ccc' }}>
+                                <CCardBody className="p-1">Lịch cứng / Chưa mở chuyến</CCardBody>
+                            </CCard>
                             <CCard style={{ backgroundColor: '#08ba41' }}>
                                 <CCardBody className="p-1">Đã phân công</CCardBody>
                             </CCard>
