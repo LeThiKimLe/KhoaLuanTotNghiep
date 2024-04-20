@@ -1,4 +1,4 @@
-package com.example.QuanLyNhaXe.controller.Admin;
+package com.example.QuanLyNhaXe.controller.SystemManager;
 
 import java.util.List;
 
@@ -22,11 +22,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/admin/locations")
+@RequestMapping("/manager/locations")
 @RequiredArgsConstructor
-@Tag(name = "Admin", description = "Admin Controller")
+@Tag(name = "Manager", description = "Manager Controller")
 @SecurityRequirement(name = "bearerAuth")
-public class AdminLocationController {
+public class ManagerLocationController {
 
 	private final LocationService locationService;
 

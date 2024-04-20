@@ -10,7 +10,7 @@ import com.example.QuanLyNhaXe.model.Trip;
 public interface TripRepository extends JpaRepository<Trip, Integer> {
 
 	List<Trip> findByRouteIdAndTurn(Integer routeId, Boolean turn);
-	boolean existsByStartStationIdAndEndStationId(Integer startStation,Integer endStation);
+	boolean existsByStartStationIdAndEndStationIdAndBusCompanyId(Integer startStation,Integer endStation, Integer companyId);
 	Optional<Trip> findByStartStationIdAndEndStationIdAndTurn(Integer startStation,Integer endStation,Boolean turn);
 	
 

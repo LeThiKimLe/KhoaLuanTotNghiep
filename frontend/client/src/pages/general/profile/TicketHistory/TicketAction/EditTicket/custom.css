@@ -1,34 +1,33 @@
 .editTicket {
-
 }
 
-.editTicket .react-tabs__tab-list{
-    width: 60%;
-    margin: 0 auto 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding-left: 0px;
-    list-style: none;
-    gap: 10px;
+.editTicket .react-tabs__tab-list {
+  width: 60%;
+  margin: 0 auto 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-left: 0px;
+  list-style: none;
+  gap: 10px;
 }
 
-.editTicket .react-tabs__tab{
-    text-align: center;
-    flex: 1;
-    padding: 10px 0;
-    border-bottom: 2px solid white;
-    cursor: pointer;
+.editTicket .react-tabs__tab {
+  text-align: center;
+  flex: 1;
+  padding: 10px 0;
+  border-bottom: 2px solid white;
+  cursor: pointer;
 }
 
-.editTicket .react-tabs__tab:hover{
-    background-color: rgb(204, 204, 204, 0.5);
+.editTicket .react-tabs__tab:hover {
+  background-color: rgb(204, 204, 204, 0.5);
 }
 
 .editTicket .react-tabs__tab--selected {
-    border-color: var(--primary-color)
-  }
+  border-color: var(--primary-color);
+}
 
-.editTicket .react-tabs__tab-panel{
-    padding: 0 110px;
+.editTicket .react-tabs__tab-panel {
+  padding: 0 110px;
 }

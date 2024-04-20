@@ -14,14 +14,11 @@ import lombok.NoArgsConstructor;
 public class RouteDTO {
 	
 	private Integer id;
-	private Integer distance;
+
 	private LocationDTO departure;
 	private LocationDTO destination;
-	
-	private String schedule;
 	private Integer parents;
-	private float hours;
-	
+		
 	private boolean isActive;
 
 }

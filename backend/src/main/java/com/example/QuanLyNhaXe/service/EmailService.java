@@ -8,43 +8,34 @@ import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-
-import com.sun.mail.smtp.SMTPAddressFailedException;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
-import com.example.QuanLyNhaXe.Request.CreateBookingDTO;
 import com.example.QuanLyNhaXe.Request.CreateBusCompany;
-import com.example.QuanLyNhaXe.dto.BookingDTO;
 import com.example.QuanLyNhaXe.enumration.TicketState;
+import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.model.Booking;
-import com.example.QuanLyNhaXe.model.Station;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.StopStation;
 import com.example.QuanLyNhaXe.model.Ticket;
-import com.example.QuanLyNhaXe.model.Trip;
-import com.example.QuanLyNhaXe.repository.BookingRepository;
-import com.example.QuanLyNhaXe.util.Message;
-import com.google.api.services.gmail.Gmail.Users.Drafts.List;
-import com.example.QuanLyNhaXe.exception.BadRequestException;
-import com.example.QuanLyNhaXe.exception.NotFoundException;
+import com.example.QuanLyNhaXe.model.User;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import com.google.api.services.gmail.model.Draft;
 
 @Service
 @RequiredArgsConstructor
 public class EmailService {
 	private final JavaMailSender javaMailSender;
-	private final BookingRepository bookingRepository;
+	private final UtilityService utilityService;
 
 	@Value("${spring.mail.username}")
 	private String emailFrom;
@@ -194,6 +185,36 @@ public class EmailService {
 				+ "<p>Mã số thuế: " + createBusCompany.getBusinessLicense() + "</p>"
 				+ "</body></html>";
 		sendEmail(createBusCompany.getEmail(), subject, emailContent);
+	}
+	
+	public void sendNotification(BusCompany busCompany, User user, double fee) {
+		String subject = "Thông tin hợp tác bán vé";
+		LocalDate date= utilityService.addDays(busCompany.getCoopDay(), 15);
+		String emailContent = "<html><body>" + "<p>Xin Chào, <strong>" + busCompany.getName() + "</strong></p><br>"
+				+ "<p>Chúng tôi rất vui mừng thông báo rằng đăng ký của bạn để hợp tác bán vé đã được xử lý thành công."
+	            + " Chúng tôi rất đánh giá cao sự quan tâm của bạn trong việc hợp tác với chúng tôi.</p><br>"
+	            + "<h3>Thông tin về nhà xe:</h3>"
+				+ "<p>Tên doanh nghiệp: " + busCompany.getName() + "</p>"
+				+ "<p>Ngày hợp tác: " + busCompany.getCoopDay() + "</p>"
+				+ "<p>Mã số thuế: " + busCompany.getBusinessLicense() + "</p>"
+				+ "<h3>Thông tin về chủ nhà xe:</h3>"
+				+ "<p>Họ và tên: " + user.getName() + "</p>"
+	            + "<p>Email: " + user.getEmail() + "</p>"
+	            + "<p>Số điện thoại: " + user.getTel() + "</p>"
+	            + "<p>Mã định danh: " + user.getStaff().getIdCard() + "</p>"
+	            + "<p>Địa chỉ: " + user.getStaff().getAddress()+ "</p>"
+	            + "<p>Tên đăng nhập: " + user.getAccount().getUsername() + "</p>"
+	            + "<p>Mật khẩu: " + user.getAccount().getPassword() + "</p>"
+	            + "<h3>Thông tin về chính sách sử dụng:</h3>"
+	            + "<p>Chúng tôi xin thông báo rằng bạn được sử dụng dịch vụ của chúng tôi miễn phí từ ngày hôm nay đến ngày"+date
+	            + " Để tiếp tục sử dụng dịch vụ sau thời gian miễn phí, bạn hãy thanh toán phí dịch vụ trước ngày đến hạn</p>"
+	             + "<p>Chi Phí để sử dụng dịch vụ cần thanh toán là: "+fee+"</p>"
+	            + "<p>Chúng tôi rất mong nhận được sự hợp tác lâu dài từ bạn.</p>"
+	            + "<p>Xin chân thành cảm ơn và trân trọng,</p>"
+				+ "</body></html>";
+		sendEmail(user.getEmail(), subject, emailContent);
+		
+		
 	}
 
 }

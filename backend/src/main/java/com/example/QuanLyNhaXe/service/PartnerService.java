@@ -1,6 +1,7 @@
 package com.example.QuanLyNhaXe.service;
 
 import com.example.QuanLyNhaXe.Request.CreateBusCompany;
+import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
 
@@ -20,9 +21,8 @@ public class PartnerService {
 		try {
             manageNotifyService.notifyNewRegister(createBusCompany);
             emailService.sendRegisterDataForBusCompany(createBusCompany);
-        } catch (IOException e) {
-            System.out.println("Error: " + e.getMessage());
-            e.printStackTrace();
+        } catch (Exception e) {
+            throw new BadRequestException(Message.EXISTED_COMPANY_INFO);
         }
 		return new ResponseMessage(Message.REGISTER_INFO_SENT);
 	}

@@ -176,6 +176,19 @@ const distributeDriver = createAsyncThunk(
     },
 )
 
+const getFixSchedule = createAsyncThunk('manager/fix-schedule', async (scheduleId, thunkAPI) => {
+    try {
+        const response = await axiosClient.get('manager/fixed-schedule')
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const scheduleThunk = {
     getSchedules,
     handleSchedule,
@@ -186,6 +199,7 @@ const scheduleThunk = {
     getNotDistributeDriver,
     distributeBus,
     distributeDriver,
+    getFixSchedule,
 }
 
 export default scheduleThunk

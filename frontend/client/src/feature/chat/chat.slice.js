@@ -1,19 +1,19 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    activeLink: 'home'
-}
+  activeLink: "home",
+};
 
 const chatSlice = createSlice({
-    name: 'navigation',
-    initialState,
-    reducers: {
-        setActiveLink : (state, action) => {
-            state.activeLink = action.payload
-        }
-    }
-})
+  name: "navigation",
+  initialState,
+  reducers: {
+    setActiveLink: (state, action) => {
+      state.activeLink = action.payload;
+    },
+  },
+});
 
-export const chatAction = chatSlice.actions
+export const chatAction = chatSlice.actions;
 
-export default chatSlice.reducer
+export default chatSlice.reducer;

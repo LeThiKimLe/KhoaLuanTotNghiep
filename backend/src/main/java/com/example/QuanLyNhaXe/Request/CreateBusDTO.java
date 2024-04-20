@@ -9,5 +9,6 @@ public class CreateBusDTO {
 	private String color;
 	private String licensePlate;
 	private Integer typeId;
+	private Integer companyId;
 
 }

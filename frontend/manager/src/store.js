@@ -20,6 +20,7 @@ import scheduleReducer from './feature/schedule/schedule.slice'
 import statisticsReducer from './feature/statistics/statistics.slice'
 import driverReducer from './feature/driver/driver.slice'
 import companyReducer from './feature/bus-company/busCompany.slice'
+import socketReducer from './feature/socket/socket.slice'
 const rootPersistConfig = {
     key: 'root',
     storage,
@@ -45,6 +46,7 @@ const rootReducer = combineReducers({
     statistics: statisticsReducer,
     driver: driverReducer,
     company: companyReducer,
+    socket: socketReducer,
 })
 
 const persitedReducer = persistReducer(rootPersistConfig, rootReducer)

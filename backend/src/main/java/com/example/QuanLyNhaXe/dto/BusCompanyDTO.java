@@ -11,7 +11,7 @@ public class BusCompanyDTO {
 	private String businessLicense;
 	private String name;
 	private LocalDate coopDay;
-	private AdminDTO admin;
 	private boolean isActive;
+	private Integer adminId;
 
 }

@@ -104,12 +104,66 @@ const updateSchedule = createAsyncThunk('admin/schedules/edit', async (scheduleI
     }
 })
 
+const getFixSchedule = createAsyncThunk('manager/fix-schedule', async (scheduleId, thunkAPI) => {
+    try {
+        const response = await axiosClient.get('manager/fixed-schedule')
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+const addFixedSchedule = createAsyncThunk(
+    'manager/add-fixed-schedule',
+    async ({ tripId, listTime, listRepeat }, thunkAPI) => {
+        try {
+            const response = await axiosClient.post('manager/fixed-schedule', {
+                tripId: tripId,
+                times: listTime.map((time) => time + ':00'),
+                dayOfWeeks: listRepeat,
+            })
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
+const deleteFixedSchedule = createAsyncThunk(
+    'manager/delete-fixed-schedule',
+    async (listFixScheduleId, thunkAPI) => {
+        try {
+            const response = await axiosClient.delete('manager/fixed-schedule', {
+                listFixScheduleId,
+            })
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const scheduleThunk = {
     getSchedules,
     handleSchedule,
     getMaxSchedules,
     getTripBusDriver,
     updateSchedule,
+    getFixSchedule,
+    addFixedSchedule,
+    deleteFixedSchedule,
 }
 
 export default scheduleThunk

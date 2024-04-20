@@ -29,7 +29,7 @@ public class TwilioService {
     
 
     public Object sendOtp(String toPhoneNumber) {
-    	toPhoneNumber=phoneNumber;
+    	
         Twilio.init(accountSid, authToken);
 
         try {
@@ -37,12 +37,12 @@ public class TwilioService {
             return verification.getDateUpdated().withZoneSameInstant(ZoneId.of("Asia/Ho_Chi_Minh"));
         } catch (ApiException e) {
             // Xử lý lỗi gửi yêu cầu xác minh OTP
-            throw new RuntimeException("Error sending OTP: " + e.getMessage());
+            throw new BadRequestException("Error sending OTP: " + e.getMessage());
         }
     }
 
     public boolean verifyOtp(String toPhoneNumber, String otp) {
-    	toPhoneNumber=phoneNumber;
+    	
         Twilio.init(accountSid, authToken);
 
         try {

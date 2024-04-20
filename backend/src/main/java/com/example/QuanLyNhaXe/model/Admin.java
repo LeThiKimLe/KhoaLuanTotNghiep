@@ -31,7 +31,4 @@ public class Admin {
 	@JoinColumn(name = "staff_id", referencedColumnName = "staff_id")
 	private Staff staff;
 
-	@OneToOne(mappedBy = "admin")
-	private BusCompany busCompany;
-
 }

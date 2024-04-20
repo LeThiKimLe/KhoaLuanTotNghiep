@@ -101,7 +101,17 @@ const _nav = [
             {
                 component: CNavItem,
                 name: 'Quản lý tuyến xe',
-                to: '/system-manage/routes',
+                to: '/system-manage/trips',
+            },
+            // {
+            //     component: CNavItem,
+            //     name: 'Quản lý tuyến xe',
+            //     to: '/system-manage/routes',
+            // },
+            {
+                component: CNavItem,
+                name: 'Quản lý loại xe',
+                to: '/system-manage/bus-types',
             },
             {
                 component: CNavItem,

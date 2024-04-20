@@ -10,6 +10,7 @@ const ChangePassword = React.lazy(() => import('./views/profile/changePassword/C
 const TransportManagement = React.lazy(() => import('./views/system-manager/grab-system/Transport'))
 const CompanyManagement = React.lazy(() => import('./views/system-manager/ticket-system/Company'))
 const SystemRouteManagement = React.lazy(() => import('./views/system-manager/ticket-system/Route'))
+const CompanyDetail = React.lazy(() => import('./views/system-manager/ticket-system/CompanyDetail'))
 
 const routes = [
     { path: '/', exact: true, name: 'Home' },
@@ -33,6 +34,12 @@ const routes = [
         path: '/ticket-system/bus-companies',
         name: 'Quản lý nhà xe',
         element: CompanyManagement,
+        protected: true,
+    },
+    {
+        path: '/ticket-system/bus-companies/company-detail',
+        name: 'Thông tin nhà xe',
+        element: CompanyDetail,
         protected: true,
     },
     {

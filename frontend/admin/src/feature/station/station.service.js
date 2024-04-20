@@ -3,11 +3,12 @@ import axiosClient from 'src/api/axios'
 
 const addStation = createAsyncThunk(
     'admin/stations/add',
-    async ({ locationId, listStation }, thunkAPI) => {
+    async ({ locationId, listStation, companyId }, thunkAPI) => {
         try {
             const station = await axiosClient.post('admin/stations', {
                 locationId: locationId,
                 stationOfLocations: listStation,
+                companyId: companyId,
             })
             return station
         } catch (error) {

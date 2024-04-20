@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.CreateTrip;
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
+import com.example.QuanLyNhaXe.Request.EditTrip;
 import com.example.QuanLyNhaXe.Request.TripAssignment;
 import com.example.QuanLyNhaXe.service.TripService;
 
@@ -28,32 +29,21 @@ public class AdminTripController {
 	
 	private final  TripService tripService;
 	
-	@PutMapping("/active")
-	public ResponseEntity<Object> editActiveStation(@RequestBody EditActiveDTO editActiveDTO) {
-		return new ResponseEntity<>(tripService.editStateTrip(editActiveDTO), HttpStatus.OK);
-	}
+	
 	
 	@PostMapping("/distribute")
 	public ResponseEntity<Object> distributeTripDriversBuses(@RequestBody TripAssignment tripAssignment) {
 		return new ResponseEntity<>(tripService.tripAssignment(tripAssignment), HttpStatus.OK);
 	}
 	
-	@PostMapping()
-	public ResponseEntity<Object> createTrip(@RequestBody CreateTrip createTrip) {
-		return new ResponseEntity<>(tripService.createTrip(createTrip), HttpStatus.OK);
-	}
 	
-	@GetMapping("/stop-station")
-	public ResponseEntity<Object> getStopStationForTrip(@Parameter Integer tripId) {
-		return new ResponseEntity<>(tripService.getStopStation(tripId), HttpStatus.OK);
+	@PutMapping()
+	public ResponseEntity<Object> editTrip(@RequestBody EditTrip editTrip) {
+		return new ResponseEntity<>(tripService.editTrip(editTrip), HttpStatus.OK);
 	}
 	
 	
 
-	@GetMapping("/driver-bus")
-	public ResponseEntity<Object> getDriversAndBusForTrip(@Parameter Integer tripId) {
-		return new ResponseEntity<>(tripService.getBusAndDriverForTrip(tripId), HttpStatus.OK);
-	}
 	
 	
 	@GetMapping("/statistic")

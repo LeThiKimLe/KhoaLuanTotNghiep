@@ -315,7 +315,7 @@ const Payment = () => {
                                         </Col>
                                         <Col lg={7} md={7} className={styles.qrCol}>
                                             <h4 className={styles.colTitle}>Tổng thanh toán</h4>
-                                            <h2>{`${(bookingInfor.bookingTrip.ticketPrice * bookingInfor.bookedSeat.length).toLocaleString()} đ`}</h2>
+                                            <h2>{`${(bookingInfor.bookingTrip.tripInfor.price * bookingInfor.bookedSeat.length).toLocaleString()} đ`}</h2>
                                             <i style={{ color: 'red', fontSize: '14px' }}>{`Thời gian giữ chỗ còn lại `}
                                                 {showCountDown ? <CountDown onTimeout={handleTimeout}></CountDown> : <i>00:00</i>}
                                             </i>
@@ -374,7 +374,7 @@ const Payment = () => {
                                         </div>
                                         <div className={styles.sum_infor}>
                                             <span className={styles.sum_infor_title}>Tổng tiền</span>
-                                            <span className={styles.sum_infor_value}>{`${(bookingInfor.bookingTrip.ticketPrice * bookingInfor.bookedSeat.length).toLocaleString()} đ`}</span>
+                                            <span className={styles.sum_infor_value}>{`${(bookingInfor.bookingTrip.tripInfor.price * bookingInfor.bookedSeat.length).toLocaleString()} đ`}</span>
                                         </div>
                                     </div>
                                 </Col>

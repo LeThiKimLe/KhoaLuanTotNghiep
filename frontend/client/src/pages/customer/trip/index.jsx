@@ -49,7 +49,7 @@ const TripSum = ({ turn, trip, selectedSeats }) => {
             </div>
             <div className={styles.sum_infor}>
                 <span className={styles.sum_infor_title}>Tổng tiền</span>
-                <span className={styles.sum_infor_value}>{`${(trip.ticketPrice * selectedSeats.length).toLocaleString()} đ`}</span>
+                <span className={styles.sum_infor_value}>{`${(trip.tripInfor.price * selectedSeats.length).toLocaleString()} đ`}</span>
             </div>
         </div>
     )
@@ -124,9 +124,9 @@ const Trip = ({ tabStyle }) => {
             name: "tel",
             type: "text",
             placeholder: "Số điện thoại",
-            errorMessage: "Sai số điện thoại",
+            errorMessage: "Số điện thoại dạng +xxx... hoặc 0xxx...",
             label: "Số điện thoại",
-            pattern: "^0[0-9]{9,10}$",
+            pattern: "^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$",
             required: true
 
         },
@@ -255,7 +255,7 @@ const Trip = ({ tabStyle }) => {
                                     <div className={styles.infor_segment}>
                                         <h2>Chọn ghế</h2>
                                         <SeatMap
-                                            seatMap={currentTrip.tripInfor.route.busType.seatMap}
+                                            seatMap={currentTrip.tripInfor.busType.seatMap}
                                             booked={currentTrip.tickets.filter((tk) => tk.state !== "Đã hủy" && tk.state !== "Chờ hủy")}
                                             selectedSeats={selectedSeats}
                                             handleSeatClick={handleSeatClick}
@@ -266,7 +266,7 @@ const Trip = ({ tabStyle }) => {
                                         {
                                             returnTrip && (
                                                 <SeatMap
-                                                    seatMap={returnTrip.tripInfor.route.busType.seatMap}
+                                                    seatMap={returnTrip.tripInfor.busType.seatMap}
                                                     booked={returnTrip.tickets.filter((tk) => tk.state !== "Đã hủy" && tk.state !== "Chờ hủy")}
                                                     selectedSeats={selectedReturnSeats}
                                                     handleSeatClick={handleSeatReturnClick}
@@ -350,7 +350,7 @@ const Trip = ({ tabStyle }) => {
                                     </div>
                                     <div className={styles.payment_direct}>
                                         <span>
-                                            {`Tổng cộng: ${(returnTrip ? currentTrip.ticketPrice * selectedSeats.length + returnTrip.ticketPrice * selectedReturnSeats.length : currentTrip.ticketPrice * selectedSeats.length).toLocaleString()} đ`}
+                                            {`Tổng cộng: ${(returnTrip ? currentTrip.tripInfor.price * selectedSeats.length + returnTrip.tripInfor.price * selectedReturnSeats.length : currentTrip.tripInfor.price * selectedSeats.length).toLocaleString()} đ`}
                                         </span>
                                         <Button text="Thanh toán"
                                             className={styles.btnCheckout}
@@ -373,7 +373,7 @@ const Trip = ({ tabStyle }) => {
                                         <div className={styles.infor_segment}>
                                             <h2>Chọn ghế</h2>
                                             <SeatMap
-                                                seatMap={currentTrip.tripInfor.route.busType.seatMap}
+                                                seatMap={currentTrip.tripInfor.busType.seatMap}
                                                 booked={currentTrip.tickets.filter((tk) => tk.state !== "Đã hủy" && tk.state !== "Chờ hủy")}
                                                 selectedSeats={selectedSeats}
                                                 handleSeatClick={handleSeatClick}
@@ -384,7 +384,7 @@ const Trip = ({ tabStyle }) => {
                                             {
                                                 returnTrip && (
                                                     <SeatMap
-                                                        seatMap={returnTrip.tripInfor.route.busType.seatMap}
+                                                        seatMap={returnTrip.tripInfor.busType.seatMap}
                                                         booked={returnTrip.tickets.filter((tk) => tk.state !== "Đã hủy" && tk.state !== "Chờ hủy")}
                                                         selectedSeats={selectedReturnSeats}
                                                         handleSeatClick={handleSeatReturnClick}
@@ -477,7 +477,7 @@ const Trip = ({ tabStyle }) => {
                                             </div>
                                             <div className={styles.payment_direct}>
                                             <span style={{fontSize: '18px'}}>
-                                                {`Tổng cộng: ${(returnTrip ? currentTrip.ticketPrice * selectedSeats.length + returnTrip.ticketPrice * selectedReturnSeats.length : currentTrip.ticketPrice * selectedSeats.length).toLocaleString()} đ`}
+                                                {`Tổng cộng: ${(returnTrip ? currentTrip.tripInfor.price * selectedSeats.length + returnTrip.tripInfor.price * selectedReturnSeats.length : currentTrip.tripInfor.price * selectedSeats.length).toLocaleString()} đ`}
                                             </span>
                                             <Button text="Thanh toán"
                                                 className={styles.btnCheckout}
@@ -514,7 +514,7 @@ const Trip = ({ tabStyle }) => {
                         <Tab>Chọn ghế</Tab>
                     </TabList>
                     <TabPanel>
-                        <SeatMap seatMap={currentTrip.tripInfor.route.busType.seatMap}
+                        <SeatMap seatMap={currentTrip.tripInfor.busType.seatMap}
                             booked={currentTrip.tickets}
                             selectedSeats={selectedSeats}
                             handleSeatClick={handleSeatTabStyle}

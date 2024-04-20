@@ -11,6 +11,7 @@ const initialState = {
     currentTurn: 1,
     currentListDriver: [],
     currentListBus: [],
+    listFixSchedule: [],
 }
 
 const scheduleSlice = createSlice({
@@ -51,6 +52,12 @@ const scheduleSlice = createSlice({
                 state.currentListDriver = []
                 state.currentListBus = []
             })
+            .addCase(scheduleThunk.getFixSchedule.fulfilled, (state, action) => {
+                state.listFixSchedule = action.payload
+            })
+            .addCase(scheduleThunk.getFixSchedule.rejected, (state) => {
+                state.listFixSchedule = []
+            })
     },
 })
 
@@ -62,6 +69,7 @@ export const selectCurrentDateScheduleReturn = (state) => state.schedule.current
 export const selectCurrentTurn = (state) => state.schedule.currentTurn
 export const selectCurrentListDriver = (state) => state.schedule.currentListDriver
 export const selectCurrentListBus = (state) => state.schedule.currentListBus
+export const selectListFixSchedule = (state) => state.schedule.listFixSchedule
 
 export const scheduleAction = scheduleSlice.actions
 export default scheduleSlice.reducer

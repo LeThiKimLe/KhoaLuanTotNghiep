@@ -82,10 +82,10 @@ public class RouteService {
 
 		}
 		Route route = Route.builder().departure(departure).destination(destination).parents(createRouteDTO.getParents()).isActive(true)
-				.hours(createRouteDTO.getHours()).schedule(createRouteDTO.getSchedule())
-				.distance(createRouteDTO.getDistance()).build();
+				.build();
 		routeRepository.save(route);
-		return new ResponseMessage(Message.SUCCESS);
+		// return new ResponseMessage(Message.SUCCESS);
+		return modelMapper.map(route, RouteFullDTO.class);
 
 	}
 
@@ -118,10 +118,7 @@ public class RouteService {
 		}
 		
 		editRoute.setParents(parentRoute.getId());
-		editRoute.setDistance(editRouteDTO.getDistance());
-		editRoute.setHours(editRouteDTO.getHours());
-		
-		editRoute.setSchedule(editRouteDTO.getSchedule());
+
 		routeRepository.save(editRoute);
 		return new ResponseMessage(Message.UPDATE_SUCCESS);
 

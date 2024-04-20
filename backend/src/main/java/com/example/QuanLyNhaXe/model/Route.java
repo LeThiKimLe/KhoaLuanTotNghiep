@@ -23,8 +23,7 @@ public class Route {
 	@Column(name = "id")
 	private Integer id;
 
-	@Column(name = "distance", nullable = false)
-	private Integer distance;
+
 
 	@ManyToOne
 	@JoinColumn(name = "departure", referencedColumnName = "id")
@@ -34,14 +33,11 @@ public class Route {
 	@JoinColumn(name = "destination", referencedColumnName = "id")
 	private Location destination;
 
-	@Column(name = "schedule", length = 250)
-	private String schedule;
 
 	@Column(name = "parents")
 	private Integer parents;
 
-	@Column(name = "hours")
-	private float hours;
+	
 
 	@Column(name = "is_active")
 	private boolean isActive;

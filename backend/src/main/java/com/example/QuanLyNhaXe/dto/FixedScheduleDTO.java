@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class FixedScheduleDTO {
-	private Integer tripId;
+	private Integer id;
 	private Time time;
 	private Integer dayOfWeek;
 	private TripDTO trip;

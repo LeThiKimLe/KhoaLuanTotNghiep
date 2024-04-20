@@ -18,6 +18,13 @@ public class TripSimpleDTO {
 	private StationDTO startStation;
 	private StationDTO endStation;
 	private BusTypeDTO busType;
+	private Integer price;
+	private Integer distance;
+	private float hours;
+	private String schedule;
+	private List<StopStationDTO> stopStations;
+	private BusCompanyDTO busCompany;
 	private boolean isActive;
+	
 
 }

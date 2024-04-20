@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.Request.CreateTrip;
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
+import com.example.QuanLyNhaXe.Request.EditTrip;
 import com.example.QuanLyNhaXe.Request.GetSameTripDTO;
 import com.example.QuanLyNhaXe.Request.GetTripDTO;
 import com.example.QuanLyNhaXe.Request.TripAssignment;
@@ -242,14 +243,20 @@ public class TripService {
 	}
 
 	public Object createTrip(CreateTrip createTrip) {
-		if (tripRepository.existsByStartStationIdAndEndStationId(createTrip.getStartStationId(),
-				createTrip.getEndStationId())
-				|| tripRepository.existsByStartStationIdAndEndStationId(createTrip.getEndStationId(),
-						createTrip.getStartStationId())) {
+		if (tripRepository.existsByStartStationIdAndEndStationIdAndBusCompanyId(createTrip.getStartStationId(),
+				createTrip.getEndStationId(),createTrip.getCompanyId())
+				|| tripRepository.existsByStartStationIdAndEndStationIdAndBusCompanyId(createTrip.getEndStationId(),
+						createTrip.getStartStationId(),createTrip.getCompanyId())) {
 			throw new ConflictException(Message.TRIP_EXISTS);
 		}
-		BusType busType=busTypeRepository.findById(createTrip.getBusType())
-				.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
+		BusType busType=null;
+		if(createTrip.getBusType()!=0 &&createTrip.getBusType()!=null) {
+			busType=busTypeRepository.findById(createTrip.getBusType())
+					.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
+			
+		}
+		
+		
 		Route route = routeRepository.findById(createTrip.getRouteId())
 				.orElseThrow(() -> new NotFoundException(Message.ROUTE_NOT_FOUND));
 		Station startStation = stationRepository.findById(createTrip.getStartStationId())
@@ -260,9 +267,9 @@ public class TripService {
 				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 
 		Trip trip = Trip.builder().startStation(startStation).endStation(endStation).route(route).price(createTrip.getPrice()).busCompany(busCompany).isActive(true)
-				.turn(true).busType(busType).build();
+				.turn(true).busType(busType).schedule(createTrip.getSchedule()).distance(createTrip.getDistance()).hours(createTrip.getHours()).build();
 		Trip returnTrip = Trip.builder().startStation(startStation).endStation(endStation).price(createTrip.getPrice()).busCompany(busCompany).route(route).isActive(true)
-				.turn(false).busType(busType).build();
+				.turn(false).busType(busType).schedule(createTrip.getScheduleReturn()).distance(createTrip.getDistance()).hours(createTrip.getHours()).build();
 		tripRepository.save(trip);
 		tripRepository.save(returnTrip);
 		return TripReponseDTO.builder().trip(modelMapper.map(trip, TripDTO.class)).tripReturn(modelMapper.map(returnTrip, TripDTO.class)).build();
@@ -465,6 +472,23 @@ public class TripService {
 			
 		}
 		
+	
+	}
+	
+	public Object editTrip(EditTrip editTrip) {
+		Trip trip = tripRepository.findById(editTrip.getTripId())
+				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
+		BusType busType=null;
+		if(editTrip.getBusTypeId()!=0 &&editTrip.getBusTypeId()!=null) {
+			busType=busTypeRepository.findById(editTrip.getBusTypeId())
+					.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
+			
+		}
+		trip.setBusType(busType);
+		trip.setPrice(editTrip.getPrice());
+		trip.setSchedule(editTrip.getSchedule());
+		tripRepository.save(trip);
+		return modelMapper.map(trip, TripDTO.class);
 	
 	}
 	

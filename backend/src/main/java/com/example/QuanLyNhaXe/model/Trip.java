@@ -35,6 +35,16 @@ public class Trip {
 
 	@Column(name = "price")
 	private Integer price;
+	
+	@Column(name = "schedule", length = 250)
+	private String schedule;
+	
+	
+	@Column(name = "hours")
+	private float hours;
+	
+	@Column(name = "distance", nullable = false)
+	private Integer distance;
 
 	@Column(name = "is_active")
 	private boolean isActive;

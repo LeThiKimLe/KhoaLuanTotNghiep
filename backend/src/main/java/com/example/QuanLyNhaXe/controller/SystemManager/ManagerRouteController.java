@@ -1,4 +1,4 @@
-package com.example.QuanLyNhaXe.controller.Admin;
+package com.example.QuanLyNhaXe.controller.SystemManager;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,11 +22,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/admin/routes")
+@RequestMapping("/manager/routes")
 @SecurityRequirement(name = "bearerAuth")
 @RequiredArgsConstructor
-@Tag(name = "Admin", description = "Admin Controller")
-public class AdminRouteController {
+@Tag(name = "Manager", description = "Manager Controller")
+public class ManagerRouteController {
 	private final RouteService routeService;
 
 	@PostMapping

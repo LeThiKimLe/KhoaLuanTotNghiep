@@ -52,5 +52,9 @@ public class Driver {
     
     @OneToMany(mappedBy = "driver")
     private List<Trip_Driver> driverTrip;
+    
+    @ManyToOne
+    @JoinColumn(name = "company_id", referencedColumnName = "id")
+    private BusCompany busCompany;
    
 }

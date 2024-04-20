@@ -20,5 +20,6 @@ public class BusTypeDTO {
 	private Integer fee;
 	private String description;
 	private SeatMapDTO seatMap;
+	private Integer busCompanyId;
 
 }

@@ -27,6 +27,8 @@ const BusManagement = React.lazy(() => import('./views/system/BusManagement'))
 const RouteManagement = React.lazy(() => import('./views/system/RouteManagement'))
 const SpecialDayManagement = React.lazy(() => import('./views/schedule/SpecialDayManage'))
 const ReviewManagement = React.lazy(() => import('./views/system/ReviewManagement'))
+const BusTypeManagement = React.lazy(() => import('./views/system/BusTypeManagement'))
+const TripManagement = React.lazy(() => import('./views/system/TripManagement'))
 
 //ScheduleManagement
 const ScheduleManagement = React.lazy(() => import('./views/schedule/ScheduleManagement'))
@@ -35,11 +37,15 @@ const TripDistribute = React.lazy(() => import('./views/schedule/TripDistribute'
 //Chat
 const Chat = React.lazy(() => import('./views/chat/Chat'))
 
+//Company Info
+const CompanyInfor = React.lazy(() => import('./views/profile/company/CompanyInfor'))
+
 const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
     { path: '/profile/infor', name: 'Thông tin nhân viên', element: UserProfile },
     { path: '/profile/change-password', name: 'Đổi mật khẩu', element: ChangePassword },
+    { path: '/company/infor', name: 'Thông tin nhà xe', element: CompanyInfor },
     { path: '/booking', name: 'Đặt vé', element: Booking },
     { path: '/search-ticket', name: 'Tìm vé', element: SearchTicket },
     { path: '/confirm-cancel', name: 'Duyệt hủy vé', element: ConfirmCancel },
@@ -83,6 +89,12 @@ const routes = [
         protected: true,
     },
     {
+        path: '/system-manage/trips',
+        name: 'Quản lý tuyến xe',
+        element: TripManagement,
+        protected: true,
+    },
+    {
         path: '/system-manage/locations',
         name: 'Quản lý trạm xe',
         element: StationManagement,
@@ -94,7 +106,18 @@ const routes = [
         element: RouteManagement,
         protected: true,
     },
-    { path: '/system-manage/buses', name: 'Quản lý xe', element: BusManagement, protected: true },
+    {
+        path: '/system-manage/bus-types',
+        name: 'Quản lý loại xe',
+        element: BusTypeManagement,
+        protected: true,
+    },
+    {
+        path: '/system-manage/buses',
+        name: 'Quản lý xe',
+        element: BusManagement,
+        protected: true,
+    },
     {
         path: '/system-manage/special-date',
         name: 'Quản lý ngày',

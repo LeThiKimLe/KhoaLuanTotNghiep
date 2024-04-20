@@ -15,9 +15,9 @@ export const UPDATE_INFOR = [
         name: 'tel',
         type: 'text',
         placeholder: 'Số điện thoại',
-        errorMessage: 'Sai số điện thoại',
+        errorMessage: 'Số điện thoại dạng +xxx... hoặc 0xxx...',
         label: 'Số điện thoại',
-        pattern: '^0[0-9]{9,10}$',
+        pattern: '^(0d{9,10}|+d{1,3}s?d{1,14})$',
         required: false,
         role: [1, 2, 3, 4],
         editable: [1],
@@ -145,3 +145,30 @@ export const MONTH_IN_YEAR = [
 ]
 
 export const COLOR = ['info', 'warning', 'success', 'danger', 'dark', 'light']
+
+export const TIME_TABLE = {
+    morning: {
+        label: 'Sáng',
+        from: 6,
+        to: 12,
+        color: 'success',
+    },
+    afternoon: {
+        label: 'Chiều',
+        from: 12,
+        to: 18,
+        color: 'primary',
+    },
+    evening: {
+        label: 'Tối',
+        from: 18,
+        to: 24,
+        color: 'infor',
+    },
+    late: {
+        label: 'Khuya',
+        from: 0,
+        to: 6,
+        color: 'warning',
+    },
+}

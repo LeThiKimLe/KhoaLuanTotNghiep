@@ -32,7 +32,6 @@ public class User {
     @Column(name = "tel", nullable = false, unique = true, length = 12)
     private String tel;
 
-
     @OneToOne
     @JoinColumn(name = "account_id", referencedColumnName = "id")
     private Account account;

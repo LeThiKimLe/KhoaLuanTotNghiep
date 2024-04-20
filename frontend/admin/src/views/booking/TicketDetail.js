@@ -398,7 +398,7 @@ const TicketDetail = ({ ticket, visible, handleShow }) => {
                                                     className="mb-2"
                                                     onChange={(e) => setTel(e.target.value)}
                                                     required
-                                                    pattern="^0[0-9]{9,10}$"
+                                                    pattern="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
                                                 />
                                                 <CFormFeedback invalid>
                                                     Hãy điền đúng số điện thoại

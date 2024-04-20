@@ -23,5 +23,6 @@ public class StationDTO {
 	 private BigDecimal latitude;
 	 private BigDecimal longitude;
 	 private boolean isActive;
+	 private Integer busCompanyId;
 
 }

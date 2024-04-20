@@ -29,13 +29,12 @@ const getBus = createAsyncThunk('admin/bus/get', async (_, thunkAPI) => {
 
 const addBus = createAsyncThunk('admin/bus/add', async (busInfor, thunkAPI) => {
     try {
-        const bus = await axiosClient.post('admin/bus', null, {
-            params: {
-                manufactureYear: busInfor.year,
-                color: busInfor.color,
-                licensePlate: busInfor.license,
-                typeId: busInfor.typeId,
-            },
+        const bus = await axiosClient.post('admin/bus', {
+            manufactureYear: busInfor.year,
+            color: busInfor.color,
+            licensePlate: busInfor.license,
+            typeId: busInfor.typeId,
+            companyId: busInfor.companyId,
         })
         return bus
     } catch (error) {
@@ -174,7 +173,7 @@ const getSchedules = createAsyncThunk('admin/bus/schedules', async (busId, thunk
 
 const getTripBus = createAsyncThunk('trip/get-bus', async (tripId, thunkAPI) => {
     try {
-        const response = await axiosClient.get('admin/trips/driver-bus', {
+        const response = await axiosClient.get('manager/trips/driver-bus', {
             params: {
                 tripId: tripId,
             },
@@ -189,6 +188,64 @@ const getTripBus = createAsyncThunk('trip/get-bus', async (tripId, thunkAPI) => 
     }
 })
 
+const addSeatMap = createAsyncThunk('admin/seatmap/add', async (busSeatMap, thunkAPI) => {
+    try {
+        const result = await axiosClient.post('admin/bus/seat-map', {
+            rowNo: busSeatMap.rowNo,
+            floorNo: busSeatMap.floorNo,
+            colNo: busSeatMap.colNo,
+        })
+        return result
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+const addListSeat = createAsyncThunk(
+    'admin/bus/type/seat/add',
+    async ({ seatMapId, seatInfors }, thunkAPI) => {
+        try {
+            const result = await axiosClient.post('admin/bus/seat', {
+                seatMapId: seatMapId,
+                seatInfors: seatInfors,
+            })
+            return result
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
+const addBusType = createAsyncThunk(
+    'admin/bus/type/add',
+    async ({ busType, seatMapId }, thunkAPI) => {
+        try {
+            const result = await axiosClient.post('admin/bus/type', {
+                name: busType.name,
+                capacity: busType.capacity,
+                fee: busType.fee,
+                description: busType.description,
+                seatMapId: seatMapId,
+            })
+            return result
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const busThunk = {
     getBus,
     addBus,
@@ -200,5 +257,8 @@ const busThunk = {
     getSchedules,
     getTripBus,
     deleteDistributeBus,
+    addSeatMap,
+    addListSeat,
+    addBusType,
 }
 export default busThunk

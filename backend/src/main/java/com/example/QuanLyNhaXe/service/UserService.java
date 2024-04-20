@@ -15,12 +15,14 @@ import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Account;
 import com.example.QuanLyNhaXe.model.Admin;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Customer;
 import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Staff;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.AccountRepository;
 import com.example.QuanLyNhaXe.repository.AdminRepository;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.CustomerRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.StaffRepository;
@@ -42,6 +44,7 @@ public class UserService {
 	private final AccountRepository accountRepository;
 	private final S3Service s3Service;
 	private final AdminRepository adminRepository;
+	private final BusCompanyRepository busCompanyRepository;
 
 	private final JwtService jwtService;
 
@@ -151,22 +154,31 @@ public class UserService {
 		return modelMapper.map(user, UserDTO.class);
 	}
 
-	public Object getAllStaffs() {
+	public Object getAllStaffs(String authorizationHeader) {
+		User user=getUserByAuthorizationHeader(authorizationHeader);
+		
 		List<Staff> staffs = staffRepository.findAll();
 		if (staffs.isEmpty()) {
 			throw new NotFoundException(Message.STAFF_NOT_FOUND);
 		}
-		return staffs.stream().filter(staff -> staff.getAdmin() == null)
+		BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		return staffs.stream().filter(staff -> staff.getBusCompany().getId().equals(busCompany.getId()))
 				.map(staff -> modelMapper.map(staff.getUser(), UserDTO.class)).toList();
 
 	}
 
-	public Object getAllDrivers() {
+	public Object getAllDrivers(String authorizationHeader) {
 		List<Driver> drivers = driverRepository.findAll();
+		User user=getUserByAuthorizationHeader(authorizationHeader);
 		if (drivers.isEmpty()) {
 			throw new NotFoundException(Message.DRIVER_NOT_FOUND);
 		}
-		return drivers.stream().map(driver -> modelMapper.map(driver.getUser(), UserDTO.class)).toList();
+		BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		return drivers.stream()
+				.filter(driver-> driver.getBusCompany().getId().equals(busCompany.getId()))
+				.map(driver -> modelMapper.map(driver.getUser(), UserDTO.class)).toList();
 	}
 	
 	public Object getAllAdmins() {

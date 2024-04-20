@@ -61,3 +61,49 @@ export const getTripJourney = (trip) => {
     if (trip.turn === true) return trip.startStation.name + '-' + trip.endStation.name
     else return trip.endStation.name + '-' + trip.startStation.name
 }
+
+export const tripProcess = (listRoute) => {
+    const listTrip = []
+    let temp = -1
+    listRoute.forEach((route) => {
+        const { trips, ...routeInfo } = route
+        trips.forEach((trip) => {
+            const { id, turn, stopStations, ...tripInfo } = trip
+            temp = listTrip.findIndex(
+                (item) =>
+                    item.startStation.id === trip.startStation.id &&
+                    item.endStation.id === trip.endStation.id &&
+                    (item.schedule === trip.schedule ||
+                        item.schedule === reverseString(trip.schedule)),
+            )
+            if (temp != -1) {
+                listTrip[temp] = {
+                    ...listTrip[temp],
+                    turnBack: {
+                        id: id,
+                        stopStations: stopStations,
+                    },
+                }
+                return
+            } else {
+                listTrip.push({
+                    ...tripInfo,
+                    turnGo: {
+                        id: id,
+                        stopStations: stopStations,
+                    },
+                    route: routeInfo,
+                })
+            }
+        })
+    })
+    return listTrip
+}
+
+export const reverseString = (text, separator = '-') => {
+    if (text !== '') {
+        const splited = text.split(` ${separator} `)
+        return splited.reverse().join(` ${separator} `)
+    }
+    return text
+}

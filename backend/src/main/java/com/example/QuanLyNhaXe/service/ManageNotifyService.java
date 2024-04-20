@@ -41,7 +41,22 @@ public class ManageNotifyService implements WebSocketHandler{
 
     @Override
     public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) throws Exception {
-
+        // Loại thông báo đã xử lý ra khỏi hệ thống
+        Gson gson = new Gson();
+        JsonObject jsonObject = gson.fromJson(message.getPayload().toString(), JsonObject.class);
+        if (jsonObject.get("type").getAsString().equals("remove")) {
+            for (CreateBusCompany createBusCompany : listRegister) {
+                if (createBusCompany.getTel().equals(jsonObject.get("tel").getAsString())) {
+                    listRegister.remove(createBusCompany);
+                    break;
+                }
+            }
+            //Convert listRegister to JSON
+            String listRegisterJson = gson.toJson(listRegister);
+            for (WebSocketSession webSocketSession : managerSessions) {
+                webSocketSession.sendMessage(new TextMessage(listRegisterJson));
+            }
+        }
     }
 
     @Override
@@ -52,7 +67,6 @@ public class ManageNotifyService implements WebSocketHandler{
 
     @Override
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
-        System.out.println("Session closed");
         managerSessions.remove(session);
     }
 
@@ -64,6 +78,12 @@ public class ManageNotifyService implements WebSocketHandler{
     public void notifyNewRegister(Object notice) throws IOException {
         Gson gson = new Gson();
         String content = gson.toJson(notice);
+        //Check if the same notice is already in listRegister
+        for (CreateBusCompany createBusCompany : listRegister) {
+            if (createBusCompany.getTel().equals(((CreateBusCompany) notice).getTel())) {
+                throw new IOException("Thông tin đăng ký đã có trong hệ thống");
+            }
+        }
         //Check if notice is CreateBusCompany
         if (notice instanceof CreateBusCompany) {
             listRegister.add((CreateBusCompany) notice);

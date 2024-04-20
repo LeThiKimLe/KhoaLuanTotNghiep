@@ -1,6 +1,8 @@
 package com.example.QuanLyNhaXe.dto;
 
 import java.util.List;
+
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -14,6 +16,9 @@ public class TripDTO {
 	private Integer id;
 	private boolean turn;
 	private Integer price;
+	private Integer distance;
+	private float hours;
+	private String schedule;
 	private StationDTO startStation;
 	private StationDTO endStation;
 	private List<ScheduleDTO> schedules;

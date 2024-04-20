@@ -1,9 +1,9 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axiosClient from 'src/api/axios'
 
-const getLocations = createAsyncThunk('admin/locations/get', async (_, thunkAPI) => {
+const getLocations = createAsyncThunk('manager/locations/get', async (_, thunkAPI) => {
     try {
-        const listLocations = await axiosClient.get('admin/locations')
+        const listLocations = await axiosClient.get('manager/locations')
         return listLocations
     } catch (error) {
         const message =
@@ -14,9 +14,9 @@ const getLocations = createAsyncThunk('admin/locations/get', async (_, thunkAPI)
     }
 })
 
-const addLocation = createAsyncThunk('admin/locations/add', async (nameLocation, thunkAPI) => {
+const addLocation = createAsyncThunk('manager/locations/add', async (nameLocation, thunkAPI) => {
     try {
-        const location = await axiosClient.post('admin/locations', null, {
+        const location = await axiosClient.post('manager/locations', null, {
             params: { name: nameLocation },
         })
         return location
@@ -29,9 +29,9 @@ const addLocation = createAsyncThunk('admin/locations/add', async (nameLocation,
     }
 })
 
-const editLocation = createAsyncThunk('admin/locations/edit', async ({ id, name }, thunkAPI) => {
+const editLocation = createAsyncThunk('manager/locations/edit', async ({ id, name }, thunkAPI) => {
     try {
-        const location = await axiosClient.put('admin/locations', { id: id, name: name })
+        const location = await axiosClient.put('manager/locations', { id: id, name: name })
         return location
     } catch (error) {
         const message =
@@ -43,10 +43,10 @@ const editLocation = createAsyncThunk('admin/locations/edit', async ({ id, name 
 })
 
 const activeLocation = createAsyncThunk(
-    'admin/locations/active',
+    'manager/locations/active',
     async ({ id, active }, thunkAPI) => {
         try {
-            const location = await axiosClient.put('admin/locations/active', {
+            const location = await axiosClient.put('manager/locations/active', {
                 id: id,
                 active: active,
             })

@@ -42,7 +42,7 @@ import { convertToDisplayDate, convertToDisplayTimeStamp } from 'src/utils/conve
 import format from 'date-fns/format'
 import { cilPlus } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
-import { selectListRoute } from 'src/feature/route/route.slice'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import { getRouteJourney, getTripJourney } from 'src/utils/tripUtils'
 import routeThunk from 'src/feature/route/route.service'
 import { convertTimeToInt } from 'src/utils/convertUtils'
@@ -50,6 +50,7 @@ import { startOfWeek, endOfWeek, parse } from 'date-fns'
 import { dayInWeek } from 'src/utils/constants'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.turn === true) return 'success'
@@ -1145,22 +1146,14 @@ const Bus = ({ bus, currentBus, setActiveBus, finishUpdate }) => {
                                                                     <option value={0}>
                                                                         Chọn một tuyến đường
                                                                     </option>
-                                                                    {listRoute
-                                                                        .filter(
-                                                                            (route) =>
-                                                                                route.busType.id ===
-                                                                                bus.type.id,
-                                                                        )
-                                                                        .map((rte) => (
-                                                                            <option
-                                                                                key={rte.id}
-                                                                                value={rte.id}
-                                                                            >
-                                                                                {getRouteJourney(
-                                                                                    rte,
-                                                                                )}
-                                                                            </option>
-                                                                        ))}
+                                                                    {listRoute.map((rte) => (
+                                                                        <option
+                                                                            key={rte.id}
+                                                                            value={rte.id}
+                                                                        >
+                                                                            {getRouteJourney(rte)}
+                                                                        </option>
+                                                                    ))}
                                                                 </CFormSelect>
                                                                 {route !== 0 && (
                                                                     <>
@@ -1282,7 +1275,7 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
     const [manufactureYear, setManufactureYear] = useState('')
     const [color, setColor] = useState('')
     const [licensePlate, setLicensePlate] = useState('')
-    const [typeId, setTypeId] = useState(1)
+    const [typeId, setTypeId] = useState(0)
     const listBusType = useSelector(selectListBusType)
     const [error, setError] = useState('')
     const [validated, setValidated] = useState(false)
@@ -1290,9 +1283,10 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
     const [curRoute, setCurRoute] = useState(currentRoute ? currentRoute : 0)
     const [curTrip, setCurTrip] = useState(currentTrip ? currentTrip : 0)
     const [toast, addToast] = useState(0)
+    const companyId = useSelector(selectCompanyId)
     const toaster = useRef('')
     const dispatch = useDispatch()
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const handleDistribute = (busId) => {
         dispatch(busThunk.distributeBus({ tripId: curTrip, busId: busId }))
             .unwrap()
@@ -1301,24 +1295,31 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
     }
     const handleAddBus = (e) => {
         e.preventDefault()
-        setLoading(true)
-        const busType = {
-            year: manufactureYear,
-            color: color,
-            license: licensePlate,
-            typeId: typeId,
+        if (typeId != 0 && manufactureYear != '' && licensePlate != '' && color != '') {
+            setLoading(true)
+            const busType = {
+                year: manufactureYear,
+                color: color,
+                license: licensePlate,
+                typeId: typeId,
+                companyId: companyId,
+            }
+            dispatch(busThunk.addBus(busType))
+                .unwrap()
+                .then((res) => {
+                    setLoading(false)
+                    setVisible(false)
+                    if (res.id) handleDistribute(res.id)
+                    setError('')
+                    finishAdd()
+                })
+                .catch((err) => {
+                    setLoading(false)
+                    setError(err)
+                })
+        } else {
+            setError('Vui lòng điền đủ các thông tin')
         }
-        dispatch(busThunk.addBus(busType))
-            .unwrap()
-            .then((res) => {
-                setLoading(false)
-                setVisible(false)
-                if (res.id) handleDistribute(res.id)
-                finishAdd()
-            })
-            .catch(() => {
-                setLoading(false)
-            })
     }
     const getListTrip = (routeId) => {
         const routeIn = listRoute.find((rt) => rt.id == routeId)
@@ -1449,6 +1450,11 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                                             value={typeId}
                                             onChange={(e) => setTypeId(e.target.value)}
                                         >
+                                            <option value="0">
+                                                {listBusType.length > 0
+                                                    ? 'Chọn loại xe'
+                                                    : 'Chưa có loại xe'}
+                                            </option>
                                             {listBusType.map((busType) => (
                                                 <option key={busType.id} value={busType.id}>
                                                     {busType.description}
@@ -1547,7 +1553,7 @@ const BusManagement = () => {
     const redirect = useSelector(selectRedirect)
     const [option, setOption] = useState(redirect.currentRoute !== 0 ? 'route' : 'all')
     const [toast, addToast] = useState(0)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [currentRoute, setCurrentRoute] = useState(redirect.currentRoute)
     const [currentTrip, setCurrentTrip] = useState(redirect.currentTrip)
     const listReverse = useRef([])

@@ -1,12 +1,20 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axiosClient from 'src/api/axios'
+import { reverseString } from 'src/utils/tripUtils'
 
-const addTrip = createAsyncThunk('admin/trips', async (tripInfor, thunkAPI) => {
+const addTrip = createAsyncThunk('manager/trips', async (tripInfor, thunkAPI) => {
     try {
-        const trip = await axiosClient.post('admin/trips', {
+        const trip = await axiosClient.post('manager/trips', {
             routeId: tripInfor.routeId,
             startStationId: tripInfor.startStationId,
             endStationId: tripInfor.endStationId,
+            price: tripInfor.price,
+            companyId: tripInfor.companyId,
+            busType: 0,
+            schedule: tripInfor.schedule,
+            scheduleReturn: reverseString(tripInfor.schedule, '-'),
+            distance: tripInfor.distance,
+            hours: tripInfor.hours,
         })
         return trip
     } catch (error) {
@@ -18,9 +26,9 @@ const addTrip = createAsyncThunk('admin/trips', async (tripInfor, thunkAPI) => {
     }
 })
 
-const activeTrip = createAsyncThunk('admin/trips/active', async ({ id, active }, thunkAPI) => {
+const activeTrip = createAsyncThunk('manager/trips/active', async ({ id, active }, thunkAPI) => {
     try {
-        const result = await axiosClient.put('admin/trips/active', {
+        const result = await axiosClient.put('manager/trips/active', {
             id: id,
             active: active,
         })

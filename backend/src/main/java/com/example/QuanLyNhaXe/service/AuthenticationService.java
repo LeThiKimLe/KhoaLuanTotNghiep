@@ -37,6 +37,7 @@ import com.example.QuanLyNhaXe.model.SystemManager;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.AccountRepository;
 import com.example.QuanLyNhaXe.repository.AdminRepository;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.CustomerRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.StaffRepository;
@@ -68,6 +69,7 @@ public class AuthenticationService {
 	private static final String DEFAULT_IMG = "https://bookingupfile.s3.amazonaws.com/Image/1700527483380-anh-chipi-16.jpg";
 	private final TwilioService twilioService;
 	private final SystemManagerRepository managerRepository;
+	private final BusCompanyRepository busCompanyRepository;
 
 	public TokenDTO login(LoginDTO loginDTO) {
 
@@ -77,6 +79,8 @@ public class AuthenticationService {
 				.orElseThrow(() -> new NotFoundException(Message.ACCOUNT_NOT_FOUND));
 		if (!account.isActive())
 			throw new BadRequestException(Message.ACCOUNT_DISABLED);
+		if((account.getRole().getId()==1||account.getRole().getId()==2)&&!account.getUser().getStaff().getBusCompany().isActive())
+			throw new BadRequestException(Message.COMPANY_NOT_FOUND);
 
 		UserDTO userDTO = userService.getUserInfor(account.getId());
 		String accessToken = jwtService.generateToken(account);
@@ -142,8 +146,9 @@ public class AuthenticationService {
 	}
 
 	@Transactional
-	public Staff createStaff(SignupStaffDTO signupStaffDTO, Integer roleId) {
+	public Staff createStaff(SignupStaffDTO signupStaffDTO, Integer roleId,BusCompany busCompany) {
 		User user = null;
+		
 
 		boolean checkExist1 = userRepository.existsByTel(signupStaffDTO.getTel());
 		boolean checkExist2 = staffRepository.existsByIdCard(signupStaffDTO.getIdCard());
@@ -151,14 +156,14 @@ public class AuthenticationService {
 			throw new ConflictException("Nhân viên đã tồn tại trong hệ thống");
 		}
 		SignupDTO signupDTO = SignupDTO.builder().email(signupStaffDTO.getEmail()).tel(signupStaffDTO.getTel())
-				.name(signupStaffDTO.getName()).gender(signupStaffDTO.getGender()).password("@12345678@").build();
+				.name(signupStaffDTO.getName()).gender(signupStaffDTO.getGender()).oauthId("").password("@12345678@").build();
 		String userName = signupStaffDTO.getEmail();
 
 		user = createUser(signupDTO, roleId, userName);
 
 		Staff staff = Staff.builder().address(signupStaffDTO.getAddress())
 				.beginWorkDate(signupStaffDTO.getBeginWorkDate()).idCard(signupStaffDTO.getIdCard()).img(DEFAULT_IMG)
-				.nickname("NV: " + signupStaffDTO.getName()).user(user).build();
+				.nickname("NV: " + signupStaffDTO.getName()).busCompany(busCompany).user(user).build();
 		try {
 			accountRepository.save(user.getAccount());
 			userRepository.save(user);
@@ -183,7 +188,7 @@ public class AuthenticationService {
 		}
 
 		SignupDTO signupDTO = SignupDTO.builder().email(signupDriverDTO.getEmail()).tel(signupDriverDTO.getTel())
-				.name(signupDriverDTO.getName()).gender(signupDriverDTO.getGender()).password("@123456@").build();
+				.name(signupDriverDTO.getName()).gender(signupDriverDTO.getGender()).oauthId("").password("@123456@").build();
 		String userName = signupDriverDTO.getEmail();
 		User user = createUser(signupDTO, 3, userName);
 
@@ -340,23 +345,18 @@ public class AuthenticationService {
 	@Transactional
 	public ResponseMessage createNewStaff(SignupStaffDTO signupStaffDTO, String authentication) {
 		User adminUser = userService.getUserByAuthorizationHeader(authentication);
-		BusCompany busCompany = adminUser.getStaff().getAdmin().getBusCompany();
-		Staff staff = createStaff(signupStaffDTO, 2);
-		staff.setBusCompany(busCompany);
-		try {
-			staffRepository.save(staff);
-
-		} catch (DataAccessException e) {
-			return new ResponseMessage(Message.INACCURATE_DATA);
-		}
+		BusCompany busCompany = adminUser.getStaff().getBusCompany();
+		createStaff(signupStaffDTO, 2,busCompany);
+		
 		return new ResponseMessage(Message.SUCCESS_ADD_STAFF);
 
 	}
 
 	@Transactional
-	public Admin createNewAdmin(SignupStaffDTO signupStaffDTO) {
+	public Admin createNewAdmin(SignupStaffDTO signupStaffDTO, BusCompany busCompany) {
 		try {
-			Staff staff = createStaff(signupStaffDTO, 1);
+			Staff staff = createStaff(signupStaffDTO, 1,busCompany);
+			
 			Admin admin = Admin.builder().staff(staff).build();
 			adminRepository.save(admin);
 			return admin;

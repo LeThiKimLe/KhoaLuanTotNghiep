@@ -23,5 +23,4 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 	List<Booking> findByTransactionIsNotNullAndBookingDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
 	
 	
-
 }

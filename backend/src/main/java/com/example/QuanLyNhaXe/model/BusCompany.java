@@ -32,15 +32,15 @@ public class BusCompany {
 	@Column(name = "id")
 	private Integer id;
 
-	@Column(name = "name", length = 45)
+	@Column(name = "name")
 	private String name;
 
-	@Column(name = "business_license", length = 45)
+	@Column(name = "business_license")
 	private String businessLicense;
 
-	@OneToOne
-	@JoinColumn(name = "admin_id", referencedColumnName = "admin_id")
-	private Admin admin;
+
+	@Column(name = "admin_id")
+	private Integer adminId;
 
 	@Column(name = "coop_day")
 	private LocalDate coopDay;
@@ -66,4 +66,12 @@ public class BusCompany {
 	@OneToMany(mappedBy = "busCompany")
 	private List<Station> stations;
 
+	@OneToMany(mappedBy = "busCompany")
+	private List<BusType> busTypes;
+	
+	@OneToMany(mappedBy = "busCompany")
+	private List<Driver> drivers;
+	
+	@OneToMany(mappedBy = "busCompany")
+	private List<ServiceFee> serviceFees ;
 }

@@ -3,6 +3,7 @@ package com.example.QuanLyNhaXe.controller.SystemManager;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
@@ -13,6 +14,7 @@ import com.example.QuanLyNhaXe.Request.CreateManager;
 import com.example.QuanLyNhaXe.Request.SignupDTO;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
+import com.example.QuanLyNhaXe.service.UserService;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -27,10 +29,16 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Manager", description = "ManagerController")
 public class ManagerController {
 	private final AuthenticationService authenticationService;
+	private final UserService userService;
 	
 	@PostMapping()
-	public ResponseEntity<Object> registerCustomer(@Valid @RequestBody CreateManager createManager) {
+	public ResponseEntity<Object> registerManager(@Valid @RequestBody CreateManager createManager) {
 		return new ResponseEntity<>(authenticationService.createManager(createManager), HttpStatus.CREATED);
+	}
+	
+	@GetMapping("/admins")
+	public ResponseEntity<Object> getAllAdmins() {
+		return new ResponseEntity<>(userService.getAllAdmins(), HttpStatus.OK);
 	}
 
 }

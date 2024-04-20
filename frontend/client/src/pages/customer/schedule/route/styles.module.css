@@ -1,86 +1,83 @@
-.container{
-    width: 100%;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    margin-bottom: 10px;
-    background-color: var(--primary-color);
+.container {
+  width: 100%;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  margin-bottom: 10px;
+  background-color: var(--primary-color);
 }
 
-.sub_container{
-    width: 100%;
-    padding: 20px;
-    border: 1px solid var(--border-color);
-    background-color: white;
-    border-radius: 50px 10px 50px 10px;
+.sub_container {
+  width: 100%;
+  padding: 20px;
+  border: 1px solid var(--border-color);
+  background-color: white;
+  border-radius: 50px 10px 50px 10px;
 }
 
-.container:hover{
-    box-shadow: 0 0 8px #ccc;
+.container:hover {
+  box-shadow: 0 0 8px #ccc;
 }
 
-.routeName{
-    font-size: 19px;
-    font-weight: 700;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+.routeName {
+  font-size: 19px;
+  font-weight: 700;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-.routePlace{
-    flex: 1;
+.routePlace {
+  flex: 1;
 }
 
-.routePlace:first-child{
-    text-align: left;
+.routePlace:first-child {
+  text-align: left;
 }
-.routePlace:last-child{
-    text-align: right;
-}
-
-.routeTime{
-    display: flex;
-    align-items: center;
-    color: var(--sub-color);
-    margin: 10px 0;
+.routePlace:last-child {
+  text-align: right;
 }
 
-.routeTime .time{
-    color: var(--text-color)
+.routeTime {
+  display: flex;
+  align-items: center;
+  color: var(--sub-color);
+  margin: 10px 0;
 }
 
-.dot{
-    border: 1px dashed #ccc;
-    height: 0;
-    flex: 1;
+.routeTime .time {
+  color: var(--text-color);
 }
 
-.infor{
-    margin: 5px 0;
-    display: flex;
+.dot {
+  border: 1px dashed #ccc;
+  height: 0;
+  flex: 1;
 }
 
-.infor .infor_title{
-    font-weight: 700;
-    min-width: 120px;
-
+.infor {
+  margin: 5px 0;
+  display: flex;
 }
 
-.searchArea{
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+.infor .infor_title {
+  font-weight: 700;
+  min-width: 120px;
 }
 
-.note{
-    font-size: 12px;
-    
+.searchArea {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.container .searchBtn{
-    text-align: right;
+.note {
+  font-size: 12px;
 }
 
-.searchBtn{
-    background-color: var(--sub-color);
+.container .searchBtn {
+  text-align: right;
 }
 
+.searchBtn {
+  background-color: var(--sub-color);
+}

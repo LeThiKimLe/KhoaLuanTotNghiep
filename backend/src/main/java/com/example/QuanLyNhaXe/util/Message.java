@@ -45,5 +45,8 @@ public class Message {
     public static final String COMPANY_NOT_FOUND = "Không tìm thấy nhà xe";
     public static final String FIXEDSCHEDULE_NOT_FOUND = "Không tìm thấy nhà xe";
     public static final String REGISTER_INFO_SENT = "Đã gửi thông tin đăng ký thành công";
-    
+    public static final String EXISTED_COMPANY_INFO = "Thông tin đăng ký đã tồn tại trong hệ thống";
+    public static final String ROUTEASSIGN_NOT_FOUND = "Không tìm thấy phân công nào";
+    public static final String SEATMAP_NOT_FOUND = "Không tìm thấy sơ đồ ghế nào";
+    public static final String SEAT_NOT_FOUND = "Không tìm thấy ghế";
 }

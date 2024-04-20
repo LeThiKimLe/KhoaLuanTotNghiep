@@ -1,63 +1,60 @@
-.prime_btn{
-    font-size: 15px;
-    font-weight: 700;
-    min-width: 200px;
-    color: #ffffff;
-    border: 2px solid #ccc;
-    border-radius: 10px;
-    background-color: #13b9f0;
-    padding: 10px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 10px;
-    margin: auto;
+.prime_btn {
+  font-size: 15px;
+  font-weight: 700;
+  min-width: 200px;
+  color: #ffffff;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: #13b9f0;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  margin: auto;
 }
 
-.prime_btn:hover
-{
-    border: 2px solid #fbf9f9;
-    box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
+.prime_btn:hover {
+  border: 2px solid #fbf9f9;
+  box-shadow: 0px 0px 6px rgba(0, 0, 0, 0.6);
 }
 
-.prime_btn:active
-{
-    background-color: #055e7b;
+.prime_btn:active {
+  background-color: #055e7b;
 }
 
 @keyframes fade {
-    from {
-      border-color: #ccc;
-      color: #000;
-    }
-    to {
-      border-color: #06b4ee;
-      color: #0579a0;
-    }
-  }
-
-.option_btn{
+  from {
+    border-color: #ccc;
     color: #000;
-    font-weight: 600;
-    background-color: white;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin: 5px;
-    border-radius: 10px;
-    transition: border-color 0.3s ease-in-out;
-}
-
-.option_btn:not(:focus):hover{
-    animation: fade 0.2s ease-in-out forwards;
-}
-
-.option_btn:active{
+  }
+  to {
     border-color: #06b4ee;
     color: #0579a0;
+  }
 }
 
-.option_btn:focus{
-    border-color: #06b4ee;
-    color: #0579a0;
+.option_btn {
+  color: #000;
+  font-weight: 600;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 5px;
+  border-radius: 10px;
+  transition: border-color 0.3s ease-in-out;
 }
 
+.option_btn:not(:focus):hover {
+  animation: fade 0.2s ease-in-out forwards;
+}
+
+.option_btn:active {
+  border-color: #06b4ee;
+  color: #0579a0;
+}
+
+.option_btn:focus {
+  border-color: #06b4ee;
+  color: #0579a0;
+}

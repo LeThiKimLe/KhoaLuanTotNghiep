@@ -14,14 +14,17 @@ import com.example.QuanLyNhaXe.Request.EditStationDTO;
 import com.example.QuanLyNhaXe.Request.EditStopStation;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO.StationOfLocation;
+import com.example.QuanLyNhaXe.dto.StationDTO;
 import com.example.QuanLyNhaXe.dto.StopStationDTO;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Location;
 import com.example.QuanLyNhaXe.model.Station;
 import com.example.QuanLyNhaXe.model.StopStation;
 import com.example.QuanLyNhaXe.model.Trip;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.LocationRepository;
 import com.example.QuanLyNhaXe.repository.StationRepository;
 import com.example.QuanLyNhaXe.repository.StopStationRepository;
@@ -40,22 +43,30 @@ public class StationService {
 	private final TripService tripService;
 	private final  TripRepository tripRepository;
 	private final ModelMapper modelMapper;
+	private final BusCompanyRepository busCompanyRepository;
 
 	public Object createStation(RequestStationDTO stationDTO) {
 		Location location = locationRepository.findById(stationDTO.getLocationId())
 				.orElseThrow(() -> new NotFoundException(Message.LOCATION_NOT_FOUND));
+		BusCompany busCompany=null;
+		if(stationDTO.getCompanyId()!=0) {
+			busCompany=busCompanyRepository.findById(stationDTO.getCompanyId())
+					.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		}
+		
 		List<Station> stations = new ArrayList<>();
 		for (StationOfLocation station : stationDTO.getStationOfLocations()) {
 			if (stationRepository.existsByName(station.getName())) {
 				throw new ConflictException(Message.STATION_EXISTS);
 			}
 			Station createStation = Station.builder().name(station.getName()).address(station.getAddress())
-					.latitude(station.getLatitude()).longitude(station.getLongitude()).isActive(true).location(location)
+					.latitude(station.getLatitude()).longitude(station.getLongitude()).isActive(true).location(location).busCompany(busCompany)
 					.build();
 			stations.add(createStation);
 		}
 		stationRepository.saveAll(stations);
-		return new ResponseMessage(Message.SUCCESS);
+		return stations.stream().map(station -> modelMapper.map(station, StationDTO.class));
+		
 	}
 
 	public Object editStation(EditStationDTO editStationDTO) {
@@ -114,7 +125,7 @@ public class StationService {
 	}
 
 	public Object createStopStation(CreateStopStation createStopStation) {
-		if(!createStopStation.getStationType().equals("pick")&&!createStopStation.getStationType().equals("drop")) {
+		if(!createStopStation.getStationType().equals("pick")&&!createStopStation.getStationType().equals("drop")&&!createStopStation.getStationType().equals("stop")) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
 		if(stopStationRepository.existsByTripIdAndStationId(createStopStation.getTripId(), createStopStation.getStationId())) {
@@ -131,7 +142,7 @@ public class StationService {
 	}
 	
 	public Object updateStopStation(EditStopStation editStopStation) {
-		if(!editStopStation.getStationType().equals("pick")&&!editStopStation.getStationType().equals("drop")) {
+		if(!editStopStation.getStationType().equals("pick")&&!editStopStation.getStationType().equals("drop")&&!editStopStation.getStationType().equals("stop")) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
 		if(stopStationRepository.existsByTripIdAndStationId(editStopStation.getTripId(),editStopStation.getStationId())) {

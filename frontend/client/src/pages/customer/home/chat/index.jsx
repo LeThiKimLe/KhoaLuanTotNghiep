@@ -123,7 +123,7 @@ const OptionBox = ({ option, setOption, closeForm, setUserInfor }) => {
                                     placeholder="Số điện thoại của bạn"
                                     id="tel"
                                     type="text"
-                                    pattern="^0[0-9]{9,10}$"
+                                    pattern="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
                                     required
                                     value={tel}
                                     onChange={(e) => setTel(e.target.value)}
@@ -222,7 +222,9 @@ const Chat = () => {
             direction: 'incoming',
             sender: 'Assistant',
         }])
-        const hostname = window.location.hostname
+        const host = process.env.REACT_APP_SOCKET_URL
+        console.log(host)
+        const hostname = host ? host : window.location.hostname
         if (openBox && option === 'agent') {
             // Tạo kết nối WebSocket khi component được mount
             const socket = new WebSocket(`wss://${hostname}/api/socket`);
