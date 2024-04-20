@@ -41,12 +41,12 @@ import { convertToDisplayDate, convertDataTimeToDisplayDate } from 'src/utils/co
 import CIcon from '@coreui/icons-react'
 import { cilReload } from '@coreui/icons'
 import format from 'date-fns/format'
-import { selectListRoute } from 'src/feature/route/route.slice'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import routeThunk from 'src/feature/route/route.service'
 import { getTripJourney, getRouteJourney } from 'src/utils/tripUtils'
 const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, currentRoute }) => {
     const [validated, setValidated] = useState(false)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [tel, setTel] = useState('')
@@ -422,7 +422,7 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
 
 const DriverManagement = () => {
     const listDriver = useSelector(selectListDriver)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [showAddForm, setShowAddForm] = useState(false)
     const [toast, addToast] = useState(0)
     const toaster = useRef('')

@@ -168,13 +168,10 @@ const RouteInfo = ({ route, fixSchedule }) => {
                     (r.departure === route.destination && r.destination === route.departure)) &&
                 r.startStation === tripGo.startStation.name &&
                 r.endStation === tripGo.endStation.name &&
-                r.journey === route.schedule,
+                (r.journey === route.trips[0].schedule || r.journey === route.trips[1].schedule),
         )
         setOfficialRoute(offRoute)
     }
-    useEffect(() => {
-        updateCompanyData()
-    }, [])
     return (
         <div>
             <Tabs className="tabStyle">
@@ -244,7 +241,7 @@ const CompanyDetail = () => {
     const listFixSchedule = useSelector(selectListFixSchedule)
     const listCurFix = listFixSchedule.filter((schedule) => {
         if (schedule.trip && schedule.trip.busCompany)
-            return schedule.trip.busCompany.id === curCompany.id
+            return schedule.trip.busCompany.id === curCompany.busCompany.id
         else return false
     })
     const { busCompany, admin } = curCompany ? curCompany : { busCompany: null, admin: null }
@@ -258,7 +255,9 @@ const CompanyDetail = () => {
         address: admin ? admin.staffUser.staff.address : '',
     })
     const listAssign = useSelector(selectListAssign)
-    const curAssign = listAssign.filter((assign) => assign.busCompanyId === curCompany.id)
+    const curAssign = listAssign.filter(
+        (assign) => assign.busCompanyId === curCompany.busCompany.id,
+    )
     const listRoute = useSelector(selectListRoute)
     const handleChangeCompanyInfo = (e) => {
         setCompanyInfo({ ...companyInfo, [e.target.name]: e.target.value })
@@ -270,13 +269,13 @@ const CompanyDetail = () => {
                 setValidated(true)
                 setLoading(true)
                 const companyData = {
-                    id: curCompany.id,
+                    id: curCompany.busCompany.id,
                     representName: companyInfo.representName,
                     email: companyInfo.email,
                     telephone: companyInfo.telephone,
                     idCard: companyInfo.idCard,
                     address: companyInfo.address,
-                    beginWorkDate: curCompany.coopDay,
+                    beginWorkDate: curCompany.busCompany.coopDay,
                     firmName: companyInfo.firmName,
                     businessLicense: companyInfo.businessLicense,
                 }
@@ -323,8 +322,8 @@ const CompanyDetail = () => {
     }
     useEffect(() => {
         dispatch(scheduleThunk.getFixSchedule())
+        dispatch(companyThunk.getAssignedRouteForCompany())
     }, [])
-    console.log(listFixSchedule)
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />

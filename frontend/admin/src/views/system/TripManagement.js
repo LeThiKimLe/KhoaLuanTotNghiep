@@ -6,7 +6,7 @@ import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route
 import routeThunk from 'src/feature/route/route.service'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
 import { Tabs, Tab, TabList, TabPanel } from 'react-tabs'
-import { getRouteJourney } from 'src/utils/tripUtils'
+import { getRouteJourney, reverseString } from 'src/utils/tripUtils'
 import { CCardBody, CFormSelect } from '@coreui/react'
 import busThunk from 'src/feature/bus/bus.service'
 import { selectListBusType } from 'src/feature/bus/bus.slice'
@@ -293,11 +293,13 @@ const ListStopStation = ({ trip, turn }) => {
 
 const TripManagement = () => {
     const dispatch = useDispatch()
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
     const listBusType = useSelector(selectListBusType)
     const listFixSchedule = useSelector(selectListFixSchedule)
     const listRouteAssign = useSelector(selectListCompanyRoute)
     const listCompanyLocation = useSelector(selectListCompanyLocation)
-    const listTrip = tripProcess(listRouteAssign)
+    const [listTrip, setListTrip] = useState(tripProcess(listRouteAssign))
     const [activeTab, setActiveTab] = useState(0)
     const [busType, setBusType] = useState(
         listTrip.length > 0 ? listTrip[activeTab].busType?.id : 0,
@@ -310,7 +312,38 @@ const TripManagement = () => {
     }
     const updateTripData = () => {
         if (price != 0 && busType != 0) {
-            // dispatch(tripThunk.)
+            const tripGoInfor = {
+                tripId: listTrip[activeTab].turnGo.id,
+                price: price,
+                schedule: listTrip[activeTab].schedule,
+                busTypeId: busType,
+            }
+            const tripBackInfor = {
+                tripId: listTrip[activeTab].turnBack.id,
+                price: price,
+                schedule: reverseString(listTrip[activeTab].schedule),
+                busTypeId: busType,
+            }
+            dispatch(tripThunk.editTrip(tripGoInfor))
+                .unwrap()
+                .then(() => {
+                    dispatch(tripThunk.editTrip(tripBackInfor))
+                        .unwrap()
+                        .then(() => {
+                            addToast(() =>
+                                CustomToast({
+                                    message: 'Cập nhật thông tin thành công',
+                                    type: 'success',
+                                }),
+                            )
+                        })
+                        .catch((error) => {
+                            addToast(() => CustomToast({ message: error, type: 'error' }))
+                        })
+                })
+                .catch((error) => {
+                    addToast(() => CustomToast({ message: error, type: 'error' }))
+                })
         }
     }
     useEffect(() => {
@@ -323,8 +356,13 @@ const TripManagement = () => {
             setPrice(listTrip[activeTab].price)
         }
     }, [activeTab, listTrip])
+    useEffect(() => {
+        setListTrip(tripProcess(listRouteAssign))
+    }, [listRouteAssign])
+
     return (
         <div>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
             {listTrip.length > 0 ? (
                 <Tabs
                     className="tabStyle"
@@ -506,6 +544,7 @@ const TripManagement = () => {
                                                 variant="outline"
                                                 text="Cập nhật"
                                                 style={{ width: '100%' }}
+                                                onClick={updateTripData}
                                             ></CustomButton>
                                         </CCol>
                                         <CCol md="12">

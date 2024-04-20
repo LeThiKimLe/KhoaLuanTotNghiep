@@ -20,7 +20,7 @@ import {
 import { createListRoutes } from 'src/utils/routeUtils'
 import { CustomToast } from '../customToast/CustomToast'
 import CustomButton from '../customButton/CustomButton'
-import { selectListRoute } from 'src/feature/route/route.slice'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import { format, parse } from 'date-fns'
 import { searchAction } from 'src/feature/search/search.slice'
 import searchThunk from 'src/feature/search/search.service'
@@ -34,7 +34,7 @@ import FilterBox from './FilterBox'
 import { filterAction } from 'src/feature/filter/filter.slice'
 
 const SearchArea = () => {
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const dispatch = useDispatch()
     const searchInfor = useSelector(selectSearchInfor)
     const loading = useSelector(selectLoading)

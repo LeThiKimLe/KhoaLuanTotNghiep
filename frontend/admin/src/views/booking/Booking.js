@@ -3,7 +3,7 @@ import SearchArea from './SearchArea'
 import ListTrip from './ListTrip'
 import { CRow, CForm } from '@coreui/react'
 import routeThunk from 'src/feature/route/route.service'
-import { selectLoadingState } from 'src/feature/route/route.slice'
+import { selectListCompanyRoute, selectLoadingState } from 'src/feature/route/route.slice'
 import { useDispatch } from 'react-redux'
 import { useSelector } from 'react-redux'
 import { CSpinner } from '@coreui/react'
@@ -15,7 +15,7 @@ const Booking = () => {
     const dispatch = useDispatch()
     const loading = useSelector(selectLoadingState)
     const [gotRoute, setGotRoute] = useState(false)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     useEffect(() => {
         const loadData = () => {
             dispatch(routeThunk.getRoute())

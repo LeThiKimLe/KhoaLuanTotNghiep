@@ -50,6 +50,7 @@ import { startOfWeek, endOfWeek, parse } from 'date-fns'
 import { dayInWeek } from 'src/utils/constants'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.turn === true) return 'success'
@@ -1145,22 +1146,14 @@ const Bus = ({ bus, currentBus, setActiveBus, finishUpdate }) => {
                                                                     <option value={0}>
                                                                         Chọn một tuyến đường
                                                                     </option>
-                                                                    {listRoute
-                                                                        .filter(
-                                                                            (route) =>
-                                                                                route.busType.id ===
-                                                                                bus.type.id,
-                                                                        )
-                                                                        .map((rte) => (
-                                                                            <option
-                                                                                key={rte.id}
-                                                                                value={rte.id}
-                                                                            >
-                                                                                {getRouteJourney(
-                                                                                    rte,
-                                                                                )}
-                                                                            </option>
-                                                                        ))}
+                                                                    {listRoute.map((rte) => (
+                                                                        <option
+                                                                            key={rte.id}
+                                                                            value={rte.id}
+                                                                        >
+                                                                            {getRouteJourney(rte)}
+                                                                        </option>
+                                                                    ))}
                                                                 </CFormSelect>
                                                                 {route !== 0 && (
                                                                     <>
@@ -1290,6 +1283,7 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
     const [curRoute, setCurRoute] = useState(currentRoute ? currentRoute : 0)
     const [curTrip, setCurTrip] = useState(currentTrip ? currentTrip : 0)
     const [toast, addToast] = useState(0)
+    const companyId = useSelector(selectCompanyId)
     const toaster = useRef('')
     const dispatch = useDispatch()
     const listRoute = useSelector(selectListCompanyRoute)
@@ -1308,6 +1302,7 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                 color: color,
                 license: licensePlate,
                 typeId: typeId,
+                companyId: companyId,
             }
             dispatch(busThunk.addBus(busType))
                 .unwrap()
@@ -1558,7 +1553,7 @@ const BusManagement = () => {
     const redirect = useSelector(selectRedirect)
     const [option, setOption] = useState(redirect.currentRoute !== 0 ? 'route' : 'all')
     const [toast, addToast] = useState(0)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [currentRoute, setCurrentRoute] = useState(redirect.currentRoute)
     const [currentTrip, setCurrentTrip] = useState(redirect.currentTrip)
     const listReverse = useRef([])

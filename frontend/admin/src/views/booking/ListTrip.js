@@ -151,7 +151,7 @@ const ListTrip = () => {
                                 (currentTrip && isAdjusting)) && (
                                 <CCard>
                                     <SeatMap
-                                        seatMap={currentTrip.tripInfor.route.busType.seatMap}
+                                        seatMap={currentTrip.tripInfor.busType.seatMap}
                                         activeTicket={getActiveTicket()}
                                     ></SeatMap>
                                 </CCard>

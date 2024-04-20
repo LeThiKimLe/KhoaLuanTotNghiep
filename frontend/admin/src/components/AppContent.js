@@ -46,6 +46,7 @@ const AppContent = () => {
         dispatch(routeThunk.getRoute())
             .unwrap()
             .then((listRoute) => {
+                console.log(listRoute)
                 return listRoute
             })
             .then(async (listRoute) => {
@@ -61,11 +62,10 @@ const AppContent = () => {
                                 return {
                                     ...route,
                                     trips: route.trips.filter(
-                                        (trip) => trip.busCompanyId === companyId,
+                                        (trip) => trip.busCompany?.id === companyId,
                                     ),
                                 }
                             })
-                        console.log(listRouteAssign)
                         dispatch(routeAction.setCompanyRoute(listRouteAssign))
                         listCompanyAssign = listRouteAssign
                     })
@@ -92,7 +92,6 @@ const AppContent = () => {
                                 stations: validStation,
                             }
                         })
-                        console.log(filterStation)
                         dispatch(locationAction.setCompanyLocation(filterStation))
                     })
             })
