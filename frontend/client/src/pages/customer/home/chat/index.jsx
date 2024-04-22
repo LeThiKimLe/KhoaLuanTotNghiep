@@ -228,6 +228,12 @@ const Chat = () => {
         if (openBox && option === 'agent') {
             // Tạo kết nối WebSocket khi component được mount
             const socket = new WebSocket(`ws://${hostname}/api/socket`);
+
+            socket.onopen = function(event) {
+                if (socket.readyState === WebSocket.OPEN) {
+                    console.log("WebSocket connection established");
+                }
+            };
             // Listen for messages
             socket.addEventListener("message", (event) => {
                 handleReceiveMessage(event.data)

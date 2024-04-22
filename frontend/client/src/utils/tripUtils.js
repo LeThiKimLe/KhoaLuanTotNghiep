@@ -28,27 +28,28 @@ export const getTripJourney = (trip) => {
 };
 
 export const tripProcess = (listRoute) => {
+  console.log(listRoute)
   const listResult = []
   let temp = -1
   listRoute.forEach((route) => {
       const { trips, ...routeInfo } = route
-      const listTrip = []
+      const listOut = []
       trips.forEach((trip) => {
           const { id, turn, ...tripInfo } = trip
-          temp = listTrip.findIndex(
+          temp = listOut.findIndex(
               (item) =>
                   item.startStation.id === trip.startStation.id &&
                   item.endStation.id === trip.endStation.id &&
                   item.schedule === trip.schedule,
           )
           if (temp != -1) {
-              listTrip[temp] = {
-                  ...listTrip[temp],
+              listOut[temp] = {
+                  ...listOut[temp],
                   turnBack: trip.id,
               }
               return
           } else {
-              listTrip.push({
+              listOut.push({
                   ...tripInfo,
                   turnGo: id,
               })
@@ -56,7 +57,7 @@ export const tripProcess = (listRoute) => {
       })
       listResult.push({
           ...routeInfo,
-          listTrip: listTrip,
+          listTrip: listOut,
       })
   })
   console.log(listResult)

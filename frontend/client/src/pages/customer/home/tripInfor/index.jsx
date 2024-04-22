@@ -442,6 +442,7 @@ const TripInfor = () => {
         else
             return []
     }
+    console.log(onGoingTrip)
     return (
         <div>
             {currentTicket.length !== 0 ?
@@ -479,12 +480,12 @@ const TripInfor = () => {
                             <i>Ghế: </i>
                             <b>{currentTicket.map((ticket) => ticket.seat).join()}</b>
                         </p>
-                        <i className={styles.infor}>
+                        {/* <i className={styles.infor}>
                             <i><FontAwesomeIcon icon={faMapLocationDot} /></i>
                             <a href="#" className={styles.showSchedule} onClick={() => setOpenMap(true)}>
                                 Theo dõi hành trình
                             </a>
-                        </i>
+                        </i> */}
                     </div>
                 )
                 : (

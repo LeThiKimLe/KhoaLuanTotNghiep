@@ -10,19 +10,45 @@ import { searchAction } from '../../../../feature/search/search.slice'
 import { useNavigate } from 'react-router-dom'
 import { selectListRoute } from '../../../../feature/route/route.slice'
 import { getDesandDep } from '../../../../utils/routeUtils'
+import { tripProcess } from '../../../../utils/tripUtils'
 
-const Route = ({route, reverse}) => {
-    const listRoute = useSelector(selectListRoute)
+const Trip = ({trip, reverse}) => {
     const reverseSchedule = (schedule) => {
         if (schedule)
         {
-            const splited = schedule.split(' -> ');
-            return splited.reverse().join(' -> ');
+            const splited = schedule.split(' - ');
+            return splited.reverse().join(' - ');
         }   
     }
+
+    const cusTrip = reverse 
+                    ? {...trip, 
+                        startStation: trip.endStation,
+                        endStation: trip.startStation,
+                        schedule: reverseSchedule(trip.schedule),
+                    } : trip
+
+    return (
+        <div>
+            <div className={styles.tripName}>
+                <div className={styles.tripPlace}>{cusTrip.startStation.name}</div>
+                <div className={styles.routeTime}>
+                    <FontAwesomeIcon icon={faCircleDot} />
+                    <div className={styles.dot}></div>
+                    <div className={styles.time}>{`${cusTrip.distance} km / ${convertToStamp(cusTrip.hours)}`}</div>
+                    <div className={styles.dot}></div>
+                    <FontAwesomeIcon icon={faCircleDot}/>
+                </div>
+                <div className={styles.tripPlace}>{cusTrip.endStation.name}</div>
+            </div>
+        </div>
+    )
+}
+
+const Route = ({route, reverse}) => {
+    const listRoute = useSelector(selectListRoute)
     const navigate = useNavigate()
     const dispatch = useDispatch()
-
     const cusRoute = reverse 
                     ? {...route, 
                         departure: route.destination,
@@ -52,7 +78,7 @@ const Route = ({route, reverse}) => {
             navigate('/trips'); 
         }
     }
-
+    console.log(route)
     return (
         <div className={styles.container}>
             <div className={styles.sub_container}>
@@ -61,27 +87,13 @@ const Route = ({route, reverse}) => {
                 <FontAwesomeIcon icon={faArrowRightArrowLeft}/>
                 <span className={styles.routePlace}>{cusRoute.destination.name}</span>
             </div>
-            <div className={styles.routeTime}>
-                <FontAwesomeIcon icon={faCircleDot} />
-                <div className={styles.dot}></div>
-                <div className={styles.time}>{convertToStamp(cusRoute.hours)}</div>
-                <div className={styles.dot}></div>
-                <FontAwesomeIcon icon={faCircleDot}/>
+            <div>
+                {
+                    cusRoute.listTrip && cusRoute.listTrip.map((trip, index) => (
+                        <Trip key={index} trip={trip} reverse={reverse}></Trip>
+                    ))
+                }
             </div>
-            <div className={styles.infor}>
-                <div className={styles.infor_title}>Khoảng cách: </div>
-                <span>{cusRoute.distance} km</span>
-            </div>
-            {/* <div className={styles.infor}>
-                <div className={styles.infor_title}>Lộ trình: </div>
-                <span>{cusRoute.schedule}</span>
-            </div> */}
-            {/* <div className={styles.infor}>
-                <div className={styles.infor_title}>
-                    Giá vé: 
-                </div>
-                <span>{`${cusRoute.price.toLocaleString()} VND`}</span>
-            </div> */}
             <div className={styles.searchArea}>
                 <i className={styles.note}>* Giá vé chưa bao gồm phụ phí xe, dịp lễ</i>
                 <OptionButton text="Tìm chuyến xe" className={styles.findBtn} onClick={handleSearch}></OptionButton>
