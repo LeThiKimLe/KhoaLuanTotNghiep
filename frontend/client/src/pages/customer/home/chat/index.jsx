@@ -223,11 +223,16 @@ const Chat = () => {
             sender: 'Assistant',
         }])
         const host = process.env.REACT_APP_SOCKET_URL
-        console.log(host)
-        const hostname = host ? host : window.location.hostname
+        const hostname = host ? host : window.location.host
+        let protocol = ''
+        if (window.location.protocol === 'https:') {
+            protocol = 'wss'
+        } else if (window.location.protocol === 'http:') {
+            protocol = 'ws'
+        }
         if (openBox && option === 'agent') {
             // Tạo kết nối WebSocket khi component được mount
-            const socket = new WebSocket(`wss://${hostname}/api/socket`);
+            const socket = new WebSocket(`${protocol}://${hostname}/api/socket`);
             // Listen for messages
             socket.addEventListener("message", (event) => {
                 handleReceiveMessage(event.data)

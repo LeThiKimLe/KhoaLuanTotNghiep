@@ -3,4 +3,4 @@ frontend/admin/.env
 frontend/driver/.env
 frontend/client/.env
 frontend/manager/.env
-create.sql
+/create.sql

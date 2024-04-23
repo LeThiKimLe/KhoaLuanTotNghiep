@@ -397,13 +397,19 @@ const Chat = () => {
         // Kết nối tới máy chủ WebSocket
         const host = process.env.REACT_APP_SOCKET_URL
         console.log(host)
-        const hostname = host ? host : window.location.hostname
+        const hostname = host ? host : window.location.host
+        let protocol = ''
+        if (window.location.protocol === 'https:') {
+            protocol = 'wss'
+        } else if (window.location.protocol === 'http:') {
+            protocol = 'ws'
+        }
         let authorizationString = ''
         if (user && user.accessToken) authorizationString = user.accessToken
         let connectionString =
             authorizationString == ''
-                ? `wss://${hostname}/api/socket`
-                : `wss://${hostname}/api/socket?authorization=Bearer%20` + user.accessToken
+                ? `${protocol}://${hostname}/api/socket`
+                : `${protocol}://${hostname}/api/socket?authorization=Bearer%20` + user.accessToken
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
 
