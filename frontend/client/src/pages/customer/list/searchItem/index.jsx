@@ -133,7 +133,7 @@ const SearchItem = ({ trip, sameTrip }) => {
                             <a href='#' onClick={handleOpenInfo}><i role='button'>Thông tin chi tiết</i></a>
                         </div>
                         <div>
-                            <div className={styles.ticketPrice} >{`${trip.tripInfor.price.toLocaleString()} đ`}</div>
+                            <div className={styles.ticketPrice} >{`${trip.ticketPrice.toLocaleString()} đ`}</div>
                             <Button className={styles.bookBtn} onClick={handleChooseTrip} text='Chọn chuyến'></Button>
                         </div>
                     </div>

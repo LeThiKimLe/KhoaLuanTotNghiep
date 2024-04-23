@@ -49,7 +49,7 @@ const TripSum = ({ turn, trip, selectedSeats }) => {
             </div>
             <div className={styles.sum_infor}>
                 <span className={styles.sum_infor_title}>Tổng tiền</span>
-                <span className={styles.sum_infor_value}>{`${(trip.tripInfor.price * selectedSeats.length).toLocaleString()} đ`}</span>
+                <span className={styles.sum_infor_value}>{`${(trip.ticketPrice * selectedSeats.length).toLocaleString()} đ`}</span>
             </div>
         </div>
     )
@@ -350,7 +350,7 @@ const Trip = ({ tabStyle }) => {
                                     </div>
                                     <div className={styles.payment_direct}>
                                         <span>
-                                            {`Tổng cộng: ${(returnTrip ? currentTrip.tripInfor.price * selectedSeats.length + returnTrip.tripInfor.price * selectedReturnSeats.length : currentTrip.tripInfor.price * selectedSeats.length).toLocaleString()} đ`}
+                                            {`Tổng cộng: ${(returnTrip ? currentTrip.ticketPrice * selectedSeats.length + returnTrip.ticketPrice * selectedReturnSeats.length : currentTrip.ticketPrice * selectedSeats.length).toLocaleString()} đ`}
                                         </span>
                                         <Button text="Thanh toán"
                                             className={styles.btnCheckout}
@@ -477,7 +477,7 @@ const Trip = ({ tabStyle }) => {
                                             </div>
                                             <div className={styles.payment_direct}>
                                             <span style={{fontSize: '18px'}}>
-                                                {`Tổng cộng: ${(returnTrip ? currentTrip.tripInfor.price * selectedSeats.length + returnTrip.tripInfor.price * selectedReturnSeats.length : currentTrip.tripInfor.price * selectedSeats.length).toLocaleString()} đ`}
+                                                {`Tổng cộng: ${(returnTrip ? currentTrip.ticketPrice * selectedSeats.length + returnTrip.ticketPrice * selectedReturnSeats.length : currentTrip.ticketPrice * selectedSeats.length).toLocaleString()} đ`}
                                             </span>
                                             <Button text="Thanh toán"
                                                 className={styles.btnCheckout}

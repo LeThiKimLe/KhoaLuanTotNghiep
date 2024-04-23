@@ -110,7 +110,7 @@ public class ChatService implements WebSocketHandler {
     @Override
     public void handleTransportError(WebSocketSession session, Throwable exception) throws Exception {
         // Xử lý lỗi khi truyền tin nhắn
-        System.out.println("Error: " + exception.getMessage());
+        System.out.println("Error: " + exception.toString());
     }
 
     @Override
