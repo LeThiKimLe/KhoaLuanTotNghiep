@@ -1,0 +1,32 @@
+name: Deploy to Server
+
+on:
+  push:
+    branches:
+      - deploy
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v2
+
+    - name: SSH into server and deploy
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secret.HOST_USERNAME }}
+        password: ${{ secret.HOST_PASSWORD }}
+        port: ${{ secret.HOST_PORT }}
+        script: |
+          cd project/20110248_20110315/KhoaLuanTotNghiep-final
+          git pull
+          echo "${{secret.FRONTEND_ADMIN_ENV}}" > frontend/admin/.env
+          echo "${{secret.FRONTEND_CLIENT_ENV}}" > frontend/client/.env
+          echo "${{secret.FRONTEND_DRIVER_ENV}}" > frontend/driver/.env
+          echo "${{secret.FRONTEND_MANAGER_ENV}}" > frontend/manager/.env
+          echo "${{secret.CHATBOT_ENV}}" > backend/src/main/python/.env
+          echo "${{ secret.APPLICATION_PROPERTIES}}" > backend/src/main/resources/application.properties
+          docker-compose up -d
