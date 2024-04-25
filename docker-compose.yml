@@ -75,7 +75,7 @@ services:
       - manager-frontend
 
 volumes:
-  mydata:
+  data:
   webdata-client:
   webdata-admin:
   webdata-driver:
