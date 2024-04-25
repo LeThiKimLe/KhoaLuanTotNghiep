@@ -17,16 +17,16 @@ jobs:
       uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.HOST }}
-        username: ${{ secret.HOST_USERNAME }}
-        password: ${{ secret.HOST_PASSWORD }}
-        port: ${{ secret.HOST_PORT }}
+        username: ${{ secrets.HOST_USERNAME }}
+        password: ${{ secrets.HOST_PASSWORD }}
+        port: ${{ secrets.HOST_PORT }}
         script: |
-          cd project/20110248_20110315/KhoaLuanTotNghiep-final
+          cd project/20110248_20110315/KhoaLuanTotNghiep-final/KhoaLuanTotNghiep
           git pull
-          echo "${{secret.FRONTEND_ADMIN_ENV}}" > frontend/admin/.env
-          echo "${{secret.FRONTEND_CLIENT_ENV}}" > frontend/client/.env
-          echo "${{secret.FRONTEND_DRIVER_ENV}}" > frontend/driver/.env
-          echo "${{secret.FRONTEND_MANAGER_ENV}}" > frontend/manager/.env
-          echo "${{secret.CHATBOT_ENV}}" > backend/src/main/python/.env
-          echo "${{ secret.APPLICATION_PROPERTIES}}" > backend/src/main/resources/application.properties
-          docker-compose up -d
+          echo "${{ secrets.FRONTEND_ADMIN_ENV }}" > frontend/admin/.env
+          echo "${{ secrets.FRONTEND_CLIENT_ENV }}" > frontend/client/.env
+          echo "${{ secrets.FRONTEND_DRIVER_ENV }}" > frontend/driver/.env
+          echo "${{ secrets.FRONTEND_MANAGER_ENV }}" > frontend/manager/.env
+          echo "${{ secrets.CHATBOT_ENV }}" > backend/src/main/python/.env
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > backend/src/main/resources/application.properties
+          docker-compose up -d --build
