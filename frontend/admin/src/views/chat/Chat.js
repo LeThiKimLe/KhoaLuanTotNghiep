@@ -294,7 +294,7 @@ const Chat = () => {
 
     const handleConnectError = (error) => {
         //Refresh lại trang hiện tại
-        window.location.reload()
+        // window.location.reload()
     }
 
     const handleAddMessage = (listData) => {
