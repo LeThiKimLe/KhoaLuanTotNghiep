@@ -209,7 +209,7 @@ const ListStopStation = ({ trip, turn }) => {
                                 }),
                             )
                             setIsAddStop(false)
-                            // setTimeout(() => window.location.reload(), 1000)
+                            setTimeout(() => window.location.reload(), 1000)
                         })
                         .catch((error) => {
                             setLoading(false)

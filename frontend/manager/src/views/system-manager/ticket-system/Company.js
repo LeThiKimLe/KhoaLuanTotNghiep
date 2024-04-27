@@ -1027,6 +1027,10 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             .unwrap()
             .then((res) => {
                 addToast(() => CustomToast({ message: 'Thêm nhà xe thành công', type: 'success' }))
+                // wait 1s to reload page
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1000)
             })
             .catch((err) => {
                 throw err
@@ -1095,6 +1099,28 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                             throw err
                         })
                 }
+            })
+            .catch(async (err) => {
+                const companyData = {
+                    name: companyInfo.representName,
+                    email: companyInfo.email,
+                    tel: companyInfo.telephone,
+                    gender: true,
+                    idCard: companyInfo.idCard,
+                    address: companyInfo.address,
+                    beginWorkDate: new Date(),
+                    businessName: companyInfo.firmName,
+                    businessLicense: companyInfo.businessLicense,
+                }
+                return await dispatch(companyThunk.addCompany({ companyInfor: companyData }))
+                    .unwrap()
+                    .then((res) => {
+                        return res?.busCompany?.id
+                    })
+                    .catch((err) => {
+                        setError(err)
+                        throw err
+                    })
             })
     }
 

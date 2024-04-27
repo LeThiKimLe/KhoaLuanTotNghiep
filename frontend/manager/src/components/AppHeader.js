@@ -47,7 +47,7 @@ const AppHeader = () => {
         // Kết nối tới máy chủ WebSocket
         const host = process.env.REACT_APP_SOCKET_URL
         const hostname = host ? host : window.location.hostname
-        let connectionString = `ws://${hostname}/api/notice`
+        let connectionString = `ws://${hostname}/api/socket/notice`
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
 

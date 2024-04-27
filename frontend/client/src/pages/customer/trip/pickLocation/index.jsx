@@ -7,6 +7,7 @@ import { addHoursToTime, subtractHoursFromTime } from '../../../../utils/unitUti
 import { selectCurrentTrip } from '../../../../feature/trip/trip.slice';
 import { useSelector } from 'react-redux';
 import axios from 'axios'
+import { th } from 'date-fns/locale';
 
 const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, modifiedTrip }) => {
 
@@ -61,6 +62,17 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
                         setListArrivalTime(updateList)
                     }
                 })
+                .catch((err) => {
+                    updateList.push({
+                        id: locationDes.id,
+                        arrivalTime: trip.departTime.slice(0, -3)
+                    }) 
+                    count = count + 1
+                    if (count === listLocation.length)
+                    {
+                        setListArrivalTime(updateList)
+                    }
+                })
             }
             catch (error) {
                 updateList.push({
@@ -102,6 +114,17 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
                             arrivalTime: arrivalTime
                         })
                     }
+                    count = count + 1
+                    if (count === listLocation.length)
+                    {
+                        setListArrivalTime(updateList)
+                    }
+                })
+                .catch((err) => {
+                    updateList.push({
+                        id: locationDes.id,
+                        arrivalTime: arrivalTime
+                    })
                     count = count + 1
                     if (count === listLocation.length)
                     {

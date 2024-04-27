@@ -132,7 +132,7 @@ const Header = ({ type, active, listRoute }) => {
                             </ul>
                         </div>
                     </div>
-                    {type !== "list" && (
+                    {type !== "list" && listRoute.length > 0 && (
                         <SearchBox listRoute={listRoute} intro={true}></SearchBox>
                     )}
                 </div>
