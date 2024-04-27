@@ -200,13 +200,13 @@ const RouteInfo = ({ route, fixSchedule }) => {
                             <b>Bến đi - đến</b>
                         </CFormLabel>
                         <CCol sm="3">
-                            <CFormInput readOnly value={tripGo.startStation.name}></CFormInput>
+                            <CFormInput readOnly value={tripGo?.startStation?.name}></CFormInput>
                         </CCol>
                         <CCol sm="2" className="d-flex justify-content-center align-items-center">
                             <CIcon icon={cilTransfer}></CIcon>
                         </CCol>
                         <CCol sm="3">
-                            <CFormInput readOnly value={tripGo.endStation.name}></CFormInput>
+                            <CFormInput readOnly value={tripGo?.endStation?.name}></CFormInput>
                         </CCol>
                     </CRow>
                     <CRow className="mb-3 justify-content-center align-items-center">
@@ -214,14 +214,14 @@ const RouteInfo = ({ route, fixSchedule }) => {
                             <b>Lộ trình</b>
                         </CFormLabel>
                         <CCol sm={8}>
-                            <CFormInput readOnly value={tripGo.schedule}></CFormInput>
+                            <CFormInput readOnly value={tripGo?.schedule}></CFormInput>
                         </CCol>
                     </CRow>
                 </TabPanel>
                 <TabPanel>
                     <TableSchedule
                         listFixSchedule={fixSchedule}
-                        tripGoId={tripGo.id}
+                        tripGoId={tripGo?.id}
                     ></TableSchedule>
                 </TabPanel>
             </Tabs>

@@ -906,7 +906,7 @@ const ScheduleManagement = () => {
                                     loading || currentDay.getTime() - new Date().getTime() < 0
                                 }
                                 onClick={() => setOpenAddForm(true)}
-                                text="Sửa lịch trình"
+                                text="Mở bán vé"
                                 loading={loading}
                             ></CustomButton>
                             <CustomButton

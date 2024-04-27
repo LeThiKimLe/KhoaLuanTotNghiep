@@ -53,16 +53,16 @@ const _nav = [
             text: '',
         },
     },
-    {
-        component: CNavItem,
-        name: 'Cửa sổ khách hàng',
-        to: '/chat',
-        icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
-        badge: {
-            color: 'success',
-            text: '',
-        },
-    },
+    // {
+    //     component: CNavItem,
+    //     name: 'Cửa sổ khách hàng',
+    //     to: '/chat',
+    //     icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
+    //     badge: {
+    //         color: 'success',
+    //         text: '',
+    //     },
+    // },
     {
         component: CNavTitle,
         name: 'Quản lý',

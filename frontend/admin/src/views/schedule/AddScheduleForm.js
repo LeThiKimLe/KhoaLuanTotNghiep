@@ -320,6 +320,20 @@ const AddScheduleForm = ({
     }
     const addTimeReturn = (newTime) => {
         if (!listTimeReturn.find((timer) => timer.time === newTime)) {
+            setListTimeReturn([
+                ...listTimeReturn,
+                {
+                    time: newTime,
+                    fix: false,
+                },
+            ])
+        } else {
+            setError('Đã có chuyến về vào giờ này rồi')
+        }
+    }
+
+    const addTimeReturn2 = (newTime) => {
+        if (!listTimeReturn.find((timer) => timer.time === newTime)) {
             if (listTimeReturn.length < tripInfor.maxSchedule) {
                 if (validAvaiBusDriver(newTime)) {
                     setListTimeReturn([

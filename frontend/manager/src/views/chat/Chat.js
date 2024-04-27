@@ -293,8 +293,7 @@ const Chat = () => {
     const handleReceiveMessageRef = useRef(handleReceiveMessage)
 
     const handleConnectError = (error) => {
-        //Refresh lại trang hiện tại
-        window.location.reload()
+        console.log(error)
     }
 
     const handleAddMessage = (listData) => {
@@ -446,7 +445,7 @@ const Chat = () => {
                 <ConversationHeader>
                     <Avatar
                         name={'NV. ' + user?.user?.name}
-                        src={user?.user?.staff?.img}
+                        src={user?.user?.staff?.img ? user?.user?.staff?.img : guest}
                         status="available"
                     />
                     <ConversationHeader.Content userName={'NV. ' + user?.user?.name} />

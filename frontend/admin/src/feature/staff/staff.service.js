@@ -227,7 +227,7 @@ const activeAccount = createAsyncThunk('admin/user-active', async ({ id, active 
 
 const getAdmins = createAsyncThunk('admin/admins', async (_, thunkAPI) => {
     try {
-        const result = await axiosClient.get('admin/admins')
+        const result = await axiosClient.get('manager/admins')
         return result
     } catch (error) {
         const message =

@@ -1,6 +1,6 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
-import { cilSpeedometer, cilBook, cilGarage } from '@coreui/icons'
+import { cilSpeedometer, cilBook, cilGarage, cilChatBubble } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 const _nav = [
     {
@@ -47,6 +47,12 @@ const _nav = [
             },
         ],
         protected: true,
+    },
+    {
+        component: CNavItem,
+        name: 'Cửa sổ khách hàng',
+        to: '/chat',
+        icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
     },
 ]
 
