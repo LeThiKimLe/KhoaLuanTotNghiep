@@ -140,9 +140,10 @@ const addFixedSchedule = createAsyncThunk(
 const deleteFixedSchedule = createAsyncThunk(
     'manager/delete-fixed-schedule',
     async (listFixScheduleId, thunkAPI) => {
+        console.log(listFixScheduleId)
         try {
             const response = await axiosClient.delete('manager/fixed-schedule', {
-                listFixScheduleId,
+                data: listFixScheduleId,
             })
             return response
         } catch (error) {

@@ -120,3 +120,51 @@ export const getLocationData = (listOfficialRroute) => {
     })
     return listLocation
 }
+
+export const reverseString = (text, separator = '-') => {
+    if (text !== '') {
+        const splited = text.split(` ${separator} `)
+        return splited.reverse().join(` ${separator} `)
+    }
+    return text
+}
+
+export const tripProcess = (listRoute, companyId = -1) => {
+    const listTrip = []
+    let temp = -1
+    listRoute.forEach((route) => {
+        const { trips, ...routeInfo } = route
+        trips.forEach((trip) => {
+            if (companyId == -1 || (trip?.busCompany?.id == companyId && companyId != -1)) {
+                const { id, turn, stopStations, ...tripInfo } = trip
+                temp = listTrip.findIndex(
+                    (item) =>
+                        item.startStation.id === trip.startStation.id &&
+                        item.endStation.id === trip.endStation.id &&
+                        (item.schedule === trip.schedule ||
+                            item.schedule === reverseString(trip.schedule)),
+                )
+                if (temp != -1) {
+                    listTrip[temp] = {
+                        ...listTrip[temp],
+                        turnBack: {
+                            id: id,
+                            stopStations: stopStations,
+                        },
+                    }
+                    return
+                } else {
+                    listTrip.push({
+                        ...tripInfo,
+                        turnGo: {
+                            id: id,
+                            stopStations: stopStations,
+                        },
+                        route: routeInfo,
+                    })
+                }
+            }
+        })
+    })
+    return listTrip
+}

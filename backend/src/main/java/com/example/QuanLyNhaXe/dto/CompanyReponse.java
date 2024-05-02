@@ -7,6 +7,6 @@ import lombok.Data;
 @Builder
 public class CompanyReponse {
 	private BusCompanyDTO busCompany;
-	private AdminDTO admin;
+	private UserDTO admin;
 
 }

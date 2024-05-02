@@ -19,8 +19,8 @@ export const UPDATE_INFOR = [
         label: 'Số điện thoại',
         pattern: '^(0d{9,10}|+d{1,3}s?d{1,14})$',
         required: false,
-        role: [1, 2, 3, 4],
-        editable: [1],
+        role: [1, 2, 3, 4, 5],
+        editable: [1, 5],
     },
     {
         id: 2,
@@ -31,8 +31,8 @@ export const UPDATE_INFOR = [
         label: 'Họ và tên',
         pattern: '^.{1,30}$',
         required: false,
-        role: [1, 2, 3, 4],
-        editable: [2, 3, 4],
+        role: [1, 2, 3, 4, 5],
+        editable: [2, 3, 4, 5],
     },
     {
         id: 3,
@@ -42,8 +42,8 @@ export const UPDATE_INFOR = [
         errorMessage: '',
         label: 'Email',
         required: false,
-        role: [1, 2, 3, 4],
-        editable: [2, 3, 4],
+        role: [1, 2, 3, 4, 5],
+        editable: [2, 3, 4, 5],
     },
     {
         id: 4,
@@ -53,7 +53,7 @@ export const UPDATE_INFOR = [
         errorMessage: '',
         label: 'Giới tính',
         options: GENDER_OPTION,
-        role: [1, 2, 3, 4],
+        role: [1, 2, 3, 4, 5],
         editable: [],
     },
     {
@@ -63,7 +63,7 @@ export const UPDATE_INFOR = [
         placeholder: 'Địa chỉ',
         errorMessage: '',
         label: 'Địa chỉ',
-        role: [2, 3, 4],
+        role: [2, 3, 4, 5],
         editable: [],
     },
     {
@@ -74,8 +74,8 @@ export const UPDATE_INFOR = [
         pattern: '^d{9}$|^d{12}$',
         errorMessage: 'CCCD chỉ chứa 9 hoặc 12 số',
         label: 'CCCD',
-        role: [2, 3, 4],
-        editable: [2, 3, 4],
+        role: [2, 3, 4, 5],
+        editable: [2, 3, 4, 5],
     },
     {
         id: 7,
@@ -85,8 +85,8 @@ export const UPDATE_INFOR = [
         pattern: '',
         errorMessage: '',
         label: 'Ngày làm việc',
-        role: [2, 3, 4],
-        editable: [2, 3, 4],
+        role: [2, 3, 4, 5],
+        editable: [2, 3, 4, 5],
     },
     {
         id: 8,

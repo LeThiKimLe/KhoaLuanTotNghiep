@@ -58,7 +58,8 @@ export const getDateAndTimeSchedule = (schedule) => {
 }
 
 export const getRouteJourney = (route) => {
-    return route.departure.name + ' - ' + route.destination.name
+    if (route) return route.departure.name + ' - ' + route.destination.name
+    return ''
 }
 
 export const getTripJourney = (trip) => {
@@ -77,7 +78,7 @@ export const getTripEndStation = (trip) => {
         else return trip.startStation.name
 }
 
-export const reverseString = (text, separator) => {
+export const reverseString = (text, separator = '-') => {
     if (text !== '') {
         const splited = text.split(` ${separator} `)
         return splited.reverse().join(` ${separator} `)

@@ -61,7 +61,7 @@ public class BusCompanyService {
 		for(BusCompany company:busCompanyLists) {
 			Admin admin=adminRepository.findById(company.getAdminId())
 					.orElseThrow(() -> new NotFoundException(Message.USER_NOT_FOUND));
-			CompanyReponse com =CompanyReponse.builder().admin(modelMapper.map(admin,AdminDTO.class)).busCompany(modelMapper.map(company, BusCompanyDTO.class)).build();
+			CompanyReponse com =CompanyReponse.builder().admin(modelMapper.map(admin.getStaff().getUser(), UserDTO.class)).busCompany(modelMapper.map(company, BusCompanyDTO.class)).build();
 			companyReponses.add(com);
 		}
 	  return companyReponses;
@@ -88,7 +88,7 @@ public class BusCompanyService {
 			e.printStackTrace();
 		}
 
-		return CompanyReponse.builder().admin(modelMapper.map(admin,AdminDTO.class)).busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).build();
+		return CompanyReponse.builder().admin(modelMapper.map(admin.getStaff().getUser(), UserDTO.class)).busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).build();
 
 	}
 
