@@ -239,6 +239,16 @@ const List = () => {
         else
             setCurrentListTrip(listTripReturn)
     }, [selectedTab, listTripGo, listTripReturn])
+
+    useEffect(() => {
+        if (currentTrip && !returnTrip)
+        {
+            setSelectedTab(1)
+        } else if (!currentTrip && returnTrip)
+        {
+            setSelectedTab(0)
+        }
+    }, [currentTrip, returnTrip])
     return (
         <div>
             <Navbar></Navbar>

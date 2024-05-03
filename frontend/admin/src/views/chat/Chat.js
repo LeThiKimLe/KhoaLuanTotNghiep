@@ -294,7 +294,7 @@ const Chat = () => {
 
     const handleConnectError = (error) => {
         //Refresh lại trang hiện tại
-        window.location.reload()
+        // window.location.reload()
     }
 
     const handleAddMessage = (listData) => {
@@ -397,13 +397,20 @@ const Chat = () => {
         // Kết nối tới máy chủ WebSocket
         const host = process.env.REACT_APP_SOCKET_URL
         console.log(host)
-        const hostname = host ? host : window.location.hostname
+        const hostname = host ? host : window.location.host
+        let protocol = ''
+        if (window.location.protocol === 'https:') {
+            protocol = 'wss'
+        } else if (window.location.protocol === 'http:') {
+            protocol = 'ws'
+        }
         let authorizationString = ''
         if (user && user.accessToken) authorizationString = user.accessToken
         let connectionString =
             authorizationString == ''
-                ? `ws://${hostname}/api/socket`
-                : `ws://${hostname}/api/socket?authorization=Bearer%20` + user.accessToken
+                ? `${protocol}://${hostname}/api/socket/chat`
+                : `${protocol}://${hostname}/api/socket/chat?authorization=Bearer%20` +
+                  user.accessToken
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
 

@@ -50,7 +50,7 @@ const Home = () => {
             {loading ? (<Loading scale={0.8}></Loading>) : 
             (
                 <>
-                { listRoute.length >0 && <Header active="home" listRoute={listRoute}></Header>}
+                <Header active="home" listRoute={listRoute}></Header>
                     <div className={styles.homeContainer}> 
                         {user && <TripInfor></TripInfor>}
                         <Featured></Featured>

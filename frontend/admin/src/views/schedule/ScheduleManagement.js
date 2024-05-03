@@ -707,6 +707,20 @@ const ScheduleManagement = () => {
     const getFixSchedule = (tripId) => {
         return listFixSchedule.filter((schd) => schd.trip.id === tripId)
     }
+    const getDayFixSchedule = () => {
+        let dayOfWeek = currentDay.getDay()
+        if (dayOfWeek === 0) {
+            dayOfWeek = 8
+        } else {
+            dayOfWeek += 2
+        }
+        return listFixSchedule.filter(
+            (schd) =>
+                schd.dayOfWeek === dayOfWeek &&
+                (schd.trip.id === listTrip[currentTrip]?.turnGo?.id ||
+                    schd.trip.id === listTrip[currentTrip]?.turnBack?.id),
+        )
+    }
     useEffect(() => {
         dispatch(scheduleThunk.getFixSchedule())
     }, [])
@@ -892,7 +906,7 @@ const ScheduleManagement = () => {
                                     loading || currentDay.getTime() - new Date().getTime() < 0
                                 }
                                 onClick={() => setOpenAddForm(true)}
-                                text="Thêm lịch trình"
+                                text="Mở bán vé"
                                 loading={loading}
                             ></CustomButton>
                             <CustomButton
@@ -901,6 +915,13 @@ const ScheduleManagement = () => {
                                 text="Phân công"
                                 loading={loading}
                                 color="warning"
+                            ></CustomButton>
+                            <CustomButton
+                                className="mt-3 mb-3 mx-2"
+                                onClick={() => setOpenAssignForm(true)}
+                                text="Mở bán vé"
+                                loading={loading}
+                                color="info"
                             ></CustomButton>
                             <CustomButton
                                 className="mt-3 mb-3 mx-2"
@@ -939,6 +960,7 @@ const ScheduleManagement = () => {
                 listPreTimeGo={todayScheduleGo}
                 listPreTimeReturn={todayScheduleReturn}
                 finishAdd={finishAdd}
+                fixSchedule={getDayFixSchedule()}
             ></AddScheduleForm>
             <AssignScheduleForm
                 visible={openAssignForm}

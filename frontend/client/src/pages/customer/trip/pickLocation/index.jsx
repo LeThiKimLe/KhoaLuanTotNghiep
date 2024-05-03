@@ -7,6 +7,7 @@ import { addHoursToTime, subtractHoursFromTime } from '../../../../utils/unitUti
 import { selectCurrentTrip } from '../../../../feature/trip/trip.slice';
 import { useSelector } from 'react-redux';
 import axios from 'axios'
+import { th } from 'date-fns/locale';
 
 const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, modifiedTrip }) => {
 
@@ -16,7 +17,7 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
 
     const [listArrivalTime, setListArrivalTime] = useState(listLocation.map((local) => ({
         id: local.id,
-        arrivalTime: pick ? trip.departTime.slice(0, -3) : addHoursToTime(trip.departTime, trip.tripInfor.route.hours)
+        arrivalTime: pick ? trip.departTime.slice(0, -3) : addHoursToTime(trip.departTime, trip.tripInfor.hours)
     })))
 
     const copyArrival = useRef([...listArrivalTime])
@@ -61,6 +62,17 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
                         setListArrivalTime(updateList)
                     }
                 })
+                .catch((err) => {
+                    updateList.push({
+                        id: locationDes.id,
+                        arrivalTime: trip.departTime.slice(0, -3)
+                    }) 
+                    count = count + 1
+                    if (count === listLocation.length)
+                    {
+                        setListArrivalTime(updateList)
+                    }
+                })
             }
             catch (error) {
                 updateList.push({
@@ -77,7 +89,7 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
     }
 
     const getTimeDrop = () => {
-        const arrivalTime = addHoursToTime(trip.departTime, trip.tripInfor.route.hours)
+        const arrivalTime = addHoursToTime(trip.departTime, trip.tripInfor.hours)
         var count = 0
         var updateList = []
         const locationDep = trip.tripInfor.turn === true ? trip.tripInfor.endStation : trip.tripInfor.startStation
@@ -102,6 +114,17 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
                             arrivalTime: arrivalTime
                         })
                     }
+                    count = count + 1
+                    if (count === listLocation.length)
+                    {
+                        setListArrivalTime(updateList)
+                    }
+                })
+                .catch((err) => {
+                    updateList.push({
+                        id: locationDes.id,
+                        arrivalTime: arrivalTime
+                    })
                     count = count + 1
                     if (count === listLocation.length)
                     {

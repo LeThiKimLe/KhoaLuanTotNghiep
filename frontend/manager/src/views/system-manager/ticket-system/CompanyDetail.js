@@ -23,6 +23,16 @@ import {
     CAccordionItem,
     CAccordionHeader,
     CAccordionBody,
+    CFormSelect,
+    CDropdown,
+    CDropdownToggle,
+    CDropdownMenu,
+    CDropdownItem,
+    CModal,
+    CModalBody,
+    CModalHeader,
+    CTooltip,
+    CModalFooter,
 } from '@coreui/react'
 import { companyActions, selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
 import { companyInput } from 'src/utils/constants'
@@ -42,20 +52,57 @@ import { TIME_TABLE, COLOR } from 'src/utils/constants'
 import { Tabs, Tab, TabList, TabPanel } from 'react-tabs'
 import { convertTimeToInt } from 'src/utils/convertUtils'
 import CIcon from '@coreui/icons-react'
-import { cilTransfer } from '@coreui/icons'
-const ScheduleWrap = ({ schedule, turn }) => {
+import { cilTransfer, cilX } from '@coreui/icons'
+import { MONTH_IN_YEAR } from 'src/utils/constants'
+import { tripProcess } from 'src/utils/routeUtils'
+import { CChart } from '@coreui/react-chartjs'
+import { getStyle } from '@coreui/utils'
+import tripThunk from 'src/feature/trip/trip.service'
+import routeThunk from 'src/feature/route/route.service'
+import TimePicker from 'react-time-picker'
+import 'react-time-picker/dist/TimePicker.css'
+import { selectListLocation } from 'src/feature/location/location.slice'
+import stationThunk from 'src/feature/station/station.service'
+import locationThunk from 'src/feature/location/location.service'
+import mapThunk from 'src/feature/map/map.service'
+const ScheduleWrap = ({ schedule, turn, isEdit = false, removeTrip }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
         else return 'warning'
+    }
+    const [showClear, setShowClear] = useState(false)
+    const handleMouseEnter = () => {
+        if (isEdit) setShowClear(true)
+    }
+    const handleMouseLeave = () => {
+        if (isEdit) setShowClear(false)
+    }
+    const handleRemoteSchedule = () => {
+        console.log('remove')
+        removeTrip(schedule)
     }
     return (
         <CTable bordered className="mb-1">
             <CTableBody>
                 <CTableRow>
-                    <CTableDataCell className="text-center p-0">
+                    <CTableDataCell
+                        className="text-center p-0"
+                        onMouseEnter={handleMouseEnter}
+                        onMouseLeave={handleMouseLeave}
+                    >
                         <CCard color={getScheduleColor()} style={{ borderRadius: '0' }}>
                             <CCardBody className="p-1">
                                 <b>{schedule.time.slice(0, -3)}</b>
+                                <i>{` `}</i>
+                                {showClear && (
+                                    <CTooltip content="Xóa" placement="right" color="white">
+                                        <CIcon
+                                            icon={cilX}
+                                            role="button"
+                                            onClick={handleRemoteSchedule}
+                                        ></CIcon>
+                                    </CTooltip>
+                                )}
                             </CCardBody>
                         </CCard>
                     </CTableDataCell>
@@ -65,7 +112,11 @@ const ScheduleWrap = ({ schedule, turn }) => {
     )
 }
 
-const TableSchedule = ({ listFixSchedule, tripGoId }) => {
+const TableSchedule = ({ listFixScheduleIn, tripGoId, tripBackId }) => {
+    const [listFixSchedule, setListFixSchedule] = useState([listFixScheduleIn])
+    const dispatch = useDispatch()
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
     const filterTime = (listSchd, time) => {
         //sort list based on time
         listSchd.sort((a, b) => {
@@ -100,8 +151,92 @@ const TableSchedule = ({ listFixSchedule, tripGoId }) => {
                     convertTimeToInt(schd.time.slice(0, -3)) < 6,
             )
     }
+    const [isEdit, setIsEdit] = useState(false)
+    const [listRemoveSchd, setListRemoveSchd] = useState([])
+    const [listAddSchd, setListAddSchd] = useState([])
+    const [openTimeBox, setOpenTimeBox] = useState(false)
+    const [isAddGo, setIsAddGo] = useState(true)
+    const [curDay, setCurDay] = useState(2)
+    const [loading, setLoading] = useState(false)
+    const [curTime, setCurTime] = useState('07:00')
+    const handleRemoveSchd = (schd) => {
+        if (!schd.new) {
+            setListRemoveSchd([...listRemoveSchd, schd])
+        } else {
+            setListAddSchd(listAddSchd.filter((schedule) => schedule.id !== schd.id))
+        }
+        setListFixSchedule(listFixSchedule.filter((schedule) => schedule.id !== schd.id))
+    }
+    const handleAddSchd = () => {
+        const trip = isAddGo === true ? tripGoId : tripBackId
+        if (
+            !listFixSchedule.find(
+                (schd) =>
+                    schd.time.slice(0, -3) === curTime &&
+                    schd.dayOfWeek === curDay &&
+                    schd.trip.id === trip,
+            )
+        ) {
+            const newSchd = {
+                id: listFixSchedule[listFixSchedule.length - 1].id + 1,
+                time: curTime + ':00',
+                dayOfWeek: curDay,
+                trip: { id: isAddGo === true ? tripGoId : tripBackId },
+                new: true,
+            }
+            setListAddSchd([...listAddSchd, newSchd])
+            setListFixSchedule([...listFixSchedule, newSchd])
+            setOpenTimeBox(false)
+        } else {
+            addToast(() =>
+                CustomToast({ message: 'Đã có chuyến vào thời gian này', type: 'error' }),
+            )
+        }
+    }
+    const handleOpenTimeBox = (day, turn) => {
+        setOpenTimeBox(true)
+        setIsAddGo(turn)
+        setCurDay(day)
+    }
+    const handleSaveInfo = async () => {
+        console.log(listRemoveSchd.map((schd) => schd.id))
+        try {
+            setLoading(true)
+            if (listRemoveSchd.length > 0)
+                await dispatch(
+                    scheduleThunk.deleteFixedSchedule(listRemoveSchd.map((schd) => schd.id)),
+                ).unwrap()
+            for (let i = 0; i < listAddSchd.length; i++) {
+                await dispatch(
+                    scheduleThunk.addFixedSchedule({
+                        tripId: listAddSchd[i].trip.id,
+                        listTime: [listAddSchd[i].time.slice(0, -3)],
+                        listRepeat: [listAddSchd[i].dayOfWeek],
+                    }),
+                ).unwrap()
+            }
+            setLoading(false)
+            addToast(() => CustomToast({ message: 'Đã cập nhật lịch trình', type: 'success' }))
+            setIsEdit(false)
+            dispatch(scheduleThunk.getFixSchedule())
+        } catch (err) {
+            setLoading(false)
+            console.log(err)
+        }
+    }
+    useEffect(() => {
+        if (isEdit == false) {
+            setListFixSchedule(listFixScheduleIn)
+            setListAddSchd([])
+            setListRemoveSchd([])
+        }
+    }, [isEdit])
+    useEffect(() => {
+        setListFixSchedule(listFixScheduleIn)
+    }, [listFixScheduleIn])
     return (
         <div>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
             <CTable stripedColumns bordered>
                 <CTableHead>
                     <CTableRow>
@@ -111,6 +246,38 @@ const TableSchedule = ({ listFixSchedule, tripGoId }) => {
                                 <b>
                                     <i>{dayInWeek[dayIndex]}</i>
                                 </b>
+                                {isEdit && (
+                                    <CDropdown>
+                                        <CDropdownToggle
+                                            style={{
+                                                padding: '0 5px',
+                                                backgroundColor: 'transparent',
+                                                border: 0,
+                                                color: 'black',
+                                            }}
+                                        ></CDropdownToggle>
+                                        <CDropdownMenu>
+                                            <CDropdownItem
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    handleOpenTimeBox(dayIndex + 2, true)
+                                                }}
+                                            >
+                                                Thêm chuyến đi
+                                            </CDropdownItem>
+                                            <CDropdownItem
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    handleOpenTimeBox(dayIndex + 2, false)
+                                                }}
+                                            >
+                                                Thêm chuyến về
+                                            </CDropdownItem>
+                                        </CDropdownMenu>
+                                    </CDropdown>
+                                )}
                             </CTableHeaderCell>
                         ))}
                     </CTableRow>
@@ -129,11 +296,13 @@ const TableSchedule = ({ listFixSchedule, tripGoId }) => {
                                             (schd) => schd.dayOfWeek === dayIndex + 2,
                                         ),
                                         key,
-                                    ).map((schedule) => (
+                                    ).map((schedule, index) => (
                                         <ScheduleWrap
-                                            key={schedule.id}
+                                            key={index}
                                             schedule={schedule}
                                             turn={schedule.trip.id === tripGoId}
+                                            isEdit={isEdit}
+                                            removeTrip={handleRemoveSchd}
                                         ></ScheduleWrap>
                                     ))}
                                 </CTableDataCell>
@@ -142,25 +311,456 @@ const TableSchedule = ({ listFixSchedule, tripGoId }) => {
                     ))}
                 </CTableBody>
             </CTable>
-            <div className="d-flex gap-2 align-items-center">
-                <i>Ghi chú</i>
-                <CCard color="success">
-                    <CCardBody className="p-1">Chuyến đi</CCardBody>
-                </CCard>
-                <CCard color="warning">
-                    <CCardBody className="p-1">Chuyến về</CCardBody>
-                </CCard>
+            <div className="d-flex align-items-center justify-content-between">
+                <div className="d-flex gap-2 align-items-center">
+                    <i>Ghi chú</i>
+                    <CCard color="success">
+                        <CCardBody className="p-1">Chuyến đi</CCardBody>
+                    </CCard>
+                    <CCard color="warning">
+                        <CCardBody className="p-1">Chuyến về</CCardBody>
+                    </CCard>
+                </div>
+                <div className="d-flex justify-content-end gap-2">
+                    <CButton variant="outline" onClick={() => setIsEdit(!isEdit)} color="warning">
+                        {!isEdit ? 'Sửa lịch trình' : 'Hủy'}
+                    </CButton>
+                    {isEdit && (
+                        <CustomButton
+                            loading={loading}
+                            variant="outline"
+                            onClick={handleSaveInfo}
+                            text="Lưu"
+                        ></CustomButton>
+                    )}
+                </div>
             </div>
+            <CModal alignment="center" visible={openTimeBox} onClose={() => setOpenTimeBox(false)}>
+                <CModalHeader>{`Thêm chuyến chiều ${isAddGo ? 'đi' : 'về'}`}</CModalHeader>
+                <CModalBody className="d-flex justify-content-center">
+                    <TimePicker
+                        format="HH:mm"
+                        onChange={setCurTime}
+                        value={curTime}
+                        clearIcon={null}
+                        disableClock={true}
+                        size={260}
+                    />
+                </CModalBody>
+                <CModalFooter>
+                    <CButton variant="outline" onClick={handleAddSchd}>
+                        OK
+                    </CButton>
+                    <CButton variant="outline" onClick={() => setOpenTimeBox(false)}>
+                        Hủy
+                    </CButton>
+                </CModalFooter>
+            </CModal>
         </div>
     )
 }
 
+const AddRouteForm = ({ visible, setVisible }) => {
+    const listLocationIn = useSelector(selectListLocation)
+    const listLocation = useRef(listLocationIn)
+    const listRouteIn = useSelector(selectListRoute)
+    const listRoute = useRef(listRouteIn)
+    const curCompany = useSelector(selectCurCompany)
+    const [loading, setLoading] = useState(false)
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
+    const dispatch = useDispatch()
+    const [companyRoute, setCompanyRoute] = useState({
+        route: null,
+        listTimeGo: [
+            {
+                listTime: [],
+                listRepeat: [2, 3, 4, 5, 6, 7, 8],
+            },
+        ],
+        listTimeReturn: [
+            {
+                listTime: [],
+                listRepeat: [2, 3, 4, 5, 6, 7, 8],
+            },
+        ],
+        price: 0,
+    })
+    const updateCompanyRoute = (index, route, listGo, listReturn, price = 0) => {
+        const routeData = {
+            route: route,
+            listTimeGo: listGo,
+            listTimeReturn: listReturn,
+            price: price,
+        }
+        setCompanyRoute(routeData)
+    }
+
+    const handleAddLocation = async (name) => {
+        let location = null
+        await dispatch(locationThunk.getLocations())
+            .unwrap()
+            .then((res) => {
+                location = res.find((location) => location.name === name)
+            })
+        if (location) {
+            return Promise.resolve(location.id)
+        } else {
+            //add location to list
+            return await dispatch(locationThunk.addLocation(name))
+                .unwrap()
+                .then(async (res) => {
+                    //update list location
+                    return await dispatch(locationThunk.getLocations())
+                        .unwrap()
+                        .then((newList) => {
+                            listLocation.current = newList
+                            return res.id
+                        })
+                })
+                .catch((err) => {
+                    throw err
+                })
+        }
+    }
+    const handleAddRoute = async (route) => {
+        let departureId = -1
+        let destinationId = -1
+        return await handleAddLocation(route.departure)
+            .then(async (res) => {
+                departureId = res
+                return await handleAddLocation(route.destination)
+                    .then(async (res1) => {
+                        destinationId = res1
+                        if (departureId === -1 || destinationId === -1)
+                            return Promise.reject(new Error('Invalid ID'))
+                        let routeData = listRoute.current.find(
+                            (r) =>
+                                (r.departure.id === departureId &&
+                                    r.destination.id === destinationId) ||
+                                (r.departure.id === destinationId &&
+                                    r.destination.id === departureId),
+                        )
+                        if (routeData) return Promise.resolve(routeData)
+                        else {
+                            routeData = {
+                                departureId: departureId,
+                                destinationId: destinationId,
+                                parents: 0,
+                            }
+                            //add route to list
+                            return await dispatch(routeThunk.addRoute({ routeData }))
+                                .unwrap()
+                                .then(async (res) => {
+                                    return await dispatch(routeThunk.getRoute())
+                                        .unwrap()
+                                        .then((listNewRoute) => {
+                                            listRoute.current = listNewRoute
+                                            return res
+                                        })
+                                })
+                                .catch((err) => {
+                                    throw err
+                                })
+                        }
+                    })
+                    .catch((err) => {
+                        throw err
+                    })
+            })
+            .catch((err) => {
+                throw err
+            })
+    }
+    const handleAddStation = async (locationId, station) => {
+        const location = listLocation.current.find((location) => location.id === locationId)
+        const listStation = location.stations
+        const stationF = listStation.find((sta) => sta.name === station)
+        if (!stationF) {
+            const stationName = 'Bến xe ' + station + ', ' + location.name
+            let stationInfo = {
+                name: station,
+                address: stationName,
+                latitude: 0,
+                longitude: 0,
+            }
+            await dispatch(mapThunk.getStationInfo(stationName))
+                .unwrap()
+                .then(async (res) => {
+                    stationInfo = {
+                        name: station,
+                        address: res.address,
+                        latitude: res.latitude,
+                        longitude: res.longitude,
+                    }
+                })
+                .catch((err) => {})
+            return await dispatch(
+                stationThunk.addStation({
+                    locationId: location.id,
+                    listStation: [stationInfo],
+                    companyId: 0,
+                }),
+            )
+                .unwrap()
+                .then((res) => {
+                    console.log(res)
+                    return res[0].id
+                })
+                .catch((err) => {
+                    throw err
+                })
+        } else return Promise.resolve(stationF.id)
+    }
+    const handleAssignRoute = async (companyId, listRouteId) => {
+        await dispatch(
+            companyThunk.assignRouteForCompany({
+                listRoute: listRouteId,
+                companyId: companyId,
+            }),
+        )
+            .unwrap()
+            .then(async (res) => {
+                addToast(() =>
+                    CustomToast({ message: 'Thêm tuyến xe thành công', type: 'success' }),
+                )
+            })
+            .catch((err) => {
+                throw err
+            })
+    }
+    const handleAddTrip = async (
+        route,
+        startStationId,
+        endStationId,
+        companyId,
+        journey,
+        distance,
+    ) => {
+        const tripInfor = {
+            routeId: route.id,
+            startStationId: startStationId,
+            endStationId: endStationId,
+            schedule: journey,
+            price: 0,
+            companyId: companyId,
+            distance: distance,
+            hours: parseFloat((distance / 75).toFixed(1)),
+        }
+        return await dispatch(tripThunk.addTrip(tripInfor))
+            .unwrap()
+            .then((res) => {
+                return [res.trip.id, res.tripReturn.id]
+            })
+            .catch((err) => {
+                throw err
+            })
+    }
+
+    const handleAddFixSchedule = async (tripId, listTime, listRepeat) => {
+        await dispatch(
+            scheduleThunk.addFixedSchedule({
+                tripId: tripId,
+                listTime: listTime,
+                listRepeat: listRepeat,
+            }),
+        )
+            .unwrap()
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((err) => {
+                throw err
+            })
+    }
+
+    const handleAddStopStation = async (listTrip, startStationId, endStationId) => {
+        const stationType = ['pick', 'drop']
+        const stationId = [startStationId, endStationId]
+        for (let i = 0; i < listTrip.length; i++)
+            for (let j = 0; j < stationId.length; j++)
+                await dispatch(
+                    stationThunk.addStopStation({
+                        tripId: listTrip[i],
+                        stationId: stationId[j],
+                        stationType: stationType[Math.abs(i - j)],
+                    }),
+                )
+                    .unwrap()
+                    .then((res) => {
+                        console.log(res)
+                    })
+                    .catch((err) => {
+                        throw err
+                    })
+    }
+
+    const handleSaveInfo = async () => {
+        const companyId = curCompany.busCompany.id
+        let listTrip = []
+        let listRouteId = []
+        if (companyRoute && companyRoute.route) {
+            setLoading(true)
+            try {
+                await handleAddRoute(companyRoute.route)
+                    .then(async (res) => {
+                        const route = res
+                        let startStationId = -1
+                        let endStationId = -1
+                        if (route) {
+                            await handleAddStation(
+                                route.departure.id,
+                                companyRoute.route.departure === route.departure.name
+                                    ? companyRoute.route.startStation
+                                    : companyRoute.route.endStation,
+                            ).then((res) => (startStationId = res))
+                            await handleAddStation(
+                                route.destination.id,
+                                companyRoute.route.destination === route.destination.name
+                                    ? companyRoute.route.endStation
+                                    : companyRoute.route.startStation,
+                            ).then((res) => (endStationId = res))
+                            if (startStationId === -1 || endStationId === -1) {
+                                throw new Error('Invalid ID')
+                            }
+                            await handleAddTrip(
+                                route,
+                                startStationId,
+                                endStationId,
+                                companyId,
+                                companyRoute.route.journey,
+                                companyRoute.route.distance,
+                            ).then(async (res) => {
+                                listTrip = res
+                                if (listTrip.length === 2) {
+                                    for (let j = 0; j < companyRoute.listTimeGo.length; j++) {
+                                        await handleAddFixSchedule(
+                                            listTrip[0],
+                                            companyRoute.listTimeGo[j].listTime.map(
+                                                (time) => time.time,
+                                            ),
+                                            companyRoute.listTimeGo[j].listRepeat,
+                                        )
+                                    }
+                                    for (let j = 0; j < companyRoute.listTimeReturn.length; j++) {
+                                        await handleAddFixSchedule(
+                                            listTrip[1],
+                                            companyRoute.listTimeReturn[j].listTime.map(
+                                                (time) => time.time,
+                                            ),
+                                            companyRoute.listTimeReturn[j].listRepeat,
+                                        )
+                                    }
+                                    await handleAddStopStation(
+                                        listTrip,
+                                        startStationId,
+                                        endStationId,
+                                    )
+                                }
+                            })
+                            listRouteId.push(route.id)
+                            await handleAssignRoute(companyId, listRouteId).then(async () => {
+                                setLoading(false)
+                                // wait 1s to reload page
+                                await dispatch(routeThunk.getRoute()).unwrap()
+                                await dispatch(companyThunk.getAssignedRouteForCompany()).unwrap()
+                                await dispatch(scheduleThunk.getFixSchedule()).unwrap()
+                                setTimeout(() => setVisible(false), 1000)
+                            })
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err)
+                        setLoading(false)
+                    })
+            } catch (err) {
+                addToast(() => CustomToast({ message: err, type: 'error' }))
+                setLoading(false)
+            }
+        } else {
+            addToast(() =>
+                CustomToast({
+                    message:
+                        'Một số thông tin chưa hợp lệ. Cần điền đủ thông tin nhà xe và tuyến xe',
+                    type: 'error',
+                }),
+            )
+            return
+        }
+    }
+    useEffect(() => {
+        if (listLocation.length === 0) dispatch(locationThunk.getLocations())
+        if (listRoute.length === 0) dispatch(routeThunk.getRoute())
+    }, [])
+    useEffect(() => {
+        listLocation.current = listLocationIn
+        listRoute.current = listRouteIn
+    }, [listRouteIn, listLocationIn])
+    useEffect(() => {
+        if (!visible) {
+            setCompanyRoute({
+                route: null,
+                listTimeGo: [
+                    {
+                        listTime: [],
+                        listRepeat: [2, 3, 4, 5, 6, 7, 8],
+                    },
+                ],
+                listTimeReturn: [
+                    {
+                        listTime: [],
+                        listRepeat: [2, 3, 4, 5, 6, 7, 8],
+                    },
+                ],
+                price: 0,
+            })
+        }
+    }, [visible])
+    return (
+        <>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+            <CModal
+                alignment="center"
+                visible={visible}
+                onClose={() => setVisible(false)}
+                size="lg"
+                backdrop="static"
+            >
+                <CModalHeader>Thêm tuyến xe</CModalHeader>
+                <CModalBody>
+                    <CompanyRoute
+                        id={1}
+                        addCompanyRoute={updateCompanyRoute}
+                        companyRoute={companyRoute}
+                    ></CompanyRoute>
+                </CModalBody>
+                <CModalFooter>
+                    <CustomButton
+                        text="Lưu thông tin"
+                        onClick={handleSaveInfo}
+                        loading={loading}
+                    ></CustomButton>
+                    <CButton onClick={() => setVisible(false)}>Đóng</CButton>
+                </CModalFooter>
+            </CModal>
+        </>
+    )
+}
+
 const RouteInfo = ({ route, fixSchedule }) => {
+    const curCompany = useSelector(selectCurCompany)
     const [companyRouteData, setCompanyRouteData] = useState(null)
     const listOfficialRoute = useSelector(selectListOfficialRoute)
     const [officialRoute, setOfficialRoute] = useState(null)
-    const tripGo = route.trips[0]
-    const tripBack = route.trips[1]
+    const [listTrip, setListTrip] = useState([])
+    const tripGo = listTrip.length > 0 ? listTrip[0].turnGo : null
+    const tripBack = listTrip.length > 0 ? listTrip[0].turnBack : null
+    const [openComfirmForm, setOpenComfirmForm] = useState(false)
+    const [isDelete, setIsDelete] = useState(false)
+    const dispatch = useDispatch()
+    const [loading, setLoading] = useState(false)
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
     const updateCompanyData = () => {
         const offRoute = listOfficialRoute.find(
             (r) =>
@@ -168,15 +768,41 @@ const RouteInfo = ({ route, fixSchedule }) => {
                     (r.departure === route.destination && r.destination === route.departure)) &&
                 r.startStation === tripGo.startStation.name &&
                 r.endStation === tripGo.endStation.name &&
-                r.journey === route.schedule,
+                (r.journey === route.trips[0].schedule || r.journey === route.trips[1].schedule),
         )
         setOfficialRoute(offRoute)
     }
+    const handleActive = (active) => {
+        setOpenComfirmForm(true)
+        setIsDelete(active)
+    }
+    const handleSaveActiveState = () => {
+        setLoading(true)
+        dispatch(tripThunk.activeTrip({ id: tripGo.id, active: !isDelete }))
+            .unwrap()
+            .then((res) => {
+                dispatch(tripThunk.activeTrip({ id: tripBack.id, active: !isDelete }))
+                    .unwrap()
+                    .then((res) => {
+                        setOpenComfirmForm(false)
+                        addToast(() =>
+                            CustomToast({ message: 'Thay đổi thành công', type: 'success' }),
+                        )
+                        setLoading(false)
+                        dispatch(routeThunk.getRoute())
+                    })
+            })
+            .catch((err) => {
+                setLoading(false)
+            })
+    }
     useEffect(() => {
-        updateCompanyData()
-    }, [])
+        const listTripExtract = tripProcess([route], curCompany?.busCompany?.id)
+        setListTrip(listTripExtract)
+    }, [route])
     return (
         <div>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
             <Tabs className="tabStyle">
                 <TabList>
                     <Tab>Thông tin tuyến</Tab>
@@ -188,44 +814,402 @@ const RouteInfo = ({ route, fixSchedule }) => {
                             <b>Tỉnh đi - đến</b>
                         </CFormLabel>
                         <CCol sm="3">
-                            <CFormInput readOnly value={route.departure.name}></CFormInput>
+                            <CFormInput readOnly value={route?.departure?.name}></CFormInput>
                         </CCol>
                         <CCol sm="2" className="d-flex justify-content-center align-items-center">
                             <CIcon icon={cilTransfer}></CIcon>
                         </CCol>
                         <CCol sm="3">
-                            <CFormInput readOnly value={route.destination.name}></CFormInput>
+                            <CFormInput readOnly value={route?.destination?.name}></CFormInput>
                         </CCol>
                     </CRow>
-
-                    <CRow className="mb-3 justify-content-center align-items-center">
-                        <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
-                            <b>Bến đi - đến</b>
-                        </CFormLabel>
-                        <CCol sm="3">
-                            <CFormInput readOnly value={tripGo.startStation.name}></CFormInput>
-                        </CCol>
-                        <CCol sm="2" className="d-flex justify-content-center align-items-center">
-                            <CIcon icon={cilTransfer}></CIcon>
-                        </CCol>
-                        <CCol sm="3">
-                            <CFormInput readOnly value={tripGo.endStation.name}></CFormInput>
-                        </CCol>
-                    </CRow>
-                    <CRow className="mb-3 justify-content-center align-items-center">
-                        <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
-                            <b>Lộ trình</b>
-                        </CFormLabel>
-                        <CCol sm={8}>
-                            <CFormInput readOnly value={tripGo.schedule}></CFormInput>
-                        </CCol>
-                    </CRow>
+                    {listTrip.length > 0 && (
+                        <>
+                            <CRow className="mb-3 justify-content-center align-items-center">
+                                <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
+                                    <b>Bến đi - đến</b>
+                                </CFormLabel>
+                                <CCol sm="3">
+                                    <CFormInput
+                                        readOnly
+                                        value={listTrip[0].startStation.name}
+                                    ></CFormInput>
+                                </CCol>
+                                <CCol
+                                    sm="2"
+                                    className="d-flex justify-content-center align-items-center"
+                                >
+                                    <CIcon icon={cilTransfer}></CIcon>
+                                </CCol>
+                                <CCol sm="3">
+                                    <CFormInput
+                                        readOnly
+                                        value={listTrip[0].endStation.name}
+                                    ></CFormInput>
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3 justify-content-center align-items-center">
+                                <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
+                                    <b>Lộ trình</b>
+                                </CFormLabel>
+                                <CCol sm={8}>
+                                    <CFormInput readOnly value={listTrip[0].schedule}></CFormInput>
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3 justify-content-center align-items-center">
+                                <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
+                                    <b>Tình trạng</b>
+                                </CFormLabel>
+                                <CCol sm={6}>
+                                    <CFormInput
+                                        readOnly
+                                        value={
+                                            listTrip[0].active
+                                                ? 'Đang khai thác'
+                                                : 'Ngừng khai thác'
+                                        }
+                                    ></CFormInput>
+                                </CCol>
+                                <CDropdown className="col-sm-2">
+                                    <CDropdownToggle color="secondary">Tác vụ</CDropdownToggle>
+                                    <CDropdownMenu>
+                                        {listTrip[0].active ? (
+                                            <CDropdownItem
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    handleActive(true)
+                                                }}
+                                            >
+                                                Ngừng tuyến
+                                            </CDropdownItem>
+                                        ) : (
+                                            <CDropdownItem
+                                                href="#"
+                                                onClick={(e) => {
+                                                    e.preventDefault()
+                                                    handleActive(false)
+                                                }}
+                                            >
+                                                Mở tuyến
+                                            </CDropdownItem>
+                                        )}
+                                    </CDropdownMenu>
+                                </CDropdown>
+                            </CRow>
+                        </>
+                    )}
                 </TabPanel>
                 <TabPanel>
                     <TableSchedule
-                        listFixSchedule={fixSchedule}
-                        tripGoId={tripGo.id}
+                        listFixScheduleIn={fixSchedule}
+                        tripGoId={tripGo?.id}
+                        tripBackId={tripBack?.id}
                     ></TableSchedule>
+                </TabPanel>
+            </Tabs>
+            <CModal
+                backdrop="static"
+                visible={openComfirmForm}
+                onClose={() => setOpenComfirmForm(false)}
+            >
+                <CModalHeader>
+                    <b>Xác nhận tác vụ</b>
+                </CModalHeader>
+                <CModalBody>
+                    {isDelete
+                        ? 'Bạn có chắc chắn muốn ngừng tuyến này?'
+                        : 'Bạn có chắc chắn muốn mở tuyến này?'}
+                    <div className="d-flex justify-content-end gap-2">
+                        <CustomButton
+                            text="Xác nhận"
+                            loading={loading}
+                            onClick={handleSaveActiveState}
+                        ></CustomButton>
+                        <CustomButton
+                            text="Hủy"
+                            variant="outline"
+                            color="danger"
+                            onClick={() => setOpenComfirmForm(false)}
+                        ></CustomButton>
+                    </div>
+                </CModalBody>
+            </CModal>
+        </div>
+    )
+}
+
+const FeeInfo = ({ listAssignRouteId }) => {
+    const listRoute = useSelector(selectListRoute)
+    const [listTrip, setListTrip] = useState([])
+    const curCompany = useSelector(selectCurCompany)
+    const startTime = new Date(curCompany.busCompany.coopDay)
+    const today = new Date()
+    const [chartData, setChartData] = useState({
+        labels: [],
+        backGroundColor: [],
+        data: [],
+    })
+    const [yearValue, setYearValue] = useState(today.getFullYear())
+    const [monthValue, setMonthValue] = useState(today.getMonth())
+    const [monthRange, setMonthRange] = useState({
+        start: today.getFullYear() == 2023 ? 8 : 0,
+        end: today.getMonth(),
+    })
+    const getYearRange = () => {
+        var year = []
+        const startYear = startTime.getFullYear()
+        for (let i = startYear; i <= today.getFullYear(); i++) {
+            year.push(i)
+        }
+        return year
+    }
+    const getMonthRange = (year) => {
+        const startMonth = startTime.getMonth()
+        const startYear = startTime.getFullYear()
+        if (startYear == year) {
+            setMonthRange({
+                start: startMonth,
+                end: today.getFullYear() === year ? today.getMonth() : 11,
+            })
+        } else {
+            setMonthRange({
+                start: 0,
+                end: today.getFullYear() === year ? today.getMonth() : 11,
+            })
+        }
+    }
+    //Generate a random color
+    const randomColor = () => {
+        return `#${Math.floor(Math.random() * 16777215).toString(16)}`
+    }
+
+    const getLabelandColor = () => {
+        const labels = []
+        const data = []
+        const backGroundColor = []
+        listTrip.forEach((trip) => {
+            labels.push(`${trip.startStation.name} - ${trip.endStation.name}`)
+            //get random number
+            data.push(Math.floor(Math.random() * 100) + 1)
+            backGroundColor.push(randomColor())
+        })
+        setChartData({ labels: labels, data: data, backGroundColor: backGroundColor })
+    }
+
+    const getData = () => {}
+
+    useEffect(() => {
+        getMonthRange(yearValue)
+    }, [yearValue])
+
+    useEffect(() => {
+        const listAssign = listRoute.filter((route) =>
+            listAssignRouteId.find((id) => id.routeId === route.id),
+        )
+        const listTripIn = tripProcess(listAssign)
+        setListTrip(listTripIn)
+    }, [listAssignRouteId])
+
+    useEffect(() => {
+        getLabelandColor()
+    }, [listTrip])
+
+    useEffect(() => {
+        getData()
+    }, [monthValue, yearValue])
+    return (
+        <div>
+            <Tabs className="tabStyle">
+                <TabList>
+                    <Tab>Thống kê doanh số</Tab>
+                    <Tab>Phí dịch vụ</Tab>
+                </TabList>
+                <TabPanel className="px-3">
+                    <CRow className="justify-content-center align-items-center">
+                        <CCol>
+                            <b>Số vé bán ra</b>
+                            <div className="small text-medium-emphasis">{`${MONTH_IN_YEAR[monthValue]}
+                                 ${yearValue}`}</div>
+                        </CCol>
+                        <CCol sm={3}>
+                            <CFormSelect
+                                value={yearValue}
+                                onChange={(e) => setYearValue(parseInt(e.target.value))}
+                            >
+                                <option value="-1" disabled>
+                                    Chọn năm
+                                </option>
+                                {getYearRange().map((year) => (
+                                    <option value={year} key={year}>
+                                        {year}
+                                    </option>
+                                ))}
+                            </CFormSelect>
+                        </CCol>
+                        <CCol sm={3}>
+                            <CFormSelect
+                                value={monthValue}
+                                onChange={(e) => setMonthValue(parseInt(e.target.value))}
+                            >
+                                <option value="-1" disabled>
+                                    Chọn tháng
+                                </option>
+                                {MONTH_IN_YEAR.slice(monthRange.start, monthRange.end + 1).map(
+                                    (month, index) => (
+                                        <option value={monthRange.start + index} key={index}>
+                                            {month}
+                                        </option>
+                                    ),
+                                )}
+                            </CFormSelect>
+                        </CCol>
+                    </CRow>
+                    <CRow className="justify-content-center align-items-center gap-3 mt-3">
+                        <CCol md={3}>
+                            <div>
+                                <div className="text-center">
+                                    <b style={{ fontSize: '20px' }}>{`${100} vé`}</b>
+                                </div>
+                                <CChart
+                                    type="doughnut"
+                                    data={{
+                                        labels: chartData.labels,
+                                        datasets: [
+                                            {
+                                                backgroundColor: chartData.backGroundColor,
+                                                data: chartData.data,
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        plugins: {
+                                            legend: {
+                                                labels: {
+                                                    color: getStyle('--cui-body-color'),
+                                                    textAlign: 'left',
+                                                    usePointStyle: true,
+                                                },
+                                            },
+                                        },
+                                    }}
+                                />
+                            </div>
+                        </CCol>
+                        <CCol md={6}>
+                            <CTable bordered>
+                                <CTableHead>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="col">STT</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Tuyến</CTableHeaderCell>
+                                        <CTableHeaderCell
+                                            scope="col"
+                                            align="center"
+                                            className="text-center"
+                                        >
+                                            Số vé
+                                        </CTableHeaderCell>
+                                        <CTableHeaderCell
+                                            scope="col"
+                                            align="center"
+                                            className="text-center"
+                                        >
+                                            Tổng tiền
+                                        </CTableHeaderCell>
+                                    </CTableRow>
+                                </CTableHead>
+                                <CTableBody>
+                                    {chartData.labels.map((label, index) => (
+                                        <CTableRow key={index}>
+                                            <CTableHeaderCell scope="row">
+                                                {index + 1}
+                                            </CTableHeaderCell>
+                                            <CTableDataCell>{label}</CTableDataCell>
+                                            <CTableDataCell align="center" className="text-center">
+                                                {chartData.data[index]}
+                                            </CTableDataCell>
+                                            <CTableDataCell align="center" className="text-center">
+                                                {chartData.data[index] * 36}
+                                            </CTableDataCell>
+                                        </CTableRow>
+                                    ))}
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="row">#1</CTableHeaderCell>
+                                        <CTableDataCell colSpan={2}>
+                                            <b>
+                                                <i>Tổng tiền vé</i>
+                                            </b>
+                                        </CTableDataCell>
+                                        <CTableDataCell align="center" className="text-center">
+                                            <b>1000</b>
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="row">#2</CTableHeaderCell>
+                                        <CTableDataCell colSpan={2}>
+                                            <b>
+                                                <i>Phí dịch vụ - 10%</i>
+                                            </b>
+                                        </CTableDataCell>
+                                        <CTableDataCell align="center" className="text-center">
+                                            <b>10</b>
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="row">$</CTableHeaderCell>
+                                        <CTableDataCell colSpan={2}>
+                                            <div className="d-flex justify-content-between">
+                                                <b style={{ color: 'red' }}>
+                                                    <i>Tổng chi</i>
+                                                </b>
+                                                <i style={{ color: 'grey' }}>Chưa thanh toán</i>
+                                                <i style={{ color: 'green' }}>Đã thanh toán</i>
+                                            </div>
+                                        </CTableDataCell>
+                                        <CTableDataCell
+                                            align="center"
+                                            className="text-center"
+                                            active
+                                        >
+                                            <b>990</b>
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                </CTableBody>
+                            </CTable>
+                        </CCol>
+                    </CRow>
+                </TabPanel>
+                <TabPanel className="px-3">
+                    <CTable striped>
+                        <CTableHead>
+                            <CTableRow>
+                                <CTableHeaderCell scope="col">STT</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Kỳ hạn</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Số tuyến xe</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Tổng phí</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Trạng thái</CTableHeaderCell>
+                                <CTableHeaderCell scope="col">Mã giao dịch</CTableHeaderCell>
+                            </CTableRow>
+                        </CTableHead>
+                        <CTableBody>
+                            <CTableRow>
+                                <CTableHeaderCell scope="row">1</CTableHeaderCell>
+                                <CTableDataCell>20/10/2024</CTableDataCell>
+                                <CTableDataCell>3</CTableDataCell>
+                                <CTableDataCell>{`300.000đ`}</CTableDataCell>
+                                <CTableDataCell>Đã thanh toán</CTableDataCell>
+                                <CTableDataCell>HUI9JD</CTableDataCell>
+                            </CTableRow>
+                            <CTableRow>
+                                <CTableHeaderCell scope="row">2</CTableHeaderCell>
+                                <CTableDataCell>20/11/2024</CTableDataCell>
+                                <CTableDataCell>3</CTableDataCell>
+                                <CTableDataCell>{`300.000đ`}</CTableDataCell>
+                                <CTableDataCell>Chưa thanh toán</CTableDataCell>
+                                <CTableDataCell>HUI9JD</CTableDataCell>
+                            </CTableRow>
+                        </CTableBody>
+                    </CTable>
                 </TabPanel>
             </Tabs>
         </div>
@@ -244,21 +1228,23 @@ const CompanyDetail = () => {
     const listFixSchedule = useSelector(selectListFixSchedule)
     const listCurFix = listFixSchedule.filter((schedule) => {
         if (schedule.trip && schedule.trip.busCompany)
-            return schedule.trip.busCompany.id === curCompany.id
+            return schedule.trip.busCompany.id === curCompany.busCompany.id
         else return false
     })
     const { busCompany, admin } = curCompany ? curCompany : { busCompany: null, admin: null }
     const [companyInfo, setCompanyInfo] = useState({
         firmName: busCompany ? busCompany.name : '',
-        representName: admin ? admin.staffUser.name : '',
-        email: admin ? admin.staffUser.email : '',
-        idCard: admin ? admin.staffUser.staff.idCard : '',
-        telephone: admin ? admin.staffUser.tel : '',
+        representName: admin ? admin.name : '',
+        email: admin ? admin.email : '',
+        idCard: admin ? admin.staff.idCard : '',
+        telephone: admin ? admin.tel : '',
         businessLicense: busCompany ? busCompany.businessLicense : '',
-        address: admin ? admin.staffUser.staff.address : '',
+        address: admin ? admin.staff.address : '',
     })
     const listAssign = useSelector(selectListAssign)
-    const curAssign = listAssign.filter((assign) => assign.busCompanyId === curCompany.id)
+    const curAssign = listAssign.filter(
+        (assign) => assign.busCompanyId === curCompany.busCompany.id,
+    )
     const listRoute = useSelector(selectListRoute)
     const handleChangeCompanyInfo = (e) => {
         setCompanyInfo({ ...companyInfo, [e.target.name]: e.target.value })
@@ -270,13 +1256,13 @@ const CompanyDetail = () => {
                 setValidated(true)
                 setLoading(true)
                 const companyData = {
-                    id: curCompany.id,
+                    id: curCompany.busCompany.id,
                     representName: companyInfo.representName,
                     email: companyInfo.email,
                     telephone: companyInfo.telephone,
                     idCard: companyInfo.idCard,
                     address: companyInfo.address,
-                    beginWorkDate: curCompany.coopDay,
+                    beginWorkDate: curCompany.busCompany.coopDay,
                     firmName: companyInfo.firmName,
                     businessLicense: companyInfo.businessLicense,
                 }
@@ -313,18 +1299,19 @@ const CompanyDetail = () => {
         setIsUpdate(false)
         setCompanyInfo({
             firmName: busCompany ? busCompany.name : '',
-            representName: admin ? admin.staffUser.name : '',
-            email: admin ? admin.staffUser.email : '',
-            idCard: admin ? admin.staffUser.staff.idCard : '',
-            telephone: admin ? admin.staffUser.tel : '',
+            representName: admin ? admin.name : '',
+            email: admin ? admin.email : '',
+            idCard: admin ? admin.staff.idCard : '',
+            telephone: admin ? admin.tel : '',
             businessLicense: busCompany ? busCompany.businessLicense : '',
-            address: admin ? admin.staffUser.staff.address : '',
+            address: admin ? admin.staff.address : '',
         })
     }
+    const [openAddRouteForm, setOpenAddRouteForm] = useState(false)
     useEffect(() => {
         dispatch(scheduleThunk.getFixSchedule())
+        dispatch(companyThunk.getAssignedRouteForCompany())
     }, [])
-    console.log(listFixSchedule)
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -471,18 +1458,30 @@ const CompanyDetail = () => {
                         </CRow>
                     </CForm>
                 </CCardBody>
-                <CCardFooter className="d-flex justify-content-center align-items-center gap-3">
-                    <CustomButton
-                        color="success"
-                        onClick={handleUpdateInfo}
-                        text={isUpdate ? 'Lưu' : 'Sửa thông tin'}
-                        loading={loading}
-                    ></CustomButton>
-                    {isUpdate && (
-                        <CButton variant="outline" color="danger" onClick={handleCancel}>
-                            Hủy
+                <CCardFooter className="d-flex justify-content-between align-items-center">
+                    <div className="col-6 offset-1">
+                        <CustomButton
+                            color="success"
+                            onClick={handleUpdateInfo}
+                            text={isUpdate ? 'Lưu' : 'Sửa thông tin'}
+                            loading={loading}
+                        ></CustomButton>
+                        {isUpdate && (
+                            <CButton
+                                variant="outline"
+                                color="danger"
+                                onClick={handleCancel}
+                                className="mx-2"
+                            >
+                                Hủy
+                            </CButton>
+                        )}
+                    </div>
+                    <div className="col-6 offset-2">
+                        <CButton color="danger" variant="outline">
+                            Ngưng hợp tác
                         </CButton>
-                    )}
+                    </div>
                 </CCardFooter>
             </CCard>
             <CCard className="my-3">
@@ -493,7 +1492,7 @@ const CompanyDetail = () => {
                             {curAssign.map((assign, index) => (
                                 <CAccordionItem itemKey={index} key={index}>
                                     <CAccordionHeader>{`Tuyến ${index + 1}: ${getRouteJourney(
-                                        listRoute.find((route) => route.id === assign.routeId),
+                                        listRoute?.find((route) => route.id === assign.routeId),
                                     )}`}</CAccordionHeader>
                                     <CAccordionBody>
                                         <RouteInfo
@@ -513,6 +1512,26 @@ const CompanyDetail = () => {
                     ) : (
                         <div>Chưa có tuyến xe</div>
                     )}
+                    <div className="d-flex justify-content-center">
+                        <CButton
+                            variant="outline"
+                            color="info"
+                            className="mt-2"
+                            onClick={() => setOpenAddRouteForm(true)}
+                        >
+                            Thêm tuyến
+                        </CButton>
+                    </div>
+                    <AddRouteForm
+                        visible={openAddRouteForm}
+                        setVisible={setOpenAddRouteForm}
+                    ></AddRouteForm>
+                </CCardBody>
+            </CCard>
+            <CCard>
+                <CCardHeader style={{ backgroundColor: '#ccc' }}>Thông tin dịch vụ</CCardHeader>
+                <CCardBody>
+                    <FeeInfo listAssignRouteId={curAssign}></FeeInfo>
                 </CCardBody>
             </CCard>
             <CCard className="my-3">

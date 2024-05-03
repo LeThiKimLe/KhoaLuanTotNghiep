@@ -26,6 +26,19 @@
   align-items: center;
 }
 
+.tripName {
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tripPlace {
+  width: 150px;
+  text-align: center;
+}
+
 .routePlace {
   flex: 1;
 }
@@ -42,6 +55,7 @@
   align-items: center;
   color: var(--sub-color);
   margin: 10px 0;
+  flex: 1
 }
 
 .routeTime .time {

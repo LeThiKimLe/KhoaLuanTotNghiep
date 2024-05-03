@@ -12,11 +12,15 @@ const CompanyManagement = React.lazy(() => import('./views/system-manager/ticket
 const SystemRouteManagement = React.lazy(() => import('./views/system-manager/ticket-system/Route'))
 const CompanyDetail = React.lazy(() => import('./views/system-manager/ticket-system/CompanyDetail'))
 
+//Chat
+// const Chat = React.lazy(() => import('./views/chat/Chat'))
+
 const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
     { path: '/profile/infor', name: 'Thông tin tài xế', element: UserProfile },
     { path: '/profile/change-password', name: 'Đổi mật khẩu', element: ChangePassword },
+    // { path: '/chat', name: 'Cửa sổ khách hàng', element: Chat },
     {
         path: '/ticket-system',
         name: 'Hệ thống đặt vé',

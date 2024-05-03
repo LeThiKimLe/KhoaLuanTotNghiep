@@ -36,3 +36,5 @@ build/
 **/src/main/python/pyenv/
 
 create.sql
+**/src/main/resources/application.properties
+**/src/main/python/.env

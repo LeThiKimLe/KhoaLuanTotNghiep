@@ -39,6 +39,7 @@ import { staffAction } from 'src/feature/staff/staff.slice'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
 import CIcon from '@coreui/icons-react'
 import { cilReload } from '@coreui/icons'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 
 const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
     const [validated, setValidated] = useState(false)
@@ -248,7 +249,7 @@ const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
                                         />
                                     </CCol>
                                 </CRow>
-                                <CRow className="mb-3 justify-content-center">
+                                {/* <CRow className="mb-3 justify-content-center">
                                     <CFormLabel
                                         htmlFor="address"
                                         className="col-sm-2 col-form-label"
@@ -264,7 +265,7 @@ const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
                                             <option value={false}>Nhân viên</option>
                                         </CFormSelect>
                                     </CCol>
-                                </CRow>
+                                </CRow> */}
                                 <CRow className="mb-3 justify-content-center">
                                     <CustomButton
                                         text="Thêm"
@@ -302,8 +303,11 @@ const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
 }
 
 const StaffManagement = () => {
-    const listStaff = useSelector(selectListStaff)
-    const listAdmin = useSelector(selectListAdmin)
+    const companyId = useSelector(selectCompanyId)
+    const listStaffIn = useSelector(selectListStaff)
+    const listAdminIn = useSelector(selectListAdmin)
+    const [listStaff, setListStaff] = useState([])
+    const [listAdmin, setListAdmin] = useState([])
     const [showAddForm, setShowAddForm] = useState(false)
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
@@ -344,6 +348,12 @@ const StaffManagement = () => {
             .then(() => {})
             .catch(() => {})
     }, [])
+    useEffect(() => {
+        if (listStaffIn.length > 0)
+            setListStaff(listStaffIn.filter((staff) => staff.staff.busCompanyId === companyId))
+        if (listAdminIn.length > 0)
+            setListAdmin(listAdminIn.filter((admin) => admin.staff.busCompanyId === companyId))
+    }, [listStaffIn, listAdminIn])
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />

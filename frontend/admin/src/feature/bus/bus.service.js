@@ -34,6 +34,7 @@ const addBus = createAsyncThunk('admin/bus/add', async (busInfor, thunkAPI) => {
             color: busInfor.color,
             licensePlate: busInfor.license,
             typeId: busInfor.typeId,
+            companyId: busInfor.companyId,
         })
         return bus
     } catch (error) {
@@ -172,7 +173,7 @@ const getSchedules = createAsyncThunk('admin/bus/schedules', async (busId, thunk
 
 const getTripBus = createAsyncThunk('trip/get-bus', async (tripId, thunkAPI) => {
     try {
-        const response = await axiosClient.get('admin/trips/driver-bus', {
+        const response = await axiosClient.get('manager/trips/driver-bus', {
             params: {
                 tripId: tripId,
             },

@@ -100,9 +100,7 @@ const Login = () => {
                                                     height={32}
                                                     className="text-center"
                                                 />
-                                                <h2>
-                                                    😄 Chúc các bạn một ngày làm việc hiệu quả 😄
-                                                </h2>
+                                                <h2>Chúc bạn một ngày làm việc hiệu quả</h2>
                                                 <p>---------------</p>
                                                 <h1>Đăng nhập</h1>
                                             </div>

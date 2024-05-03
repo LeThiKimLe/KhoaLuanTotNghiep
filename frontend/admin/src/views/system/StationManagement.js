@@ -245,6 +245,7 @@ const SearchBox = ({ onSearch, onConfirm, preLocation }) => {
 }
 
 export const Station = ({ locationId, station, empty, finishAdd, visibleEmpty }) => {
+    const companyId = useSelector(selectCompanyId)
     const [visible, setVisible] = useState(false)
     const handleShowInfor = () => {
         setVisible(!visible)
@@ -358,6 +359,7 @@ export const Station = ({ locationId, station, empty, finishAdd, visibleEmpty })
                             longitude: longitude,
                         },
                     ],
+                    companyId: companyId,
                 }),
             )
                 .unwrap()

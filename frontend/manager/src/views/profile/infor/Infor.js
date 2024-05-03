@@ -179,7 +179,7 @@ const UserProfile = () => {
         else if (valueInfor.gender.value === 1) return female
         else return male
     }
-
+    console.log(valueInfor)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -193,7 +193,7 @@ const UserProfile = () => {
                             <CCardBody>
                                 <CForm ref={myform}>
                                     <p className="text-medium-emphasis">
-                                        Xem và cập nhật tài khoản tài xế ủa bạn
+                                        Xem và cập nhật tài khoản của bạn
                                     </p>
                                     <CRow>
                                         <CCol md={4}>

@@ -40,6 +40,7 @@ import {
     selectCurrentReverse,
     selectCurrentScheduleGo,
     selectCurrentScheduleReturn,
+    selectListFixSchedule,
 } from 'src/feature/schedule/schedule.slice'
 import { DateRange } from 'react-date-range'
 import TimePicker from 'react-time-picker'
@@ -138,12 +139,14 @@ const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
                             position: 'absolute',
                         }}
                     >
-                        <CCardBody>
+                        <CCardBody className="d-flex gap-1 align-items-center px-1 py-1">
                             <TimePicker
                                 format="HH:mm"
                                 onChange={setCurTime}
                                 value={curTime}
                                 clearIcon={null}
+                                clockIcon={null}
+                                disableClock={true}
                             />
                             <CButton
                                 id={turn === 1 ? 'add-go' : 'add-return'}
@@ -152,7 +155,6 @@ const ScheduleBox = ({ listTime, addTime, removeTime, turn }) => {
                                 onClick={() => addTime(curTime)}
                                 style={{
                                     width: 'fit-content',
-                                    marginTop: '10px',
                                 }}
                             >
                                 OK
@@ -172,14 +174,14 @@ const ScheduleSummary = ({ curRoute, curTrip, listGo, listReturn }) => {
         listGo.forEach((item) => {
             sumTrip.push({
                 departTime: item.time,
-                arrivalTime: addHoursToTime(item.time, curRoute.hours),
+                arrivalTime: addHoursToTime(item.time, curTrip.hours),
                 turn: 1,
             })
         })
         listReturn.forEach((item) => {
             sumTrip.push({
                 departTime: item.time,
-                arrivalTime: addHoursToTime(item.time, curRoute.hours),
+                arrivalTime: addHoursToTime(item.time, curTrip.hours),
                 turn: 0,
             })
         })
@@ -241,18 +243,27 @@ const AddScheduleForm = ({
     finishAdd,
     listPreTimeGo,
     listPreTimeReturn,
+    fixSchedule,
 }) => {
+    console.log(fixSchedule)
     const curTrip = useSelector(selectCurrentTrip)
+    console.log(curTrip)
+    // const listFixSchedule = fixSchedule.filter((item) => item.trip.id === curTrip.)
     const curRoute = useSelector(selectCurrentRoute)
-    const curReverse = useSelector(selectCurrentReverse)
     const [openDateRange, setOpenDateRange] = useState(false)
     const [listTimeGo, setListTimeGo] = useState(
-        listPreTimeGo.length > 0 ? listPreTimeGo.map((time) => ({ time: time, fix: true })) : [],
+        listPreTimeGo.length > 0
+            ? listPreTimeGo.map((time) => ({ time: time, fix: true }))
+            : fixSchedule
+                  .filter((schd) => schd.trip.id === curTrip.turnGo.id)
+                  .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
     )
     const [listTimeReturn, setListTimeReturn] = useState(
         listPreTimeReturn.length > 0
             ? listPreTimeReturn.map((time) => ({ time: time, fix: true }))
-            : [],
+            : fixSchedule
+                  .filter((schd) => schd.trip.id === curTrip.turnBack.id)
+                  .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
     )
     const [note, setNote] = useState('')
     const [error, setError] = useState('')
@@ -269,6 +280,20 @@ const AddScheduleForm = ({
         },
     ])
     const addTimeGo = (newTime) => {
+        if (!listTimeGo.find((timer) => timer.time === newTime)) {
+            setListTimeGo([
+                ...listTimeGo,
+                {
+                    time: newTime,
+                    fix: false,
+                },
+            ])
+            setError('')
+        } else {
+            setError('Đã có chuyến đi vào giờ này rồi')
+        }
+    }
+    const addTimeGo2 = (newTime) => {
         if (!listTimeGo.find((timer) => timer.time === newTime)) {
             if (listTimeGo.length < tripInfor.maxSchedule) {
                 if (validAvaiBusDriver(newTime)) {
@@ -294,6 +319,20 @@ const AddScheduleForm = ({
         setError('')
     }
     const addTimeReturn = (newTime) => {
+        if (!listTimeReturn.find((timer) => timer.time === newTime)) {
+            setListTimeReturn([
+                ...listTimeReturn,
+                {
+                    time: newTime,
+                    fix: false,
+                },
+            ])
+        } else {
+            setError('Đã có chuyến về vào giờ này rồi')
+        }
+    }
+
+    const addTimeReturn2 = (newTime) => {
         if (!listTimeReturn.find((timer) => timer.time === newTime)) {
             if (listTimeReturn.length < tripInfor.maxSchedule) {
                 if (validAvaiBusDriver(newTime)) {
@@ -339,7 +378,7 @@ const AddScheduleForm = ({
             requestCount.current = 0
             let maxCount = 0
             const scheduleGoInfor = {
-                tripId: curTrip.id,
+                tripId: curTrip.turnGo.id,
                 dateSchedule: currentDay,
                 repeat: Math.floor(
                     (dateRange[0].endDate.getTime() - dateRange[0].startDate.getTime()) / 86400000,
@@ -350,7 +389,7 @@ const AddScheduleForm = ({
                     .map((timer) => timer.time + ':00'),
             }
             const scheduleReturnInfor = {
-                tripId: curReverse.id,
+                tripId: curTrip.turnBack.id,
                 dateSchedule: currentDay,
                 repeat: Math.floor(
                     (dateRange[0].endDate.getTime() - dateRange[0].startDate.getTime()) / 86400000,
@@ -452,6 +491,23 @@ const AddScheduleForm = ({
             },
         ])
     }, [currentDay])
+    useEffect(() => {
+        setListTimeGo(
+            listPreTimeGo.length > 0
+                ? listPreTimeGo.map((time) => ({ time: time, fix: true }))
+                : fixSchedule
+                      .filter((schd) => schd.trip.id === curTrip.turnGo.id)
+                      .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
+        )
+
+        setListTimeReturn(
+            listPreTimeReturn.length > 0
+                ? listPreTimeReturn.map((time) => ({ time: time, fix: true }))
+                : fixSchedule
+                      .filter((schd) => schd.trip.id === curTrip.turnBack.id)
+                      .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
+        )
+    }, [curTrip, fixSchedule, listPreTimeReturn, listPreTimeGo])
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -472,7 +528,7 @@ const AddScheduleForm = ({
                             <CCardHeader className="bg-info">
                                 <b>Thông tin lập lịch</b>
                             </CCardHeader>
-                            {curRoute && curTrip && curReverse && (
+                            {curRoute && curTrip && (
                                 <CCardBody>
                                     <CForm className="w-100">
                                         <CRow className="mb-3 justify-content-center">
@@ -582,7 +638,7 @@ const AddScheduleForm = ({
                                             removeTime={removeTimeReturn}
                                             turn={0}
                                         ></ScheduleBox>
-                                        <CRow className="mb-3 justify-content-center">
+                                        {/* <CRow className="mb-3 justify-content-center">
                                             <CFormLabel
                                                 htmlFor="maxSchedule"
                                                 className="col-sm-2 col-form-label"
@@ -628,7 +684,7 @@ const AddScheduleForm = ({
                                                     defaultValue={tripInfor.driverCount}
                                                 />
                                             </CCol>
-                                        </CRow>
+                                        </CRow> */}
                                         <div className="w-100 border-top mb-3"></div>
                                         <CRow className="mb-3 justify-content-center">
                                             <CFormLabel
@@ -1215,8 +1271,6 @@ const AssignScheduleBox = ({ curRoute, curTrip, listGo, listReturn, finishUpdate
             autoScheduling()
         }
     }, [autoSchdMode])
-    console.log(listDriverSchedule)
-    console.log(listBusSchedule)
     return (
         <>
             <b>{`Trạm A: ${curTrip.startStation.name} `}</b>

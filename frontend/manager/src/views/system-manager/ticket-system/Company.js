@@ -63,7 +63,7 @@ import stationThunk from 'src/feature/station/station.service'
 import { selectConnection } from 'src/feature/socket/socket.slice'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
 import { companyInput } from 'src/utils/constants'
-import { getRouteJourney } from 'src/utils/tripUtils'
+import { getRouteJourney, reverseString } from 'src/utils/tripUtils'
 
 const TimeBox = ({ time, removeTime, fix, turn }) => {
     const [showRemove, setShowRemove] = useState(false)
@@ -352,6 +352,28 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
         return { listStartStation: listStartStationNew, listEndStation: listEndStationNew }
     }
 
+    const getNewListEndStation = () => {
+        const listAvaiRoute = listOfficialRoute.filter(
+            (route) =>
+                ((route.departure === listDeparture[curDeparture].name &&
+                    route.destination === listDestination[curDestination].name) ||
+                    (route.departure === listDestination[curDestination].name &&
+                        route.destination === listDeparture[curDeparture].name)) &&
+                (route.startStation === listStartStation[curStartStation] ||
+                    route.endStation === listStartStation[curStartStation]),
+        )
+        const listEndStationNew = listDestination[curDestination].listStation.filter((station) => {
+            if (
+                listAvaiRoute.findIndex(
+                    (route) => route.startStation === station || route.endStation === station,
+                ) !== -1
+            )
+                return true
+            return false
+        })
+        return listEndStationNew
+    }
+
     const getListStation = useCallback(() => {
         if (curDeparture === -1 || curDestination === -1)
             return {
@@ -387,7 +409,15 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
             listEndStation[curEndStation],
         )
         listAvaiRoute.forEach((route) => {
-            listJourneyNew.push(route.journey)
+            if (
+                route.journey.indexOf(listStartStation[curStartStation]) >
+                route.journey.indexOf(listEndStation[curEndStation])
+            ) {
+                console.log('reverse')
+                console.log(route.journey)
+                console.log(reverseString(route.journey))
+                listJourneyNew.push(reverseString(route.journey))
+            } else listJourneyNew.push(route.journey)
         })
         return listJourneyNew
     }, [curEndStation])
@@ -534,7 +564,6 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
                 } thứ ${i + 1}`
             }
         }
-        console.log('check ok')
         return ''
     }
 
@@ -617,7 +646,16 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
             setCurJourney(-1)
             setListJourney(getListJourney())
         }
+        if (curEndStation != -1 && curStartStation == -1) {
+            setCurEndStation(-1)
+        }
     }, [curEndStation, curStartStation])
+    useEffect(() => {
+        if (curStartStation != -1) {
+            setCurEndStation(-1)
+            setListEndStation(getNewListEndStation())
+        }
+    }, [curStartStation])
     useEffect(() => {
         if (curJourney !== -1 && isBackup === false) {
             setCurRoute(
@@ -1004,6 +1042,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 stationThunk.addStation({
                     locationId: location.id,
                     listStation: [stationInfo],
+                    companyId: 0,
                 }),
             )
                 .unwrap()
@@ -1026,6 +1065,10 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             .unwrap()
             .then((res) => {
                 addToast(() => CustomToast({ message: 'Thêm nhà xe thành công', type: 'success' }))
+                // wait 1s to reload page
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1000)
             })
             .catch((err) => {
                 throw err
@@ -1047,7 +1090,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             price: 0,
             companyId: companyId,
             distance: distance,
-            hours: parseFloat((distance/75).toFixed(1)),
+            hours: parseFloat((distance / 75).toFixed(1)),
         }
         return await dispatch(tripThunk.addTrip(tripInfor))
             .unwrap()
@@ -1063,7 +1106,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             .unwrap()
             .then((res) => {
                 const preCompany = res.findIndex(
-                    (company) => company?.admin?.staffUser?.email === companyInfo.email,
+                    (company) => company?.admin?.email === companyInfo.email,
                 )
                 if (preCompany !== -1) {
                     return res[preCompany].busCompany.id
@@ -1094,6 +1137,28 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                             throw err
                         })
                 }
+            })
+            .catch(async (err) => {
+                const companyData = {
+                    name: companyInfo.representName,
+                    email: companyInfo.email,
+                    tel: companyInfo.telephone,
+                    gender: true,
+                    idCard: companyInfo.idCard,
+                    address: companyInfo.address,
+                    beginWorkDate: new Date(),
+                    businessName: companyInfo.firmName,
+                    businessLicense: companyInfo.businessLicense,
+                }
+                return await dispatch(companyThunk.addCompany({ companyInfor: companyData }))
+                    .unwrap()
+                    .then((res) => {
+                        return res?.busCompany?.id
+                    })
+                    .catch((err) => {
+                        setError(err)
+                        throw err
+                    })
             })
     }
 
@@ -1591,7 +1656,6 @@ const BusCompany = ({ companyInfo }) => {
     const handleLeave = () => {
         setIsHover(false)
     }
-    console.log(curAssign)
     return (
         <CCard
             textColor="dark"
@@ -1628,9 +1692,9 @@ const BusCompany = ({ companyInfo }) => {
                         <small>Chưa có tuyến xe</small>
                     )}
                 </div>
-                <small>{`SĐT: ${admin?.staffUser?.tel}`}</small>
+                <small>{`SĐT: ${admin?.tel}`}</small>
                 <br></br>
-                <small>{`Ngày hợp tác: ${busCompany?.coopDay}`}</small>
+                <small>{`Ngày hợp tác: ${convertToDisplayDate(busCompany?.coopDay)}`}</small>
             </CCardBody>
         </CCard>
     )
@@ -1642,8 +1706,10 @@ const Company = () => {
     const [openAddForm, setOpenAddForm] = useState(false)
     const openListRequest = useSelector(selectOpenListRequest)
     const listRequest = useSelector(selectListRequest)
-    const listCompany = useSelector(selectListCompany)
+    const listCompanyIn = useSelector(selectListCompany)
+    const [listCompany, setListCompany] = useState(listCompanyIn)
     const [currentRequest, setCurrentRequest] = useState(null)
+    const [filter, setFilter] = useState('active')
     useEffect(() => {
         if (listRoute.length === 0)
             dispatch(routeThunk.getOfficialRoute())
@@ -1654,6 +1720,13 @@ const Company = () => {
         dispatch(companyThunk.getCompany())
         dispatch(routeThunk.getRoute())
     }, [])
+    useEffect(() => {
+        if (filter === 'active') {
+            setListCompany(listCompanyIn.filter((company) => company.busCompany.active))
+        } else {
+            setListCompany(listCompanyIn.filter((company) => !company.busCompany.active))
+        }
+    }, [filter, listCompanyIn])
     return (
         <div>
             {openAddForm && (
@@ -1723,6 +1796,31 @@ const Company = () => {
                     </CTable>
                 )}
             </CCollapse>
+            <CRow>
+                <CCol md="2">
+                    <CCard
+                        role="button"
+                        textColor={filter === 'active' ? 'warning' : ''}
+                        className="p-1 text-center"
+                        onClick={() => setFilter('active')}
+                    >
+                        Đang hoạt động
+                    </CCard>
+                </CCol>
+                <CCol md="2">
+                    <CCard
+                        role="button"
+                        className="p-1 text-center"
+                        textColor={filter === 'inactive' ? 'warning' : ''}
+                        onClick={() => setFilter('inactive')}
+                    >
+                        Đã đóng
+                    </CCard>
+                </CCol>
+            </CRow>
+            <div className="my-2">
+                <b>{`Số nhà xe: ${listCompany.length}`}</b>
+            </div>
             <CRow className="my-3">
                 {listCompany.map((company, index) => (
                     <CCol key={index} sm="4">

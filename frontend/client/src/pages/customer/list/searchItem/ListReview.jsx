@@ -1,7 +1,7 @@
 export const ListReview = () => {
     return ( 
         <div>
-            Đánh giá 1
+            Chưa có đánh giá
         </div>
     )
 }

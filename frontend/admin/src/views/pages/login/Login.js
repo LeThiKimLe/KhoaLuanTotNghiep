@@ -26,6 +26,7 @@ import { selectLoading } from 'src/feature/auth/auth.slice'
 import CustomButton from 'src/views/customButton/CustomButton'
 import { selectUserRoleId } from 'src/feature/auth/auth.slice'
 import { CustomToast } from 'src/views/customToast/CustomToast'
+import loginImg from 'src/assets/images/loginImg.png'
 
 const Login = () => {
     const navigate = useNavigate()
@@ -85,11 +86,14 @@ const Login = () => {
             <CToaster ref={toaster} push={toast} placement="top-end" />
             <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
                 <CContainer>
-                    <CRow className="justify-content-center">
-                        <CCol md={8}>
+                    <CRow className="justify-content-center gap-2">
+                        <CCol md={10}>
                             <CCardGroup>
                                 <CCard className="p-4">
-                                    <CCardBody>
+                                    <CCardBody className="d-flex align-items-center">
+                                        <CCol md={4}>
+                                            <img src={loginImg} style={{ width: '100%' }}></img>
+                                        </CCol>
                                         <CForm ref={loginForm}>
                                             <div className="d-flex flex-column justify-content-center align-items-center h-100">
                                                 <CIcon
@@ -97,7 +101,7 @@ const Login = () => {
                                                     height={32}
                                                     className="text-center"
                                                 />
-                                                <h2>😄 Chúc bạn một ngày làm việc hiệu quả 😄</h2>
+                                                <h2>Chúc bạn một ngày làm việc hiệu quả</h2>
                                                 <p>---------------</p>
                                                 <h1>Đăng nhập</h1>
                                             </div>

@@ -1,7 +1,9 @@
 import os
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext, load_index_from_storage
+from dotenv import load_dotenv
+load_dotenv()
 
-os.environ["OPENAI_API_KEY"] = "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"
+os.environ["OPENAI_API_KEY"] = os.getenv("CHATBOT_API_KEY")
 
 class Chatbot:
     def __init__(self):

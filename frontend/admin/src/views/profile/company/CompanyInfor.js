@@ -156,8 +156,7 @@ const CompanyInfor = () => {
                                                                 type="text"
                                                                 id="staticEmail"
                                                                 defaultValue={
-                                                                    companyInfo?.admin?.staffUser
-                                                                        ?.name
+                                                                    companyInfo?.admin?.name
                                                                 }
                                                                 readOnly
                                                                 plainText
@@ -176,8 +175,7 @@ const CompanyInfor = () => {
                                                                 type="text"
                                                                 id="staticEmail"
                                                                 defaultValue={
-                                                                    companyInfo?.admin?.staffUser
-                                                                        ?.tel
+                                                                    companyInfo?.admin?.tel
                                                                 }
                                                                 readOnly
                                                                 plainText
@@ -196,8 +194,7 @@ const CompanyInfor = () => {
                                                                 type="text"
                                                                 id="staticEmail"
                                                                 defaultValue={
-                                                                    companyInfo?.admin?.staffUser
-                                                                        ?.email
+                                                                    companyInfo?.admin?.email
                                                                 }
                                                                 readOnly
                                                                 plainText

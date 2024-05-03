@@ -1,5 +1,8 @@
 import companyThunk from './busCompany.service'
 import { createSlice } from '@reduxjs/toolkit'
+import storage from 'redux-persist/lib/storage'
+import { persistReducer } from 'redux-persist'
+import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 
 const initialState = {
     loading: false,
@@ -50,6 +53,15 @@ export const selectOpenListRequest = (state) => state.company.openListRequest
 export const selectCurCompany = (state) => state.company.curCompany
 export const selectListAssign = (state) => state.company.listAssign
 
+const companyPersistConfig = {
+    key: 'company',
+    storage,
+    stateReconciler: autoMergeLevel2,
+    whitelist: ['curCompany', 'listAssign', 'listCompany'],
+}
+
+const companyReducer = persistReducer(companyPersistConfig, companySlice.reducer)
+
 export const companyActions = companySlice.actions
 
-export default companySlice.reducer
+export default companyReducer
