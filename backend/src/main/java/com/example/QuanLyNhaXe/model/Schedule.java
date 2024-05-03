@@ -72,4 +72,7 @@ public class Schedule {
 	
 	@OneToMany(mappedBy = "schedule")
 	private List<Review> reviews;
+	
+	@OneToMany(mappedBy = "schedule")
+	private List<TransportStationOrder> transportStationOrders;
 }
