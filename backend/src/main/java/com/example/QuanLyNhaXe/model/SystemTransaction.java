@@ -45,7 +45,7 @@ public class SystemTransaction {
 	private String paymentMethod;
 	
 	@OneToOne(mappedBy = "systemTransaction")
-	private TicketSave ticketSave;
+	private TicketSale ticketSale;
 	
 	@OneToOne(mappedBy = "systemTransaction")
 	private ServiceFee serviceFee;

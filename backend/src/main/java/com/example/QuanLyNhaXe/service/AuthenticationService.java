@@ -176,7 +176,7 @@ public class AuthenticationService {
 	}
 
 	@Transactional
-	public Object createDriver(SignupDriverDTO signupDriverDTO) {
+	public Object createDriver(SignupDriverDTO signupDriverDTO, String authentication) {
 		boolean checkExist1 = userRepository.existsByTel(signupDriverDTO.getTel());
 		boolean checkExistIdCard = driverRepository.existsByIdCard(signupDriverDTO.getIdCard());
 		if (checkExistIdCard || checkExist1) {
@@ -186,6 +186,8 @@ public class AuthenticationService {
 		if (checkExistLicenseNumber) {
 			throw new ConflictException("Số bằng lái tồn tại trong hệ thống");
 		}
+		User adminUser = userService.getUserByAuthorizationHeader(authentication);
+		BusCompany busCompany = adminUser.getStaff().getBusCompany();
 
 		SignupDTO signupDTO = SignupDTO.builder().email(signupDriverDTO.getEmail()).tel(signupDriverDTO.getTel())
 				.name(signupDriverDTO.getName()).gender(signupDriverDTO.getGender()).oauthId("").password("@123456@").build();
@@ -194,7 +196,7 @@ public class AuthenticationService {
 
 		Driver driver = Driver.builder().address(signupDriverDTO.getAddress())
 				.beginWorkDate(signupDriverDTO.getBeginWorkDate()).idCard(signupDriverDTO.getIdCard()).img(DEFAULT_IMG)
-				.licenseNumber(signupDriverDTO.getLicenseNumber()).issueDate(signupDriverDTO.getIssueDate()).user(user)
+				.licenseNumber(signupDriverDTO.getLicenseNumber()).issueDate(signupDriverDTO.getIssueDate()).user(user).busCompany(busCompany)
 				.build();
 		user.setDriver(driver);
 		try {

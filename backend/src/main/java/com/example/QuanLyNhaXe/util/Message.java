@@ -49,4 +49,5 @@ public class Message {
     public static final String ROUTEASSIGN_NOT_FOUND = "Không tìm thấy phân công nào";
     public static final String SEATMAP_NOT_FOUND = "Không tìm thấy sơ đồ ghế nào";
     public static final String SEAT_NOT_FOUND = "Không tìm thấy ghế";
+    public static final String FEE_NOT_FOUND = "Không tìm thấy phí dịch vụ";
 }
