@@ -46,6 +46,7 @@ public class VNPayService {
 
 			Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+			formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 			String vnp_CreateDate = formatter.format(cld.getTime());
 
 			String vnp_IpAddr = PaymentConfig.getIpAddress(request);
@@ -98,7 +99,7 @@ public class VNPayService {
 		}
 	}
 
-	public String generatePaymentUrl(HttpServletRequest req, Integer amountNumber, String order_id, Booking bookingInfor) throws UnsupportedEncodingException {
+	public String generatePaymentUrl(HttpServletRequest req, Integer amountNumber, String order_id, String bookingInfor) throws UnsupportedEncodingException {
 		String vnp_Version = "2.1.0";
 		String vnp_Command = "pay";
 		String orderType = "other";
@@ -121,16 +122,17 @@ public class VNPayService {
 			vnp_Params.put("vnp_BankCode", bankCode);
 		}
 		vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-		vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + bookingInfor.getCode());
+		vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + bookingInfor);
 		vnp_Params.put("vnp_OrderType", orderType);
 
 		vnp_Params.put("vnp_Locale", "vn");
 
-		vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_Returnurl + bookingInfor.getCode() + "/");
+		vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_Returnurl + bookingInfor + "/");
 		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
 		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+		formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		String vnp_CreateDate = formatter.format(cld.getTime());
 		vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
@@ -187,6 +189,7 @@ public class VNPayService {
 
 		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+		formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		String vnp_CreateDate = formatter.format(cld.getTime());
 
 		String vnp_IpAddr = PaymentConfig.getIpAddress(req);
