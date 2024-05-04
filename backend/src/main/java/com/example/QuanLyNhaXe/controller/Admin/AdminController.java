@@ -10,19 +10,23 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditDriverByAdmin;
 import com.example.QuanLyNhaXe.Request.EditStaffByAdmin;
+import com.example.QuanLyNhaXe.Request.PaymentServiceFee;
 import com.example.QuanLyNhaXe.Request.SignupDriverDTO;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
+import com.example.QuanLyNhaXe.service.FeeService;
 import com.example.QuanLyNhaXe.service.UserService;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -35,6 +39,7 @@ public class AdminController {
 	
 	private final AuthenticationService authenticationService;
 	private final UserService userService;
+	private final FeeService feeService;
 	
 	
 
@@ -44,8 +49,8 @@ public class AdminController {
 	}
 
 	@PostMapping("/drivers")
-	public ResponseEntity<Object> createDriver(@Valid @RequestBody SignupDriverDTO signupDriverDTO) {
-		return new ResponseEntity<>(authenticationService.createDriver(signupDriverDTO), HttpStatus.CREATED);
+	public ResponseEntity<Object> createDriver(@Valid @RequestBody SignupDriverDTO signupDriverDTO,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+		return new ResponseEntity<>(authenticationService.createDriver(signupDriverDTO,authorization), HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/drivers")
@@ -79,6 +84,17 @@ public class AdminController {
 	@GetMapping("/drivers/not-distribute")
 	public ResponseEntity<Object> getAllDriversNotDistribute() {
 		return new ResponseEntity<>(userService.getDriversNotDistribute(), HttpStatus.OK);
+	}
+	
+	
+	@GetMapping("/fee-payment")
+	public ResponseEntity<Object> getServiceFeePaymentURL(@RequestParam Integer feeId ,HttpServletRequest httpServletRequest) {
+		return new ResponseEntity<>(feeService.paymentServiceFee(feeId, httpServletRequest), HttpStatus.OK);
+	}
+	
+	@PostMapping("/fee-payment")
+	public ResponseEntity<Object> gupdatePaymentServiceFee(@RequestBody PaymentServiceFee paymentServiceFee) {
+		return new ResponseEntity<>(feeService.updateServiceFee(paymentServiceFee), HttpStatus.OK);
 	}
 	
 	

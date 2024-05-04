@@ -8,6 +8,7 @@ const initialState = {
     openListRequest: false,
     curCompany: null,
     listAssign: [],
+    update: false,
 }
 
 const companySlice = createSlice({
@@ -25,6 +26,9 @@ const companySlice = createSlice({
         },
         setCurCompany: (state, action) => {
             state.curCompany = action.payload
+        },
+        setUpdate: (state, action) => {
+            state.update = action.payload
         },
     },
     extraReducers: (builder) => {
@@ -49,6 +53,7 @@ export const selectListRequest = (state) => state.company.listRequest
 export const selectOpenListRequest = (state) => state.company.openListRequest
 export const selectCurCompany = (state) => state.company.curCompany
 export const selectListAssign = (state) => state.company.listAssign
+export const selectUpdate = (state) => state.company.update
 
 export const companyActions = companySlice.actions
 

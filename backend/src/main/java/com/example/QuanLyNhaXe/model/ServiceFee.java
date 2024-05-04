@@ -40,6 +40,9 @@ public class ServiceFee {
 	@Column(name = "due_date", nullable = false)
 	private LocalDate dueDate;
 	
+	@Column(name = "fee_code", length = 45)
+	private String feeCode;
+	
 	@OneToOne
     @JoinColumn(name = "system_transaction_id", referencedColumnName = "id")
     private SystemTransaction systemTransaction;

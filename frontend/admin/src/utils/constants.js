@@ -172,3 +172,36 @@ export const TIME_TABLE = {
         color: 'warning',
     },
 }
+
+export const TRIP_STATUS = [
+    {
+        value: 0,
+        label: 'Đăng ký',
+        description: 'Tuyến xe đã được đăng ký trên hệ thống bán vé',
+        helpDocument: 'https://www.google.com',
+    },
+    {
+        value: 1,
+        label: 'Chọn loại xe',
+        description: 'Nhà xe đã tạo loại phương tiện cho tuyến',
+        helpDocument: 'https://www.google.com',
+    },
+    {
+        value: 2,
+        label: 'Cập nhật giá vé',
+        description: 'Nhà xe cập nhật giá vé cho tuyến',
+        helpDocument: 'https://www.google.com',
+    },
+    {
+        value: 3,
+        label: 'Kiểm tra & Cập nhật trạm',
+        description: 'Nhà xe cập nhật thông tin các trạm đón - trả, dừng nghỉ cho tuyến',
+        helpDocument: 'https://www.google.com',
+    },
+    {
+        value: 4,
+        label: 'Sẵn sàng mở bán vé',
+        description: 'Nhà xe có thể mở bán các chuyến xe',
+        helpDocument: 'https://www.google.com',
+    },
+]

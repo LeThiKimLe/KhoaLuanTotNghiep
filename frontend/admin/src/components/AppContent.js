@@ -6,12 +6,13 @@ import AdminProtectedRoute from './AdminProtectedRoute'
 import routes from '../routes'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
-import { routeAction } from 'src/feature/route/route.slice'
+import { routeAction, selectListRoute } from 'src/feature/route/route.slice'
 import { getListAssignLocation } from 'src/utils/routeUtils'
 import { locationAction } from 'src/feature/location/location.slice'
 import routeThunk from 'src/feature/route/route.service'
 import companyThunk from 'src/feature/bus-company/busCompany.service'
 import locationThunk from 'src/feature/location/location.service'
+import { companyActions, selectUpdate } from 'src/feature/bus-company/busCompany.slice'
 
 // const AppContent = () => {
 //     return (
@@ -41,12 +42,12 @@ import locationThunk from 'src/feature/location/location.service'
 const AppContent = () => {
     const dispatch = useDispatch()
     const companyId = useSelector(selectCompanyId)
+    const update = useSelector(selectUpdate)
     //Get company route info
     const getCompanyRouteData = () => {
         dispatch(routeThunk.getRoute())
             .unwrap()
             .then((listRoute) => {
-                console.log(listRoute)
                 return listRoute
             })
             .then(async (listRoute) => {
@@ -95,10 +96,16 @@ const AppContent = () => {
                         dispatch(locationAction.setCompanyLocation(filterStation))
                     })
             })
+            .then(() => {
+                dispatch(companyActions.setUpdate(false))
+            })
     }
     useEffect(() => {
         getCompanyRouteData()
     }, [])
+    useEffect(() => {
+        if (update) getCompanyRouteData()
+    }, [update])
     return (
         <CContainer lg>
             <Suspense fallback={<CSpinner color="primary" />}>

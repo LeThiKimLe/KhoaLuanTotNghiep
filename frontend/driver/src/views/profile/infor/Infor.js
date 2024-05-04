@@ -260,7 +260,7 @@ const UserProfile = () => {
                             <CCardBody>
                                 <CForm ref={myform}>
                                     <p className="text-medium-emphasis">
-                                        Xem và cập nhật tài khoản tài xế ủa bạn
+                                        Xem và cập nhật tài khoản tài xế của bạn
                                     </p>
                                     <CRow>
                                         <CCol md={4}>

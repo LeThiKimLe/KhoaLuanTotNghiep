@@ -204,10 +204,10 @@ public class EmailService {
 	            + "<p>Mã định danh: " + user.getStaff().getIdCard() + "</p>"
 	            + "<p>Địa chỉ: " + user.getStaff().getAddress()+ "</p>"
 	            + "<p>Tên đăng nhập: " + user.getAccount().getUsername() + "</p>"
-	            + "<p>Mật khẩu: " + user.getAccount().getPassword() + "</p>"
+	            + "<p>Mật khẩu: @12345678@</p>"
 	            + "<h3>Thông tin về chính sách sử dụng:</h3>"
-	            + "<p>Chúng tôi xin thông báo rằng bạn được sử dụng dịch vụ của chúng tôi miễn phí từ ngày hôm nay đến ngày"+date
-	            + " Để tiếp tục sử dụng dịch vụ sau thời gian miễn phí, bạn hãy thanh toán phí dịch vụ trước ngày đến hạn</p>"
+	            + "<p>Chúng tôi xin thông báo rằng bạn được sử dụng dịch vụ của chúng tôi miễn phí từ ngày hôm nay đến ngày: "+date
+	            + ". Để tiếp tục sử dụng dịch vụ sau thời gian miễn phí, bạn hãy thanh toán phí dịch vụ trước ngày đến hạn</p>"
 	             + "<p>Chi Phí để sử dụng dịch vụ cần thanh toán là: "+fee+"</p>"
 	            + "<p>Chúng tôi rất mong nhận được sự hợp tác lâu dài từ bạn.</p>"
 	            + "<p>Xin chân thành cảm ơn và trân trọng,</p>"

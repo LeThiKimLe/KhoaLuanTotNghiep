@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.QuanLyNhaXe.Request.AssignRoute;
 import com.example.QuanLyNhaXe.Request.CreateBusCompany;
+import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditBusCompany;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.dto.AdminDTO;
@@ -61,7 +62,7 @@ public class BusCompanyService {
 		for(BusCompany company:busCompanyLists) {
 			Admin admin=adminRepository.findById(company.getAdminId())
 					.orElseThrow(() -> new NotFoundException(Message.USER_NOT_FOUND));
-			CompanyReponse com =CompanyReponse.builder().admin(modelMapper.map(admin,AdminDTO.class)).busCompany(modelMapper.map(company, BusCompanyDTO.class)).build();
+			CompanyReponse com =CompanyReponse.builder().admin(modelMapper.map(admin.getStaff().getUser(), UserDTO.class)).busCompany(modelMapper.map(company, BusCompanyDTO.class)).build();
 			companyReponses.add(com);
 		}
 	  return companyReponses;
@@ -88,7 +89,7 @@ public class BusCompanyService {
 			e.printStackTrace();
 		}
 
-		return CompanyReponse.builder().admin(modelMapper.map(admin,AdminDTO.class)).busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).build();
+		return CompanyReponse.builder().admin(modelMapper.map(admin.getStaff().getUser(), UserDTO.class)).busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).build();
 
 	}
 
@@ -161,5 +162,14 @@ public class BusCompanyService {
 
 		return routeAssigns.stream().map(routeAssign -> modelMapper.map(routeAssign, CompanyRouteDTO.class)).toList();
 
+	}
+	
+	public Object eidtStateCompany(EditActiveDTO editActiveDTO) {
+		BusCompany busCompany=busCompanyRepository.findById(editActiveDTO.getId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		busCompany.setActive(editActiveDTO.isActive());
+		busCompanyRepository.save(busCompany);
+		return modelMapper.map(busCompany, BusCompanyDTO.class);
+				
 	}
 }
