@@ -133,7 +133,7 @@ public class BookingService {
 		BookingSimpleDTO bookingSimpleDTO = modelMapper.map(booking, BookingSimpleDTO.class);
 		try {
 
-			String paymentURL = vnPayService.generatePaymentUrl(request, price*createBookingDTO.getTicketNumber(), orderId, booking);
+			String paymentURL = vnPayService.generatePaymentUrl(request, price*createBookingDTO.getTicketNumber(), orderId, booking.getCode());
 
 			bookingSimpleDTO.setPaymentURL(paymentURL);
 		} catch (UnsupportedEncodingException e) {
@@ -265,7 +265,7 @@ public class BookingService {
 		BookingSimpleDTO bookingSimpleDTO = modelMapper.map(booking, BookingSimpleDTO.class);
 		try {
 
-			String paymentURL = vnPayService.generatePaymentUrl(request, price*createBookingDTO.getTicketNumber(), orderId, booking);
+			String paymentURL = vnPayService.generatePaymentUrl(request, price*createBookingDTO.getTicketNumber(), orderId, booking.getCode());
 
 			bookingSimpleDTO.setPaymentURL(paymentURL);
 		} catch (UnsupportedEncodingException e) {
@@ -294,7 +294,7 @@ public class BookingService {
 		BookingSimpleDTO bookingSimpleDTO = modelMapper.map(booking, BookingSimpleDTO.class);
 		try {
 			Integer price=booking.getTicketNumber()*booking.getTickets().get(0).getTicketPrice();
-			String paymentURL = vnPayService.generatePaymentUrl(request,price , orderId, booking);
+			String paymentURL = vnPayService.generatePaymentUrl(request,price , orderId, booking.getCode());
 
 			bookingSimpleDTO.setPaymentURL(paymentURL);
 		} catch (UnsupportedEncodingException e) {
