@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.QuanLyNhaXe.Request.AssignRoute;
 import com.example.QuanLyNhaXe.Request.CreateBusCompany;
+import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditBusCompany;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.dto.AdminDTO;
@@ -161,5 +162,14 @@ public class BusCompanyService {
 
 		return routeAssigns.stream().map(routeAssign -> modelMapper.map(routeAssign, CompanyRouteDTO.class)).toList();
 
+	}
+	
+	public Object eidtStateCompany(EditActiveDTO editActiveDTO) {
+		BusCompany busCompany=busCompanyRepository.findById(editActiveDTO.getId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		busCompany.setActive(editActiveDTO.isActive());
+		busCompanyRepository.save(busCompany);
+		return modelMapper.map(busCompany, BusCompanyDTO.class);
+				
 	}
 }

@@ -44,8 +44,9 @@ public class VNPayService {
 			String vnp_OrderInfo = "Kiem tra ket qua GD OrderId:" + vnp_TxnRef;
 			String vnp_TransDate = transDate;
 
-			Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+			Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+			formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 			String vnp_CreateDate = formatter.format(cld.getTime());
 
 			String vnp_IpAddr = PaymentConfig.getIpAddress(request);
@@ -129,8 +130,9 @@ public class VNPayService {
 		vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_Returnurl + bookingInfor + "/");
 		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
-		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+		formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		String vnp_CreateDate = formatter.format(cld.getTime());
 		vnp_Params.put("vnp_CreateDate", vnp_CreateDate);
 
@@ -185,8 +187,9 @@ public class VNPayService {
 		String vnp_TransactionDate = transactionDate;
 		String vnp_CreateBy = user;
 
-		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
+		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
+		formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		String vnp_CreateDate = formatter.format(cld.getTime());
 
 		String vnp_IpAddr = PaymentConfig.getIpAddress(req);

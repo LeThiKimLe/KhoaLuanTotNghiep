@@ -59,6 +59,11 @@ public class Schedule {
 	@JoinColumn(name = "driver_id", referencedColumnName = "driver_id")
 	private Driver driver;
 	
+	
+	@ManyToOne
+	@JoinColumn(name = "driver2_id", referencedColumnName = "driver_id")
+	private Driver driver2;
+	
 	@ManyToOne
 	@JoinColumn(name = "bus_id", referencedColumnName = "id")
 	private Bus bus;
