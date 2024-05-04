@@ -50,6 +50,7 @@ public class GoogleVerifyService {
 				String name = (String) payload.get("name");
 				Optional<Account> accountOptional = accountRepository.findByOauthId(userId);
 				if (accountOptional.isPresent()) {
+					
 					userDTO=modelMapper.map(accountOptional.get().getUser(), UserDTO.class);
 					
 					String accessToken = jwtService.generateToken(accountOptional.get());

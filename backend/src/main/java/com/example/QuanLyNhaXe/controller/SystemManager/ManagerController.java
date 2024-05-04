@@ -21,6 +21,7 @@ import com.example.QuanLyNhaXe.service.UserService;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -48,6 +49,12 @@ public class ManagerController {
 	public ResponseEntity<Object> sendConfirmEmail(@RequestParam Integer companyId) {
 		return new ResponseEntity<>(feeService.sendNotificationForFee(companyId), HttpStatus.OK);
 	}
+	
+	@GetMapping("/service-fee")
+	public ResponseEntity<Object> getServiceFee( @Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,HttpServletRequest httpServletRequest) {
+		return new ResponseEntity<>(feeService.getServiceFee(authorization), HttpStatus.OK);
+	}
+	
 	
 
 }

@@ -18,13 +18,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "transportstation_order")
+@Table(name = "transporttation_order")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransportStationOrder {
+public class TransportTationOrder {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

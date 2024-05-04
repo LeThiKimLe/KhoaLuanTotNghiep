@@ -31,7 +31,7 @@ public class PaymentConfig {
 	
 
 		public static String vnp_TmnCode = "UHANIMVU";
-		public static  String vnp_Returnurl = "http://localhost:3000/payment/";
+		public static  String vnp_Returnurl = "https://vexe.workon.space/payment/";
 		public static String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 		public  static String vnp_HashSecret = "HESYEZSHYLQULKQSJTOAXSWQKAQXCVYX";		
 		public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";

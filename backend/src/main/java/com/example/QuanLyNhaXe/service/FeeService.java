@@ -2,6 +2,7 @@ package com.example.QuanLyNhaXe.service;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
+import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -30,8 +31,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class FeeService {
-	
-	private Integer feeOneDay=34000;
+
+	private Integer feeOneDay = 34000;
 	private final RouteAssignRepository routeAssignRepository;
 	private final BusCompanyRepository busCompanyRepository;
 	private final UtilityService utilityService;
@@ -41,96 +42,115 @@ public class FeeService {
 	private final ServiceFeeRepository feeRepository;
 	private final VNPayService vnPayService;
 	private final SystemTransactionService systemTransactionService;
+	private final UserService userService;
 
-	
 	public ServiceFeeDTO createServiceFee(Integer companyId) {
-		BusCompany busCompany=busCompanyRepository.findById(companyId)
+		BusCompany busCompany = busCompanyRepository.findById(companyId)
 				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
-		
+
 		String orderId = utilityService.getRandomNumber(8);
-		
-		Integer routeTotal=routeAssignRepository.countBybusCompanyId(companyId);
-		
-		LocalDate dueDate=utilityService.addDays(busCompany.getCoopDay(), 15);
-		long days=utilityService.countDaysToEndOfMonth(dueDate);
-		double fee=routeTotal*feeOneDay*days;
-		ServiceFee serviceFee=ServiceFee.builder().fee(fee).feeCode(orderId).status(TicketState.PENDING_PAYMENT.getLabel()).busCompany(busCompany).dueDate(dueDate).build();
+
+		Integer routeTotal = routeAssignRepository.countBybusCompanyId(companyId);
+
+		LocalDate dueDate = utilityService.addDays(busCompany.getCoopDay(), 15);
+		long days = utilityService.countDaysToEndOfMonth(dueDate);
+		double fee = routeTotal * feeOneDay * days;
+		ServiceFee serviceFee = ServiceFee.builder().fee(fee).feeCode(orderId)
+				.status(TicketState.PENDING_PAYMENT.getLabel()).busCompany(busCompany).dueDate(dueDate).build();
 		feeRepository.save(serviceFee);
 		return modelMapper.map(serviceFee, ServiceFeeDTO.class);
-				
-		
+
 	}
-	
-	public Object  sendNotificationForFee(Integer companyId) {
-		BusCompany busCompany=busCompanyRepository.findById(companyId)
+
+	public Object sendNotificationForFee(Integer companyId) {
+		BusCompany busCompany = busCompanyRepository.findById(companyId)
 				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
-		
-		Admin admin=adminRepository.findById(busCompany.getAdminId())
+
+		Admin admin = adminRepository.findById(busCompany.getAdminId())
 				.orElseThrow(() -> new NotFoundException(Message.USER_NOT_FOUND));
-		User user=admin.getStaff().getUser();
-		ServiceFeeDTO serviceFeeDTO=createServiceFee(companyId);
-		if (emailService.checkEmail(user.getEmail())){
+		User user = admin.getStaff().getUser();
+		ServiceFeeDTO serviceFeeDTO = createServiceFee(companyId);
+		if (emailService.checkEmail(user.getEmail())) {
 			emailService.sendNotification(busCompany, user, serviceFeeDTO.getFee());
-		}
-		else {
+		} else {
 			throw new BadRequestException("Yêu cầu không hợp lệ. Email không tồn tại");
 		}
 		return new ResponseMessage("Gửi thông báo thành công");
-		
+
 	}
-	
+
 	public Object paymentServiceFee(Integer feeId, HttpServletRequest request) {
-		
-		ServiceFee serviceFee=feeRepository.findById(feeId)
+
+		ServiceFee serviceFee = feeRepository.findById(feeId)
 				.orElseThrow(() -> new NotFoundException(Message.FEE_NOT_FOUND));
 		try {
-			int fee = (int)serviceFee.getFee(); 
-			String paymentURL = vnPayService.generatePaymentUrl(request, fee, serviceFee.getFeeCode(), serviceFee.getId().toString());
+			int fee = (int) serviceFee.getFee();
+			String paymentURL = vnPayService.generatePaymentUrl(request, fee, serviceFee.getFeeCode(),
+					serviceFee.getId().toString());
 
 			return paymentURL;
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 			throw new BadRequestException("Có lỗi xảy ra trong quá trình thanh toán");
-		}	
+		}
 
 	}
-	
-	
+
 	public ServiceFee createDdefaultFee(LocalDate day, Integer companyId) {
-		Integer routeTotal=routeAssignRepository.countBybusCompanyId(companyId);
-		 LocalDate nextMonthFirstDay = day.plusMonths(1).withDayOfMonth(1);
-		 LocalDate dueDate=nextMonthFirstDay.withDayOfMonth(5);
-		 int lastDayOfMonth = nextMonthFirstDay.lengthOfMonth();
-		 double fee=routeTotal*feeOneDay*lastDayOfMonth;
-		BusCompany busCompany=busCompanyRepository.findById(companyId)
+		Integer routeTotal = routeAssignRepository.countBybusCompanyId(companyId);
+		LocalDate nextMonthFirstDay = day.plusMonths(1).withDayOfMonth(1);
+		LocalDate dueDate = nextMonthFirstDay.withDayOfMonth(5);
+		int lastDayOfMonth = nextMonthFirstDay.lengthOfMonth();
+		double fee = routeTotal * feeOneDay * lastDayOfMonth;
+		BusCompany busCompany = busCompanyRepository.findById(companyId)
 				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 		String orderId = utilityService.getRandomNumber(8);
-		ServiceFee serviceFee=ServiceFee.builder().fee(fee).feeCode(orderId).status(TicketState.PENDING_PAYMENT.getLabel()).busCompany(busCompany).dueDate(dueDate).build();
+		ServiceFee serviceFee = ServiceFee.builder().fee(fee).feeCode(orderId)
+				.status(TicketState.PENDING_PAYMENT.getLabel()).busCompany(busCompany).dueDate(dueDate).build();
 		feeRepository.save(serviceFee);
 		return serviceFee;
-		
+
 	}
-	 
+
 	@Transactional
 	public Object updateServiceFee(PaymentServiceFee paymentServiceFee) {
-		
-		ServiceFee serviceFee=feeRepository.findById(paymentServiceFee.getFeeServiceId())
+
+		ServiceFee serviceFee = feeRepository.findById(paymentServiceFee.getFeeServiceId())
 				.orElseThrow(() -> new NotFoundException(Message.FEE_NOT_FOUND));
-		
+
 		try {
-			SystemTransaction transaction=systemTransactionService.createSysTransaction(paymentServiceFee, serviceFee.getFee());
+			SystemTransaction transaction = systemTransactionService.createSysTransaction(paymentServiceFee,
+					serviceFee.getFee());
 			serviceFee.setStatus(TicketState.PAID.getLabel());
 			serviceFee.setSystemTransaction(transaction);
 			feeRepository.save(serviceFee);
-			ServiceFee newFee=createDdefaultFee(serviceFee.getDueDate(), serviceFee.getBusCompany().getId());
-			return modelMapper.map(newFee,ServiceFeeDTO.class);
-			
+			ServiceFee newFee = createDdefaultFee(serviceFee.getDueDate(), serviceFee.getBusCompany().getId());
+			return modelMapper.map(newFee, ServiceFeeDTO.class);
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			throw new BadRequestException("Lỗi trong xử lý dữ liệu");
 		}
-		
-		
+
+	}
+
+	public Object getServiceFee(String authentication) {
+
+		User user = userService.getUserByAuthorizationHeader(authentication);
+		List<ServiceFee> serviceFees = feeRepository.findAll();
+		if (serviceFees.isEmpty()) {
+			throw new NotFoundException(Message.FEE_NOT_FOUND);
+		}
+		if (user.getAccount().getRole().getRoleName().equals("ADMIN")) {
+			BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+					.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+
+			return serviceFees.stream()
+					.filter(serviceFee -> serviceFee.getBusCompany().getId().equals(busCompany.getId()))
+					.map(serviceFee -> modelMapper.map(serviceFee, ServiceFeeDTO.class)).toList();
+		}
+		return serviceFees.stream().map(serviceFee -> modelMapper.map(serviceFee, ServiceFeeDTO.class)).toList();
+
 	}
 
 }

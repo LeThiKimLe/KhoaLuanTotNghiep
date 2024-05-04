@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.AssignRoute;
 import com.example.QuanLyNhaXe.Request.CreateBusCompany;
+import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditBusCompany;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
 
@@ -35,7 +36,7 @@ public class BusCompanyController {
 
 	@GetMapping
 	public ResponseEntity<Object> getAllBusCompany() {
-		return new ResponseEntity<>(busCompanyService.getAllBusCompany(), HttpStatus.CREATED);
+		return new ResponseEntity<>(busCompanyService.getAllBusCompany(), HttpStatus.OK);
 	}
 
 	@PostMapping
@@ -45,7 +46,7 @@ public class BusCompanyController {
 	
 	@PutMapping
 	public ResponseEntity<Object> editBusCompany(@Valid @RequestBody EditBusCompany editBusCompany) {
-		return new ResponseEntity<>(busCompanyService.editBusCompany(editBusCompany), HttpStatus.CREATED);
+		return new ResponseEntity<>(busCompanyService.editBusCompany(editBusCompany), HttpStatus.OK);
 	}
 	
 	@PostMapping("/assign-company")
@@ -55,7 +56,12 @@ public class BusCompanyController {
 	
 	@GetMapping("/assign-company")
 	public ResponseEntity<Object> getAllBusCompanyAsignRoute(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
-		return new ResponseEntity<>(busCompanyService.getRouteAssign(authorization), HttpStatus.CREATED);
+		return new ResponseEntity<>(busCompanyService.getRouteAssign(authorization), HttpStatus.OK);
+	}
+	
+	@PutMapping("/state")
+	public ResponseEntity<Object> editActiveBusCompany(@RequestBody EditActiveDTO editActiveDTO) {
+		return new ResponseEntity<>(busCompanyService.eidtStateCompany(editActiveDTO), HttpStatus.OK);
 	}
 	
 }

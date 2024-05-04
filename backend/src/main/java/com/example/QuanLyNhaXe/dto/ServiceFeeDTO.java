@@ -10,5 +10,6 @@ public class ServiceFeeDTO {
 	private String status;
 	private double fee;
 	private LocalDate dueDate;
+	private BusCompanyDTO company;
 
 }
