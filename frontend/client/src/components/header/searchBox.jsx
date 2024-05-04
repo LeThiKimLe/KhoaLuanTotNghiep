@@ -24,7 +24,24 @@ const SearchBox = ({ listRoute, intro, parentClass, setSearchAction }) => {
     const listDestination = useSelector(selectListDestination)
     // const { listDeparture, listDestination } = useMemo(() => createListRoutes(listRoute), [])
     const originPlaceInput = useRef(null);
-    const [currentInfor, setCurrentInfor] = useState(searchInfor)
+    const getDate = () => {
+        let departDate = searchInfor.departDate ? searchInfor.departDate : format(new Date(), 'dd/MM/yyyy')
+        let arrivalDate = searchInfor.arrivalDate ? searchInfor.arrivalDate : format(new Date(), 'dd/MM/yyyy')
+        if (parse(searchInfor.departDate, 'dd/MM/yyyy', new Date()) - new Date() < 0)
+        {
+            departDate = format(new Date(), 'dd/MM/yyyy')
+        }
+        if (parse(departDate, 'dd/MM/yyyy', new Date()) - parse(searchInfor.arrivalDate, 'dd/MM/yyyy', new Date()) > 0)
+        {
+            arrivalDate = departDate
+        }
+        return { departDate, arrivalDate }
+    }
+    const [currentInfor, setCurrentInfor] = useState({
+        ...searchInfor,
+        departDate: getDate().departDate,
+        arrivalDate: getDate().arrivalDate,
+    })
     const [message, setMessage] = useState({ content: '', repeat: 0 })
     const navigate = useNavigate()
     const today = new Date();
