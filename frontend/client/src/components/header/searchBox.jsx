@@ -152,6 +152,7 @@ const SearchBox = ({ listRoute, intro, parentClass, setSearchAction }) => {
     useEffect(() => {
         if (listRoute.length > 0)
         {
+            console.log(listRoute)
             const { listDeparture, listDestination } =  createListRoutes(listRoute)
             dispatch(searchAction.setListDeparture(listDeparture))
             dispatch(searchAction.setListDestination(listDestination))

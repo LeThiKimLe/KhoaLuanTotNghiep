@@ -99,12 +99,33 @@ const getAssignedRouteForCompany = createAsyncThunk(
     },
 )
 
+const noticeCompany = createAsyncThunk(
+    'manager/company/confirm-email',
+    async (companyId, thunkAPI) => {
+        try {
+            const response = await axiosClient.post('manager/confirm-email', null, {
+                params: {
+                    companyId: companyId,
+                },
+            })
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const companyThunk = {
     getCompany,
     addCompany,
     editCompanyInfor,
     assignRouteForCompany,
     getAssignedRouteForCompany,
+    noticeCompany,
 }
 
 export default companyThunk

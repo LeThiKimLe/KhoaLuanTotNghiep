@@ -471,6 +471,7 @@ const TimeTable = ({
             }
         }
     }, [currentRoute, dayStart.getDate(), currentTrip, reload])
+    console.log(new Date(dayStart.getTime() + 86400000))
     return (
         <>
             {listSchedule.length === 7 &&
@@ -497,8 +498,9 @@ const TimeTable = ({
                                                 className="text-center"
                                                 scope="col"
                                                 color={
-                                                    dayStart.getDate() + dayIndex ===
-                                                    currentDay.getDate()
+                                                    new Date(
+                                                        dayStart.getTime() + dayIndex * 86400000,
+                                                    ).getDate() === currentDay.getDate()
                                                         ? 'dark'
                                                         : ''
                                                 }
