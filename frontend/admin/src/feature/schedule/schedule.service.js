@@ -69,22 +69,30 @@ const getMaxSchedules = createAsyncThunk('admin/schedules/maximum', async (tripI
     }
 })
 
-const getTripBusDriver = createAsyncThunk('admin/trips/driver-bus', async (tripId, thunkAPI) => {
-    try {
-        const response = await axiosClient.get('admin/trips/driver-bus', {
-            params: {
-                tripId: tripId,
-            },
-        })
-        return response
-    } catch (error) {
-        const message =
-            (error.response && error.response.data && error.response.data.message) ||
-            error.message ||
-            error.toString()
-        return thunkAPI.rejectWithValue(message)
-    }
-})
+const getTripBusDriver = createAsyncThunk(
+    'admin/trips/driver-bus',
+    async ({ tripId }, thunkAPI) => {
+        try {
+            const response = await axiosClient.get('manager/trips/driver-bus', {
+                params: {
+                    tripId: tripId,
+                },
+            })
+            return response
+            // const { drivers, buses } = response
+            // return {
+            //     drivers: drivers.filter((driver) => driver.companyId === companyId),
+            //     buses: buses.filter((bus) => bus.companyId === companyId),
+            // }
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
 
 const updateSchedule = createAsyncThunk('admin/schedules/edit', async (scheduleInfor, thunkAPI) => {
     try {
@@ -92,6 +100,7 @@ const updateSchedule = createAsyncThunk('admin/schedules/edit', async (scheduleI
             scheduleId: scheduleInfor.id,
             busId: scheduleInfor.bus,
             driverId: scheduleInfor.driver,
+            driverId2: scheduleInfor.driver2,
             note: scheduleInfor.note,
         })
         return response

@@ -49,6 +49,7 @@ import {
     selectOpenListRequest,
     selectListCompany,
     selectListAssign,
+    selectCurCompany,
 } from 'src/feature/bus-company/busCompany.slice'
 import { COLOR } from 'src/utils/constants'
 import locationThunk from 'src/feature/location/location.service'
@@ -1360,7 +1361,6 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         listLocation.current = listLocationIn
         listRoute.current = listRouteIn
     }, [listLocationIn, listRouteIn])
-
     return (
         <>
             <CModal

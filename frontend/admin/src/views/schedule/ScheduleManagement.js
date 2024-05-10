@@ -53,6 +53,8 @@ import staffThunk from 'src/feature/staff/staff.service'
 import busThunk from 'src/feature/bus/bus.service'
 import { CustomToast } from '../customToast/CustomToast'
 import { AssignScheduleForm } from './AddScheduleForm'
+import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
     const [schedule, setSchedule] = useState(inSchedule)
     const [toast, addToast] = useState(0)
@@ -236,9 +238,9 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                                 htmlFor="note"
                                                 className="col-sm-2 col-form-label"
                                             >
-                                                <b>Tài xế</b>
+                                                <b>Tài xế 1</b>
                                             </CFormLabel>
-                                            <CCol sm={8}>
+                                            <CCol sm={3}>
                                                 <CFormInput
                                                     type="note"
                                                     id="driver"
@@ -247,6 +249,24 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                                         schedule.driverUser
                                                             ? schedule.driverUser.name
                                                             : 'Chưa có tài xế'
+                                                    }
+                                                />
+                                            </CCol>
+                                            <CFormLabel
+                                                htmlFor="note"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Tài xế 2</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <CFormInput
+                                                    type="note"
+                                                    id="driver"
+                                                    disabled
+                                                    defaultValue={
+                                                        schedule.driverUser2
+                                                            ? schedule.driverUser2.name
+                                                            : 'Không'
                                                     }
                                                 />
                                             </CCol>
@@ -285,9 +305,9 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                                     id="price"
                                                     disabled
                                                     value={`${
-                                                        curRoute.busType?.capacity -
+                                                        curTrip.busType?.capacity -
                                                         schedule.availability
-                                                    } / ${curRoute.busType?.capacity}`}
+                                                    } / ${curTrip.busType?.capacity}`}
                                                 />
                                             </CCol>
                                         </CRow>
@@ -316,7 +336,6 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                             Hủy
                                         </CButton>
                                     )}
-                                    <CButton>Xuất lệnh vận chuyển</CButton>
                                 </CRow>
                             </CCardFooter>
                         </CCard>
@@ -471,7 +490,6 @@ const TimeTable = ({
             }
         }
     }, [currentRoute, dayStart.getDate(), currentTrip, reload])
-    console.log(new Date(dayStart.getTime() + 86400000))
     return (
         <>
             {listSchedule.length === 7 &&
@@ -644,8 +662,11 @@ const ScheduleManagement = () => {
         busCount: 0,
         driverCount: 0,
     })
+    const companyId = useSelector(selectCompanyId)
     const listRoute = useSelector(selectListCompanyRoute)
-    const [currentRoute, setCurrentRoute] = useState(0)
+    const curTrip = useSelector(selectCurrentTrip)
+    const curRoute = useSelector(selectCurrentRoute)
+    const [currentRoute, setCurrentRoute] = useState(curRoute ? curRoute.id : 0)
     const [currentTrip, setCurrentTrip] = useState(0)
     const [currentDay, setCurrentDate] = useState(new Date())
     const startDate = startOfWeek(currentDay, { weekStartsOn: 1 })
@@ -727,16 +748,23 @@ const ScheduleManagement = () => {
         dispatch(scheduleThunk.getFixSchedule())
     }, [])
     useEffect(() => {
-        setCurrentTrip(-1)
         if (currentRoute != 0) {
-            const listTripIn = tripProcess(listRoute).filter(
-                (trip) => trip.route.id == currentRoute,
+            const listTripIn = tripProcess(listRoute, companyId).filter(
+                (trip) =>
+                    trip.route.id == currentRoute &&
+                    trip.price !== 0 &&
+                    trip.active &&
+                    trip.busType,
             )
             setListTrip(listTripIn)
+            console.log(listRoute)
+            if (!curTrip) setCurrentTrip(-1)
+            else
+                setCurrentTrip(listTripIn.findIndex((trip) => trip.turnGo.id === curTrip.turnGo.id))
         }
     }, [currentRoute])
     useEffect(() => {
-        if (currentTrip !== -1) {
+        if (currentTrip !== -1 && curTrip) {
             dispatch(scheduleThunk.getMaxSchedules(currentTrip))
                 .unwrap()
                 .then((res) => {
@@ -747,7 +775,11 @@ const ScheduleManagement = () => {
                     })
                 })
                 .catch((error) => {})
-            dispatch(scheduleThunk.getTripBusDriver(currentTrip))
+            dispatch(
+                scheduleThunk.getTripBusDriver({
+                    tripId: curTrip.turnGo.id,
+                }),
+            )
                 .unwrap()
                 .then((res) => {})
                 .catch((error) => {})
@@ -918,13 +950,13 @@ const ScheduleManagement = () => {
                                 loading={loading}
                                 color="warning"
                             ></CustomButton>
-                            <CustomButton
+                            {/* <CustomButton
                                 className="mt-3 mb-3 mx-2"
                                 onClick={() => setOpenAssignForm(true)}
                                 text="Mở bán vé"
                                 loading={loading}
                                 color="info"
-                            ></CustomButton>
+                            ></CustomButton> */}
                             <CustomButton
                                 className="mt-3 mb-3 mx-2"
                                 onClick={() => finishAdd()}

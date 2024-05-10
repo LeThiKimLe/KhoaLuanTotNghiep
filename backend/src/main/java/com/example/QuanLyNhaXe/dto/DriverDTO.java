@@ -13,6 +13,5 @@ public class DriverDTO {
 	private Date beginWorkDate;
 	private String licenseNumber;
 	private Date issueDate;
-
-
+	private Integer busCompanyId;
 }

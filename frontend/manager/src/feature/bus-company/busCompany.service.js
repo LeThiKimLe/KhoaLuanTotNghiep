@@ -119,6 +119,25 @@ const noticeCompany = createAsyncThunk(
     },
 )
 
+const activeCompany = createAsyncThunk(
+    'manager/company/active',
+    async ({ companyId, active }, thunkAPI) => {
+        try {
+            const response = await axiosClient.put('/manager/company/state', {
+                id: companyId,
+                active: active,
+            })
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const companyThunk = {
     getCompany,
     addCompany,
@@ -126,6 +145,7 @@ const companyThunk = {
     assignRouteForCompany,
     getAssignedRouteForCompany,
     noticeCompany,
+    activeCompany,
 }
 
 export default companyThunk

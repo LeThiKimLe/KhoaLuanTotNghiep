@@ -23,6 +23,7 @@ public class ScheduleDTO {
 	private Integer availability;
 	private String note;
 	private UserDTO driverUser;
+	private UserDTO driverUser2;
 	private BusDTO bus;
 	private List<TicketTripDTO> tickets;
 	

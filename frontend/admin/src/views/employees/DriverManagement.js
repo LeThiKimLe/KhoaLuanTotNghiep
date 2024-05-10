@@ -44,6 +44,7 @@ import format from 'date-fns/format'
 import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import routeThunk from 'src/feature/route/route.service'
 import { getTripJourney, getRouteJourney } from 'src/utils/tripUtils'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, currentRoute }) => {
     const [validated, setValidated] = useState(false)
     const listRoute = useSelector(selectListCompanyRoute)
@@ -474,9 +475,9 @@ const DriverManagement = () => {
         })
         return listTrip
     }
-    const handleGetTripDriver = () => {
+    const handleGetTripDriver = async () => {
         setLoading(true)
-        dispatch(staffThunk.getTripDriver(curTrip))
+        await dispatch(staffThunk.getTripDriver(curTrip))
             .unwrap()
             .then((res) => {
                 setListCurDriver(res)
@@ -525,6 +526,7 @@ const DriverManagement = () => {
             )
         }
     }, [curRoute])
+    console.log(curTrip)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />

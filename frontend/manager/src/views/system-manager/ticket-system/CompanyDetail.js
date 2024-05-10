@@ -34,7 +34,11 @@ import {
     CTooltip,
     CModalFooter,
 } from '@coreui/react'
-import { companyActions, selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
+import {
+    companyActions,
+    selectCurCompany,
+    selectListCompany,
+} from 'src/feature/bus-company/busCompany.slice'
 import { companyInput } from 'src/utils/constants'
 import { useState, useRef } from 'react'
 import companyThunk from 'src/feature/bus-company/busCompany.service'
@@ -65,6 +69,9 @@ import { selectListLocation } from 'src/feature/location/location.slice'
 import stationThunk from 'src/feature/station/station.service'
 import locationThunk from 'src/feature/location/location.service'
 import mapThunk from 'src/feature/map/map.service'
+import feeThunk from 'src/feature/fee/fee.service'
+import { convertToDisplayDate } from 'src/utils/convertUtils'
+import { format, parse } from 'date-fns'
 const ScheduleWrap = ({ schedule, turn, isEdit = false, removeTrip }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
@@ -940,8 +947,10 @@ const RouteInfo = ({ route, fixSchedule }) => {
 }
 
 const FeeInfo = ({ listAssignRouteId }) => {
+    const dispatch = useDispatch()
     const listRoute = useSelector(selectListRoute)
     const [listTrip, setListTrip] = useState([])
+    const [listCompanyServiceFee, setListCompanyServiceFee] = useState([])
     const curCompany = useSelector(selectCurCompany)
     const startTime = new Date(curCompany.busCompany.coopDay)
     const today = new Date()
@@ -997,7 +1006,24 @@ const FeeInfo = ({ listAssignRouteId }) => {
         setChartData({ labels: labels, data: data, backGroundColor: backGroundColor })
     }
 
-    const getData = () => {}
+    const getData = () => {
+        dispatch(feeThunk.getFee())
+            .unwrap()
+            .then((res) => {
+                setListCompanyServiceFee(
+                    res.filter((fee) => fee.company.id === curCompany.busCompany.id),
+                )
+            })
+    }
+
+    const getNextDueDay = (day) => {
+        var currentDay = parse(day, 'yyyy-MM-dd', new Date())
+        var currentMonth = currentDay.getMonth()
+        var nextDate = new Date(currentDay.getTime())
+        nextDate.setDate(5)
+        nextDate.setMonth(currentMonth + 1)
+        return format(nextDate, 'dd/MM/yyyy')
+    }
 
     useEffect(() => {
         getMonthRange(yearValue)
@@ -1015,9 +1041,12 @@ const FeeInfo = ({ listAssignRouteId }) => {
         getLabelandColor()
     }, [listTrip])
 
+    useEffect(() => {}, [monthValue, yearValue])
+
     useEffect(() => {
         getData()
-    }, [monthValue, yearValue])
+    }, [])
+
     return (
         <div>
             <Tabs className="tabStyle">
@@ -1180,34 +1209,110 @@ const FeeInfo = ({ listAssignRouteId }) => {
                     </CRow>
                 </TabPanel>
                 <TabPanel className="px-3">
-                    <CTable striped>
+                    <CTable striped bordered>
                         <CTableHead>
                             <CTableRow>
-                                <CTableHeaderCell scope="col">STT</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Kỳ hạn</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Số tuyến xe</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Tổng phí</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Trạng thái</CTableHeaderCell>
-                                <CTableHeaderCell scope="col">Mã giao dịch</CTableHeaderCell>
+                                <CTableHeaderCell
+                                    scope="col"
+                                    rowSpan={2}
+                                    className="align-middle text-center"
+                                >
+                                    STT
+                                </CTableHeaderCell>
+                                <CTableHeaderCell scope="col" colSpan={2} className="text-center">
+                                    Kỳ hạn
+                                </CTableHeaderCell>
+                                <CTableHeaderCell
+                                    scope="col"
+                                    rowSpan={2}
+                                    className="align-middle text-center"
+                                >
+                                    Số tuyến xe
+                                </CTableHeaderCell>
+                                <CTableHeaderCell
+                                    scope="col"
+                                    rowSpan={2}
+                                    className="align-middle text-center"
+                                >
+                                    Tổng phí
+                                </CTableHeaderCell>
+                                <CTableHeaderCell
+                                    scope="col"
+                                    rowSpan={2}
+                                    className="align-middle text-center"
+                                >
+                                    Trạng thái
+                                </CTableHeaderCell>
+                                <CTableHeaderCell
+                                    scope="col"
+                                    rowSpan={2}
+                                    className="align-middle text-center"
+                                >
+                                    Mã giao dịch
+                                </CTableHeaderCell>
+                            </CTableRow>
+                            <CTableRow>
+                                <CTableHeaderCell scope="col" className="text-center">
+                                    Ngày bắt đầu
+                                </CTableHeaderCell>
+                                <CTableHeaderCell scope="col" className="text-center">
+                                    Ngày kết thúc
+                                </CTableHeaderCell>
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
                             <CTableRow>
-                                <CTableHeaderCell scope="row">1</CTableHeaderCell>
-                                <CTableDataCell>20/10/2024</CTableDataCell>
-                                <CTableDataCell>3</CTableDataCell>
-                                <CTableDataCell>{`300.000đ`}</CTableDataCell>
-                                <CTableDataCell>Đã thanh toán</CTableDataCell>
-                                <CTableDataCell>HUI9JD</CTableDataCell>
+                                <CTableHeaderCell scope="row" className="text-center">
+                                    {1}
+                                </CTableHeaderCell>
+                                <CTableDataCell className="text-center">
+                                    {convertToDisplayDate(curCompany.busCompany.coopDay)}
+                                </CTableDataCell>
+                                <CTableDataCell className="text-center">
+                                    {format(
+                                        new Date(
+                                            parse(
+                                                curCompany.busCompany.coopDay,
+                                                'yyyy-MM-dd',
+                                                new Date(),
+                                            ).getTime() +
+                                                14 * 86400000,
+                                        ),
+                                        'dd/MM/yyyy',
+                                    )}
+                                </CTableDataCell>
+                                <CTableDataCell className="text-center">
+                                    {listTrip.length}
+                                </CTableDataCell>
+                                <CTableDataCell className="text-center">{`Miễn phí`}</CTableDataCell>
+                                <CTableDataCell className="text-center">{`---`}</CTableDataCell>
+                                <CTableDataCell className="text-center">{'---'}</CTableDataCell>
                             </CTableRow>
-                            <CTableRow>
-                                <CTableHeaderCell scope="row">2</CTableHeaderCell>
-                                <CTableDataCell>20/11/2024</CTableDataCell>
-                                <CTableDataCell>3</CTableDataCell>
-                                <CTableDataCell>{`300.000đ`}</CTableDataCell>
-                                <CTableDataCell>Chưa thanh toán</CTableDataCell>
-                                <CTableDataCell>HUI9JD</CTableDataCell>
-                            </CTableRow>
+                            {listCompanyServiceFee.map((fee, index) => (
+                                <CTableRow key={index}>
+                                    <CTableHeaderCell scope="row" className="text-center">
+                                        {index + 1}
+                                    </CTableHeaderCell>
+                                    <CTableDataCell className="text-center">
+                                        {convertToDisplayDate(fee.dueDate)}
+                                    </CTableDataCell>
+                                    <CTableDataCell className="text-center">
+                                        {getNextDueDay(fee.dueDate)}
+                                    </CTableDataCell>
+                                    <CTableDataCell className="text-center">
+                                        {listTrip.length}
+                                    </CTableDataCell>
+                                    <CTableDataCell className="text-center">
+                                        {fee.fee.toLocaleString()}
+                                    </CTableDataCell>
+                                    <CTableDataCell className="text-center">
+                                        {fee.status}
+                                    </CTableDataCell>
+                                    <CTableDataCell className="text-center">
+                                        {'Đang cập nhật'}
+                                    </CTableDataCell>
+                                </CTableRow>
+                            ))}
                         </CTableBody>
                     </CTable>
                 </TabPanel>
@@ -1217,6 +1322,7 @@ const FeeInfo = ({ listAssignRouteId }) => {
 }
 
 const CompanyDetail = () => {
+    const listCompany = useSelector(selectListCompany)
     const curCompany = useSelector(selectCurCompany)
     const [validated, setValidated] = useState(false)
     const dispatch = useDispatch()
@@ -1232,6 +1338,8 @@ const CompanyDetail = () => {
         else return false
     })
     const { busCompany, admin } = curCompany ? curCompany : { busCompany: null, admin: null }
+    const [openComfirmForm, setOpenComfirmForm] = useState(false)
+    const [isDelete, setIsDelete] = useState(false)
     const [companyInfo, setCompanyInfo] = useState({
         firmName: busCompany ? busCompany.name : '',
         representName: admin ? admin.name : '',
@@ -1308,10 +1416,40 @@ const CompanyDetail = () => {
         })
     }
     const [openAddRouteForm, setOpenAddRouteForm] = useState(false)
+    const handleOpenForm = () => {
+        setOpenComfirmForm(true)
+        setIsDelete(curCompany.busCompany.active)
+    }
+    const handleActiveCompany = () => {
+        setLoading(true)
+        dispatch(
+            companyThunk.activeCompany({ companyId: curCompany.busCompany.id, active: !isDelete }),
+        )
+            .unwrap()
+            .then((res) => {
+                setOpenComfirmForm(false)
+                addToast(() => CustomToast({ message: 'Thay đổi thành công', type: 'success' }))
+                setLoading(false)
+                dispatch(companyThunk.getCompany())
+            })
+            .catch((err) => {
+                setLoading(false)
+            })
+    }
     useEffect(() => {
         dispatch(scheduleThunk.getFixSchedule())
         dispatch(companyThunk.getAssignedRouteForCompany())
     }, [])
+    useEffect(() => {
+        if (curCompany) {
+            const updateCompany = listCompany.find(
+                (company) => company.busCompany.id === curCompany.busCompany.id,
+            )
+            if (updateCompany) {
+                dispatch(companyActions.setCurCompany(updateCompany))
+            }
+        }
+    }, [listCompany])
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -1456,6 +1594,13 @@ const CompanyDetail = () => {
                                 </CFormFeedback>
                             </CCol>
                         </CRow>
+                        <CRow className="mb-3 justify-content-center align-items-center">
+                            {!curCompany.busCompany.active && (
+                                <i style={{ color: 'red' }} className="col-sm-10">
+                                    Đã ngừng hợp tác với nhà xe này
+                                </i>
+                            )}
+                        </CRow>
                     </CForm>
                 </CCardBody>
                 <CCardFooter className="d-flex justify-content-between align-items-center">
@@ -1478,8 +1623,8 @@ const CompanyDetail = () => {
                         )}
                     </div>
                     <div className="col-6 offset-2">
-                        <CButton color="danger" variant="outline">
-                            Ngưng hợp tác
+                        <CButton color="danger" variant="outline" onClick={handleOpenForm}>
+                            {curCompany.busCompany.active ? 'Ngưng hợp tác' : 'Hợp tác lại'}
                         </CButton>
                     </div>
                 </CCardFooter>
@@ -1538,6 +1683,29 @@ const CompanyDetail = () => {
                 <CCardHeader style={{ backgroundColor: '#ccc' }}>Đánh giá nhà xe</CCardHeader>
                 <CCardBody></CCardBody>
             </CCard>
+            <CModal visible={openComfirmForm} onClose={() => setOpenComfirmForm(false)}>
+                <CModalHeader>
+                    <b>Xác nhận tác vụ</b>
+                </CModalHeader>
+                <CModalBody>
+                    {isDelete
+                        ? 'Bạn có chắc chắn muốn ngừng hợp tác với nhà xe này?'
+                        : 'Bạn có chắc chắn muốn tiếp tục hợp tác với nhà xe này?'}
+                    <div className="d-flex justify-content-end gap-2 mt-2">
+                        <CustomButton
+                            text="Xác nhận"
+                            loading={loading}
+                            onClick={handleActiveCompany}
+                        ></CustomButton>
+                        <CustomButton
+                            text="Hủy"
+                            variant="outline"
+                            color="danger"
+                            onClick={() => setOpenComfirmForm(false)}
+                        ></CustomButton>
+                    </div>
+                </CModalBody>
+            </CModal>
         </div>
     )
 }

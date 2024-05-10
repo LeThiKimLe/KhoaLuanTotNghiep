@@ -571,9 +571,10 @@ const TripManagement = () => {
     const dispatch = useDispatch()
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
+    const companyId = useSelector(selectCompanyId)
     const listFixSchedule = useSelector(selectListFixSchedule)
     const listRouteAssign = useSelector(selectListCompanyRoute)
-    const [listTrip, setListTrip] = useState(tripProcess(listRouteAssign))
+    const [listTrip, setListTrip] = useState(tripProcess(listRouteAssign, companyId))
     const [activeTab, setActiveTab] = useState(0)
     const getFixSchedule = (trip) => {
         return listFixSchedule.filter(
@@ -588,7 +589,7 @@ const TripManagement = () => {
         dispatch(scheduleThunk.getFixSchedule())
     }, [])
     useEffect(() => {
-        setListTrip(tripProcess(listRouteAssign))
+        setListTrip(tripProcess(listRouteAssign, companyId))
     }, [listRouteAssign])
     return (
         <div>
