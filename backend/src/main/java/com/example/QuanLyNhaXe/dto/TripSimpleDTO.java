@@ -15,9 +15,9 @@ public class TripSimpleDTO {
 	
 	private Integer id;
 	private boolean turn;
+	private Integer busCompanyId;
 	private StationDTO startStation;
 	private StationDTO endStation;
-	private BusCompanyDTO busCompany;
 	private BusTypeDTO busType;
 	private Integer price;
 	private Integer distance;

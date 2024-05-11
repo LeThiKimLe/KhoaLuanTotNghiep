@@ -240,7 +240,7 @@ const getAdmins = createAsyncThunk('admin/admins', async (_, thunkAPI) => {
 
 const getTripDriver = createAsyncThunk('trip/get-bus', async (tripId, thunkAPI) => {
     try {
-        const response = await axiosClient.get('admin/trips/driver-bus', {
+        const response = await axiosClient.get('manager/trips/driver-bus', {
             params: {
                 tripId: tripId,
             },

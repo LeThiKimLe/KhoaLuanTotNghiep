@@ -72,10 +72,18 @@ public class ScheduleService {
 			
 			
 		}
+		if (distributeSchedule.getDriverId() == distributeSchedule.getDriverId2() && distributeSchedule.getDriverId() != 0 && distributeSchedule.getDriverId2() != 0){
+			throw new BadRequestException(Message.NOT_SAME_DRIVER);
+		}
 		if(distributeSchedule.getDriverId()!=0&&distributeSchedule.getDriverId()!=null) {
 			Driver driver=driverRepository.findById(distributeSchedule.getDriverId())
 					.orElseThrow(() -> new NotFoundException(Message.DRIVER_NOT_FOUND));
 			schedule.setDriver(driver);
+		}
+		if(distributeSchedule.getDriverId2()!=0&&distributeSchedule.getDriverId2()!=null) {
+			Driver driver2=driverRepository.findById(distributeSchedule.getDriverId2())
+					.orElseThrow(() -> new NotFoundException(Message.DRIVER_NOT_FOUND));
+			schedule.setDriver2(driver2);
 		}
 		schedule.setNote(distributeSchedule.getNote());	
 		scheduleRepository.save(schedule);
@@ -121,8 +129,6 @@ public class ScheduleService {
 		            .filter(schedule -> schedule.getDepartDate() == departDate)
 		            .map(schedule -> modelMapper.map(schedule, ScheduleDTO.class))
 		            .toList();
-
-			
 	 }
 	 
 	 public Object getScheduleByDriver(Integer driverId) {

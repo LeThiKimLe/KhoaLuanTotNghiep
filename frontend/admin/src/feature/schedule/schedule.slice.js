@@ -1,6 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit'
 import format from 'date-fns/format'
 import scheduleThunk from './schedule.service'
+import storage from 'redux-persist/lib/storage'
+import { persistReducer } from 'redux-persist'
+import autoMergeLevel2 from 'redux-persist/es/stateReconciler/autoMergeLevel2'
 
 const initialState = {
     currentTrip: null,
@@ -14,6 +17,8 @@ const initialState = {
     currentListDriver: [],
     currentListBus: [],
     listFixSchedule: [],
+    currentWeekScheduleGo: [],
+    currentWeekScheduleReturn: [],
 }
 
 const scheduleSlice = createSlice({
@@ -44,6 +49,12 @@ const scheduleSlice = createSlice({
         setCurrentTurn: (state, action) => {
             state.currentTurn = action.payload
         },
+        setCurrentWeekScheduleGo: (state, action) => {
+            state.currentWeekScheduleGo = action.payload
+        },
+        setCurrentWeekScheduleReturn: (state, action) => {
+            state.currentWeekScheduleReturn = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -73,6 +84,18 @@ export const selectCurrentListBus = (state) => state.schedule.currentListBus
 export const selectCurrentScheduleGo = (state) => state.schedule.currentScheduleGo
 export const selectCurrentScheduleReturn = (state) => state.schedule.currentScheduleReturn
 export const selectListFixSchedule = (state) => state.schedule.listFixSchedule
+export const selectCurrentWeekScheduleGo = (state) => state.schedule.currentWeekScheduleGo
+export const selectCurrentWeekScheduleReturn = (state) => state.schedule.currentWeekScheduleReturn
 
 export const scheduleAction = scheduleSlice.actions
-export default scheduleSlice.reducer
+
+const schedulePersistConfig = {
+    key: 'schedule',
+    storage,
+    stateReconciler: autoMergeLevel2,
+    whitelist: ['currentTrip', 'currentRoute'],
+}
+
+const scheduleReducer = persistReducer(schedulePersistConfig, scheduleSlice.reducer)
+
+export default scheduleReducer

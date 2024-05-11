@@ -85,8 +85,7 @@ public class FeeService {
 				.orElseThrow(() -> new NotFoundException(Message.FEE_NOT_FOUND));
 		try {
 			int fee = (int) serviceFee.getFee();
-			String paymentURL = vnPayService.generatePaymentUrl(request, fee, serviceFee.getFeeCode(),
-					serviceFee.getId().toString());
+			String paymentURL = vnPayService.generateFeePaymentUrl(request, fee, serviceFee.getFeeCode(), serviceFee);
 
 			return paymentURL;
 		} catch (UnsupportedEncodingException e) {

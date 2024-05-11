@@ -88,7 +88,7 @@ const routePersistConfig = {
     key: 'route',
     storage,
     stateReconciler: autoMergeLevel2,
-    whitelist: ['listOfficialRoute'],
+    whitelist: ['listOfficialRoute', 'listRoute', 'listCompanyRoute'],
 }
 
 const routeReducer = persistReducer(routePersistConfig, routeSlice.reducer)

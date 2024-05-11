@@ -71,7 +71,7 @@ const getMaxSchedules = createAsyncThunk('admin/schedules/maximum', async (tripI
 
 const getTripBusDriver = createAsyncThunk('admin/trips/driver-bus', async (tripId, thunkAPI) => {
     try {
-        const response = await axiosClient.get('admin/trips/driver-bus', {
+        const response = await axiosClient.get('manager/trips/driver-bus', {
             params: {
                 tripId: tripId,
             },
