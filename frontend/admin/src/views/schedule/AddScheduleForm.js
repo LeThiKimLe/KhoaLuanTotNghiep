@@ -2231,6 +2231,7 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const [listError, setListError] = useState([])
+    console.log('update')
     console.log(listUpdate)
     const filterTime = (listSchdIn, time) => {
         //sort list based on time
@@ -2272,6 +2273,7 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
     }
     const [loading, setLoading] = useState(false)
     const handleUpdateListAssign = (scheduleId, driverId, driverId2, busId) => {
+        console.log('update list')
         if (listUpdate)
             setListUpdate({
                 ...listUpdate,
@@ -2474,6 +2476,7 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
         })
         for (let i = 0; i < listDriverAssign.length; i++) {
             if (validateAssignedItem(listDriverAssign[i]) === false) {
+                console.log(listDriverAssign[i].schedules)
                 setListError(listDriverAssign[i].schedules)
                 return 'Lịch trình của tài xế có xung đột'
             }
@@ -2541,7 +2544,6 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
             )
         }
     }
-    console.log(listError)
     useEffect(() => {
         setListSchedule(listScheduleIn)
     }, [listScheduleIn])
@@ -2568,7 +2570,6 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                 })
             })
             sumTrip.sort((a, b) => convertTimeToInt(a.departTime) - convertTimeToInt(b.departTime))
-            console.log(sumTrip)
             setListProcessSchedule(sumTrip)
         }
     }, [listScheduleIn])

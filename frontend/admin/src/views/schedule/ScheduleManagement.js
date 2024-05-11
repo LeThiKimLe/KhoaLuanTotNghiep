@@ -666,7 +666,9 @@ const ScheduleManagement = () => {
     const listRoute = useSelector(selectListCompanyRoute)
     const curTrip = useSelector(selectCurrentTrip)
     const curRoute = useSelector(selectCurrentRoute)
-    const [currentRoute, setCurrentRoute] = useState(curRoute ? curRoute.id : 0)
+    const [currentRoute, setCurrentRoute] = useState(
+        curRoute && listRoute.find((rt) => rt.id === curRoute.id) ? curRoute.id : 0,
+    )
     const [currentTrip, setCurrentTrip] = useState(0)
     const [currentDay, setCurrentDate] = useState(new Date())
     const startDate = startOfWeek(currentDay, { weekStartsOn: 1 })
@@ -687,29 +689,6 @@ const ScheduleManagement = () => {
             setCurrentDate(newDate)
         }
     }
-    // const getListTrip = (routeId) => {
-    //     const routeIn = listRoute.find((rt) => rt.id == routeId)
-    //     var listTrip = []
-    //     var tempTrip = null
-    //     listReverse.current = []
-    //     routeIn.trips.forEach((trip) => {
-    //         tempTrip = listTrip.find(
-    //             (tp) =>
-    //                 (tp.startStation.id === trip.startStation.id &&
-    //                     tp.endStation.id === trip.endStation.id) ||
-    //                 (tp.startStation.id === trip.endStation.id &&
-    //                     tp.endStation.id === trip.startStation.id),
-    //         )
-    //         if (!tempTrip) listTrip.push(trip)
-    //         else {
-    //             listReverse.current.push({
-    //                 key: tempTrip.id,
-    //                 reverse: trip,
-    //             })
-    //         }
-    //     })
-    //     return listTrip.filter((tp) => tp.active === true)
-    // }
     const [listTrip, setListTrip] = useState([])
     const handleSelectRoute = (routeId) => {
         setCurrentRoute(routeId)
@@ -831,6 +810,9 @@ const ScheduleManagement = () => {
                 })
         }
     }, [currentDay.getDate(), currentDay.getMonth(), currentTrip, reload])
+    useEffect(() => {
+        setCurrentRoute(curRoute && listRoute.find((rt) => rt.id === curRoute.id) ? curRoute.id : 0)
+    }, [curRoute])
     return (
         <>
             <CRow className="justify-content-between">

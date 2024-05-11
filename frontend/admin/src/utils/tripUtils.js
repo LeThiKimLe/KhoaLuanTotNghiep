@@ -89,6 +89,7 @@ export const tripProcess = (listRoute, companyId = -1) => {
                         return
                     } else {
                         listTrip.push({
+                            id: listTrip.length + 1,
                             ...tripInfo,
                             turnGo: {
                                 id: id,

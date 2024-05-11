@@ -78,6 +78,10 @@ export const addDays = (date, days) => {
     return new Date(date.getTime() + days * 24 * 60 * 60 * 1000)
 }
 
+export const addHours = (date, hours) => {
+    return new Date(date.getTime() + hours * 60 * 60 * 1000)
+}
+
 export const subStractDays = (date, days) => {
     return new Date(date.getTime() - days * 24 * 60 * 60 * 1000)
 }
