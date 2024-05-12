@@ -35,7 +35,7 @@ import {
     CInputGroup,
     CInputGroupText,
 } from '@coreui/react'
-import { startOfWeek, endOfWeek, format, add } from 'date-fns'
+import { startOfWeek, endOfWeek, format, add, sub } from 'date-fns'
 import scheduleThunk from 'src/feature/schedule/schedule.service'
 import {
     selectCurrentRoute,
@@ -71,6 +71,7 @@ import { addDays } from 'src/utils/convertUtils'
 import { TIME_TABLE, dayInWeek } from 'src/utils/constants'
 import parse from 'date-fns/parse'
 import { shortenName } from 'src/utils/convertUtils'
+import { check } from 'prettier'
 const TimeBox = ({ time, removeTime, fix }) => {
     const [showRemove, setShowRemove] = useState(false)
     const handleRemove = () => {
@@ -255,10 +256,7 @@ const AddScheduleForm = ({
     listPreTimeReturn,
     fixSchedule,
 }) => {
-    console.log(fixSchedule)
     const curTrip = useSelector(selectCurrentTrip)
-    console.log(curTrip)
-    // const listFixSchedule = fixSchedule.filter((item) => item.trip.id === curTrip.)
     const curRoute = useSelector(selectCurrentRoute)
     const [openDateRange, setOpenDateRange] = useState(false)
     const [listTimeGo, setListTimeGo] = useState(
@@ -843,8 +841,9 @@ const AssignScheduleBox = ({ curRoute, curTrip, listGo, listReturn, finishUpdate
             }
         })
         for (let i = 0; i < listDriverAssign.length; i++) {
-            if (validateAssignedItem(listDriverAssign[i]) === false)
+            if (validateAssignedItem(listDriverAssign[i]) === false) {
                 return 'Lịch trình của tài xế có xung đột'
+            }
         }
         for (let i = 0; i < listBusAssign.length; i++) {
             if (validateAssignedItem(listBusAssign[i], 'bus') === false)
@@ -890,7 +889,6 @@ const AssignScheduleBox = ({ curRoute, curTrip, listGo, listReturn, finishUpdate
             checkState = verifyItemSchedule()
         }
         if (checkState === 'success') {
-            // console.log('Lưu thông tin')
             const listRequest = Object.entries(listUpdate)
             let scheduleInfor = null
             if (listRequest.length > 0) {
@@ -1100,8 +1098,6 @@ const AssignScheduleBox = ({ curRoute, curTrip, listGo, listReturn, finishUpdate
             else valid = false
         }
         if (valid === true) {
-            console.log(schedule)
-            console.log(prevTrip)
         }
         return valid
     }
@@ -2043,25 +2039,24 @@ const ScheduleWrap = ({ schedule, handleSetInfo, listUpdate, listError }) => {
     const updatedData = listUpdate ? listUpdate[schedule.id] : null
     //Các hàm lấy giá trị schedule của mỗi bus - driver
     const getDriverValue = () => {
-        if (schedule.driverUser) return schedule.driverUser.driver.driverId
-        else if (listUpdate && listUpdate[schedule.id]) return listUpdate[schedule.id].driverId
+        if (listUpdate && listUpdate[schedule.id]) return listUpdate[schedule.id].driverId
+        else if (schedule.driverUser) return schedule.driverUser.driver.driverId
         else return 0
     }
     const getDriver2Value = () => {
-        if (schedule.driverUser2) return schedule.driverUser2.driver.driverId
-        else if (listUpdate && listUpdate[schedule.id]) return listUpdate[schedule.id].driverId2
+        if (listUpdate && listUpdate[schedule.id]) return listUpdate[schedule.id].driverId2
+        else if (schedule.driverUser2) return schedule.driverUser2.driver.driverId
         else return 0
     }
     const getBusValue = () => {
-        if (schedule.bus) return schedule.bus.id
-        else if (listUpdate && listUpdate[schedule.id]) return listUpdate[schedule.id].busId
+        if (listUpdate && listUpdate[schedule.id]) return listUpdate[schedule.id].busId
+        else if (schedule.bus) return schedule.bus.id
         else return 0
     }
     const [driver, setDriver] = useState(getDriverValue())
     const [driver2, setDriver2] = useState(getDriver2Value())
     const [bus, setBus] = useState(getBusValue())
     const getScheduleColor = () => {
-        if (listError.find((item) => item.id === schedule.id)) return 'danger'
         if (schedule.tripInfor.turn === true) return 'success'
         else return 'warning'
     }
@@ -2079,7 +2074,7 @@ const ScheduleWrap = ({ schedule, handleSetInfo, listUpdate, listError }) => {
         setDriver(getDriverValue())
         setDriver2(getDriver2Value())
         setBus(getBusValue())
-    }, [listUpdate])
+    }, [listUpdate, schedule])
     return (
         <>
             <CTable bordered className="mb-1">
@@ -2132,13 +2127,14 @@ const ScheduleWrap = ({ schedule, handleSetInfo, listUpdate, listError }) => {
                                                 <b>{shortenName(schedule.driverUser2.name)}</b>
                                             </div>
                                         ) : null}
-                                        {updatedData && updatedData.bus != 0 ? (
+                                        {updatedData && updatedData.busId != 0 ? (
                                             <div>
                                                 <i>Xe: </i>
                                                 <b>
                                                     {
-                                                        listBus.find((bs) => bs.id === bus)
-                                                            .licensePlate
+                                                        listBus.find(
+                                                            (bs) => bs.id === updatedData.busId,
+                                                        ).licensePlate
                                                     }
                                                 </b>
                                             </div>
@@ -2150,6 +2146,21 @@ const ScheduleWrap = ({ schedule, handleSetInfo, listUpdate, listError }) => {
                                         ) : null}
                                     </div>
                                 </CCardBody>
+                                {listError.find((item) => item.id === schedule.id) && (
+                                    <div
+                                        style={{
+                                            position: 'absolute',
+                                            bottom: 0,
+                                            right: 0,
+                                            width: '0',
+                                            height: '0',
+                                            borderLeft: '10px solid transparent',
+                                            borderTop: '10px solid transparent',
+                                            borderRight: '10px solid red',
+                                            borderBottom: '10px solid red',
+                                        }}
+                                    ></div>
+                                )}
                             </CCard>
                         </CTableDataCell>
                     </CTableRow>
@@ -2219,11 +2230,12 @@ const ScheduleWrap = ({ schedule, handleSetInfo, listUpdate, listError }) => {
 }
 
 const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
+    const curRoute = useSelector(selectCurrentRoute)
     const listDriver = useSelector(selectCurrentListDriver)
     const listBus = useSelector(selectCurrentListBus)
     const [listSchedule, setListSchedule] = useState(listScheduleIn)
     const [listProcessSchedule, setListProcessSchedule] = useState([])
-    const [listUpdate, setListUpdate] = useState([])
+    const [listUpdate, setListUpdate] = useState(null)
     const [listDriverSchedule, setListDriverSchedule] = useState([])
     const [listBusSchedule, setListBusSchedule] = useState([])
     const curTrip = useSelector(selectCurrentTrip)
@@ -2231,8 +2243,9 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const [listError, setListError] = useState([])
-    console.log('update')
-    console.log(listUpdate)
+    const [auto, setAuto] = useState(false)
+    const [driverNumber, setDriverNumber] = useState(1)
+    const [listRepeat, setListRepeat] = useState([])
     const filterTime = (listSchdIn, time) => {
         //sort list based on time
         const listSchd = []
@@ -2273,7 +2286,6 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
     }
     const [loading, setLoading] = useState(false)
     const handleUpdateListAssign = (scheduleId, driverId, driverId2, busId) => {
-        console.log('update list')
         if (listUpdate)
             setListUpdate({
                 ...listUpdate,
@@ -2292,19 +2304,35 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                 },
             })
     }
-
     const isPreviousSchedule = (schd) => {
         const schdDate = parse(schd.departDate, 'yyyy-MM-dd', new Date())
-        return schdDate.getTime() <= startDate.getTime()
+        return schdDate.getTime() < startDate.getTime()
     }
-
+    //sort lại lịch trình
+    const sortTime = (a, b) => {
+        return (
+            parse(a.departDate + 'T' + a.departTime, "yyyy-MM-dd'T'HH:mm", new Date()).getTime() -
+            parse(b.departDate + 'T' + b.departTime, "yyyy-MM-dd'T'HH:mm", new Date()).getTime()
+        )
+    }
+    //sort lại lịch trình
+    const sortTime2 = (a, b) => {
+        return (
+            parse(
+                a.departDate + 'T' + a.departTime,
+                "yyyy-MM-dd'T'HH:mm:ss",
+                new Date(),
+            ).getTime() -
+            parse(b.departDate + 'T' + b.departTime, "yyyy-MM-dd'T'HH:mm:ss", new Date()).getTime()
+        )
+    }
     //Lấy lịch trình các tài xế
     const scanDriver = () => {
         let listDriverSchd = []
         let schedules = []
         let count = 0
         listDriver.forEach(async (driver, index) => {
-            //Tìm chuyến cuối của ngày hôm qua
+            //Tìm chuyến cuối của ngày tuần trước
             try {
                 const response = await Promise.all([
                     dispatch(staffThunk.getDriverSchedules(driver.driver.driverId)),
@@ -2313,12 +2341,12 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                 const res = response[0].payload
                 const trip = response[1].payload
                 schedules = listProcessSchedule.filter(
-                    (schd) => schd.driver === driver.driver.driverId,
+                    (schd) =>
+                        schd.driver === driver.driver.driverId ||
+                        schd.driver2 === driver.driver.driverId,
                 )
                 const result = res.filter((schd) => isPreviousSchedule(schd))
-                result.sort(
-                    (a, b) => convertTimeToInt(b.departTime) - convertTimeToInt(a.departTime),
-                )
+                result.sort((a, b) => sortTime2(b, a))
                 if (result.length > 0) {
                     const turnGo = trip.find((tp) => tp.turn === true)
                     if (turnGo)
@@ -2343,7 +2371,9 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                 if (count === listDriver.length) setListDriverSchedule(listDriverSchd)
             } catch (error) {
                 schedules = listProcessSchedule.filter(
-                    (schd) => schd.driver === driver.driver.driverId,
+                    (schd) =>
+                        schd.driver === driver.driver.driverId ||
+                        schd.driver2 === driver.driver.driverId,
                 )
                 listDriverSchd.push({
                     id: driver.driver.driverId,
@@ -2351,11 +2381,12 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                     previous: null,
                 })
                 count = count + 1
-                if (count === listDriver.length) setListDriverSchedule(listDriverSchd)
+                if (count === listDriver.length) {
+                    setListDriverSchedule(listDriverSchd)
+                }
             }
         })
     }
-
     //Lấy lịch trình các xe
     const scanBus = () => {
         let listBusSchd = []
@@ -2371,9 +2402,7 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                 const trip = response[1]
                 schedules = listProcessSchedule.filter((schd) => schd.bus === bus.id)
                 const result = res.filter((schd) => isPreviousSchedule(schd))
-                result.sort(
-                    (a, b) => convertTimeToInt(b.departTime) - convertTimeToInt(a.departTime),
-                )
+                result.sort((a, b) => sortTime2(b, a) < 0)
                 if (result.length > 0) {
                     const turnGo = trip.find((tp) => tp.turn === true)
                     if (turnGo)
@@ -2412,29 +2441,36 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
             }
         })
     }
-
     //Kiểm tra lịch trình có hợp lệ không về thời gian
     const validSchedule = (listSchd, previous) => {
         const newSchd = [...listSchd]
         let valid = true
-        newSchd.sort((a, b) => convertTimeToInt(a.departTime) - convertTimeToInt(b.departTime))
-        if (newSchd.length > 0 && previous) if (previous.turn === newSchd[0].turn) return false
+        newSchd.sort((a, b) => sortTime(a, b))
+        setListError([])
+        if (newSchd.length > 0 && previous)
+            if (previous.turn === newSchd[0].turn) {
+                if (!auto) setListError([newSchd[0], previous.schedule])
+                return false
+            }
         // Kiểm tra từng cặp vehicle trip có hợp lệ ko vì giãn cách mỗi chuyến ít nhất là 1 tiếng (đối với 1 bus hoặc 1 driver)
         for (let i = 0; i < newSchd.length - 1; i++) {
             if (
                 !(
-                    convertTimeToInt(newSchd[i + 1].departTime) >=
-                        convertTimeToInt(newSchd[i].arrivalTime) + 1 &&
-                    newSchd[i + 1].turn !== newSchd[i].turn
+                    (newSchd[i + 1].departDate === newSchd[i].departDate &&
+                        convertTimeToInt(newSchd[i + 1].departTime) >=
+                            convertTimeToInt(newSchd[i].arrivalTime) + 1 &&
+                        newSchd[i + 1].turn !== newSchd[i].turn) ||
+                    (newSchd[i + 1].departDate !== newSchd[i].departDate &&
+                        newSchd[i + 1].turn !== newSchd[i].turn)
                 )
             ) {
                 valid = false
+                if (!auto) setListError([newSchd[i + 1], newSchd[i]])
                 break
             }
         }
         return valid
     }
-
     // Xác minh phân công cho mỗi driver - tài xế là đúng chưa
     const validateAssignedItem = (listAssignSchedule) => {
         if (validSchedule(listAssignSchedule.schedules, listAssignSchedule.previous)) {
@@ -2443,22 +2479,49 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
             return false
         }
     }
-
     //Kiểm tra xem khi thay đổi theo phân công mới thì có xung đột không
     const verifyItemSchedule = () => {
         if (!listUpdate) return false
         const listDriverAssign = JSON.parse(JSON.stringify(listDriverSchedule))
         const listBusAssign = JSON.parse(JSON.stringify(listBusSchedule))
         const assignList = Object.entries(listUpdate)
-        let index = -1
-        let schedule = null
+        let index = -1,
+            alterIndex = -1,
+            schedule = null,
+            temp = null,
+            oldDriver = [],
+            oldBus = -1
         assignList.forEach(([key, value]) => {
-            //Cập nhật schedule mới cho lịch của driver
+            //Remove old assignment (if any)
+            oldDriver = listDriverAssign.filter((item) =>
+                item.schedules.find((schd) => schd.id == key),
+            )
+            oldBus = listBusAssign.findIndex((item) =>
+                item.schedules.find((schd) => schd.id == key),
+            )
+            if (oldDriver.length > 0) {
+                oldDriver.forEach((item) => {
+                    alterIndex = listDriverAssign.findIndex((ite) => ite.id == item.id)
+                    listDriverAssign[alterIndex].schedules = listDriverAssign[
+                        alterIndex
+                    ].schedules.filter((schd) => schd.id != key)
+                })
+            }
+            if (oldBus !== -1) {
+                listBusAssign[oldBus].schedules = listBusAssign[oldBus].schedules.filter(
+                    (schd) => schd.id != key,
+                )
+            }
+        })
+        //Append new assignment
+        assignList.forEach(([key, value]) => {
+            //Cập nhật schedule mới cho lịch của driver, index là chỉ số thông tin của driver của assign
             index = listDriverAssign.findIndex((item) => item.id == value.driverId)
             if (index !== -1) {
                 schedule = listProcessSchedule.find((schd) => schd.id == key)
-                if (schedule && !listDriverAssign[index].schedules.find((schd) => schd.id == key))
-                    listDriverAssign[index].schedules.push(schedule)
+                //Kiểm tra đã từng phân công, h sửa hay là đang phân công mới
+                temp = listDriverAssign[index].schedules.find((schd) => schd.id == key)
+                if (schedule && !temp) listDriverAssign[index].schedules.push(schedule)
             }
             //Cập nhật schedule mới cho lịch của driver 2
             index = listDriverAssign.findIndex((item) => item.id == value.driverId2)
@@ -2476,21 +2539,17 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
         })
         for (let i = 0; i < listDriverAssign.length; i++) {
             if (validateAssignedItem(listDriverAssign[i]) === false) {
-                console.log(listDriverAssign[i].schedules)
-                setListError(listDriverAssign[i].schedules)
                 return 'Lịch trình của tài xế có xung đột'
             }
         }
         for (let i = 0; i < listBusAssign.length; i++) {
             if (validateAssignedItem(listBusAssign[i]) === false) {
-                setListError(...listBusAssign[i].schedules)
                 return 'Lịch trình của xe có xung đột'
             }
         }
         setListError([])
         return 'success'
     }
-
     //Thực hiện assign
     const handleAssignment = () => {
         let checkState = verifyItemSchedule()
@@ -2512,6 +2571,7 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                         .then(() => {
                             if (index === listRequest.length - 1) {
                                 setLoading(false)
+                                setListUpdate(null)
                                 finishUpdate()
                             }
                         })
@@ -2544,6 +2604,341 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
             )
         }
     }
+    const handleCheck = () => {
+        let checkState = verifyItemSchedule()
+        if (checkState === 'success') {
+            addToast(() =>
+                CustomToast({
+                    message: 'Lịch trình hợp lệ',
+                    type: 'success',
+                }),
+            )
+        } else {
+            addToast(() =>
+                CustomToast({
+                    message: checkState,
+                    type: 'error',
+                }),
+            )
+        }
+    }
+    //Kiểm tra xem khi thay đổi theo phân công mới thì có xung đột không
+    const checkAsssignment = (newAssign, listPreDriverSchedule, listPreBusSchedule) => {
+        if (!newAssign)
+            return {
+                result: false,
+                listDriverAssign: listPreDriverSchedule,
+                listBusAssign: listPreBusSchedule,
+            }
+        const listDriverAssign = JSON.parse(JSON.stringify(listPreDriverSchedule))
+        const listBusAssign = JSON.parse(JSON.stringify(listPreBusSchedule))
+        let index = -1,
+            schedule = null,
+            temp = null
+        //Append new assignment
+        const { key, value } = newAssign
+        //Cập nhật schedule mới cho lịch của driver, index là chỉ số thông tin của driver của assign
+        index = listDriverAssign.findIndex((item) => item.id == value.driverId)
+        if (index !== -1) {
+            schedule = listProcessSchedule.find((schd) => schd.id == key)
+            temp = listDriverAssign[index].schedules.find((schd) => schd.id == key)
+            if (schedule && !temp) listDriverAssign[index].schedules.push(schedule)
+        }
+        //Cập nhật schedule mới cho lịch của driver 2
+        index = listDriverAssign.findIndex((item) => item.id == value.driverId2)
+        if (index !== -1) {
+            schedule = listProcessSchedule.find((schd) => schd.id == key)
+            if (schedule && !listDriverAssign[index].schedules.find((schd) => schd.id == key))
+                listDriverAssign[index].schedules.push(schedule)
+        }
+        //Cập nhật schedule mới cho lịch của bus
+        index = listBusAssign.findIndex((item) => item.id == value.busId)
+        if (index !== -1) {
+            schedule = listProcessSchedule.find((schd) => schd.id == key)
+            if (schedule) listBusAssign[index].schedules.push(schedule)
+        }
+        for (let i = 0; i < listDriverAssign.length; i++) {
+            if (validateAssignedItem(listDriverAssign[i]) === false) {
+                return {
+                    result: false,
+                    listDriverAssign: listDriverAssign,
+                    listBusAssign: listBusAssign,
+                }
+            }
+        }
+        for (let i = 0; i < listBusAssign.length; i++) {
+            if (validateAssignedItem(listBusAssign[i]) === false) {
+                return {
+                    result: false,
+                    listDriverAssign: listDriverAssign,
+                    listBusAssign: listBusAssign,
+                }
+            }
+        }
+        return {
+            result: true,
+            listDriverAssign: listDriverAssign,
+            listBusAssign: listBusAssign,
+        }
+    }
+
+    //Thực hiện phân công tự động
+    const autoScheduling = () => {
+        let listUnAssignSchedule = listProcessSchedule
+            .filter((schd) => schd.driver == 0 && schd.driver2 == 0 && schd.bus == 0)
+            .sort((a, b) => sortTime(a, b))
+        let listFinalAssign = null
+        let listUpdateAssign = null
+        let maximumAssign = 0
+        let finish = false
+        const findAssignment = (
+            index,
+            schedule,
+            listAssign,
+            listPreDriverAssign,
+            listPreBusAssign,
+            driverAssign = 1,
+        ) => {
+            if (!finish) {
+                let newAssign = null
+                let listNewAssign = { ...listAssign }
+                let listDriverIn = [...listDriver].sort((a, b) => {
+                    let indexA = listPreDriverAssign.findIndex(
+                        (item) => item.id == a.driver.driverId,
+                    )
+                    let indexB = listPreDriverAssign.findIndex(
+                        (item) => item.id == b.driver.driverId,
+                    )
+                    return (
+                        listPreDriverAssign[indexA].schedules.length -
+                        listPreDriverAssign[indexB].schedules.length
+                    )
+                })
+                let listBusIn = [...listBus].sort((a, b) => {
+                    let indexA = listPreBusAssign.findIndex((item) => item.id == a.id)
+                    let indexB = listPreBusAssign.findIndex((item) => item.id == b.id)
+                    return (
+                        listPreBusAssign[indexA].schedules.length -
+                        listPreBusAssign[indexB].schedules.length
+                    )
+                })
+                if (driverAssign == 1) {
+                    //Phân công 1 tài xế
+                    for (let i = 0; i < listDriverIn.length; i++) {
+                        for (let j = 0; j < listBusIn.length; j++) {
+                            newAssign = {
+                                key: schedule.id,
+                                value: {
+                                    driverId: listDriverIn[i].driver.driverId,
+                                    driverId2: 0,
+                                    busId: listBusIn[j].id,
+                                },
+                            }
+                            const checkResult = checkAsssignment(
+                                newAssign,
+                                listPreDriverAssign,
+                                listPreBusAssign,
+                            )
+                            if (checkResult.result == true) {
+                                listNewAssign = {
+                                    ...listNewAssign,
+                                    [newAssign.key]: {
+                                        driverId: newAssign.value.driverId,
+                                        driverId2: newAssign.value.driverId2,
+                                        busId: newAssign.value.busId,
+                                    },
+                                }
+                                if (Object.entries(listNewAssign).length > maximumAssign) {
+                                    listFinalAssign = { ...listNewAssign }
+                                    maximumAssign = Object.entries(listNewAssign).length
+                                }
+                                if (index === listUnAssignSchedule.length - 1) {
+                                    finish = true
+                                    return true
+                                } else {
+                                    //Phân công tiếp
+                                    //Cập nhật listPreDriverAssign, listPreBusAssign
+                                    if (
+                                        findAssignment(
+                                            index + 1,
+                                            listUnAssignSchedule[index + 1],
+                                            listNewAssign,
+                                            checkResult.listDriverAssign,
+                                            checkResult.listBusAssign,
+                                            driverAssign,
+                                        )
+                                    )
+                                        return true
+                                    else {
+                                        //Remove new assign
+                                        delete listNewAssign[newAssign.key]
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return false
+                } else {
+                    //Phân công 2 tài xế
+                    for (let k = 0; k < listDriverIn.length; k++) {
+                        const listDriverIn2 = listDriverIn.filter(
+                            (drv) => drv.driver.driverId != listDriverIn[k].driver.driverId,
+                        )
+                        for (let i = 0; i < listDriverIn2.length; i++) {
+                            for (let j = 0; j < listBusIn.length; j++) {
+                                newAssign = {
+                                    key: schedule.id,
+                                    value: {
+                                        driverId: listDriverIn[k].driver.driverId,
+                                        driverId2: listDriverIn2[i].driver.driverId,
+                                        busId: listBusIn[j].id,
+                                    },
+                                }
+                                const checkResult = checkAsssignment(
+                                    newAssign,
+                                    listPreDriverAssign,
+                                    listPreBusAssign,
+                                )
+                                if (checkResult.result == true) {
+                                    listNewAssign = {
+                                        ...listNewAssign,
+                                        [newAssign.key]: {
+                                            driverId: newAssign.value.driverId,
+                                            driverId2: newAssign.value.driverId2,
+                                            busId: newAssign.value.busId,
+                                        },
+                                    }
+                                    if (Object.entries(listNewAssign).length > maximumAssign) {
+                                        listFinalAssign = { ...listNewAssign }
+                                        maximumAssign = Object.entries(listNewAssign).length
+                                    }
+                                    if (index === listUnAssignSchedule.length - 1) {
+                                        finish = true
+                                        return true
+                                    } else {
+                                        //Phân công tiếp
+                                        //Cập nhật listPreDriverAssign, listPreBusAssign
+                                        if (
+                                            findAssignment(
+                                                index + 1,
+                                                listUnAssignSchedule[index + 1],
+                                                listNewAssign,
+                                                checkResult.listDriverAssign,
+                                                checkResult.listBusAssign,
+                                                driverAssign,
+                                            )
+                                        )
+                                            return true
+                                        else {
+                                            //Remove new assign
+                                            delete listNewAssign[newAssign.key]
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    return false
+                }
+            }
+            return true
+        }
+        if (listUnAssignSchedule.length === 0) {
+            addToast(() =>
+                CustomToast({
+                    message: 'Không có lịch trình nào chưa được phân công trong tuần này',
+                    type: 'warning',
+                }),
+            )
+            return
+        } else {
+            findAssignment(
+                0,
+                listUnAssignSchedule[0],
+                listUpdateAssign,
+                listDriverSchedule,
+                listBusSchedule,
+                driverNumber,
+            )
+            if (finish) {
+                addToast(() =>
+                    CustomToast({
+                        message: 'Đã phân công thành công',
+                        type: 'success',
+                    }),
+                )
+            } else {
+                addToast(() =>
+                    CustomToast({
+                        message: 'Không thể phân công hết vì thiếu tài xế hoặc xe',
+                        type: 'error',
+                    }),
+                )
+            }
+            setListUpdate(listFinalAssign)
+        }
+    }
+
+    //Lặp lại lịch tuần trước
+    const repeatSchedule = async (day) => {
+        const lastWeekDay = subStractDays(day, 7)
+        let listLastWeekSchedule = []
+        let listNewUpdate = null
+        let filterSchedule = []
+        //Get last week schedule
+        for (let j = 0; j < 2; j++) {
+            await dispatch(
+                scheduleThunk.getSchedules({
+                    routeId: curRoute.id,
+                    departDate: lastWeekDay,
+                    turn: j === 0 ? true : false,
+                }),
+            )
+                .unwrap()
+                .then((res) => {
+                    filterSchedule = res.filter(
+                        (schedule) =>
+                            schedule.tripInfor.id === curTrip.turnGo.id ||
+                            schedule.tripInfor.id === curTrip.turnBack.id,
+                    )
+                    //push each item in filterSchedule to listLastWeekSchedule
+                    filterSchedule.forEach((item) => {
+                        listLastWeekSchedule.push(item)
+                    })
+                })
+                .catch((error) => {})
+        }
+        //Compare with current day and update
+        listProcessSchedule
+            .filter((schd) => schd.departDate === format(day, 'yyyy-MM-dd'))
+            .forEach((schd) => {
+                const target = listLastWeekSchedule.find(
+                    (item) =>
+                        item.departTime.slice(0, -3) === schd.departTime &&
+                        item.tripInfor.turn === schd.turn,
+                )
+                if (target) {
+                    listNewUpdate = {
+                        ...listNewUpdate,
+                        [schd.id]: {
+                            driverId: target.driverUser ? target.driverUser.driver.driverId : 0,
+                            driverId2: target.driverUser2 ? target.driverUser2.driver.driverId : 0,
+                            busId: target.bus ? target.bus.id : 0,
+                        },
+                    }
+                }
+            })
+        setListUpdate({
+            ...listUpdate,
+            ...listNewUpdate,
+        })
+        addToast(() => {
+            CustomToast({
+                message: 'Đã lặp lại lịch trình ngày này tuần trước',
+                type: 'success',
+            })
+        })
+    }
     useEffect(() => {
         setListSchedule(listScheduleIn)
     }, [listScheduleIn])
@@ -2552,7 +2947,6 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
         listScheduleIn.forEach((item) => {
             listProcess.push(...item.schedules)
         })
-        console.log(listProcess)
         if (listProcess.length > 0) {
             const sumTrip = []
             listProcess.forEach((item) => {
@@ -2574,11 +2968,17 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
         }
     }, [listScheduleIn])
     useEffect(() => {
-        if (listScheduleIn.length > 0) {
+        if (listProcessSchedule.length > 0) {
             scanBus()
             scanDriver()
         }
-    }, [listScheduleIn])
+    }, [listProcessSchedule])
+    useEffect(() => {
+        if (driverNumber != 0 && auto) autoScheduling()
+    }, [driverNumber, auto])
+    useEffect(() => {
+        setAuto(false)
+    }, [startDate])
     useEffect(() => {
         dispatch(
             scheduleThunk.getTripBusDriver({
@@ -2599,6 +2999,39 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />
+            <CTooltip content={'Tự động tạo phân công cho các chuyến chưa được phân công'}>
+                <CFormCheck
+                    inline
+                    checked={auto}
+                    onChange={() => setAuto(!auto)}
+                    label="Phân công tự động"
+                    className="mb-2"
+                ></CFormCheck>
+            </CTooltip>
+            {auto && (
+                <>
+                    <CFormCheck
+                        inline
+                        type="radio"
+                        name="driverNumber"
+                        id="no1"
+                        label="1 tài xế / chuyến"
+                        value="1"
+                        checked={driverNumber === 1}
+                        onClick={() => setDriverNumber(1)}
+                    />
+                    <CFormCheck
+                        inline
+                        type="radio"
+                        name="driverNumber"
+                        id="no2"
+                        label="2 tài xế / chuyến"
+                        value="2"
+                        checked={driverNumber === 2}
+                        onClick={() => setDriverNumber(2)}
+                    />
+                </>
+            )}
             <CTable stripedColumns bordered>
                 <CTableHead>
                     <CTableRow>
@@ -2609,8 +3042,25 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                                     <i>{dayInWeek[dayIndex]}</i>
                                 </b>
                                 <div>{format(addDays(startDate, dayIndex), 'dd/MM/yyyy')}</div>
-                                <CTooltip content={'Phân công tự động'}>
-                                    <CFormCheck></CFormCheck>
+                                <CTooltip content={'Giống tuần trước'}>
+                                    <CFormCheck
+                                        checked={listRepeat.includes(
+                                            addDays(startDate, dayIndex).getDate(),
+                                        )}
+                                        onChange={() => {
+                                            const day = addDays(startDate, dayIndex)
+                                            if (listRepeat.includes(day.getDate()))
+                                                setListRepeat(
+                                                    listRepeat.filter(
+                                                        (item) => item !== day.getDate(),
+                                                    ),
+                                                )
+                                            else {
+                                                setListRepeat([...listRepeat, day.getDate()])
+                                                repeatSchedule(day)
+                                            }
+                                        }}
+                                    ></CFormCheck>
                                 </CTooltip>
                             </CTableHeaderCell>
                         ))}
@@ -2654,12 +3104,38 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                     <CCard color="warning">
                         <CCardBody className="p-1">Chuyến về</CCardBody>
                     </CCard>
+                    <CCard color="light">
+                        <CCardBody className="p-1">Chuyến xung đột lịch</CCardBody>
+                        <div
+                            style={{
+                                position: 'absolute',
+                                bottom: 0,
+                                right: 0,
+                                width: '0',
+                                height: '0',
+                                borderLeft: '8px solid transparent',
+                                borderTop: '8px solid transparent',
+                                borderRight: '8px solid red',
+                                borderBottom: '8px solid red',
+                            }}
+                        ></div>
+                    </CCard>
                 </div>
                 <div className="d-flex justify-content-end gap-2">
-                    <CButton variant="outline" color="warning" onClick={handleAssignment}>
+                    <CButton variant="outline" color="success" onClick={handleAssignment}>
                         Lưu thông tin
                     </CButton>
-                    <CButton variant="outline" color="danger">
+                    <CButton variant="outline" color="info" onClick={handleCheck}>
+                        Kiểm tra
+                    </CButton>
+                    <CButton
+                        variant="outline"
+                        color="danger"
+                        onClick={() => {
+                            setListUpdate(null)
+                            setAuto(false)
+                        }}
+                    >
                         Hủy
                     </CButton>
                 </div>
@@ -2778,24 +3254,6 @@ export const AssignScheduleForm = ({ visible, setVisible, currentDay, finishAdd 
                                         onClick={handleGetNext}
                                     ></CIcon>
                                 </CCardHeader>
-                                {/* {curRoute && curTrip && curReverse && (
-                                <CCardBody>
-                                    <CForm className="w-100">
-                                        <CRow className="mb-3 justify-content-center">
-                                            <CCol sm={10}>
-                                                <AssignScheduleBox
-                                                    curRoute={curRoute}
-                                                    curTrip={curTrip}
-                                                    listGo={listGo}
-                                                    listReturn={listReturn}
-                                                    finishUpdate={finishUpdate}
-                                                    currentDay={currentDay}
-                                                ></AssignScheduleBox>
-                                            </CCol>
-                                        </CRow>
-                                    </CForm>
-                                </CCardBody>
-                            )} */}
                                 <CCardBody>
                                     <TableSchedule
                                         listScheduleIn={listSchedule}

@@ -48,6 +48,8 @@ import {
     selectCurrentListBus,
     selectListFixSchedule,
 } from 'src/feature/schedule/schedule.slice'
+import CIcon from '@coreui/icons-react'
+import { cilArrowRight, cilArrowLeft } from '@coreui/icons'
 import AddScheduleForm from './AddScheduleForm'
 import staffThunk from 'src/feature/staff/staff.service'
 import busThunk from 'src/feature/bus/bus.service'
@@ -55,6 +57,7 @@ import { CustomToast } from '../customToast/CustomToast'
 import { AssignScheduleForm } from './AddScheduleForm'
 import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
+import { subStractDays, addDays } from 'src/utils/convertUtils'
 const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
     const [schedule, setSchedule] = useState(inSchedule)
     const [toast, addToast] = useState(0)
@@ -669,7 +672,7 @@ const ScheduleManagement = () => {
     const [currentRoute, setCurrentRoute] = useState(
         curRoute && listRoute.find((rt) => rt.id === curRoute.id) ? curRoute.id : 0,
     )
-    const [currentTrip, setCurrentTrip] = useState(0)
+    const [currentTrip, setCurrentTrip] = useState(-1)
     const [currentDay, setCurrentDate] = useState(new Date())
     const startDate = startOfWeek(currentDay, { weekStartsOn: 1 })
     const endDate = endOfWeek(currentDay, { weekStartsOn: 1 })
@@ -722,6 +725,12 @@ const ScheduleManagement = () => {
                 (schd.trip.id === listTrip[currentTrip]?.turnGo?.id ||
                     schd.trip.id === listTrip[currentTrip]?.turnBack?.id),
         )
+    }
+    const handleGetBack = () => {
+        setCurrentDate(subStractDays(currentDay, 7))
+    }
+    const handleGetNext = () => {
+        setCurrentDate(addDays(currentDay, 7))
     }
     useEffect(() => {
         dispatch(scheduleThunk.getFixSchedule())
@@ -835,6 +844,12 @@ const ScheduleManagement = () => {
                     style={{ textAlign: 'right' }}
                     className="d-flex align-items-center gap-1 customDatePicker"
                 >
+                    <CIcon
+                        icon={cilArrowLeft}
+                        size="xl"
+                        role="button"
+                        onClick={handleGetBack}
+                    ></CIcon>
                     <b>
                         <i>Ngày</i>
                     </b>
@@ -855,6 +870,12 @@ const ScheduleManagement = () => {
                         disabled
                         style={{ width: '250px', marrginLeft: '10px' }}
                     ></CFormInput>
+                    <CIcon
+                        icon={cilArrowRight}
+                        size="xl"
+                        role="button"
+                        onClick={handleGetNext}
+                    ></CIcon>
                 </CCol>
             </CRow>
             {currentRoute !== 0 && (
