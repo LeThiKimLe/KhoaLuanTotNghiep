@@ -66,7 +66,7 @@ public class AuthenticationService {
 	private final StaffRepository staffRepository;
 	private final DriverRepository driverRepository;
 	private static final String DEFAULT_TYPE_AUTHENTICATION = "Bearer ";
-	private static final String DEFAULT_IMG = "https://bookingupfile.s3.amazonaws.com/Image/1700527483380-anh-chipi-16.jpg";
+	private static final String DEFAULT_IMG = "https://vexe.workon.space/api/images/1715520603997-8a7f35bf32c98be58464948536016e37.jpg";
 	private final TwilioService twilioService;
 	private final SystemManagerRepository managerRepository;
 	private final BusCompanyRepository busCompanyRepository;

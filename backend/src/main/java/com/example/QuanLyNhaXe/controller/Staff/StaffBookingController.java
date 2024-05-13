@@ -50,6 +50,11 @@ public class StaffBookingController {
 		return new ResponseEntity<>(reviewService.editStateReview(editActiveDTO), HttpStatus.OK);
 	}
 	
+	@GetMapping("/schedules/reviews-company")
+	public ResponseEntity<Object> getReviewsByCompany(@RequestParam Integer companyId){
+		return new ResponseEntity<>(reviewService.getReviewByCompany(companyId), HttpStatus.OK);
+	}
+	
 	
 
 }

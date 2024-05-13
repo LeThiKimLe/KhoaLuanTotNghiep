@@ -1,5 +1,7 @@
 package com.example.QuanLyNhaXe.controller.Admin;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -64,12 +66,12 @@ public class AdminController {
 	}
 	
 	@PutMapping("/staffs")
-	public ResponseEntity<Object> editStaff( @Valid @ModelAttribute EditStaffByAdmin editStaffByAdmin) {
+	public ResponseEntity<Object> editStaff( @Valid @ModelAttribute EditStaffByAdmin editStaffByAdmin) throws IOException {
 		return new ResponseEntity<>(userService.editStaffByAdmin(editStaffByAdmin), HttpStatus.OK);
 	}
 	
 	@PutMapping("/drivers")
-	public ResponseEntity<Object> editDriver( @Valid @ModelAttribute EditDriverByAdmin editDriverByAdmin) {
+	public ResponseEntity<Object> editDriver( @Valid @ModelAttribute EditDriverByAdmin editDriverByAdmin) throws IOException {
 		return new ResponseEntity<>(userService.editDriverByAdmin(editDriverByAdmin), HttpStatus.OK);
 	}
 	
