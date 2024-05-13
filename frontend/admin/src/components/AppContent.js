@@ -12,7 +12,11 @@ import { locationAction } from 'src/feature/location/location.slice'
 import routeThunk from 'src/feature/route/route.service'
 import companyThunk from 'src/feature/bus-company/busCompany.service'
 import locationThunk from 'src/feature/location/location.service'
-import { companyActions, selectUpdate } from 'src/feature/bus-company/busCompany.slice'
+import {
+    companyActions,
+    selectListCompany,
+    selectUpdate,
+} from 'src/feature/bus-company/busCompany.slice'
 
 // const AppContent = () => {
 //     return (
@@ -63,7 +67,7 @@ const AppContent = () => {
                                 return {
                                     ...route,
                                     trips: route.trips.filter(
-                                        (trip) => trip.busCompany?.id === companyId,
+                                        (trip) => trip.busCompanyId === companyId,
                                     ),
                                 }
                             })
@@ -100,8 +104,17 @@ const AppContent = () => {
                 dispatch(companyActions.setUpdate(false))
             })
     }
+    const getCompanyData = () => {
+        dispatch(companyThunk.getCompany())
+            .unwrap()
+            .then((listCompany) => {
+                const company = listCompany.find((company) => company.busCompany.id === companyId)
+                if (company) dispatch(companyActions.setCurCompany(company))
+            })
+    }
     useEffect(() => {
         getCompanyRouteData()
+        getCompanyData()
     }, [])
     useEffect(() => {
         if (update) getCompanyRouteData()

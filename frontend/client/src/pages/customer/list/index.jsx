@@ -249,6 +249,7 @@ const List = () => {
             setSelectedTab(0)
         }
     }, [currentTrip, returnTrip])
+    console.log(filterResult)
     return (
         <div>
             <Navbar></Navbar>

@@ -40,6 +40,12 @@ const Chat = React.lazy(() => import('./views/chat/Chat'))
 //Company Info
 const CompanyInfor = React.lazy(() => import('./views/profile/company/CompanyInfor'))
 
+//Expense Management
+const Expense = React.lazy(() => import('./views/expense/Expense'))
+
+//Transportation Management
+const ScheduleTracking = React.lazy(() => import('./views/schedule/ScheduleTracking'))
+
 const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
@@ -131,6 +137,12 @@ const routes = [
         protected: true,
     },
     {
+        path: '/system-manage/expense',
+        name: 'Quản lý chi phí',
+        element: Expense,
+        protected: true,
+    },
+    {
         path: '/schedule-manage',
         name: 'Điều hành xe',
         element: ScheduleManagement,
@@ -147,6 +159,12 @@ const routes = [
         path: '/schedule-manage/distribute',
         name: 'Phân tuyến',
         element: TripDistribute,
+        protected: true,
+    },
+    {
+        path: '/schedule-manage/tracking',
+        name: 'Quản lý chuyến xe',
+        element: ScheduleTracking,
         protected: true,
     },
 ]

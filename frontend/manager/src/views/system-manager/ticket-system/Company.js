@@ -49,6 +49,7 @@ import {
     selectOpenListRequest,
     selectListCompany,
     selectListAssign,
+    selectCurCompany,
 } from 'src/feature/bus-company/busCompany.slice'
 import { COLOR } from 'src/utils/constants'
 import locationThunk from 'src/feature/location/location.service'
@@ -1063,9 +1064,15 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
             }),
         )
             .unwrap()
-            .then((res) => {
-                addToast(() => CustomToast({ message: 'Thêm nhà xe thành công', type: 'success' }))
+            .then(async (res) => {
+                addToast(() =>
+                    CustomToast({
+                        message: 'Thêm nhà xe và gửi email xác nhận thành công',
+                        type: 'success',
+                    }),
+                )
                 // wait 1s to reload page
+                await dispatch(companyThunk.noticeCompany(companyId)).unwrap()
                 setTimeout(() => {
                     window.location.reload()
                 }, 1000)
@@ -1354,7 +1361,6 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         listLocation.current = listLocationIn
         listRoute.current = listRouteIn
     }, [listLocationIn, listRouteIn])
-
     return (
         <>
             <CModal
@@ -1710,6 +1716,21 @@ const Company = () => {
     const [listCompany, setListCompany] = useState(listCompanyIn)
     const [currentRequest, setCurrentRequest] = useState(null)
     const [filter, setFilter] = useState('active')
+    const socketConnect = useSelector(selectConnection)
+    const solveCompany = (companyTel) => {
+        const newMessage = {
+            type: 'remove',
+            tel: companyTel,
+        }
+        try {
+            // Gửi tin nhắn tới máy chủ WebSocket
+            if (socketConnect) {
+                socketConnect.send(JSON.stringify(newMessage))
+            }
+        } catch (error) {
+            console.log(error)
+        }
+    }
     useEffect(() => {
         if (listRoute.length === 0)
             dispatch(routeThunk.getOfficialRoute())
@@ -1786,7 +1807,11 @@ const Company = () => {
                                             Hoàn tất hồ sơ
                                         </CButton>
                                         <span>{` / `}</span>
-                                        <CButton variant="outline" color="danger">
+                                        <CButton
+                                            variant="outline"
+                                            color="danger"
+                                            onClick={() => solveCompany(item.tel)}
+                                        >
                                             Xóa yêu cầu
                                         </CButton>
                                     </CTableDataCell>

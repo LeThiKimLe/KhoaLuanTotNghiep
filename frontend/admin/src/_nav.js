@@ -128,6 +128,11 @@ const _nav = [
                 name: 'Quản lý đánh giá',
                 to: '/system-manage/reviews',
             },
+            {
+                component: CNavItem,
+                name: 'Quản lý chi phí',
+                to: '/system-manage/expense',
+            },
         ],
         protected: true,
     },
@@ -146,6 +151,11 @@ const _nav = [
                 component: CNavItem,
                 name: 'Phân tuyến xe',
                 to: '/schedule-manage/distribute',
+            },
+            {
+                component: CNavItem,
+                name: 'Quản lý chuyến xe',
+                to: '/schedule-manage/tracking',
             },
         ],
         protected: true,

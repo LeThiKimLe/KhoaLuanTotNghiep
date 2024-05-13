@@ -48,11 +48,16 @@ import {
     selectCurrentListBus,
     selectListFixSchedule,
 } from 'src/feature/schedule/schedule.slice'
+import CIcon from '@coreui/icons-react'
+import { cilArrowRight, cilArrowLeft } from '@coreui/icons'
 import AddScheduleForm from './AddScheduleForm'
 import staffThunk from 'src/feature/staff/staff.service'
 import busThunk from 'src/feature/bus/bus.service'
 import { CustomToast } from '../customToast/CustomToast'
 import { AssignScheduleForm } from './AddScheduleForm'
+import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
+import { subStractDays, addDays } from 'src/utils/convertUtils'
 const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
     const [schedule, setSchedule] = useState(inSchedule)
     const [toast, addToast] = useState(0)
@@ -236,9 +241,9 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                                 htmlFor="note"
                                                 className="col-sm-2 col-form-label"
                                             >
-                                                <b>Tài xế</b>
+                                                <b>Tài xế 1</b>
                                             </CFormLabel>
-                                            <CCol sm={8}>
+                                            <CCol sm={3}>
                                                 <CFormInput
                                                     type="note"
                                                     id="driver"
@@ -247,6 +252,24 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                                         schedule.driverUser
                                                             ? schedule.driverUser.name
                                                             : 'Chưa có tài xế'
+                                                    }
+                                                />
+                                            </CCol>
+                                            <CFormLabel
+                                                htmlFor="note"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Tài xế 2</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <CFormInput
+                                                    type="note"
+                                                    id="driver"
+                                                    disabled
+                                                    defaultValue={
+                                                        schedule.driverUser2
+                                                            ? schedule.driverUser2.name
+                                                            : 'Không'
                                                     }
                                                 />
                                             </CCol>
@@ -285,9 +308,9 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                                     id="price"
                                                     disabled
                                                     value={`${
-                                                        curRoute.busType?.capacity -
+                                                        curTrip.busType?.capacity -
                                                         schedule.availability
-                                                    } / ${curRoute.busType?.capacity}`}
+                                                    } / ${curTrip.busType?.capacity}`}
                                                 />
                                             </CCol>
                                         </CRow>
@@ -316,7 +339,6 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                             Hủy
                                         </CButton>
                                     )}
-                                    <CButton>Xuất lệnh vận chuyển</CButton>
                                 </CRow>
                             </CCardFooter>
                         </CCard>
@@ -497,8 +519,9 @@ const TimeTable = ({
                                                 className="text-center"
                                                 scope="col"
                                                 color={
-                                                    dayStart.getDate() + dayIndex ===
-                                                    currentDay.getDate()
+                                                    new Date(
+                                                        dayStart.getTime() + dayIndex * 86400000,
+                                                    ).getDate() === currentDay.getDate()
                                                         ? 'dark'
                                                         : ''
                                                 }
@@ -642,9 +665,14 @@ const ScheduleManagement = () => {
         busCount: 0,
         driverCount: 0,
     })
+    const companyId = useSelector(selectCompanyId)
     const listRoute = useSelector(selectListCompanyRoute)
-    const [currentRoute, setCurrentRoute] = useState(0)
-    const [currentTrip, setCurrentTrip] = useState(0)
+    const curTrip = useSelector(selectCurrentTrip)
+    const curRoute = useSelector(selectCurrentRoute)
+    const [currentRoute, setCurrentRoute] = useState(
+        curRoute && listRoute.find((rt) => rt.id === curRoute.id) ? curRoute.id : 0,
+    )
+    const [currentTrip, setCurrentTrip] = useState(-1)
     const [currentDay, setCurrentDate] = useState(new Date())
     const startDate = startOfWeek(currentDay, { weekStartsOn: 1 })
     const endDate = endOfWeek(currentDay, { weekStartsOn: 1 })
@@ -664,29 +692,6 @@ const ScheduleManagement = () => {
             setCurrentDate(newDate)
         }
     }
-    // const getListTrip = (routeId) => {
-    //     const routeIn = listRoute.find((rt) => rt.id == routeId)
-    //     var listTrip = []
-    //     var tempTrip = null
-    //     listReverse.current = []
-    //     routeIn.trips.forEach((trip) => {
-    //         tempTrip = listTrip.find(
-    //             (tp) =>
-    //                 (tp.startStation.id === trip.startStation.id &&
-    //                     tp.endStation.id === trip.endStation.id) ||
-    //                 (tp.startStation.id === trip.endStation.id &&
-    //                     tp.endStation.id === trip.startStation.id),
-    //         )
-    //         if (!tempTrip) listTrip.push(trip)
-    //         else {
-    //             listReverse.current.push({
-    //                 key: tempTrip.id,
-    //                 reverse: trip,
-    //             })
-    //         }
-    //     })
-    //     return listTrip.filter((tp) => tp.active === true)
-    // }
     const [listTrip, setListTrip] = useState([])
     const handleSelectRoute = (routeId) => {
         setCurrentRoute(routeId)
@@ -721,20 +726,33 @@ const ScheduleManagement = () => {
                     schd.trip.id === listTrip[currentTrip]?.turnBack?.id),
         )
     }
+    const handleGetBack = () => {
+        setCurrentDate(subStractDays(currentDay, 7))
+    }
+    const handleGetNext = () => {
+        setCurrentDate(addDays(currentDay, 7))
+    }
     useEffect(() => {
         dispatch(scheduleThunk.getFixSchedule())
     }, [])
     useEffect(() => {
-        setCurrentTrip(-1)
         if (currentRoute != 0) {
-            const listTripIn = tripProcess(listRoute).filter(
-                (trip) => trip.route.id == currentRoute,
+            const listTripIn = tripProcess(listRoute, companyId).filter(
+                (trip) =>
+                    trip.route.id == currentRoute &&
+                    trip.price !== 0 &&
+                    trip.active &&
+                    trip.busType,
             )
             setListTrip(listTripIn)
+            console.log(listRoute)
+            if (!curTrip) setCurrentTrip(-1)
+            else
+                setCurrentTrip(listTripIn.findIndex((trip) => trip.turnGo.id === curTrip.turnGo.id))
         }
     }, [currentRoute])
     useEffect(() => {
-        if (currentTrip !== -1) {
+        if (currentTrip !== -1 && curTrip) {
             dispatch(scheduleThunk.getMaxSchedules(currentTrip))
                 .unwrap()
                 .then((res) => {
@@ -745,7 +763,11 @@ const ScheduleManagement = () => {
                     })
                 })
                 .catch((error) => {})
-            dispatch(scheduleThunk.getTripBusDriver(currentTrip))
+            dispatch(
+                scheduleThunk.getTripBusDriver({
+                    tripId: curTrip.turnGo.id,
+                }),
+            )
                 .unwrap()
                 .then((res) => {})
                 .catch((error) => {})
@@ -797,6 +819,9 @@ const ScheduleManagement = () => {
                 })
         }
     }, [currentDay.getDate(), currentDay.getMonth(), currentTrip, reload])
+    useEffect(() => {
+        setCurrentRoute(curRoute && listRoute.find((rt) => rt.id === curRoute.id) ? curRoute.id : 0)
+    }, [curRoute])
     return (
         <>
             <CRow className="justify-content-between">
@@ -819,6 +844,12 @@ const ScheduleManagement = () => {
                     style={{ textAlign: 'right' }}
                     className="d-flex align-items-center gap-1 customDatePicker"
                 >
+                    <CIcon
+                        icon={cilArrowLeft}
+                        size="xl"
+                        role="button"
+                        onClick={handleGetBack}
+                    ></CIcon>
                     <b>
                         <i>Ngày</i>
                     </b>
@@ -839,6 +870,12 @@ const ScheduleManagement = () => {
                         disabled
                         style={{ width: '250px', marrginLeft: '10px' }}
                     ></CFormInput>
+                    <CIcon
+                        icon={cilArrowRight}
+                        size="xl"
+                        role="button"
+                        onClick={handleGetNext}
+                    ></CIcon>
                 </CCol>
             </CRow>
             {currentRoute !== 0 && (
@@ -916,13 +953,13 @@ const ScheduleManagement = () => {
                                 loading={loading}
                                 color="warning"
                             ></CustomButton>
-                            <CustomButton
+                            {/* <CustomButton
                                 className="mt-3 mb-3 mx-2"
                                 onClick={() => setOpenAssignForm(true)}
                                 text="Mở bán vé"
                                 loading={loading}
                                 color="info"
-                            ></CustomButton>
+                            ></CustomButton> */}
                             <CustomButton
                                 className="mt-3 mb-3 mx-2"
                                 onClick={() => finishAdd()}

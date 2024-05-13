@@ -2,14 +2,24 @@ const listDeparture = [];
 const listDestination = [];
 
 export const createListRoutes = (routeData) => {
-  routeData.forEach((route) => {
-    addRoute(route, "forward");
-    addRoute(route, "backward");
-  });
-  return {
-    listDeparture: listDeparture,
-    listDestination: listDestination,
-  };
+  try {
+    routeData.forEach((route) => {
+      addRoute(route, "forward");
+      addRoute(route, "backward");
+    });
+    return {
+      listDeparture: listDeparture,
+      listDestination: listDestination,
+    };
+  }
+  catch (error) {
+    console.log(error);
+    return {
+      listDeparture: listDeparture,
+      listDestination: listDestination,
+    };
+  }
+  
 };
 
 const addRoute = (route, round) => {
