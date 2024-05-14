@@ -28,40 +28,52 @@ import scheduleThunk from 'src/feature/schedule/schedule.service'
 import { getTripJourney } from 'src/utils/tripUtils'
 import { selectActiveTicket } from 'src/feature/ticket/ticket.slice'
 import { Document, Packer } from 'docxtemplater'
+import commandTemplate from 'src/assets/file/lenh-van-chuyen.docx'
+import { Docxtemplater } from 'docxtemplater'
 import axios from 'axios'
 const WordProcessor = () => {
+    const [numPages, setNumPages] = useState(null)
+    const [pageNumber, setPageNumber] = useState(1)
     const [template, setTemplate] = useState(null)
+    const [pdfData, setPdfData] = useState(null)
     useEffect(() => {
-        // Gửi yêu cầu GET đến tệp Word mẫu
         axios
-            .get('/path/to/template.docx', { responseType: 'arraybuffer' })
+            .get(commandTemplate, { responseType: 'arraybuffer' })
             .then((response) => {
-                setTemplate(response.data) // Lưu nội dung tệp Word vào state
+                setTemplate(response.data)
             })
             .catch((error) => {
                 console.error('Error fetching template:', error)
             })
     }, [])
-
-    const generateDocument = () => {
+    const onDocumentLoadSuccess = ({ numPages }) => {
+        setNumPages(numPages)
+    }
+    const generatePDF = () => {
         if (template) {
-            const doc = new Document(template)
+            const doc = new Docxtemplater()
+            doc.loadZip(template)
             doc.setData({
-                // Điền dữ liệu vào các trường
                 firstName: 'John',
                 lastName: 'Doe',
                 age: 30,
             })
             doc.render()
-
             const buffer = doc.getZip().generate({ type: 'arraybuffer' })
-            saveAs(buffer, 'generated_document.docx') // Tải xuống tệp Word đã được điền nội dung
+            const blob = new Blob([buffer], {
+                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            })
+            const url = URL.createObjectURL(blob)
+            const link = document.createElement('a')
+            link.href = url
+            link.download = 'generated_document.docx'
+            link.click()
         }
     }
 
     return (
         <div>
-            <button onClick={generateDocument}>Generate Document</button>
+            <button onClick={generatePDF}>Generate Document</button>
         </div>
     )
 }
@@ -82,7 +94,8 @@ const ScheduleData = ({ index, schedule }) => {
             <CTableDataCell>{schedule.bus?.licensePlate}</CTableDataCell>
             <CTableDataCell>
                 {!exportCommand ? (
-                    <CButton variant="outline">Xuất lệnh</CButton>
+                    // <CButton variant="outline">Xuất lệnh</CButton>
+                    <WordProcessor></WordProcessor>
                 ) : (
                     <>
                         <i>Xem lệnh</i> / <i>Chỉnh sửa</i>
