@@ -16,10 +16,11 @@ import lombok.RequiredArgsConstructor;
 public class TransportationOrderService {
 	private final TransportationOrderRepository transportationOrderRepository;
 	private final UtilityService utilityService;
-	
+	private final ImagesService imagesService;
 	
 	public void createTransportationOrder(TransportationOrderCreate transportationOrderCreate) {
 		String code=utilityService.generateRandomString(10);
+		
 		
 		
 	}
