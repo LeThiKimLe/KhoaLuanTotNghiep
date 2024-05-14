@@ -1,5 +1,6 @@
 package com.example.QuanLyNhaXe.service;
 
+import java.io.IOException;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class BusService {
 	private final UserService userService;
 	private final SeatRepository seatRepository;
 	private final BusCompanyRepository busCompanyRepository;
-
+	private final ImagesService imagesService;
 	public Object getAllBusType(String authentication) {
 		User user = userService.getUserByAuthorizationHeader(authentication);
 		List<BusType> busTypes = busTypeRepository.findAll();
@@ -187,15 +188,15 @@ public class BusService {
 
 	}
 
-	public Object createBusType(CreateBusType createBusType, String authentication) {
+	public Object createBusType(CreateBusType createBusType, String authentication) throws IOException {
 		SeatMap seatMap = seatMapRepository.findById(createBusType.getSeatMapId())
 				.orElseThrow(() -> new NotFoundException(Message.SEATMAP_NOT_FOUND));
 		User adminUser = userService.getUserByAuthorizationHeader(authentication);
 		BusCompany busCompany = adminUser.getStaff().getBusCompany();
-
+		String image = imagesService.saveImage(createBusType.getImage());
 		BusType busType = BusType.builder().name(createBusType.getName()).seatMap(seatMap)
 				.capacity(createBusType.getCapacity()).fee(createBusType.getFee())
-				.description(createBusType.getDescription()).busCompany(busCompany).isActive(true).build();
+				.description(createBusType.getDescription()).busCompany(busCompany).isActive(true).image(image).build();
 		try {
 			busTypeRepository.save(busType);
 		} catch (Exception e) {
@@ -206,10 +207,10 @@ public class BusService {
 		return modelMapper.map(busType, BusTypeDTO.class);
 	}
 
-	public Object editBusType(EditBusType editBusType) {
+	public Object editBusType(EditBusType editBusType) throws IOException {
 		BusType busType = busTypeRepository.findById(editBusType.getId())
 				.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
-
+		String image = imagesService.saveImage(editBusType.getImage());
 		SeatMap seatMap = seatMapRepository.findById(editBusType.getSeatMapId())
 				.orElseThrow(() -> new NotFoundException(Message.SEATMAP_NOT_FOUND));
 		busType.setCapacity(editBusType.getCapacity());
@@ -217,6 +218,8 @@ public class BusService {
 		busType.setDescription(editBusType.getDescription());
 		busType.setFee(editBusType.getFee());
 		busType.setSeatMap(seatMap);
+		if (!image.equals(""))
+			busType.setImage(image);
 		try {
 			busTypeRepository.save(busType);
 		} catch (Exception e) {

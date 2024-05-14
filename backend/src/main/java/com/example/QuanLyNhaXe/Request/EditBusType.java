@@ -1,5 +1,7 @@
 package com.example.QuanLyNhaXe.Request;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 
 @Data
@@ -9,6 +11,7 @@ public class EditBusType {
 	private Integer capacity;
 	private Integer fee;
 	private String description;
+	private MultipartFile image;
 	private Integer seatMapId;
 
 }

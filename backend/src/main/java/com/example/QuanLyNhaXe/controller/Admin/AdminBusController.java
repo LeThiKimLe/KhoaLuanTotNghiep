@@ -1,9 +1,12 @@
 package com.example.QuanLyNhaXe.controller.Admin;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,12 +50,12 @@ public class AdminBusController {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<Object> createBus(@RequestBody  CreateBusDTO createBusDTO) {
+	public ResponseEntity<Object> createBus(@ModelAttribute  CreateBusDTO createBusDTO) {
 		return new ResponseEntity<>(busService.createBus(createBusDTO), HttpStatus.OK);
 	}
 	
 	@PutMapping()
-	public ResponseEntity<Object> editBus(@RequestBody  EditBusDTO editBusDTO) {
+	public ResponseEntity<Object> editBus(@ModelAttribute  EditBusDTO editBusDTO) {
 		return new ResponseEntity<>(busService.editBus(editBusDTO), HttpStatus.OK);
 	}
 	
@@ -63,12 +66,12 @@ public class AdminBusController {
 	}
 	
 	@PostMapping("/type")
-	public ResponseEntity<Object> createBusType(@RequestBody  CreateBusType createBusType,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+	public ResponseEntity<Object> createBusType(@ModelAttribute  CreateBusType createBusType,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) throws IOException {
 		return new ResponseEntity<>(busService.createBusType(createBusType, authorization), HttpStatus.OK);
 	}
 	
 	@PutMapping("/type")
-	public ResponseEntity<Object> editBusType(@RequestBody  EditBusType editBusType) {
+	public ResponseEntity<Object> editBusType(@ModelAttribute  EditBusType editBusType) throws IOException {
 		return new ResponseEntity<>(busService.editBusType(editBusType), HttpStatus.OK);
 	}
 	

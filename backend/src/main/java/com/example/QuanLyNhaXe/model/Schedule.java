@@ -79,5 +79,5 @@ public class Schedule {
 	private List<Review> reviews;
 	
 	@OneToMany(mappedBy = "schedule")
-	private List<TransportTationOrder> transportTationOrders;
+	private List<TransportationOrder> transportationOrders;
 }
