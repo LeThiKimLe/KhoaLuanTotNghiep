@@ -17,6 +17,7 @@ import {
     CFormSelect,
     CFormCheck,
     CRow,
+    CButton,
 } from '@coreui/react'
 import parse from 'date-fns/parse'
 import { addHours } from 'src/utils/convertUtils'
@@ -26,20 +27,68 @@ import 'react-datepicker/dist/react-datepicker.css'
 import scheduleThunk from 'src/feature/schedule/schedule.service'
 import { getTripJourney } from 'src/utils/tripUtils'
 import { selectActiveTicket } from 'src/feature/ticket/ticket.slice'
+import { Document, Packer } from 'docxtemplater'
+import axios from 'axios'
+const WordProcessor = () => {
+    const [template, setTemplate] = useState(null)
+    useEffect(() => {
+        // Gửi yêu cầu GET đến tệp Word mẫu
+        axios
+            .get('/path/to/template.docx', { responseType: 'arraybuffer' })
+            .then((response) => {
+                setTemplate(response.data) // Lưu nội dung tệp Word vào state
+            })
+            .catch((error) => {
+                console.error('Error fetching template:', error)
+            })
+    }, [])
+
+    const generateDocument = () => {
+        if (template) {
+            const doc = new Document(template)
+            doc.setData({
+                // Điền dữ liệu vào các trường
+                firstName: 'John',
+                lastName: 'Doe',
+                age: 30,
+            })
+            doc.render()
+
+            const buffer = doc.getZip().generate({ type: 'arraybuffer' })
+            saveAs(buffer, 'generated_document.docx') // Tải xuống tệp Word đã được điền nội dung
+        }
+    }
+
+    return (
+        <div>
+            <button onClick={generateDocument}>Generate Document</button>
+        </div>
+    )
+}
 const ScheduleData = ({ index, schedule }) => {
+    const [exportCommand, setExportCommand] = useState(false)
     return (
         <CTableRow>
-            <CTableDataCell>{index}</CTableDataCell>
-            <CTableDataCell>{`${schedule.departTime} - ${convertToDisplayDate(
+            <CTableDataCell>{index + 1}</CTableDataCell>
+            <CTableDataCell>{getTripJourney(schedule.tripInfor)}</CTableDataCell>
+            <CTableDataCell>{`${schedule.departTime.slice(0, -3)} - ${convertToDisplayDate(
                 schedule.departDate,
             )}`}</CTableDataCell>
             <CTableDataCell>
                 {schedule.tickets.filter((ticket) => !ticket.state.includes('hủy')).length}
             </CTableDataCell>
-            <CTableDataCell>{schedule.driverUser.name}</CTableDataCell>
+            <CTableDataCell>{schedule.driverUser?.name}</CTableDataCell>
             <CTableDataCell>{schedule.driverUser2?.name}</CTableDataCell>
-            <CTableDataCell>{schedule.bus.licensePlate}</CTableDataCell>
-            <CTableDataCell>{`Lệnh vận chuyển`}</CTableDataCell>
+            <CTableDataCell>{schedule.bus?.licensePlate}</CTableDataCell>
+            <CTableDataCell>
+                {!exportCommand ? (
+                    <CButton variant="outline">Xuất lệnh</CButton>
+                ) : (
+                    <>
+                        <i>Xem lệnh</i> / <i>Chỉnh sửa</i>
+                    </>
+                )}
+            </CTableDataCell>
             <CTableDataCell>{`Sắp rời bến`}</CTableDataCell>
         </CTableRow>
     )
@@ -74,6 +123,7 @@ const ListTrip = ({ listSchedule }) => {
                     <CTableHead>
                         <CTableRow>
                             <CTableHeaderCell>STT</CTableHeaderCell>
+                            <CTableHeaderCell>Tuyến</CTableHeaderCell>
                             <CTableHeaderCell>Thời gian</CTableHeaderCell>
                             <CTableHeaderCell>Số khách</CTableHeaderCell>
                             <CTableHeaderCell>Tài xế 1</CTableHeaderCell>
@@ -140,7 +190,10 @@ const ScheduleTracking = () => {
                     new Date(),
                 )
                 const currentTime = new Date()
-                return departTime.getTime() - currentTime.getTime() <= 24 * 60 * 60 * 1000
+                return (
+                    currentTime.getTime() < departTime.getTime() &&
+                    currentTime.getTime() + 24 * 60 * 60 * 1000 > departTime.getTime()
+                )
             })
         }
         if (status === 'OnGoing') {
@@ -203,21 +256,22 @@ const ScheduleTracking = () => {
                             const index = listSchedule.findIndex(
                                 (item) => item.trip.id === curTrip.id,
                             )
-                            if (index !== -1) {
+                            if (index == -1) {
                                 listSchedule.push({
                                     trip: curTrip,
-                                    schedules: filterSchedule,
+                                    schedules: [...filterSchedule],
                                 })
                             } else {
-                                listSchedule[index].schedules =
-                                    listSchedule[index].schedules.push(filterSchedule)
+                                filterSchedule.forEach((item) => {
+                                    listSchedule[index].schedules.push(item)
+                                })
                             }
                         })
                         .catch((error) => {
                             const index = listSchedule.findIndex(
                                 (item) => item.trip.id === curTrip.id,
                             )
-                            if (index !== -1) {
+                            if (index == -1) {
                                 listSchedule.push({
                                     trip: curTrip,
                                     schedules: [],
@@ -266,8 +320,13 @@ const ScheduleTracking = () => {
         }
     }, [currentTrip])
     useEffect(() => {
-        getScheduleData()
+        if (currentDay) {
+            getScheduleData()
+        }
     }, [currentDay])
+    useEffect(() => {
+        setCurrentDate(new Date())
+    }, [])
     return (
         <>
             <CRow className="justify-content-between">
@@ -302,20 +361,22 @@ const ScheduleTracking = () => {
             </CRow>
             {currentRoute !== 0 && (
                 <div className="mt-3">
-                    {listTrip.map((trip, index) => (
-                        <CFormCheck
-                            inline
-                            type="radio"
-                            key={index}
-                            name="tripOptions"
-                            required
-                            id={index}
-                            value={currentTrip ? currentTrip.id : -1}
-                            label={getTripJourney(trip)}
-                            checked={currentTrip ? currentTrip.id == trip.id : false}
-                            onChange={() => setCurrentTrip(trip)}
-                        />
-                    ))}
+                    {listTrip
+                        .filter((trip) => trip.route.id == currentRoute)
+                        .map((trip, index) => (
+                            <CFormCheck
+                                inline
+                                type="radio"
+                                key={index}
+                                name="tripOptions"
+                                required
+                                id={index}
+                                value={currentTrip ? currentTrip.id : -1}
+                                label={getTripJourney(trip)}
+                                checked={currentTrip ? currentTrip.id == trip.id : false}
+                                onChange={() => setCurrentTrip(trip)}
+                            />
+                        ))}
                 </div>
             )}
             <div className="tabStyle">
