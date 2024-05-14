@@ -108,6 +108,7 @@ public class BusService {
 		if (busRepository.existsByLicensePlate(createBusDTO.getLicensePlate())) {
 			throw new ConflictException("Giấy phép đã tồn tại");
 		}
+		System.out.println(createBusDTO.getCompanyId());
 		BusCompany busCompany=busCompanyRepository.findById(createBusDTO.getCompanyId())
 				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 		BusType busType = busTypeRepository.findById(createBusDTO.getTypeId())

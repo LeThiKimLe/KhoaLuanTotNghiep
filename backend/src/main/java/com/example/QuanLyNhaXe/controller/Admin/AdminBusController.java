@@ -50,12 +50,12 @@ public class AdminBusController {
 	}
 	
 	@PostMapping()
-	public ResponseEntity<Object> createBus(@ModelAttribute  CreateBusDTO createBusDTO) {
+	public ResponseEntity<Object> createBus(@RequestBody CreateBusDTO createBusDTO) {
 		return new ResponseEntity<>(busService.createBus(createBusDTO), HttpStatus.OK);
 	}
 	
 	@PutMapping()
-	public ResponseEntity<Object> editBus(@ModelAttribute  EditBusDTO editBusDTO) {
+	public ResponseEntity<Object> editBus(@RequestBody  EditBusDTO editBusDTO) {
 		return new ResponseEntity<>(busService.editBus(editBusDTO), HttpStatus.OK);
 	}
 	
