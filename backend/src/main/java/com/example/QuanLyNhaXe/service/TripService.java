@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.modelmapper.AbstractConverter;
@@ -26,6 +27,7 @@ import com.example.QuanLyNhaXe.Request.TripAssignment;
 import com.example.QuanLyNhaXe.dto.BusDTO;
 import com.example.QuanLyNhaXe.dto.DriverDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleDTO;
+import com.example.QuanLyNhaXe.dto.ScheduleTranDTO;
 import com.example.QuanLyNhaXe.dto.StatisTicForMonth;
 import com.example.QuanLyNhaXe.dto.StatisTicForMonth.StatisticOneDay;
 import com.example.QuanLyNhaXe.dto.StatisticForYear;
@@ -37,6 +39,7 @@ import com.example.QuanLyNhaXe.dto.StopStationDTO;
 import com.example.QuanLyNhaXe.dto.TripBusDriver;
 import com.example.QuanLyNhaXe.dto.TripDTO;
 import com.example.QuanLyNhaXe.dto.TripReponseDTO;
+import com.example.QuanLyNhaXe.dto.TripTranDTO;
 import com.example.QuanLyNhaXe.dto.UserDTO;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
@@ -95,15 +98,22 @@ public class TripService {
 	private final BusCompanyRepository busCompanyRepository;
 	private final BusTypeRepository busTypeRepository;
 
-	public List<TripDTO> getAllTrips() {
+	public List<TripTranDTO> getAllTrips() {
 		List<Trip> trips = tripRepository.findAll();
 		if (trips.isEmpty()) {
 			throw new NotFoundException(Message.ROUTE_NOT_FOUND);
 		}
-		return trips.stream().map(trip -> modelMapper.map(trip, TripDTO.class)).toList();
+		return trips.stream()
+				.peek(trip -> {
+					for(Schedule schedule: trip.getSchedules()) {
+						schedule.getTransportationOrder().setSchedule(null);
+					}
+			        // ...
+			    })
+				.map(trip -> modelMapper.map(trip, TripTranDTO.class)).toList();
 	}
 
-	public List<TripDTO> getTripsForRoute(GetTripDTO getTripDTO, String authorizationHeader) {
+	public List<TripTranDTO> getTripsForRoute(GetTripDTO getTripDTO, String authorizationHeader) {
 		Boolean filter = true;
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			String jwt = authorizationHeader.substring(7);
@@ -114,7 +124,7 @@ public class TripService {
 			if (!user.getAccount().isActive()) {
 				throw new BadRequestException(Message.ACCOUNT_DISABLED);
 			}
-			if (user.getAccount().getRole().getId() !=4) {
+			if (user.getAccount().getRole().getId() != 4) {
 				filter = false;
 			}
 		}
@@ -133,22 +143,28 @@ public class TripService {
 
 		ModelMapper customModelMapper = new ModelMapper();
 
-		customModelMapper.typeMap(Schedule.class, ScheduleDTO.class)
-		.addMapping(src -> src.getDriver().getUser(), ScheduleDTO::setDriverUser)
-		.addMapping(src -> src.getDriver2().getUser(), ScheduleDTO::setDriverUser2);
+		customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
+				.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
+				.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
 
-		customModelMapper.typeMap(Trip.class, TripDTO.class).addMappings(mapper -> {
-			mapper.using(ctx -> customModelMapper.map(ctx.getSource(), new TypeToken<List<ScheduleDTO>>(){}.getType()))
-				.map(Trip::getSchedules, TripDTO::setSchedules);
+		customModelMapper.typeMap(Trip.class, TripTranDTO.class).addMappings(mapper -> {
+			mapper.using(ctx -> customModelMapper.map(ctx.getSource(), new TypeToken<List<ScheduleTranDTO>>() {
+			}.getType())).map(Trip::getSchedules, TripTranDTO::setSchedules);
 		});
 
-		List<TripDTO> tripsDTO = trips.stream().map(trip -> {
+		List<TripTranDTO> tripsDTO = trips.stream().map(trip -> {
 			List<Schedule> schedules = scheduleRepository
 					.findByTripIdAndDepartDateAndAvailabilityGreaterThanEqualAndDepartTimeAfter(trip.getId(),
 							getTripDTO.getDepartDate(), getTripDTO.getAvailability(), time);
+			for (Schedule schedule : schedules) {
+				if (schedule.getTransportationOrder() != null) {
+					schedule.getTransportationOrder().setSchedule(null);
+
+				}
+			}
 			trip.setSchedules(schedules);
-			//print all driver name of schedules
-			return customModelMapper.map(trip, TripDTO.class);
+			return customModelMapper.map(trip, TripTranDTO.class);
+
 		}).filter(tripDTO -> !tripDTO.getSchedules().isEmpty()).toList();
 		if (tripsDTO.isEmpty()) {
 			throw new NotFoundException(Message.TRIP_NOT_FOUND);
@@ -161,7 +177,7 @@ public class TripService {
 		Boolean filter = true;
 		User user = userService.getUserByAuthorizationHeader(authorizationHeader);
 
-		if (user.getAccount().getRole().getId()!=4) {
+		if (user.getAccount().getRole().getId() != 4) {
 			filter = false;
 		}
 
@@ -262,35 +278,39 @@ public class TripService {
 
 	public Object createTrip(CreateTrip createTrip) {
 		if (tripRepository.existsByStartStationIdAndEndStationIdAndBusCompanyId(createTrip.getStartStationId(),
-				createTrip.getEndStationId(),createTrip.getCompanyId())
+				createTrip.getEndStationId(), createTrip.getCompanyId())
 				|| tripRepository.existsByStartStationIdAndEndStationIdAndBusCompanyId(createTrip.getEndStationId(),
-						createTrip.getStartStationId(),createTrip.getCompanyId())) {
+						createTrip.getStartStationId(), createTrip.getCompanyId())) {
 			throw new ConflictException(Message.TRIP_EXISTS);
 		}
-		BusType busType=null;
-		if(createTrip.getBusType()!=0 &&createTrip.getBusType()!=null) {
-			busType=busTypeRepository.findById(createTrip.getBusType())
+		BusType busType = null;
+		if (createTrip.getBusType() != 0 && createTrip.getBusType() != null) {
+			busType = busTypeRepository.findById(createTrip.getBusType())
 					.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
-			
+
 		}
-		
-		
+
 		Route route = routeRepository.findById(createTrip.getRouteId())
 				.orElseThrow(() -> new NotFoundException(Message.ROUTE_NOT_FOUND));
 		Station startStation = stationRepository.findById(createTrip.getStartStationId())
 				.orElseThrow(() -> new NotFoundException(Message.STATION_NOT_FOUND));
 		Station endStation = stationRepository.findById(createTrip.getEndStationId())
 				.orElseThrow(() -> new NotFoundException(Message.STATION_NOT_FOUND));
-		BusCompany busCompany=busCompanyRepository.findById(createTrip.getCompanyId())
+		BusCompany busCompany = busCompanyRepository.findById(createTrip.getCompanyId())
 				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 
-		Trip trip = Trip.builder().startStation(startStation).endStation(endStation).route(route).price(createTrip.getPrice()).busCompany(busCompany).isActive(true)
-				.turn(true).busType(busType).schedule(createTrip.getSchedule()).distance(createTrip.getDistance()).hours(createTrip.getHours()).build();
-		Trip returnTrip = Trip.builder().startStation(startStation).endStation(endStation).price(createTrip.getPrice()).busCompany(busCompany).route(route).isActive(true)
-				.turn(false).busType(busType).schedule(createTrip.getScheduleReturn()).distance(createTrip.getDistance()).hours(createTrip.getHours()).build();
+		Trip trip = Trip.builder().startStation(startStation).endStation(endStation).route(route)
+				.price(createTrip.getPrice()).busCompany(busCompany).isActive(true).turn(true).busType(busType)
+				.schedule(createTrip.getSchedule()).distance(createTrip.getDistance()).hours(createTrip.getHours())
+				.build();
+		Trip returnTrip = Trip.builder().startStation(startStation).endStation(endStation).price(createTrip.getPrice())
+				.busCompany(busCompany).route(route).isActive(true).turn(false).busType(busType)
+				.schedule(createTrip.getScheduleReturn()).distance(createTrip.getDistance())
+				.hours(createTrip.getHours()).build();
 		tripRepository.save(trip);
 		tripRepository.save(returnTrip);
-		return TripReponseDTO.builder().trip(modelMapper.map(trip, TripDTO.class)).tripReturn(modelMapper.map(returnTrip, TripDTO.class)).build();
+		return TripReponseDTO.builder().trip(modelMapper.map(trip, TripDTO.class))
+				.tripReturn(modelMapper.map(returnTrip, TripDTO.class)).build();
 
 	}
 
@@ -455,10 +475,10 @@ public class TripService {
 		return new ResponseMessage(Message.SUCCESS);
 
 	}
-	
+
 	public Object statisTicTripTicket(Integer year, Integer month) {
-		List<StatisticTripTicketsForMonth> statisticTripTicketsForMonths=new ArrayList<>();
-		List<StatisticTripTicketsForYear> statisticTripTicketsForYears=new ArrayList<>();
+		List<StatisticTripTicketsForMonth> statisticTripTicketsForMonths = new ArrayList<>();
+		List<StatisticTripTicketsForYear> statisticTripTicketsForYears = new ArrayList<>();
 		List<SumTicKet> sumTicKets;
 		if (year <= 0 || month < 0 || month > 12) {
 			throw new BadRequestException(Message.BAD_REQUEST);
@@ -471,45 +491,43 @@ public class TripService {
 				LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
 				LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 				LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
-				sumTicKets=bookingService.getTicketForTrip(startDateTime, endDateTime);
-				StatisticTripTicketsForYear statisticTripTicketsForYear=StatisticTripTicketsForYear.builder().month(yearMonth).statisticTickets(sumTicKets).build();
+				sumTicKets = bookingService.getTicketForTrip(startDateTime, endDateTime);
+				StatisticTripTicketsForYear statisticTripTicketsForYear = StatisticTripTicketsForYear.builder()
+						.month(yearMonth).statisticTickets(sumTicKets).build();
 				statisticTripTicketsForYears.add(statisticTripTicketsForYear);
 			}
 			return statisticTripTicketsForYears;
-		}
-		else {
+		} else {
 			List<LocalDate> localDates = getAllDaysInMonth(year, month);
-			for(LocalDate date: localDates) {
-				LocalDateTime startDateTime =  date.atStartOfDay();		
+			for (LocalDate date : localDates) {
+				LocalDateTime startDateTime = date.atStartOfDay();
 				LocalDateTime endDateTime = date.atTime(LocalTime.MAX);
-				sumTicKets=bookingService.getTicketForTrip(startDateTime, endDateTime);
-				StatisticTripTicketsForMonth statisticTripTicketsForMonth=StatisticTripTicketsForMonth.builder().statisticTickets(sumTicKets).date(date).build();
+				sumTicKets = bookingService.getTicketForTrip(startDateTime, endDateTime);
+				StatisticTripTicketsForMonth statisticTripTicketsForMonth = StatisticTripTicketsForMonth.builder()
+						.statisticTickets(sumTicKets).date(date).build();
 				statisticTripTicketsForMonths.add(statisticTripTicketsForMonth);
 			}
 			return statisticTripTicketsForMonths;
-			
+
 		}
-		
-	
+
 	}
-	
+
 	public Object editTrip(EditTrip editTrip) {
 		Trip trip = tripRepository.findById(editTrip.getTripId())
 				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
-		BusType busType=null;
-		if(editTrip.getBusTypeId()!=0 &&editTrip.getBusTypeId()!=null) {
-			busType=busTypeRepository.findById(editTrip.getBusTypeId())
+		BusType busType = null;
+		if (editTrip.getBusTypeId() != 0 && editTrip.getBusTypeId() != null) {
+			busType = busTypeRepository.findById(editTrip.getBusTypeId())
 					.orElseThrow(() -> new NotFoundException(Message.BUSTYPE_NOT_FOUND));
-			
+
 		}
 		trip.setBusType(busType);
 		trip.setPrice(editTrip.getPrice());
 		trip.setSchedule(editTrip.getSchedule());
 		tripRepository.save(trip);
 		return modelMapper.map(trip, TripDTO.class);
-	
+
 	}
-	
-	
 
 }

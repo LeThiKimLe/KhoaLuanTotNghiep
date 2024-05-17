@@ -22,5 +22,6 @@ public class ScheduleTicketsDTO {
 	private Integer availability;
 	private String note;
 	private BusDTO bus;
+	
 
 }

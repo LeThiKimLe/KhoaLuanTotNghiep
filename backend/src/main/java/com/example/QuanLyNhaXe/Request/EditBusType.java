@@ -11,7 +11,8 @@ public class EditBusType {
 	private Integer capacity;
 	private Integer fee;
 	private String description;
-	private MultipartFile image;
+	
 	private Integer seatMapId;
+	private MultipartFile image;
 
 }
