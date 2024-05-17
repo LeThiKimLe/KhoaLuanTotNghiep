@@ -440,6 +440,7 @@ const TimeTable = ({
     useEffect(() => {
         const tempList = []
         var filterSchedule = []
+        console.log(fixSchedule)
         setListSchedule([])
         if (currentRoute !== 0 && currentTrip !== 0) {
             currentSearch.current = {
@@ -493,6 +494,32 @@ const TimeTable = ({
             }
         }
     }, [currentRoute, dayStart.getDate(), currentTrip, reload])
+    useEffect(() => {
+        if (fixSchedule.length > 0 && listSchedule.length === 7) {
+            const listPreSchedule = [...listSchedule]
+            let index = 0
+            for (let i = 0; i < listPreSchedule.length; i++) {
+                if (listSchedule[i].schedules.length === 0) {
+                    index = listSchedule[i].date - dayStart.getDate()
+                    listPreSchedule[i].schedules = fixSchedule
+                        .filter((schd) => schd.dayOfWeek == index + 2)
+                        .map((schd) => {
+                            const { time, ...schdInfo } = schd
+                            return {
+                                ...schdInfo,
+                                departTime: time,
+                                departDate: format(
+                                    new Date(dayStart.getTime() + i * 86400000),
+                                    'yyyy-MM-dd',
+                                ),
+                                fixed: true,
+                            }
+                        })
+                }
+            }
+            setListSchedule([...listPreSchedule])
+        }
+    }, [fixSchedule])
     return (
         <>
             {listSchedule.length === 7 &&

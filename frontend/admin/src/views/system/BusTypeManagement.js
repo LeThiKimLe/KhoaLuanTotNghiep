@@ -26,6 +26,7 @@ import {
     CAccordionItem,
     CAccordionHeader,
     CAccordionBody,
+    CImage,
 } from '@coreui/react'
 import { useState, useRef } from 'react'
 import { CustomToast } from '../customToast/CustomToast'
@@ -36,8 +37,9 @@ import busThunk from 'src/feature/bus/bus.service'
 import { selectListBus, selectListBusType } from 'src/feature/bus/bus.slice'
 import { useDispatch, useSelector } from 'react-redux'
 import CustomButton from '../customButton/CustomButton'
+import no_img from '../../assets/images/no_img.png'
 
-const Seat = ({ seat, empty, changeSeat, size = 'sm' }) => {
+const Seat = ({ seat, empty, changeSeat, editable = true, size = 'sm' }) => {
     const [isHover, setIsHover] = useState(false)
     const [seatName, setSeatName] = useState(seat ? seat.name : '')
     const [active, setActive] = useState(seat && seat.active ? 'active' : 'disabled')
@@ -74,7 +76,9 @@ const Seat = ({ seat, empty, changeSeat, size = 'sm' }) => {
                     role="button"
                     onMouseEnter={handleMouseEnter}
                     onMouseLeave={handleMouseLeave}
-                    onClick={() => setOpenModal(true)}
+                    onClick={() => {
+                        if (editable) setOpenModal(true)
+                    }}
                 >
                     <img
                         src={getSeatColor()}
@@ -120,8 +124,7 @@ const Seat = ({ seat, empty, changeSeat, size = 'sm' }) => {
     )
 }
 
-const SeatMap = ({ seatMap, changeSeatMap, explain = true }) => {
-    console.log(seatMap)
+const SeatMap = ({ seatMap, changeSeatMap, explain = true, editable = true }) => {
     const [view, setView] = useState('active')
     return (
         <>
@@ -166,6 +169,7 @@ const SeatMap = ({ seatMap, changeSeatMap, explain = true }) => {
                                                             }
                                                             changeSeat={changeSeatMap}
                                                             size={explain ? 'lg' : 'sm'}
+                                                            editable={editable}
                                                         />
                                                     </CCol>
                                                 ))
@@ -226,7 +230,8 @@ const SeatMap = ({ seatMap, changeSeatMap, explain = true }) => {
                         }`}</b>
                         <br></br>
                         <i>
-                            * Lưu ý: Vui lòng đặt tên tất cả các ghế trước khi click lưu thông tin
+                            * Lưu ý: Vui lòng đặt tên tất cả các ghế và upload hình ảnh xe trước khi
+                            click lưu thông tin
                         </i>
                     </CCol>
                 )}
@@ -441,9 +446,11 @@ const AddForm = ({ handleComplete }) => {
         col: 2,
         row: 3,
         fee: 0,
+        file: undefined,
     })
     const [seatMap, setSeatMap] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
+    const [file, setFile] = useState(undefined)
     const handleChangeTypeInfo = (e) => {
         const { name, value } = e.target
         setTypeInfo({
@@ -500,6 +507,14 @@ const AddForm = ({ handleComplete }) => {
             seats: newListSeat,
         })
     }
+    const handleUpImage = (e) => {
+        setFile(URL.createObjectURL(e.target.files[0]))
+        setTypeInfo({ ...typeInfo, file: e.target.files[0] })
+    }
+    const getImage = () => {
+        if (file) return file
+        else return no_img
+    }
     const handleAddBusType = () => {
         //check every seat has name
         const check = seatMap.seats.every((seat) => seat.name !== '')
@@ -511,6 +526,15 @@ const AddForm = ({ handleComplete }) => {
                 message: 'Tên ghế không được trùng nhau',
                 type: 'error',
             }))
+            return
+        }
+        if (!file) {
+            addToast(() =>
+                CustomToast({
+                    message: 'Vui lòng chọn hình ảnh xe',
+                    type: 'error',
+                }),
+            )
             return
         }
         if (!check) {
@@ -548,12 +572,13 @@ const AddForm = ({ handleComplete }) => {
                             console.log('đã thêm map')
                         })
                     await dispatch(
-                        busThunk.addBusType({
+                        busThunk.addBusTypeWithImage({
                             busType: {
                                 name: typeInfo.code,
                                 capacity: listActiveSeat.length,
                                 fee: typeInfo.fee,
                                 description: typeInfo.name,
+                                file: typeInfo.file,
                             },
                             seatMapId: result.id,
                         }),
@@ -689,8 +714,30 @@ const AddForm = ({ handleComplete }) => {
                                     )}
                                 </CCol>
                             </CRow>
-                            <CRow className="mt-3">
-                                <SeatMap seatMap={seatMap} changeSeatMap={updateSeat}></SeatMap>
+                            <CRow className="mt-3 gap-1 justify-content-center">
+                                <CCol md={3}>
+                                    <div>
+                                        <div>
+                                            <b>Hình ảnh</b>
+                                        </div>
+                                        <CImage
+                                            rounded
+                                            thumbnail
+                                            src={getImage()}
+                                            width={200}
+                                            height={200}
+                                        />
+                                        <input
+                                            type="file"
+                                            onChange={handleUpImage}
+                                            name="myImage"
+                                            style={{ width: '100%' }}
+                                        ></input>
+                                    </div>
+                                </CCol>
+                                <CCol md={8}>
+                                    <SeatMap seatMap={seatMap} changeSeatMap={updateSeat}></SeatMap>
+                                </CCol>
                             </CRow>
                             <CRow className="my-3 justify-content-center align-items-center">
                                 <CCol sm={12} className="border-bottom my-2 border-3"></CCol>
@@ -715,10 +762,13 @@ const AddForm = ({ handleComplete }) => {
 const BusType = ({ busType }) => {
     const [busData, setBusData] = useState(busType)
     const [isEdit, setIsEdit] = useState(false)
-    const triggerEdit = () => {
-        setIsEdit(true)
-    }
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
+    const infoForm = useRef(null)
+    const dispatch = useDispatch()
+    const [file, setFile] = useState(undefined)
     const listBus = useSelector(selectListBus)
+    const [openConfirm, setOpenConfirm] = useState(false)
     const handleChangeTypeInfo = (e) => {
         const { name, value } = e.target
         setBusData({
@@ -726,180 +776,316 @@ const BusType = ({ busType }) => {
             [name]: value,
         })
     }
-    const editMap = (e) => {
-        e.preventDefault()
+    const editMap = () => {
+        if (isEdit) {
+            if (infoForm.current.checkValidity()) {
+                const busTypeData = {
+                    id: busData.id,
+                    name: busData.name,
+                    capacity: busData.capacity,
+                    fee: busData.fee,
+                    description: busData.description,
+                    image: busData.file,
+                    seatMapId: busData.seatMap.id,
+                }
+                dispatch(busThunk.updateBusTypeData({ busTypeData }))
+                    .unwrap()
+                    .then(() => {
+                        setIsEdit(false)
+                        addToast(() =>
+                            CustomToast({ message: 'Đã cập nhật thông tin', type: 'success' }),
+                        )
+                        dispatch(busThunk.getBusType())
+                    })
+                    .catch((err) => {
+                        addToast(() => CustomToast({ message: err, type: 'error' }))
+                    })
+            }
+        }
         setIsEdit(false)
     }
-    const addActiveAttributeForSeat = () => {
-        const seats = busData.seatMap.seats.map((seat) => {
+    const triggerEdit = () => {
+        if (!isEdit) setIsEdit(true)
+        else editMap()
+    }
+    const getImage = () => {
+        if (file) return file
+        else if (busData.image && busData.image !== '') return busData.image
+        else return no_img
+    }
+    const updateBaseData = () => {
+        const seats = busType.seatMap.seats.map((seat) => {
             return {
                 ...seat,
                 active: true,
             }
         })
         setBusData({
-            ...busData,
+            ...busType,
             seatMap: {
-                ...busData.seatMap,
+                ...busType.seatMap,
                 seats: seats,
             },
+            img: busType.img,
+            file: undefined,
         })
     }
+    const handleUpImage = (e) => {
+        setFile(URL.createObjectURL(e.target.files[0]))
+        setBusData({ ...busData, file: e.target.files[0] })
+    }
+    const activeBusType = () => {
+        dispatch(busThunk.activeBusType({ id: busData.id, active: !busData.active }))
+            .unwrap()
+            .then(() => {
+                addToast(() =>
+                    CustomToast({
+                        message: busData.active
+                            ? 'Đã ngừng sử dụng loại xe'
+                            : 'Đã kích hoạt loại xe',
+                        type: 'success',
+                    }),
+                )
+                setOpenConfirm(false)
+                dispatch(busThunk.getBusType())
+            })
+            .catch((err) => {
+                addToast(() => CustomToast({ message: err, type: 'error' }))
+            })
+    }
     useEffect(() => {
-        addActiveAttributeForSeat()
-    }, [])
+        updateBaseData()
+    }, [busType])
     return (
-        <CRow className="my-3">
-            <CCol md={7}>
-                <SeatMap seatMap={busData.seatMap} explain={false}></SeatMap>
-            </CCol>
-            <CCol md={5} className="border p-3">
-                <CForm onSubmit={editMap}>
-                    <CRow className="justify-content align-items-center">
-                        <CCol md="12">
-                            <CInputGroup className="mb-3">
-                                <CInputGroupText id="bus-type-name" style={{ width: '115px' }}>
-                                    Tên loại xe
-                                </CInputGroupText>
-                                <CFormInput
-                                    readOnly={!isEdit}
-                                    placeholder="Nhập tên loại xe"
-                                    aria-describedby="bus-type-name"
-                                    value={busData.description}
-                                    name="description"
-                                    onChange={handleChangeTypeInfo}
-                                />
-                            </CInputGroup>
-                        </CCol>
-                        <CCol md="12">
-                            <CInputGroup className="mb-3">
-                                <CInputGroupText id="bus-type-name" style={{ width: '115px' }}>
-                                    Code Name
-                                </CInputGroupText>
-                                <CFormInput
-                                    readOnly={!isEdit}
-                                    placeholder="Nhập codename"
-                                    aria-describedby="bus-type-code"
-                                    pattern="^[a-zA-Z0-9_]+$"
-                                    value={busData.name}
-                                    name="name"
-                                    onChange={handleChangeTypeInfo}
-                                />
-                            </CInputGroup>
-                        </CCol>
-                        <CCol md="6">
-                            <CInputGroup className="mb-3">
-                                <CInputGroupText id="floor-number" style={{ width: '115px' }}>
-                                    Số tầng ghế
-                                </CInputGroupText>
-                                <CFormInput
-                                    readOnly
-                                    id="floor-number"
-                                    type="number"
-                                    value={busData.seatMap.floorNo}
-                                    name="floor"
-                                    max={2}
-                                    min={1}
-                                    onChange={handleChangeTypeInfo}
-                                />
-                            </CInputGroup>
-                        </CCol>
-                        <CCol md="6">
-                            <CInputGroup className="mb-3">
-                                <CInputGroupText id="col-number" style={{ width: '115px' }}>
-                                    Số dãy ghế
-                                </CInputGroupText>
-                                <CFormInput
-                                    id="col-number"
-                                    type="number"
-                                    value={busData.seatMap.colNo}
-                                    name="col"
-                                    max={5}
-                                    min={2}
-                                    readOnly
-                                    onChange={handleChangeTypeInfo}
-                                />
-                            </CInputGroup>
-                        </CCol>
-                        <CCol md="6">
-                            <CInputGroup className="mb-3">
-                                <CInputGroupText id="row-number" style={{ width: '115px' }}>
-                                    Số hàng ghế
-                                </CInputGroupText>
-                                <CFormInput
-                                    id="row-number"
-                                    type="number"
-                                    value={busData.seatMap.rowNo}
-                                    readOnly
-                                    name="row"
-                                    max={10}
-                                    min={3}
-                                    onChange={handleChangeTypeInfo}
-                                />
-                            </CInputGroup>
-                        </CCol>
-                        <CCol md="6">
-                            <CInputGroup className="mb-3">
-                                <CInputGroupText id="row-number" style={{ width: '115px' }}>
-                                    Tổng số ghế
-                                </CInputGroupText>
-                                <CFormInput
-                                    readOnly
-                                    id="row-number"
-                                    type="number"
-                                    value={busData.seatMap.seats.length}
-                                    name="row"
-                                    max={10}
-                                    min={3}
-                                />
-                            </CInputGroup>
-                        </CCol>
-                        <CCol md="12">
-                            <CInputGroup className="mb-3">
-                                <CInputGroupText id="bus-type-num" style={{ width: '115px' }}>
-                                    Tổng số xe
-                                </CInputGroupText>
-                                <CFormInput
-                                    readOnly
-                                    placeholder="Số xe"
-                                    aria-describedby="bus-type-num"
-                                    type="number"
-                                    value={
-                                        listBus.filter((bus) => bus.type.id === busData.id).length
-                                    }
-                                    name="bus_num"
-                                    onChange={handleChangeTypeInfo}
-                                />
-                            </CInputGroup>
-                        </CCol>
-                    </CRow>
-                    <CRow className="justify-content-end">
-                        <CCol className="col-auto">
-                            <CButton onClick={triggerEdit} color="success" variant="outline">
-                                {isEdit ? 'Lưu' : 'Sửa'}
-                            </CButton>
-                        </CCol>
-                        {isEdit ? (
-                            <CCol className="col-auto">
-                                <CButton
-                                    onClick={() => setIsEdit(false)}
-                                    variant="outline"
-                                    color="danger"
-                                >
-                                    Hủy
-                                </CButton>
-                            </CCol>
-                        ) : (
-                            <CCol className="col-auto">
-                                <CButton color="warning" variant="outline">
-                                    Dừng sử dụng
-                                </CButton>
-                            </CCol>
-                        )}
-                    </CRow>
-                </CForm>
-            </CCol>
-        </CRow>
+        <>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+            <CRow className="my-3">
+                <CCol md={6}>
+                    <SeatMap seatMap={busData.seatMap} explain={false} editable={false}></SeatMap>
+                </CCol>
+                <CCol md={6} className="border p-3 row">
+                    <CCol md={4}>
+                        <div>
+                            <b>Thông tin</b>
+                            <CImage rounded thumbnail src={getImage()} width={200} height={200} />
+                            {isEdit ? (
+                                <input
+                                    type="file"
+                                    onChange={handleUpImage}
+                                    name="myImage"
+                                    style={{ width: '100%' }}
+                                ></input>
+                            ) : (
+                                <i>Hình ảnh</i>
+                            )}
+                        </div>
+                    </CCol>
+                    <CCol>
+                        <CForm ref={infoForm}>
+                            <CRow className="justify-content align-items-center">
+                                <CCol md="12">
+                                    <CInputGroup className="mb-3">
+                                        <CInputGroupText
+                                            id="bus-type-name"
+                                            style={{ width: '115px' }}
+                                        >
+                                            Tên loại xe
+                                        </CInputGroupText>
+                                        <CFormInput
+                                            readOnly={!isEdit}
+                                            placeholder="Nhập tên loại xe"
+                                            aria-describedby="bus-type-name"
+                                            value={busData.description}
+                                            name="description"
+                                            onChange={handleChangeTypeInfo}
+                                        />
+                                    </CInputGroup>
+                                </CCol>
+                                <CCol md="12">
+                                    <CInputGroup className="mb-3">
+                                        <CInputGroupText
+                                            id="bus-type-name"
+                                            style={{ width: '115px' }}
+                                        >
+                                            Code Name
+                                        </CInputGroupText>
+                                        <CFormInput
+                                            readOnly={!isEdit}
+                                            placeholder="Nhập codename"
+                                            aria-describedby="bus-type-code"
+                                            pattern="^[a-zA-Z0-9_]+$"
+                                            value={busData.name}
+                                            name="name"
+                                            onChange={handleChangeTypeInfo}
+                                        />
+                                    </CInputGroup>
+                                </CCol>
+                                <CCol md="6">
+                                    <CInputGroup className="mb-3">
+                                        <CInputGroupText
+                                            id="floor-number"
+                                            style={{ width: '115px' }}
+                                        >
+                                            Số tầng ghế
+                                        </CInputGroupText>
+                                        <CFormInput
+                                            readOnly
+                                            id="floor-number"
+                                            type="number"
+                                            value={busData.seatMap.floorNo}
+                                            name="floor"
+                                            max={2}
+                                            min={1}
+                                            onChange={handleChangeTypeInfo}
+                                        />
+                                    </CInputGroup>
+                                </CCol>
+                                <CCol md="6">
+                                    <CInputGroup className="mb-3">
+                                        <CInputGroupText id="col-number" style={{ width: '115px' }}>
+                                            Số dãy ghế
+                                        </CInputGroupText>
+                                        <CFormInput
+                                            id="col-number"
+                                            type="number"
+                                            value={busData.seatMap.colNo}
+                                            name="col"
+                                            max={5}
+                                            min={2}
+                                            readOnly
+                                            onChange={handleChangeTypeInfo}
+                                        />
+                                    </CInputGroup>
+                                </CCol>
+                                <CCol md="6">
+                                    <CInputGroup className="mb-3">
+                                        <CInputGroupText id="row-number" style={{ width: '115px' }}>
+                                            Số hàng ghế
+                                        </CInputGroupText>
+                                        <CFormInput
+                                            id="row-number"
+                                            type="number"
+                                            value={busData.seatMap.rowNo}
+                                            readOnly
+                                            name="row"
+                                            max={10}
+                                            min={3}
+                                            onChange={handleChangeTypeInfo}
+                                        />
+                                    </CInputGroup>
+                                </CCol>
+                                <CCol md="6">
+                                    <CInputGroup className="mb-3">
+                                        <CInputGroupText id="row-number" style={{ width: '115px' }}>
+                                            Tổng số ghế
+                                        </CInputGroupText>
+                                        <CFormInput
+                                            readOnly
+                                            id="row-number"
+                                            type="number"
+                                            value={busData.seatMap.seats.length}
+                                            name="row"
+                                            max={10}
+                                            min={3}
+                                        />
+                                    </CInputGroup>
+                                </CCol>
+                                <CCol md="12">
+                                    <CInputGroup className="mb-3">
+                                        <CInputGroupText
+                                            id="bus-type-num"
+                                            style={{ width: '115px' }}
+                                        >
+                                            Phụ phí xe
+                                        </CInputGroupText>
+                                        <CFormInput
+                                            readOnly={!isEdit}
+                                            placeholder="Phụ phí"
+                                            aria-describedby="bus-type-num"
+                                            type="number"
+                                            value={busData.fee}
+                                            name="fee"
+                                            onChange={handleChangeTypeInfo}
+                                        />
+                                        <CInputGroupText>VNĐ</CInputGroupText>
+                                    </CInputGroup>
+                                </CCol>
+                                <CCol md="12">
+                                    <CInputGroup className="mb-3">
+                                        <CInputGroupText
+                                            id="bus-type-num"
+                                            style={{ width: '115px' }}
+                                        >
+                                            Tổng số xe
+                                        </CInputGroupText>
+                                        <CFormInput
+                                            readOnly
+                                            placeholder="Số xe"
+                                            aria-describedby="bus-type-num"
+                                            type="number"
+                                            value={
+                                                listBus.filter((bus) => bus.type.id === busData.id)
+                                                    .length
+                                            }
+                                            name="bus_num"
+                                            onChange={handleChangeTypeInfo}
+                                        />
+                                    </CInputGroup>
+                                    {!busType.active && (
+                                        <i style={{ color: 'red' }}>Loại xe này đã ngừng sử dụng</i>
+                                    )}
+                                </CCol>
+                            </CRow>
+                            <CRow className="justify-content-end">
+                                <CCol className="col-auto">
+                                    <CButton
+                                        onClick={triggerEdit}
+                                        color="success"
+                                        variant="outline"
+                                    >
+                                        {isEdit ? 'Lưu' : 'Sửa'}
+                                    </CButton>
+                                </CCol>
+                                {isEdit ? (
+                                    <CCol className="col-auto">
+                                        <CButton
+                                            onClick={() => {
+                                                setIsEdit(false)
+                                                updateBaseData()
+                                            }}
+                                            variant="outline"
+                                            color="danger"
+                                        >
+                                            Hủy
+                                        </CButton>
+                                    </CCol>
+                                ) : (
+                                    <CCol className="col-auto">
+                                        <CButton
+                                            color="warning"
+                                            variant="outline"
+                                            onClick={() => setOpenConfirm(true)}
+                                        >
+                                            {busType.active ? 'Dừng sử dụng' : 'Kích hoạt'}
+                                        </CButton>
+                                    </CCol>
+                                )}
+                            </CRow>
+                        </CForm>
+                    </CCol>
+                </CCol>
+            </CRow>
+            <CModal visible={openConfirm} onClose={() => setOpenConfirm(false)}>
+                <CModalHeader>{busType.active ? 'Xác nhận xóa' : 'Xác nhận mở'}</CModalHeader>
+                <CModalBody>
+                    <p>Bạn chắc chắn tác vụ này chứ?</p>
+                </CModalBody>
+                <CModalFooter>
+                    <CButton onClick={activeBusType}>Đồng ý</CButton>
+                    <CButton onClick={() => setOpenConfirm(false)}>Hủy</CButton>
+                </CModalFooter>
+            </CModal>
+        </>
     )
 }
 

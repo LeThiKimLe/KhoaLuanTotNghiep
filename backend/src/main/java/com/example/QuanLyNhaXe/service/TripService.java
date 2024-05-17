@@ -10,7 +10,11 @@ import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.modelmapper.AbstractConverter;
+import org.modelmapper.Converter;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.PropertyMap;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.Request.CreateTrip;
@@ -20,6 +24,8 @@ import com.example.QuanLyNhaXe.Request.GetSameTripDTO;
 import com.example.QuanLyNhaXe.Request.GetTripDTO;
 import com.example.QuanLyNhaXe.Request.TripAssignment;
 import com.example.QuanLyNhaXe.dto.BusDTO;
+import com.example.QuanLyNhaXe.dto.DriverDTO;
+import com.example.QuanLyNhaXe.dto.ScheduleDTO;
 import com.example.QuanLyNhaXe.dto.StatisTicForMonth;
 import com.example.QuanLyNhaXe.dto.StatisTicForMonth.StatisticOneDay;
 import com.example.QuanLyNhaXe.dto.StatisticForYear;
@@ -124,13 +130,25 @@ public class TripService {
 		}
 
 		Time time = getTimeForSearchTrip(getTripDTO.getDepartDate(), filter);
+
+		ModelMapper customModelMapper = new ModelMapper();
+
+		customModelMapper.typeMap(Schedule.class, ScheduleDTO.class)
+		.addMapping(src -> src.getDriver().getUser(), ScheduleDTO::setDriverUser)
+		.addMapping(src -> src.getDriver2().getUser(), ScheduleDTO::setDriverUser2);
+
+		customModelMapper.typeMap(Trip.class, TripDTO.class).addMappings(mapper -> {
+			mapper.using(ctx -> customModelMapper.map(ctx.getSource(), new TypeToken<List<ScheduleDTO>>(){}.getType()))
+				.map(Trip::getSchedules, TripDTO::setSchedules);
+		});
+
 		List<TripDTO> tripsDTO = trips.stream().map(trip -> {
 			List<Schedule> schedules = scheduleRepository
 					.findByTripIdAndDepartDateAndAvailabilityGreaterThanEqualAndDepartTimeAfter(trip.getId(),
 							getTripDTO.getDepartDate(), getTripDTO.getAvailability(), time);
-
 			trip.setSchedules(schedules);
-			return modelMapper.map(trip, TripDTO.class);
+			//print all driver name of schedules
+			return customModelMapper.map(trip, TripDTO.class);
 		}).filter(tripDTO -> !tripDTO.getSchedules().isEmpty()).toList();
 		if (tripsDTO.isEmpty()) {
 			throw new NotFoundException(Message.TRIP_NOT_FOUND);

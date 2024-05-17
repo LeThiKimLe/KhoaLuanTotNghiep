@@ -246,6 +246,85 @@ const addBusType = createAsyncThunk(
     },
 )
 
+const addBusTypeWithImage = createAsyncThunk(
+    'admin/bus/type/add-type',
+    async ({ busType, seatMapId }, thunkAPI) => {
+        try {
+            const formData = new FormData()
+            formData.append('id', busType.id)
+            formData.append('name', busType.name)
+            formData.append('capacity', busType.capacity)
+            formData.append('fee', busType.fee)
+            formData.append('description', busType.description)
+            formData.append('seatMapId', seatMapId)
+            if (busType.file) formData.append('image', busType.file)
+            else formData.append('image', new File([], 'empty-file.txt'))
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+            const result = await axiosClient.post('admin/bus/type', formData, config)
+            return result
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
+const updateBusTypeData = createAsyncThunk(
+    'admin/bus/type/update',
+    async ({ busTypeData }, thunkAPI) => {
+        try {
+            const formData = new FormData()
+            formData.append('id', busTypeData.id)
+            formData.append('name', busTypeData.name)
+            formData.append('capacity', busTypeData.capacity)
+            formData.append('fee', busTypeData.fee)
+            formData.append('description', busTypeData.description)
+            formData.append('seatMapId', busTypeData.seatMapId)
+            if (busTypeData.file) formData.append('image', busTypeData.file)
+            else formData.append('image', new File([], 'empty-file.txt'))
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+            const result = await axiosClient.put('admin/bus/type', formData, config)
+            return result
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
+const activeBusType = createAsyncThunk(
+    'admin/bus/type/active',
+    async ({ id, active }, thunkAPI) => {
+        try {
+            const result = await axiosClient.put('admin/bus/type/state', {
+                id: id,
+                active: active,
+            })
+            return result
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const busThunk = {
     getBus,
     addBus,
@@ -260,5 +339,8 @@ const busThunk = {
     addSeatMap,
     addListSeat,
     addBusType,
+    updateBusTypeData,
+    addBusTypeWithImage,
+    activeBusType,
 }
 export default busThunk

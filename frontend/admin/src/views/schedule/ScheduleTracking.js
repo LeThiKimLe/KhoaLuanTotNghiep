@@ -28,57 +28,77 @@ import scheduleThunk from 'src/feature/schedule/schedule.service'
 import { getTripJourney } from 'src/utils/tripUtils'
 import { selectActiveTicket } from 'src/feature/ticket/ticket.slice'
 import { Document, Packer } from 'docxtemplater'
-import commandTemplate from 'src/assets/file/lenh-van-chuyen.docx'
 import { Docxtemplater } from 'docxtemplater'
 import axios from 'axios'
-const WordProcessor = () => {
-    const [numPages, setNumPages] = useState(null)
-    const [pageNumber, setPageNumber] = useState(1)
-    const [template, setTemplate] = useState(null)
-    const [pdfData, setPdfData] = useState(null)
-    useEffect(() => {
-        axios
-            .get(commandTemplate, { responseType: 'arraybuffer' })
-            .then((response) => {
-                setTemplate(response.data)
-            })
-            .catch((error) => {
-                console.error('Error fetching template:', error)
-            })
-    }, [])
-    const onDocumentLoadSuccess = ({ numPages }) => {
-        setNumPages(numPages)
+import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
+import format from 'date-fns/format'
+const WordProcessor = ({ id }) => {
+    const openHTMLFile = () => {
+        const params = new URLSearchParams()
+        params.append('id', id)
+        window.open(`/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
     }
-    const generatePDF = () => {
-        if (template) {
-            const doc = new Docxtemplater()
-            doc.loadZip(template)
-            doc.setData({
-                firstName: 'John',
-                lastName: 'Doe',
-                age: 30,
-            })
-            doc.render()
-            const buffer = doc.getZip().generate({ type: 'arraybuffer' })
-            const blob = new Blob([buffer], {
-                type: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            })
-            const url = URL.createObjectURL(blob)
-            const link = document.createElement('a')
-            link.href = url
-            link.download = 'generated_document.docx'
-            link.click()
-        }
-    }
-
     return (
         <div>
-            <button onClick={generatePDF}>Generate Document</button>
+            <button onClick={openHTMLFile}>Xem</button>
         </div>
     )
 }
 const ScheduleData = ({ index, schedule }) => {
     const [exportCommand, setExportCommand] = useState(false)
+    const curCompany = useSelector(selectCurCompany)
+    //Get list commandData from local storage
+    const listCommandData = JSON.parse(localStorage.getItem('commandData'))
+    const commandData = {
+        companyName: curCompany.busCompany.name,
+        companyTel: curCompany.admin.tel,
+        commandId: '02',
+        exportTime: ['TP. Hồ Chí Minh', '12', '03', '2024'],
+        valueSpan: [
+            convertToDisplayDate(schedule.departDate),
+            format(
+                addHours(
+                    parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                    schedule.tripInfor.hours,
+                ),
+                'dd/MM/yyyy',
+            ),
+        ],
+        driver1: schedule.driverUser?.name,
+        driver2: schedule.driverUser2?.name,
+        assistant: 'Lê Văn A',
+        busPlate: schedule.bus?.licensePlate,
+        seatNum: schedule.bus?.type?.capacity,
+        busType: schedule.bus?.type?.description,
+        desdep: getTripJourney(schedule.tripInfor),
+        routeId: '34UFYCHN',
+        route: schedule.tripInfor.schedule,
+        dep: getTripJourney(schedule.tripInfor).split('-')[0],
+        departTime: schedule.departTime.slice(0, -3),
+        departDate: convertToDisplayDate(schedule.departDate),
+        des: getTripJourney(schedule.tripInfor).split('-')[1],
+        arrivalTime: format(
+            addHours(
+                parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                schedule.tripInfor.hours,
+            ),
+            'HH:mm',
+        ),
+        arrivalDate: format(
+            addHours(
+                parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                schedule.tripInfor.hours,
+            ),
+            'dd/MM/yyyy',
+        ),
+    }
+    localStorage.setItem(
+        'commandData',
+        JSON.stringify({
+            ...listCommandData,
+            [schedule.id]: commandData,
+        }),
+    )
     return (
         <CTableRow>
             <CTableDataCell>{index + 1}</CTableDataCell>
@@ -95,7 +115,7 @@ const ScheduleData = ({ index, schedule }) => {
             <CTableDataCell>
                 {!exportCommand ? (
                     // <CButton variant="outline">Xuất lệnh</CButton>
-                    <WordProcessor></WordProcessor>
+                    <WordProcessor id={schedule.id}></WordProcessor>
                 ) : (
                     <>
                         <i>Xem lệnh</i> / <i>Chỉnh sửa</i>
