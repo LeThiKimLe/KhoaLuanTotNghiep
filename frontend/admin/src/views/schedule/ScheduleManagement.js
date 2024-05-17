@@ -440,7 +440,6 @@ const TimeTable = ({
     useEffect(() => {
         const tempList = []
         var filterSchedule = []
-        console.log(fixSchedule)
         setListSchedule([])
         if (currentRoute !== 0 && currentTrip !== 0) {
             currentSearch.current = {

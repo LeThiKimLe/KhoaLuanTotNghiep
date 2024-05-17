@@ -23,7 +23,7 @@ import {
     CToaster,
 } from '@coreui/react'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectListRoute } from 'src/feature/route/route.slice'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import routeThunk from 'src/feature/route/route.service'
 import { getRouteJourney, getTripJourney } from 'src/utils/tripUtils'
 import { useState, useRef } from 'react'
@@ -72,17 +72,21 @@ const ModalAddDriver = ({ visible, setVisible, listUnassigned, currentTrip, fini
             </CModalHeader>
             <CModalBody>
                 <CRow className="justify-content-center">
-                    {listUnassigned.map((driver, index) => (
-                        <CCol xs="6" key={index}>
-                            <CFormCheck
-                                id={index}
-                                label={driver.name}
-                                checked={listChosen.includes(driver.driver.driverId)}
-                                onChange={() => handleChoose(driver.driver.driverId)}
-                                style={{ scale: '1.5' }}
-                            />
-                        </CCol>
-                    ))}
+                    {listUnassigned.length > 0 ? (
+                        listUnassigned.map((driver, index) => (
+                            <CCol xs="6" key={index}>
+                                <CFormCheck
+                                    id={index}
+                                    label={driver.name}
+                                    checked={listChosen.includes(driver.driver.driverId)}
+                                    onChange={() => handleChoose(driver.driver.driverId)}
+                                    style={{ scale: '1.5' }}
+                                />
+                            </CCol>
+                        ))
+                    ) : (
+                        <b>Không có tài xế nào chưa được phân tuyến</b>
+                    )}
                 </CRow>
                 <i style={{ color: 'red' }}>{error !== '' ? error : ''}</i>
             </CModalBody>
@@ -91,6 +95,7 @@ const ModalAddDriver = ({ visible, setVisible, listUnassigned, currentTrip, fini
                     Hủy
                 </CButton>
                 <CustomButton
+                    disabled={listChosen.length === 0}
                     color="primary"
                     onClick={() => handleDistribute()}
                     loading={loading}
@@ -133,21 +138,25 @@ const ModalAddBus = ({ visible, setVisible, listUnassigned, currentTrip, finishU
             onClose={() => setVisible(false)}
         >
             <CModalHeader>
-                <CModalTitle>Danh sách các bus phân tuyến</CModalTitle>
+                <CModalTitle>Danh sách các xe chưa phân tuyến</CModalTitle>
             </CModalHeader>
             <CModalBody>
                 <CRow>
-                    {listUnassigned.map((bus, index) => (
-                        <CCol xs="4" key={index}>
-                            <CFormCheck
-                                id={bus.id}
-                                checked={listChosen.includes(bus.id)}
-                                onChange={() => handleChoose(bus.id)}
-                                label={bus.licensePlate}
-                                style={{ scale: '1.5' }}
-                            />
-                        </CCol>
-                    ))}
+                    {listUnassigned.length > 0 ? (
+                        listUnassigned.map((bus, index) => (
+                            <CCol xs="4" key={index}>
+                                <CFormCheck
+                                    id={bus.id}
+                                    checked={listChosen.includes(bus.id)}
+                                    onChange={() => handleChoose(bus.id)}
+                                    label={bus.licensePlate}
+                                    style={{ scale: '1.5' }}
+                                />
+                            </CCol>
+                        ))
+                    ) : (
+                        <b>Không có xe nào chưa được phân tuyến</b>
+                    )}
                     <i style={{ color: 'red' }}>{error !== '' ? error : ''}</i>
                 </CRow>
             </CModalBody>
@@ -156,6 +165,7 @@ const ModalAddBus = ({ visible, setVisible, listUnassigned, currentTrip, finishU
                     Hủy
                 </CButton>
                 <CustomButton
+                    disabled={listChosen.length === 0}
                     color="primary"
                     onClick={() => handleDistribute()}
                     loading={loading}
@@ -168,7 +178,7 @@ const ModalAddBus = ({ visible, setVisible, listUnassigned, currentTrip, finishU
 const TripDistribute = () => {
     const dispatch = useDispatch()
     const [curRoute, setCurRoute] = useState(0)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [openAddBus, setOpenAddBus] = useState(false)
     const [openAddDriver, setOpenAddDriver] = useState(false)
     const [routeTripInfor, setRouteTripInfor] = useState(null)
@@ -245,14 +255,16 @@ const TripDistribute = () => {
         dispatch(scheduleThunk.getNotDistributeBus())
             .unwrap()
             .then((res) => {
-                setListUnassignedBus(res)
+                if (!res.message) setListUnassignedBus(res)
+                else setListUnassignedBus([])
             })
             .catch(() => {})
 
         dispatch(scheduleThunk.getNotDistributeDriver())
             .unwrap()
             .then((res) => {
-                setListUnassignedDriver(res)
+                if (!res.message) setListUnassignedDriver(res)
+                else setListUnassignedDriver([])
             })
             .catch(() => {})
     }
@@ -275,14 +287,16 @@ const TripDistribute = () => {
         dispatch(scheduleThunk.getNotDistributeBus())
             .unwrap()
             .then((res) => {
-                setListUnassignedBus(res)
+                if (!res.message) setListUnassignedBus(res)
+                else setListUnassignedBus([])
             })
             .catch(() => {})
 
         dispatch(scheduleThunk.getNotDistributeDriver())
             .unwrap()
             .then((res) => {
-                setListUnassignedDriver(res)
+                if (!res.message) setListUnassignedDriver(res)
+                else setListUnassignedDriver([])
             })
             .catch(() => {})
     }, [])
@@ -290,6 +304,11 @@ const TripDistribute = () => {
     useEffect(() => {
         if (curRoute !== 0) getListTrip(curRoute)
     }, [curRoute])
+
+    useEffect(() => {
+        if (listRoute.length > 0)
+            setCurRoute(listRoute.filter((route) => route.active === true)[0].id)
+    }, [listRoute])
 
     return (
         <>
@@ -337,7 +356,7 @@ const TripDistribute = () => {
                                         Số tài xế
                                     </CTableHeaderCell>
                                     <CTableHeaderCell className="text-center">
-                                        Số chuyến / lượt
+                                        Số chuyến / lượt tối đa
                                     </CTableHeaderCell>
                                     <CTableHeaderCell className="text-center">
                                         Tác vụ

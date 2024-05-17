@@ -73,3 +73,24 @@ export const convertToPeriodTime = (hour, min) => {
 export const convertDataTimeToDisplayDate = (date) => {
     return format(new Date(date), 'dd/MM/yyyy')
 }
+
+export const addDays = (date, days) => {
+    return new Date(date.getTime() + days * 24 * 60 * 60 * 1000)
+}
+
+export const addHours = (date, hours) => {
+    return new Date(date.getTime() + hours * 60 * 60 * 1000)
+}
+
+export const subStractDays = (date, days) => {
+    return new Date(date.getTime() - days * 24 * 60 * 60 * 1000)
+}
+
+export const shortenName = (name) => {
+    const nameParts = name.split(' ')
+    let shortName = ''
+    for (let i = 0; i < nameParts.length - 1; i++) {
+        shortName += nameParts[i][0]
+    }
+    return shortName + '.' + nameParts[nameParts.length - 1]
+}

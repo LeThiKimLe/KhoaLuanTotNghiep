@@ -149,13 +149,13 @@ const _nav = [
             },
             {
                 component: CNavItem,
-                name: 'Phân tuyến xe',
-                to: '/schedule-manage/distribute',
+                name: 'Quản lý chuyến xe',
+                to: '/schedule-manage/tracking',
             },
             {
                 component: CNavItem,
-                name: 'Quản lý chuyến xe',
-                to: '/schedule-manage/tracking',
+                name: 'Thống kê tuyến',
+                to: '/schedule-manage/distribute',
             },
         ],
         protected: true,

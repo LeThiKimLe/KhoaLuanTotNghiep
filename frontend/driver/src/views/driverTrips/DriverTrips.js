@@ -29,7 +29,7 @@ import { selectDriverRoute } from 'src/feature/driver/driver.slice'
 import routeThunk from 'src/feature/route/route.service'
 import { driverAction } from 'src/feature/driver/driver.slice'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
-import { cilPencil } from '@coreui/icons'
+import { cilPencil, cilArrowRight, cilArrowLeft } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { useNavigate } from 'react-router-dom'
 import { Navigate } from 'react-router-dom'
@@ -41,6 +41,7 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { dayInWeek } from 'src/utils/constants'
 import MediaQuery from 'react-responsive'
 import { useMediaQuery } from 'react-responsive'
+import { subStractDays, addDays, addHours } from 'src/utils/convertUtils'
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.tripInfor && schedule.tripInfor.turn === true) return 'success'
@@ -397,8 +398,8 @@ const DriverTrip = () => {
         var result = []
         const getTimeEndSpan = (schd) => {
             const startTime = new Date(schd.departDate + 'T' + schd.departTime)
-            startTime.setHours(startTime.getHours() + route.hours)
-            return startTime.getTime() - new Date().getTime()
+            const endTime = addHours(startTime, listTrip[0].hours)
+            return endTime.getTime() - new Date().getTime()
         }
         const getTimeStartSpan = (schd) => {
             return (
@@ -424,6 +425,12 @@ const DriverTrip = () => {
                 if (listRoute[i].trips.find((tp) => tp.id === tripId)) return listRoute[i]
         }
         return null
+    }
+    const handleGetBack = () => {
+        setCurrentDay(subStractDays(currentDay, 7))
+    }
+    const handleGetNext = () => {
+        setCurrentDay(addDays(currentDay, 7))
     }
     useEffect(() => {
         const getInfor = async () => {
@@ -454,15 +461,21 @@ const DriverTrip = () => {
     }, [listTrip])
     return (
         <>
-            <CRow className="my-3 gap-3">
+            <CRow className="my-3 gap-2 justify-content-between">
                 <CCol
-                    md={6}
+                    md={5}
                     sm={12}
                     style={{ textAlign: 'right' }}
                     className={`d-flex gap-1 customDatePicker ${
                         isTabletOrMobile ? 'flex-column' : 'align-items-center'
                     }`}
                 >
+                    <CIcon
+                        icon={cilArrowLeft}
+                        size="xl"
+                        role="button"
+                        onClick={handleGetBack}
+                    ></CIcon>
                     <div className="d-flex align-items-center gap-1">
                         <b>
                             <i>Ngày</i>
@@ -487,12 +500,19 @@ const DriverTrip = () => {
                             style={{ width: '250px', marrginLeft: '10px' }}
                         ></CFormInput>
                     </div>
+                    <CIcon
+                        icon={cilArrowRight}
+                        size="xl"
+                        role="button"
+                        onClick={handleGetNext}
+                    ></CIcon>
                 </CCol>
                 <CCol
-                    md={6}
+                    md={5}
                     sm={12}
                     style={isBigScreen ? { textAlign: 'right' } : { textAlign: 'center' }}
                 >
+                    <i>Hiển thị: </i>
                     <CButtonGroup role="group" aria-label="Form option" color="info">
                         <CFormCheck
                             type="radio"
@@ -510,7 +530,7 @@ const DriverTrip = () => {
                             name="btnradio"
                             id="btnradio2"
                             autoComplete="off"
-                            label="Lịch trình"
+                            label="Bảng"
                             checked={listForm === 'table'}
                             onChange={() => setListForm('table')}
                         />
