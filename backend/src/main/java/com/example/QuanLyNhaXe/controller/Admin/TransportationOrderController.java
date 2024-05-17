@@ -36,10 +36,7 @@ public class TransportationOrderController {
 		return new ResponseEntity<>(transportationOrderService.getAllTransportationOrder(), HttpStatus.OK);
 	}
 	
-	@GetMapping("/by-schedule")
-	public ResponseEntity<Object> getAllTransportationOrders(@RequestParam Integer scheduleId) {
-		return new ResponseEntity<>(transportationOrderService.getAllTransportationOrderByScheduleId(scheduleId), HttpStatus.OK);
-	}
+	
 	
 	
 	@PostMapping()
@@ -47,10 +44,7 @@ public class TransportationOrderController {
 		return new ResponseEntity<>(transportationOrderService.createTransportationOrder(transportationOrderCreate), HttpStatus.OK);
 	}
 	
-	@PutMapping()
-	public ResponseEntity<Object> editTransportationOrder(@ModelAttribute EditTransportationOrder editTransportationOrder) throws IOException  {
-		return new ResponseEntity<>(transportationOrderService.updateTransportationOrder(editTransportationOrder), HttpStatus.OK);
-	}
+	
 	
 	@DeleteMapping()
 	public ResponseEntity<Object> deleteTransportationOrder(@RequestParam Integer transportationOrderId)  {

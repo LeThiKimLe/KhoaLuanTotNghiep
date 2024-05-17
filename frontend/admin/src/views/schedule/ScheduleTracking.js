@@ -28,45 +28,77 @@ import scheduleThunk from 'src/feature/schedule/schedule.service'
 import { getTripJourney } from 'src/utils/tripUtils'
 import { selectActiveTicket } from 'src/feature/ticket/ticket.slice'
 import { Document, Packer } from 'docxtemplater'
+import { Docxtemplater } from 'docxtemplater'
 import axios from 'axios'
-const WordProcessor = () => {
-    const [template, setTemplate] = useState(null)
-    useEffect(() => {
-        // Gửi yêu cầu GET đến tệp Word mẫu
-        axios
-            .get('/path/to/template.docx', { responseType: 'arraybuffer' })
-            .then((response) => {
-                setTemplate(response.data) // Lưu nội dung tệp Word vào state
-            })
-            .catch((error) => {
-                console.error('Error fetching template:', error)
-            })
-    }, [])
-
-    const generateDocument = () => {
-        if (template) {
-            const doc = new Document(template)
-            doc.setData({
-                // Điền dữ liệu vào các trường
-                firstName: 'John',
-                lastName: 'Doe',
-                age: 30,
-            })
-            doc.render()
-
-            const buffer = doc.getZip().generate({ type: 'arraybuffer' })
-            saveAs(buffer, 'generated_document.docx') // Tải xuống tệp Word đã được điền nội dung
-        }
+import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
+import format from 'date-fns/format'
+const WordProcessor = ({ id }) => {
+    const openHTMLFile = () => {
+        const params = new URLSearchParams()
+        params.append('id', id)
+        window.open(`/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
     }
-
     return (
         <div>
-            <button onClick={generateDocument}>Generate Document</button>
+            <button onClick={openHTMLFile}>Xem</button>
         </div>
     )
 }
 const ScheduleData = ({ index, schedule }) => {
     const [exportCommand, setExportCommand] = useState(false)
+    const curCompany = useSelector(selectCurCompany)
+    //Get list commandData from local storage
+    const listCommandData = JSON.parse(localStorage.getItem('commandData'))
+    const commandData = {
+        companyName: curCompany.busCompany.name,
+        companyTel: curCompany.admin.tel,
+        commandId: '02',
+        exportTime: ['TP. Hồ Chí Minh', '12', '03', '2024'],
+        valueSpan: [
+            convertToDisplayDate(schedule.departDate),
+            format(
+                addHours(
+                    parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                    schedule.tripInfor.hours,
+                ),
+                'dd/MM/yyyy',
+            ),
+        ],
+        driver1: schedule.driverUser?.name,
+        driver2: schedule.driverUser2?.name,
+        assistant: 'Lê Văn A',
+        busPlate: schedule.bus?.licensePlate,
+        seatNum: schedule.bus?.type?.capacity,
+        busType: schedule.bus?.type?.description,
+        desdep: getTripJourney(schedule.tripInfor),
+        routeId: '34UFYCHN',
+        route: schedule.tripInfor.schedule,
+        dep: getTripJourney(schedule.tripInfor).split('-')[0],
+        departTime: schedule.departTime.slice(0, -3),
+        departDate: convertToDisplayDate(schedule.departDate),
+        des: getTripJourney(schedule.tripInfor).split('-')[1],
+        arrivalTime: format(
+            addHours(
+                parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                schedule.tripInfor.hours,
+            ),
+            'HH:mm',
+        ),
+        arrivalDate: format(
+            addHours(
+                parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                schedule.tripInfor.hours,
+            ),
+            'dd/MM/yyyy',
+        ),
+    }
+    localStorage.setItem(
+        'commandData',
+        JSON.stringify({
+            ...listCommandData,
+            [schedule.id]: commandData,
+        }),
+    )
     return (
         <CTableRow>
             <CTableDataCell>{index + 1}</CTableDataCell>
@@ -82,7 +114,8 @@ const ScheduleData = ({ index, schedule }) => {
             <CTableDataCell>{schedule.bus?.licensePlate}</CTableDataCell>
             <CTableDataCell>
                 {!exportCommand ? (
-                    <CButton variant="outline">Xuất lệnh</CButton>
+                    // <CButton variant="outline">Xuất lệnh</CButton>
+                    <WordProcessor id={schedule.id}></WordProcessor>
                 ) : (
                     <>
                         <i>Xem lệnh</i> / <i>Chỉnh sửa</i>

@@ -22,5 +22,5 @@ public class BusTypeDTO {
 	private String image;
 	private SeatMapDTO seatMap;
 	private Integer busCompanyId;
-
+	private boolean isActive;
 }
