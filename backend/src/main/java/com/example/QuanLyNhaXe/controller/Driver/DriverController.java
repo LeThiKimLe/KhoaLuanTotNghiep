@@ -1,17 +1,22 @@
 package com.example.QuanLyNhaXe.controller.Driver;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.QuanLyNhaXe.Request.EditTransportationOrder;
 import com.example.QuanLyNhaXe.dto.BusQualityDTO;
 import com.example.QuanLyNhaXe.service.BusService;
 import com.example.QuanLyNhaXe.service.ScheduleService;
 import com.example.QuanLyNhaXe.service.TicketService;
+import com.example.QuanLyNhaXe.service.TransportationOrderService;
 import com.example.QuanLyNhaXe.service.TripService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,6 +34,7 @@ public class DriverController {
 	private final ScheduleService scheduleService;
 	private final BusService busService;
 	private final TicketService ticketService;
+	private final TransportationOrderService transportationOrderService;
 	
 	@GetMapping("/trips")
 	public ResponseEntity<Object> getTripsForDriver(@Parameter Integer driverId){
@@ -64,6 +70,15 @@ public class DriverController {
 	@GetMapping("bus/trips")
 	public ResponseEntity<Object> getTripsByBus(@Parameter Integer busId) {
 		return new ResponseEntity<>(tripService.getTripByBus(busId), HttpStatus.OK);
+	}
+	
+	@GetMapping("/transportation-order")
+	public ResponseEntity<Object> getAllTransportationOrders(@RequestParam Integer scheduleId) {
+		return new ResponseEntity<>(transportationOrderService.getAllTransportationOrderByScheduleId(scheduleId), HttpStatus.OK);
+	}
+	@PutMapping("/transportation-order")
+	public ResponseEntity<Object> editTransportationOrder(@ModelAttribute EditTransportationOrder editTransportationOrder) throws IOException  {
+		return new ResponseEntity<>(transportationOrderService.updateTransportationOrder(editTransportationOrder), HttpStatus.OK);
 	}
 
 

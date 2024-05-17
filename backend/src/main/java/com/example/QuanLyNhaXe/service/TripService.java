@@ -8,6 +8,7 @@ import java.time.LocalTime;
 import java.time.Month;
 import java.time.YearMonth;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -31,6 +32,7 @@ import com.example.QuanLyNhaXe.dto.StopStationDTO;
 import com.example.QuanLyNhaXe.dto.TripBusDriver;
 import com.example.QuanLyNhaXe.dto.TripDTO;
 import com.example.QuanLyNhaXe.dto.TripReponseDTO;
+import com.example.QuanLyNhaXe.dto.TripTranDTO;
 import com.example.QuanLyNhaXe.dto.UserDTO;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
@@ -97,7 +99,7 @@ public class TripService {
 		return trips.stream().map(trip -> modelMapper.map(trip, TripDTO.class)).toList();
 	}
 
-	public List<TripDTO> getTripsForRoute(GetTripDTO getTripDTO, String authorizationHeader) {
+	public List<TripTranDTO> getTripsForRoute(GetTripDTO getTripDTO, String authorizationHeader) {
 		Boolean filter = true;
 		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
 			String jwt = authorizationHeader.substring(7);
@@ -124,13 +126,18 @@ public class TripService {
 		}
 
 		Time time = getTimeForSearchTrip(getTripDTO.getDepartDate(), filter);
-		List<TripDTO> tripsDTO = trips.stream().map(trip -> {
+		List<TripTranDTO> tripsDTO = trips.stream().map(trip -> {
 			List<Schedule> schedules = scheduleRepository
 					.findByTripIdAndDepartDateAndAvailabilityGreaterThanEqualAndDepartTimeAfter(trip.getId(),
 							getTripDTO.getDepartDate(), getTripDTO.getAvailability(), time);
+			for(Schedule schedule: schedules) {
+				if (schedule.getTransportationOrder() != null) {
+					schedule.getTransportationOrder().setSchedule(null);
 
+				}
+			}
 			trip.setSchedules(schedules);
-			return modelMapper.map(trip, TripDTO.class);
+			return modelMapper.map(trip, TripTranDTO.class);
 		}).filter(tripDTO -> !tripDTO.getSchedules().isEmpty()).toList();
 		if (tripsDTO.isEmpty()) {
 			throw new NotFoundException(Message.TRIP_NOT_FOUND);
