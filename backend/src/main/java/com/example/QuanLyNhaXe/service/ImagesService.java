@@ -15,7 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 public class ImagesService {
 	private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
-	private String URL="http://vexe.workon.space/api";
+	private String URL="http://localhost:5000/api";
     public String saveImage(MultipartFile image) throws IOException {
     	String imageUrl="";
     	if(image.isEmpty())
