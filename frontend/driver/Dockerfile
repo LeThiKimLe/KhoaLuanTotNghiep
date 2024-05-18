@@ -11,9 +11,6 @@ RUN npm install
 # Install additional package
 RUN npm run install-qr-reader
 
-# Install additional package
-RUN npm run install-qr-code
-
 COPY . .
 
 # Starting our application
