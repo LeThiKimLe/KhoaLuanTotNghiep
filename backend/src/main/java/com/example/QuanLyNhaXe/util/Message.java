@@ -51,5 +51,6 @@ public class Message {
     public static final String SEAT_NOT_FOUND = "Không tìm thấy ghế";
     public static final String FEE_NOT_FOUND = "Không tìm thấy phí dịch vụ";
     public static final String NOT_SAME_DRIVER = "Tài xế không được trùng nhau";
+    public static final String ORDER_NOT_FOUND = "Không tìm thấy lệnh xuất bến";
 
 }

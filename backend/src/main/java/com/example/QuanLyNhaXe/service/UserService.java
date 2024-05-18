@@ -1,5 +1,6 @@
 package com.example.QuanLyNhaXe.service;
 
+import java.io.IOException;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -42,11 +43,12 @@ public class UserService {
 	private final DriverRepository driverRepository;
 	private final CustomerRepository customerRepository;
 	private final AccountRepository accountRepository;
-	private final S3Service s3Service;
+
 	private final AdminRepository adminRepository;
 	private final BusCompanyRepository busCompanyRepository;
 
 	private final JwtService jwtService;
+	private final ImagesService imagesService;
 
 	public UserDTO getUserInfor(Integer accountId) {
 		User user = userRepository.findByaccountId(accountId)
@@ -68,12 +70,12 @@ public class UserService {
 		return user;
 	}
 
-	public UserDTO updateInfor(String authorization, EditAccountDTO editAccountDTO) {
+	public UserDTO updateInfor(String authorization, EditAccountDTO editAccountDTO) throws IOException {
 
 		User user = getUserByAuthorizationHeader(authorization);
 		Integer roleId = user.getAccount().getRole().getId();
 
-		String image = s3Service.uploadFile(editAccountDTO.getFile());
+		String image = imagesService.saveImage(editAccountDTO.getFile());
 		switch (roleId) {
 		case 1, 2:
 			user.setTel(editAccountDTO.getTel());
@@ -113,12 +115,12 @@ public class UserService {
 
 	}
 
-	public Object editDriverByAdmin(EditDriverByAdmin editDriver) {
+	public Object editDriverByAdmin(EditDriverByAdmin editDriver) throws IOException {
 		Driver driver = driverRepository.findById(editDriver.getDriverId())
 				.orElseThrow(() -> new NotFoundException(Message.DRIVER_NOT_FOUND));
 		User user = driver.getUser();
 		Account account = user.getAccount();
-		String image = s3Service.uploadFile(editDriver.getFile());
+		String image = imagesService.saveImage(editDriver.getFile());
 		account.setUsername(editDriver.getEmail());
 		user.setEmail(editDriver.getEmail());
 		user.setName(editDriver.getName());
@@ -190,12 +192,12 @@ public class UserService {
 	}
 
 	@Transactional
-	public Object editStaffByAdmin(EditStaffByAdmin editStaff) {
+	public Object editStaffByAdmin(EditStaffByAdmin editStaff) throws IOException {
 		Staff staff = staffRepository.findById(editStaff.getStaffId())
 				.orElseThrow(() -> new NotFoundException(Message.STAFF_NOT_FOUND));
 		User user = staff.getUser();
 		Account account = user.getAccount();
-		String image = s3Service.uploadFile(editStaff.getFile());
+		String image = imagesService.saveImage(editStaff.getFile());
 		account.setUsername(editStaff.getEmail());
 		user.setEmail(editStaff.getEmail());
 		user.setName(editStaff.getName());

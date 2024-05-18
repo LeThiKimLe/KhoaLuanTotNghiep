@@ -34,6 +34,9 @@ public class BusType {
     
     @Column(name = "description")
     private String description;
+    
+    @Column(name = "image")
+    private String image;
 
     @OneToOne
     @JoinColumn(name = "seatmap_id", referencedColumnName = "id")

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.QuanLyNhaXe.Request.GetSameTripDTO;
 import com.example.QuanLyNhaXe.Request.GetTripDTO;
 import com.example.QuanLyNhaXe.dto.TripDTO;
+import com.example.QuanLyNhaXe.dto.TripTranDTO;
 import com.example.QuanLyNhaXe.service.TripService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,7 +29,7 @@ public class TripController {
 	
 	@SecurityRequirement(name="bearerAuth")
 	@GetMapping
-    public ResponseEntity<List<TripDTO>> getTRipsForRoute(@RequestBody GetTripDTO getTripDTO,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+    public ResponseEntity<List<TripTranDTO>> getTRipsForRoute(@RequestBody GetTripDTO getTripDTO,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
         return new ResponseEntity<>(tripService.getTripsForRoute(getTripDTO,authorization), HttpStatus.OK);
     }
 	

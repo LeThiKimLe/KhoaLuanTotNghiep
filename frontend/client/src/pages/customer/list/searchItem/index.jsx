@@ -78,7 +78,7 @@ const SearchItem = ({ trip, sameTrip }) => {
         <div className={`container ${styles.cover}`}>
             <div className={`row ${styles.searchResult}`}>
                 <div className='col-4 d-flex justify-content-center align-items-center'>
-                    <img src={companyImg} className={styles.busImg}></img>
+                    <img src={trip.tripInfor ? trip.tripInfor.busType.image : companyImg} className={styles.busImg}></img>
                 </div>
                 <div className='col-8'>
                     <div className='d-flex gap-2 align-items-center'>
@@ -106,7 +106,7 @@ const SearchItem = ({ trip, sameTrip }) => {
                     </div>
                     <div className={styles.busType}>
                         <FontAwesomeIcon icon={faBusSimple} className={styles.typeIcon} />
-                        {trip?.tripInfor?.route?.busType?.description}
+                        {trip?.tripInfor?.busType?.description}
                     </div>
                     <div className={styles.seatBlank}>{`* Còn ${trip.availability} ghế`}</div>
                     <div className={styles.split}></div>

@@ -10,10 +10,12 @@ import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.dto.ReviewDTO;
 import com.example.QuanLyNhaXe.enumration.RequestState;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Review;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.Trip;
 import com.example.QuanLyNhaXe.model.User;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.ReviewRepository;
 import com.example.QuanLyNhaXe.repository.ScheduleRepository;
 import com.example.QuanLyNhaXe.util.Message;
@@ -28,6 +30,7 @@ public class ReviewService {
 	private final UserService userService;
 	private final ReviewRepository reviewRepository;
 	private final ScheduleRepository scheduleRepository;
+	private final BusCompanyRepository busCompanyRepository;
 
 	public Object getAllReview() {
 		List<Review> reviews = reviewRepository.findAll();
@@ -107,6 +110,25 @@ public class ReviewService {
 		        .map(review -> modelMapper.map(review, ReviewDTO.class))
 		        .toList();
 	}
+	
+	
+	public Object getReviewByCompany(Integer companyId) {
+		BusCompany busCompany=busCompanyRepository.findById(companyId)
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		
+		List<Review> reviews = reviewRepository.findBySchedule_Trip_BusCompany(busCompany);
+		if (reviews.isEmpty()) {
+			throw new NotFoundException(Message.REVIEW_NOT_FOUND);
+		}
+		reviews.forEach(review -> {
+	        Trip trip = review.getSchedule().getTrip();
+	        trip.setSchedules(null);
+	        trip.setTripBus(null);
+	    });
+		return reviews.stream().map(review -> modelMapper.map(review, ReviewDTO.class)).toList();
+
+	}
+
 	
 
 }

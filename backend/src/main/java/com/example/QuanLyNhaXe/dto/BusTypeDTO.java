@@ -19,7 +19,8 @@ public class BusTypeDTO {
 	private Integer capacity;
 	private Integer fee;
 	private String description;
+	private String image;
 	private SeatMapDTO seatMap;
 	private Integer busCompanyId;
-
+	private boolean isActive;
 }

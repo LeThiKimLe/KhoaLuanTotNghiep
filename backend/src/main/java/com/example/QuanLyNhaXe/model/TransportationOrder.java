@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,13 +19,13 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "transporttation_order")
+@Table(name = "transportation_order")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class TransportTationOrder {
+public class TransportationOrder {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,11 +42,14 @@ public class TransportTationOrder {
 	@Column(name = "image")
 	private String image;
 	
+	@Column(name = "code")
+	private String code;
+	
 	
 	@Column(name = "status")
 	private String status;
 
-	@ManyToOne
+	@OneToOne
 	@JoinColumn(name = "schedule_id", referencedColumnName = "id")
 	private Schedule schedule;
 	

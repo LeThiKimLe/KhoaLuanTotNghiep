@@ -1448,7 +1448,7 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                                             id="busType2"
                                             required
                                             value={typeId}
-                                            onChange={(e) => setTypeId(e.target.value)}
+                                            onChange={(e) => setTypeId(parseInt(e.target.value))}
                                         >
                                             <option value="0">
                                                 {listBusType.length > 0
