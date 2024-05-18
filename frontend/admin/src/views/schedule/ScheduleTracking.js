@@ -398,7 +398,13 @@ const ScheduleData = ({ index, schedule, state }) => {
                         <i>Chưa cấp lệnh</i>
                     )}
                 </CTableDataCell>
-                <CTableDataCell>{`Sắp rời bến`}</CTableDataCell>
+                <CTableDataCell>
+                    {schedule.transportationOrder ? (
+                        <i>{schedule.transportationOrder.status}</i>
+                    ) : (
+                        <i>---</i>
+                    )}
+                </CTableDataCell>
             </CTableRow>
         </>
     )
