@@ -17,6 +17,7 @@ public class ImagesService {
 	private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
 	private String URL="http://localhost:5000/api";
     public String saveImage(MultipartFile image) throws IOException {
+        System.out.println(CURRENT_FOLDER);
     	String imageUrl="";
     	if(image.isEmpty())
         	return imageUrl;
