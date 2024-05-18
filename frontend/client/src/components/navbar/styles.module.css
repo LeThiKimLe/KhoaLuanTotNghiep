@@ -62,12 +62,13 @@
   align-items: center;
   gap: 5px;
   cursor: pointer;
+  padding: 10px 0;
 }
 
 .actionOption {
   color: #616060;
   position: absolute;
-  top: calc(100% + 15px);
+  top: calc(100% + 0px);
   right: -3px;
   background-color: white;
   min-width: 200px;
