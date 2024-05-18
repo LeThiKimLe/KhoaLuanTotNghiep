@@ -15,7 +15,7 @@ services:
     expose:
       - "5000"
     volumes:
-      - image-volume: /app/static/images
+      - image-volume:/app/static/images
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/QuanLyNhaXe
       - SPRING_DATASOURCE_USERNAME=root
@@ -70,7 +70,7 @@ services:
       - webdata-admin:/usr/share/nginx/html/admin
       - webdata-driver:/usr/share/nginx/html/driver
       - webdata-manager:/usr/share/nginx/html/manager
-      - image-volume: /user/share/nginx/html/images
+      - image-volume:/usr/share/nginx/html/images
     depends_on:
       - client-frontend
       - admin-frontend
