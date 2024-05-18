@@ -5,7 +5,7 @@ services:
       - MYSQL_ROOT_PASSWORD=Conchosu@1
     volumes:
       - ./mydata:/var/lib/mysql
-      - ./backupv3.sql:/docker-entrypoint-initdb.d/backup.sql
+      - ./backupv4.sql:/docker-entrypoint-initdb.d/backup.sql
     command: --init-file /docker-entrypoint-initdb.d/backup.sql
 
   backend:
@@ -14,6 +14,8 @@ services:
       dockerfile: Dockerfile
     expose:
       - "5000"
+    volumes:
+      - image-volume: /app/static/images
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/QuanLyNhaXe
       - SPRING_DATASOURCE_USERNAME=root
@@ -68,6 +70,7 @@ services:
       - webdata-admin:/usr/share/nginx/html/admin
       - webdata-driver:/usr/share/nginx/html/driver
       - webdata-manager:/usr/share/nginx/html/manager
+      - image-volume: /user/share/nginx/html/images
     depends_on:
       - client-frontend
       - admin-frontend
@@ -80,3 +83,4 @@ volumes:
   webdata-admin:
   webdata-driver:
   webdata-manager:
+  image-volume:
