@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import axiosClient from 'src/api/axios'
 
 const getTransportationOrder = createAsyncThunk(
     'admin/transportation_order',
@@ -20,10 +21,16 @@ const createOrder = createAsyncThunk(
     'admin/transportation_order/create',
     async ({ scheduleId, file }, thunkAPI) => {
         try {
-            const result = await axiosClient.post('admin/transportation_order', {
-                scheduleId: scheduleId,
-                file: file,
-            })
+            const formData = new FormData()
+            formData.append('scheduleId', scheduleId)
+            if (file) formData.append('file', file)
+            else formData.append('file', new File([], 'empty-file.txt'))
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+            const result = await axiosClient.post('admin/transportation_order', formData, config)
             return result
         } catch (error) {
             const message =
@@ -39,11 +46,17 @@ const updateOrder = createAsyncThunk(
     'admin/transportation_order/update',
     async ({ id, status, file }, thunkAPI) => {
         try {
-            const result = await axiosClient.put('driver/transportation_order', {
-                id: id,
-                status: status,
-                file: file,
-            })
+            const formData = new FormData()
+            formData.append('id', id)
+            formData.append('status', status)
+            if (file) formData.append('file', file)
+            else formData.append('file', new File([], 'empty-file.txt'))
+            const config = {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            }
+            const result = await axiosClient.put('driver/transportation_order', formData, config)
             return result
         } catch (error) {
             const message =
