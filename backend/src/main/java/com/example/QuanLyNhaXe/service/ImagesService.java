@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,6 +19,11 @@ public class ImagesService {
 	private String URL="https://vexe.workon.space/api";
     public String saveImage(MultipartFile image) throws IOException {
         System.out.println(CURRENT_FOLDER);
+        try (Stream<Path> paths = Files.list(CURRENT_FOLDER)) {
+            paths.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     	String imageUrl="";
     	if(image.isEmpty())
         	return imageUrl;
