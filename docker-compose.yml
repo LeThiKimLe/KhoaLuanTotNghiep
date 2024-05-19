@@ -15,7 +15,7 @@ services:
     expose:
       - "5000"
     volumes:
-      - image-volume:/app/static/images
+      - image-volume:/app/src/main/resources/static/images
     environment:
       - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container/QuanLyNhaXe
       - SPRING_DATASOURCE_USERNAME=root
