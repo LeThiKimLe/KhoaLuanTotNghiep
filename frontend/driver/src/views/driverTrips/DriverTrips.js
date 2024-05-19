@@ -1,11 +1,11 @@
 import React from 'react'
 import { Tab, TabPanel, Tabs, TabList } from 'react-tabs'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import staffThunk from 'src/feature/staff/staff.service'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectDriverSchedules, selectDriverTrip } from 'src/feature/driver/driver.slice'
 import driverThunk from 'src/feature/driver/driver.service'
-import { selectUser } from 'src/feature/auth/auth.slice'
+import { selectCompanyId, selectUser } from 'src/feature/auth/auth.slice'
 import { getTripJourney } from 'src/utils/tripUtils'
 import {
     CSpinner,
@@ -23,13 +23,32 @@ import {
     CFormCheck,
     CCard,
     CCardBody,
+    CButton,
+    CFormSelect,
+    CToaster,
+    CTooltip,
+    CModalFooter,
+    CImage,
+    CModalBody,
+    CModalHeader,
+    CModal,
+    CPopover,
 } from '@coreui/react'
 import { selectListRoute } from 'src/feature/route/route.slice'
 import { selectDriverRoute } from 'src/feature/driver/driver.slice'
 import routeThunk from 'src/feature/route/route.service'
 import { driverAction } from 'src/feature/driver/driver.slice'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
-import { cilPencil, cilArrowRight, cilArrowLeft } from '@coreui/icons'
+import {
+    cilPencil,
+    cilArrowRight,
+    cilArrowLeft,
+    cilReload,
+    cilCircle,
+    cilCheckCircle,
+    cilExternalLink,
+    cilDataTransferDown,
+} from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { useNavigate } from 'react-router-dom'
 import { Navigate } from 'react-router-dom'
@@ -42,6 +61,13 @@ import { dayInWeek } from 'src/utils/constants'
 import MediaQuery from 'react-responsive'
 import { useMediaQuery } from 'react-responsive'
 import { subStractDays, addDays, addHours } from 'src/utils/convertUtils'
+import { SCHEDULE_STATUS, ORDER_STATE } from 'src/utils/constants'
+import noImg from 'src/assets/images/no_img.png'
+import CustomButton from '../customButton/CustomButton'
+import orderThunk from 'src/feature/transportation-order/order.service'
+import { CustomToast } from '../customToast/CustomToast'
+import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
+import parse from 'date-fns/parse'
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.tripInfor && schedule.tripInfor.turn === true) return 'success'
@@ -217,13 +243,334 @@ const ScheduleAsTable = ({ currentList, startDate }) => {
         </>
     )
 }
+
+const Status = ({ data }) => {
+    const [showCondition, setShowCondition] = useState(false)
+    return (
+        <CTooltip content={data.describe}>
+            <div className="d-flex flex-column align-items-center" role="button">
+                <CIcon
+                    icon={data.achived ? cilCheckCircle : cilCircle}
+                    size="xl"
+                    style={data.achived ? { color: 'green' } : { color: '#ccc' }}
+                ></CIcon>
+                <b
+                    style={data.achived ? { color: '#000' } : { color: '#8f938f' }}
+                >{`${data.value}. ${data.label}`}</b>
+                <CPopover content={data.condition} placement="bottom">
+                    <small role="button">{'Điều kiện'}</small>
+                </CPopover>
+            </div>
+        </CTooltip>
+    )
+}
+
+const StatusTracker = ({ schedule }) => {
+    const dispatch = useDispatch()
+    const [status, setStatus] = useState(
+        ORDER_STATE.map((status) => {
+            return {
+                ...status,
+                achived: false,
+            }
+        }),
+    )
+    useEffect(() => {
+        const newStatus = [...status]
+        if (schedule.transportationOrder) {
+            const orderStatus = schedule.transportationOrder.status
+            for (let i = 0; i < newStatus.length; i++) {
+                newStatus[i].achived = true
+                if (newStatus[i].label === orderStatus) {
+                    break
+                }
+            }
+        }
+        setStatus(newStatus)
+    }, [schedule])
+    return (
+        <div className="d-flex gap-5 align-items-center justify-content-center">
+            {status.map((status, index) => (
+                <Status data={status} key={index}></Status>
+            ))}
+        </div>
+    )
+}
+
+const ScheduleItem = ({ schedule, index, time }) => {
+    const curCompany = useSelector(selectCurCompany)
+    const dispatch = useDispatch()
+    const [showOrder, setShowOrder] = useState(false)
+    const [fileURL, setFileURL] = useState(null)
+    const [file, setFile] = useState(null)
+    const [isUpdating, setIsUpdating] = useState(false)
+    const currentOrderStatus = ORDER_STATE.find(
+        (st) => st.label === schedule.transportationOrder?.status,
+    )
+    const [orderStatus, setOrderStatus] = useState(currentOrderStatus?.label)
+    const [loading, setLoading] = useState(false)
+    const toaster = useRef('')
+    const [toast, addToast] = useState(0)
+    const [showDetailBus, setShowDetailBus] = useState(false)
+    const navigate = useNavigate()
+    const getImage = () => {
+        if (fileURL) return fileURL
+        else if (schedule.transportationOrder && schedule.transportationOrder.image)
+            return schedule.transportationOrder.image
+        else return noImg
+    }
+    const handleUpImage = (e) => {
+        setFile(e.target.files[0])
+        setFileURL(URL.createObjectURL(e.target.files[0]))
+    }
+    const handleUpdate = () => {
+        if (isUpdating) {
+            setLoading(true)
+            dispatch(
+                orderThunk.updateOrder({
+                    id: schedule.transportationOrder.id,
+                    status: orderStatus,
+                    file: file,
+                }),
+            )
+                .unwrap()
+                .then(() => {
+                    setLoading(false)
+                    addToast(() =>
+                        CustomToast({ message: 'Đã cập nhật thành công', type: 'success' }),
+                    )
+                    setShowOrder(false)
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 1000)
+                })
+                .catch((err) => {
+                    console.log(err)
+                    setLoading(false)
+                })
+        } else {
+            setIsUpdating(true)
+        }
+    }
+    const getCurrentTrip = (schedule) => {
+        dispatch(driverAction.setCurrentTrip(schedule.tripInfor))
+        dispatch(driverAction.setCurrentSchedule(schedule))
+        dispatch(driverAction.setCurrentTripTimeProps(time))
+        navigate('detail')
+    }
+    const handleShowBusDetail = (bus) => {
+        dispatch(driverAction.setCurrentBus(bus))
+        setShowDetailBus(true)
+    }
+    const openOrderForm = () => {
+        console.log(schedule)
+        const listCommandData = JSON.parse(localStorage.getItem('commandData'))
+        const commandData = {
+            companyName: curCompany.busCompany.name,
+            companyTel: curCompany.admin.tel,
+            commandId: schedule.transportationOrder?.id,
+            exportTime: ['TP. Hồ Chí Minh', '12', '03', '2024'],
+            valueSpan: [
+                convertToDisplayDate(schedule.departDate),
+                format(
+                    addHours(
+                        parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                        schedule.tripInfor.hours,
+                    ),
+                    'dd/MM/yyyy',
+                ),
+            ],
+            driver1: schedule.driverUser?.name,
+            driver2: schedule.driverUser2?.name,
+            assistant: 'Lê Văn A',
+            busPlate: schedule.bus?.licensePlate,
+            seatNum: schedule.bus?.type?.capacity,
+            busType: schedule.bus?.type?.description,
+            desdep: getTripJourney(schedule.tripInfor),
+            routeId: '34UFYCHN',
+            route: schedule.tripInfor.schedule,
+            dep: getTripJourney(schedule.tripInfor).split('-')[0],
+            departTime: schedule.departTime.slice(0, -3),
+            departDate: convertToDisplayDate(schedule.departDate),
+            des: getTripJourney(schedule.tripInfor).split('-')[1],
+            arrivalTime: format(
+                addHours(
+                    parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                    schedule.tripInfor.hours,
+                ),
+                'HH:mm',
+            ),
+            arrivalDate: format(
+                addHours(
+                    parse(schedule.departDate, 'yyyy-MM-dd', new Date()),
+                    schedule.tripInfor.hours,
+                ),
+                'dd/MM/yyyy',
+            ),
+        }
+        localStorage.setItem(
+            'commandData',
+            JSON.stringify({
+                ...listCommandData,
+                [schedule.id]: commandData,
+            }),
+        )
+        setTimeout(() => {
+            const params = new URLSearchParams()
+            params.append('id', schedule.id)
+            window.open(`/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
+        }, 1000)
+    }
+    useEffect(() => {
+        setOrderStatus(currentOrderStatus?.label)
+    }, [schedule])
+    return (
+        <>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+            <CTableRow key={index}>
+                <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
+                <CTableDataCell className="text-center">
+                    {schedule.tripInfor && schedule.tripInfor.turn === true && 'Lượt đi'}
+                    {schedule.tripInfor && schedule.tripInfor.turn === false && 'Lượt về'}
+                </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    {convertToDisplayDate(schedule.departDate)}
+                </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    {schedule.departTime.slice(0, -3)}
+                </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    {schedule.finishTime !== '00:00:00'
+                        ? schedule.finishTime.slice(0, -3)
+                        : 'Đang cập nhật'}
+                </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    {schedule.bus ? schedule.bus.licensePlate : 'Đang cập nhật'}
+                </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    <i onClick={() => getCurrentTrip(schedule)} role="button">
+                        Chi tiết
+                    </i>
+                </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    <i>{schedule.bus ? schedule.bus.availability : 'Đang cập nhật'}</i>
+                    {schedule.bus && schedule.bus.availability !== 'Đang cập nhật' && (
+                        <CTooltip content="Cập nhật trạng thái xe">
+                            <CIcon
+                                id={'bus-detail-' + schedule.bus.licensePlate}
+                                color="success"
+                                icon={cilPencil}
+                                role="button"
+                                style={{ marginLeft: '5px' }}
+                                onClick={() => handleShowBusDetail(schedule.bus)}
+                            ></CIcon>
+                        </CTooltip>
+                    )}
+                </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    {schedule.transportationOrder ? (
+                        <>
+                            <i>{schedule.transportationOrder.status}</i>
+                            <CTooltip content="Cập nhật lệnh vận chuyển">
+                                <CIcon
+                                    icon={cilPencil}
+                                    role="button"
+                                    style={{ marginLeft: '5px' }}
+                                    onClick={() => setShowOrder(true)}
+                                ></CIcon>
+                            </CTooltip>
+                        </>
+                    ) : (
+                        <i>Chưa có lệnh</i>
+                    )}
+                </CTableDataCell>
+            </CTableRow>
+            <CModal visible={showOrder} onClose={() => setShowOrder(false)} size="lg">
+                <CModalHeader>
+                    <b>Lệnh vận chuyển</b>
+                </CModalHeader>
+                <CModalBody>
+                    <CRow className="border-bottom justify-content-center p-3">
+                        <CCol md="12">
+                            <StatusTracker schedule={schedule}></StatusTracker>
+                        </CCol>
+                    </CRow>
+                    <CRow className="justify-content-center p-1">
+                        <CCol md="5">
+                            <div>
+                                <CImage
+                                    rounded
+                                    thumbnail
+                                    src={getImage()}
+                                    width={300}
+                                    height={400}
+                                />
+                                {isUpdating && (
+                                    <input
+                                        type="file"
+                                        onChange={handleUpImage}
+                                        name="myImage"
+                                        style={{ width: '100%' }}
+                                    ></input>
+                                )}
+                            </div>
+                        </CCol>
+                        <CCol md="5">
+                            <CFormSelect
+                                value={orderStatus}
+                                onChange={(e) => setOrderStatus(e.target.value)}
+                            >
+                                <option value="0" disabled>
+                                    Chọn trạng thái
+                                </option>
+                                {ORDER_STATE.filter(
+                                    (st) =>
+                                        st.value === currentOrderStatus?.value ||
+                                        st.value === currentOrderStatus?.value + 1,
+                                ).map((status, index) => (
+                                    <option
+                                        key={index}
+                                        value={status.label}
+                                        disabled={status.value === 1}
+                                    >
+                                        {status.label}
+                                    </option>
+                                ))}
+                            </CFormSelect>
+                            <br></br>
+                            <i>* Điều kiện: </i>
+                            <i>{ORDER_STATE.find((st) => st.label === orderStatus).condition}</i>
+                        </CCol>
+                    </CRow>
+                </CModalBody>
+                <CModalFooter>
+                    <CButton variant="outline" color="info" onClick={openOrderForm}>
+                        Xem mẫu lệnh
+                        <CIcon icon={cilExternalLink} style={{ marginLeft: '5px' }}></CIcon>
+                    </CButton>
+                    {/* <CButton variant="outline" color="primary">
+                        Tải mẫu lệnh
+                        <CIcon icon={cilDataTransferDown} style={{ marginLeft: '5px' }}></CIcon>
+                    </CButton> */}
+                    <CustomButton
+                        color="success"
+                        onClick={handleUpdate}
+                        text={isUpdating ? 'Lưu' : 'Cập nhật'}
+                    ></CustomButton>
+                    <CButton variant="outline" color="dark" onClick={() => setShowOrder(false)}>
+                        Đóng
+                    </CButton>
+                </CModalFooter>
+            </CModal>
+            <DetailBus visible={showDetailBus} setVisible={setShowDetailBus}></DetailBus>
+        </>
+    )
+}
 const ScheduleAsList = ({ listSchedule, time }) => {
     const dispatch = useDispatch()
-    const navigate = useNavigate()
     const listTrip = useSelector(selectDriverTrip)
     const [listGo, setListGo] = useState([])
     const [listReturn, setListReturn] = useState([])
-    const [showDetailBus, setShowDetailBus] = useState(false)
     const sortTime = (a, b) => {
         const timeA = new Date(a.departDate + 'T' + a.departTime).getTime()
         const timeB = new Date(b.departDate + 'T' + b.departTime).getTime()
@@ -238,16 +585,6 @@ const ScheduleAsList = ({ listSchedule, time }) => {
             else if (diff > 0) return 1
             else return 0
         }
-    }
-    const getCurrentTrip = (schedule) => {
-        dispatch(driverAction.setCurrentTrip(schedule.tripInfor))
-        dispatch(driverAction.setCurrentSchedule(schedule))
-        dispatch(driverAction.setCurrentTripTimeProps(time))
-        navigate('detail')
-    }
-    const handleShowBusDetail = (bus) => {
-        dispatch(driverAction.setCurrentBus(bus))
-        setShowDetailBus(true)
     }
     return (
         <>
@@ -281,61 +618,23 @@ const ScheduleAsList = ({ listSchedule, time }) => {
                             <CTableHeaderCell className="text-center" scope="col">
                                 Trạng thái xe
                             </CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" scope="col">
+                                Lệnh vận chuyển
+                            </CTableHeaderCell>
                         </CTableRow>
                     </CTableHead>
                     <CTableBody>
                         {listSchedule.sort(sortTime).map((schedule, index) => (
-                            <CTableRow key={index}>
-                                <CTableHeaderCell scope="row">{index + 1}</CTableHeaderCell>
-                                <CTableDataCell className="text-center">
-                                    {schedule.tripInfor &&
-                                        schedule.tripInfor.turn === true &&
-                                        'Lượt đi'}
-                                    {schedule.tripInfor &&
-                                        schedule.tripInfor.turn === false &&
-                                        'Lượt về'}
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    {convertToDisplayDate(schedule.departDate)}
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    {schedule.departTime.slice(0, -3)}
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    {schedule.finishTime !== '00:00:00'
-                                        ? schedule.finishTime.slice(0, -3)
-                                        : 'Đang cập nhật'}
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    {schedule.bus ? schedule.bus.licensePlate : 'Đang cập nhật'}
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    <i onClick={() => getCurrentTrip(schedule)} role="button">
-                                        Chi tiết
-                                    </i>
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    <i>
-                                        {schedule.bus ? schedule.bus.availability : 'Đang cập nhật'}
-                                    </i>
-                                    {schedule.bus &&
-                                        schedule.bus.availability !== 'Đang cập nhật' && (
-                                            <CIcon
-                                                id={'bus-detail-' + schedule.bus.licensePlate}
-                                                color="success"
-                                                icon={cilPencil}
-                                                role="button"
-                                                style={{ marginLeft: '5px' }}
-                                                onClick={() => handleShowBusDetail(schedule.bus)}
-                                            ></CIcon>
-                                        )}
-                                </CTableDataCell>
-                            </CTableRow>
+                            <ScheduleItem
+                                schedule={schedule}
+                                index={index}
+                                key={index}
+                                time={time}
+                            ></ScheduleItem>
                         ))}
                     </CTableBody>
                 </CTable>
             )}
-            <DetailBus visible={showDetailBus} setVisible={setShowDetailBus}></DetailBus>
         </>
     )
 }
@@ -432,6 +731,9 @@ const DriverTrip = () => {
     const handleGetNext = () => {
         setCurrentDay(addDays(currentDay, 7))
     }
+    const reload = () => {
+        window.location.reload()
+    }
     useEffect(() => {
         const getInfor = async () => {
             if (user) {
@@ -512,6 +814,9 @@ const DriverTrip = () => {
                     sm={12}
                     style={isBigScreen ? { textAlign: 'right' } : { textAlign: 'center' }}
                 >
+                    <CButton onClick={reload} variant="outline" color="dark" className="mx-2">
+                        <CIcon icon={cilReload}></CIcon>
+                    </CButton>
                     <i>Hiển thị: </i>
                     <CButtonGroup role="group" aria-label="Form option" color="info">
                         <CFormCheck

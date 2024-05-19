@@ -56,7 +56,7 @@ const updateOrder = createAsyncThunk(
                     'Content-Type': 'multipart/form-data',
                 },
             }
-            const result = await axiosClient.put('driver/transportation_order', formData, config)
+            const result = await axiosClient.put('driver/transportation-order', formData, config)
             return result
         } catch (error) {
             const message =
