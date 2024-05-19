@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.Request.CreateSchedules;
@@ -14,6 +15,7 @@ import com.example.QuanLyNhaXe.Request.DistributeSchedule;
 import com.example.QuanLyNhaXe.dto.MaximumScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleTranDTO;
+import com.example.QuanLyNhaXe.dto.TripTranDTO;
 import com.example.QuanLyNhaXe.enumration.BusAvailability;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
@@ -133,6 +135,17 @@ public class ScheduleService {
 	}
 
 	public Object getScheduleByDriver(Integer driverId) {
+		ModelMapper customModelMapper = new ModelMapper();
+
+		customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
+				.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
+				.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
+
+		customModelMapper.typeMap(Trip.class, TripTranDTO.class).addMappings(mapper -> {
+			mapper.using(ctx -> customModelMapper.map(ctx.getSource(), new TypeToken<List<ScheduleTranDTO>>() {
+			}.getType())).map(Trip::getSchedules, TripTranDTO::setSchedules);
+		});
+
 		List<Schedule> schedules = scheduleRepository.findByDriverDriverId(driverId);
 		if (schedules.isEmpty()) {
 			throw new NotFoundException(Message.SCHEDULE_NOT_FOUND);
@@ -140,14 +153,24 @@ public class ScheduleService {
 		return schedules.stream().peek(schedule -> {
 			if (schedule.getTransportationOrder() != null) {
 				schedule.getTransportationOrder().setSchedule(null);
-
 			}
 
-		}).map(schedule -> modelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+		}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
 
 	}
 
 	public Object getScheduleByBus(Integer busId) {
+		ModelMapper customModelMapper = new ModelMapper();
+
+		customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
+				.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
+				.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
+
+		customModelMapper.typeMap(Trip.class, TripTranDTO.class).addMappings(mapper -> {
+			mapper.using(ctx -> customModelMapper.map(ctx.getSource(), new TypeToken<List<ScheduleTranDTO>>() {
+			}.getType())).map(Trip::getSchedules, TripTranDTO::setSchedules);
+		});
+
 		List<Schedule> schedules = scheduleRepository.findByBusId(busId);
 		if (schedules.isEmpty()) {
 			throw new NotFoundException(Message.SCHEDULE_NOT_FOUND);
@@ -157,7 +180,7 @@ public class ScheduleService {
 				schedule.getTransportationOrder().setSchedule(null);
 
 			}
-		}).map(schedule -> modelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+		}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
 
 	}
 
