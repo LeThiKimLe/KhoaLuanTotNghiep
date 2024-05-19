@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.stream.Stream;
 
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,7 +31,12 @@ public class ImagesService {
 
         String uniqueFilename = generateFileName(image);
         Path file = CURRENT_FOLDER.resolve(rootPath).resolve(staticPath).resolve(imagePath).resolve(uniqueFilename);
-
+        //list all file current folder
+        try (Stream<Path> paths = Files.list(CURRENT_FOLDER.resolve(rootPath).resolve(staticPath).resolve(imagePath))) {
+            paths.forEach(System.out::println);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         if (Files.exists(file)) {
             imageUrl = "/static/images/" + uniqueFilename;
             return imageUrl;
