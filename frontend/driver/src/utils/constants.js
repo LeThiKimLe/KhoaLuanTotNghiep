@@ -145,3 +145,70 @@ export const MONTH_IN_YEAR = [
 ]
 
 export const COLOR = ['info', 'warning', 'success', 'danger', 'dark', 'light']
+
+export const ORDER_STATE = [
+    {
+        value: 1,
+        label: 'Đã cấp lệnh',
+        describe: 'Admin cấp lệnh vận chuyển chuyến xe cho tài xế',
+        condition: 'Tài xế đã cập nhật trạng thái xe là an toàn trong ngày',
+    },
+    {
+        value: 2,
+        label: 'Đã nhận lệnh',
+        describe: 'Tài xế đã nhận lệnh vận chuyển chuyến xe',
+        condition:
+            'Admin đã cấp lệnh vận chuyển cho tài xế và upload hình ảnh lệnh vận chuyển có chữ ký của quản lý nhà xe và tài xế',
+    },
+    {
+        value: 3,
+        label: 'Xuất bến',
+        describe: 'Lệnh vận chuyển đã xuất có xác nhận rời bến của bến đi',
+        condition:
+            'Tài xế đã nhận lệnh vận chuyển, đến bến đi và upload hình ảnh có chứa xác nhận của bến đi',
+    },
+    {
+        value: 4,
+        label: 'Đến bến',
+        describe: 'Lệnh vận chuyển đã có xác nhận nhập bến của bến đến',
+        condition:
+            'Tài xế đã xuất bến, đến bến đến và upload hình ảnh có chứa xác nhận của bến đến',
+    },
+    {
+        value: 5,
+        label: 'Đã truyền tải',
+        describe: 'Quản lý nhà xe đã xác nhận thông tin lệnh vận chuyển hoàn tất',
+        condition: 'Lệnh vận chuyển đã có đủ xác nhận',
+    },
+]
+
+export const SCHEDULE_STATE = [
+    {
+        value: 1,
+        label: 'Rời bãi đỗ',
+    },
+    {
+        value: 2,
+        label: 'Đến bến đi',
+    },
+    {
+        value: 3,
+        label: 'Đang di chuyển',
+    },
+    {
+        value: 4,
+        label: 'Đến trạm đón khách',
+    },
+    {
+        value: 5,
+        label: 'Đến trạm dừng chân',
+    },
+    {
+        value: 6,
+        label: 'Đến bến đến',
+    },
+    {
+        value: 7,
+        label: 'Về bãi đỗ',
+    },
+]

@@ -116,5 +116,8 @@ export const selectUserRoleId = createSelector([selectUser], (user) => {
     }
     return 0
 })
+export const selectCompanyId = createSelector([selectUser], (user) => {
+    return user?.user?.driver?.busCompanyId
+})
 
 export default authSlice.reducer

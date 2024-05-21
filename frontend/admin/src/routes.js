@@ -157,7 +157,7 @@ const routes = [
     },
     {
         path: '/schedule-manage/distribute',
-        name: 'Phân tuyến',
+        name: 'Thống kê tuyến',
         element: TripDistribute,
         protected: true,
     },

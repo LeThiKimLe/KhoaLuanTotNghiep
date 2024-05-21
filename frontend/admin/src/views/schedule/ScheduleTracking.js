@@ -18,6 +18,18 @@ import {
     CFormCheck,
     CRow,
     CButton,
+    CTooltip,
+    CModal,
+    CModalHeader,
+    CModalBody,
+    CFormInput,
+    CFormLabel,
+    CCardBody,
+    CForm,
+    CCard,
+    CCardHeader,
+    CSpinner,
+    CToaster,
 } from '@coreui/react'
 import parse from 'date-fns/parse'
 import { addHours } from 'src/utils/convertUtils'
@@ -27,26 +39,18 @@ import 'react-datepicker/dist/react-datepicker.css'
 import scheduleThunk from 'src/feature/schedule/schedule.service'
 import { getTripJourney } from 'src/utils/tripUtils'
 import { selectActiveTicket } from 'src/feature/ticket/ticket.slice'
-import { Document, Packer } from 'docxtemplater'
-import { Docxtemplater } from 'docxtemplater'
 import axios from 'axios'
 import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
 import format from 'date-fns/format'
-const WordProcessor = ({ id }) => {
-    const openHTMLFile = () => {
-        const params = new URLSearchParams()
-        params.append('id', id)
-        window.open(`/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
-    }
-    return (
-        <div>
-            <button onClick={openHTMLFile}>Xem</button>
-        </div>
-    )
-}
-const ScheduleData = ({ index, schedule }) => {
+import orderThunk from 'src/feature/transportation-order/order.service'
+import { CustomToast } from '../customToast/CustomToast'
+const ScheduleData = ({ index, schedule, state }) => {
     const [exportCommand, setExportCommand] = useState(false)
+    const dispatch = useDispatch()
     const curCompany = useSelector(selectCurCompany)
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
+    const [viewBusState, setViewBusState] = useState(false)
     //Get list commandData from local storage
     const listCommandData = JSON.parse(localStorage.getItem('commandData'))
     const commandData = {
@@ -99,35 +103,314 @@ const ScheduleData = ({ index, schedule }) => {
             [schedule.id]: commandData,
         }),
     )
+    const viewCommand = () => {
+        const params = new URLSearchParams()
+        params.append('id', schedule.id)
+        window.open(`/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
+    }
+    const createCommand = () => {
+        dispatch(orderThunk.createOrder({ scheduleId: schedule.id, file: null }))
+            .unwrap()
+            .then(() => {
+                //reload page
+                addToast(() =>
+                    CustomToast({
+                        message: 'Đã cấp lệnh thành công',
+                        type: 'success',
+                    }),
+                )
+                setTimeout(() => {
+                    window.location.reload()
+                }, 1000)
+            })
+            .catch((err) => {
+                addToast(() =>
+                    CustomToast({
+                        message: err,
+                        type: 'error',
+                    }),
+                )
+            })
+    }
+    console.log(schedule)
     return (
-        <CTableRow>
-            <CTableDataCell>{index + 1}</CTableDataCell>
-            <CTableDataCell>{getTripJourney(schedule.tripInfor)}</CTableDataCell>
-            <CTableDataCell>{`${schedule.departTime.slice(0, -3)} - ${convertToDisplayDate(
-                schedule.departDate,
-            )}`}</CTableDataCell>
-            <CTableDataCell>
-                {schedule.tickets.filter((ticket) => !ticket.state.includes('hủy')).length}
-            </CTableDataCell>
-            <CTableDataCell>{schedule.driverUser?.name}</CTableDataCell>
-            <CTableDataCell>{schedule.driverUser2?.name}</CTableDataCell>
-            <CTableDataCell>{schedule.bus?.licensePlate}</CTableDataCell>
-            <CTableDataCell>
-                {!exportCommand ? (
-                    // <CButton variant="outline">Xuất lệnh</CButton>
-                    <WordProcessor id={schedule.id}></WordProcessor>
-                ) : (
-                    <>
-                        <i>Xem lệnh</i> / <i>Chỉnh sửa</i>
-                    </>
-                )}
-            </CTableDataCell>
-            <CTableDataCell>{`Sắp rời bến`}</CTableDataCell>
-        </CTableRow>
+        <>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+            <CTableRow>
+                <CTableDataCell>{index + 1}</CTableDataCell>
+                <CTableDataCell>{getTripJourney(schedule.tripInfor)}</CTableDataCell>
+                <CTableDataCell>{`${schedule.departTime.slice(0, -3)} - ${convertToDisplayDate(
+                    schedule.departDate,
+                )}`}</CTableDataCell>
+                <CTableDataCell>
+                    {schedule.tickets.filter((ticket) => !ticket.state.includes('hủy')).length}
+                </CTableDataCell>
+                <CTableDataCell>{schedule.driverUser?.name}</CTableDataCell>
+                <CTableDataCell>{schedule.driverUser2?.name}</CTableDataCell>
+                <CTableDataCell>
+                    <CTooltip content="Xem trạng thái xe">
+                        <i role="button" onClick={() => setViewBusState(true)}>
+                            {schedule.bus?.licensePlate}
+                        </i>
+                    </CTooltip>
+                    <CModal
+                        size="lg"
+                        alignment="center"
+                        visible={viewBusState}
+                        onClose={() => setViewBusState(false)}
+                    >
+                        <CModalHeader>
+                            <b>{`Trạng thái xe ${schedule.bus?.licensePlate}`}</b>
+                        </CModalHeader>
+                        <CModalBody>
+                            <CRow className="justify-content-center">
+                                <CCol md="10">
+                                    <CCard className="mt-1 p-0">
+                                        <CCardBody>
+                                            <CForm className="w-100">
+                                                <CRow>
+                                                    <CCol md="6">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="brake"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Phanh</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="brake"
+                                                                    name="brake"
+                                                                    disabled
+                                                                    value={
+                                                                        schedule.bus?.state.brake
+                                                                    }
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="6">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="lighting"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Chiếu sáng</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="lighting"
+                                                                    name="lighting"
+                                                                    disabled
+                                                                    value={
+                                                                        schedule.bus?.state.lighting
+                                                                    }
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="6">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="tire"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Bánh xe</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="tire"
+                                                                    name="tire"
+                                                                    disabled
+                                                                    value={schedule.bus?.state.tire}
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="6">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="steering"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Lái</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="steering"
+                                                                    name="steering"
+                                                                    disabled
+                                                                    value={
+                                                                        schedule.bus?.state.steering
+                                                                    }
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="6">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="mirror"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Gương xe</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="mirror"
+                                                                    name="mirror"
+                                                                    disabled
+                                                                    value={
+                                                                        schedule.bus?.state.mirror
+                                                                    }
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="6">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="airCondition"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Điều hòa</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="airCondition"
+                                                                    name="airCondition"
+                                                                    disabled
+                                                                    value={
+                                                                        schedule.bus?.state
+                                                                            .airCondition
+                                                                    }
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="6">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="electric"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Điện</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="electric"
+                                                                    name="electric"
+                                                                    disabled
+                                                                    value={
+                                                                        schedule.bus?.state.electric
+                                                                    }
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="6">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="fuel"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Nhiên liệu</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="fuel"
+                                                                    name="fuel"
+                                                                    disabled
+                                                                    value={schedule.bus?.state.fuel}
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="12">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="overallState"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Đánh giá chung</b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    id="overallState"
+                                                                    name="overallState"
+                                                                    disabled
+                                                                    value={
+                                                                        schedule.bus?.state
+                                                                            .overallState
+                                                                    }
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                    <CCol md="12">
+                                                        <CRow className="mb-3 justify-content-center">
+                                                            <CFormLabel
+                                                                htmlFor="time"
+                                                                className="col-sm-4 col-form-label"
+                                                            >
+                                                                <b>Cập nhật mới nhất vào: </b>
+                                                            </CFormLabel>
+                                                            <CCol sm={8}>
+                                                                <CFormInput
+                                                                    type="text"
+                                                                    disabled
+                                                                    value={convertToDisplayDate(
+                                                                        schedule.bus?.state
+                                                                            .updatedAt,
+                                                                    )}
+                                                                />
+                                                            </CCol>
+                                                        </CRow>
+                                                    </CCol>
+                                                </CRow>
+                                            </CForm>
+                                        </CCardBody>
+                                    </CCard>
+                                </CCol>
+                            </CRow>
+                        </CModalBody>
+                    </CModal>
+                </CTableDataCell>
+                <CTableDataCell>
+                    {state == 'Ready' && !schedule.transportationOrder ? (
+                        <CButton variant="outline" color="success" onClick={createCommand}>
+                            Cấp lệnh
+                        </CButton>
+                    ) : schedule.transportationOrder ? (
+                        <i role="button" onClick={viewCommand}>
+                            Xem lệnh
+                        </i>
+                    ) : (
+                        <i>Chưa cấp lệnh</i>
+                    )}
+                </CTableDataCell>
+                <CTableDataCell>
+                    {schedule.transportationOrder ? (
+                        <i>{schedule.transportationOrder.status}</i>
+                    ) : (
+                        <i>---</i>
+                    )}
+                </CTableDataCell>
+            </CTableRow>
+        </>
     )
 }
 
-const ListTrip = ({ listSchedule }) => {
+const ListTrip = ({ listSchedule, state }) => {
     const [listProcess, setListProcess] = useState(listSchedule)
     const sortTrip = () => {
         const listSort = [...listSchedule]
@@ -172,6 +455,7 @@ const ListTrip = ({ listSchedule }) => {
                                 key={index}
                                 schedule={schedule}
                                 index={index}
+                                state={state}
                             ></ScheduleData>
                         ))}
                     </CTableBody>
@@ -263,7 +547,7 @@ const ScheduleTracking = () => {
         setReload(reload + 1)
     }
     const getScheduleData = async () => {
-        setLoading(false)
+        setLoading(true)
         let filterSchedule = []
         const searchDate = [startDate, currentDay, endDate]
         let curTrip = null
@@ -413,22 +697,37 @@ const ScheduleTracking = () => {
                 </div>
             )}
             <div className="tabStyle">
-                <Tabs selectedIndex={selectedTab} onSelect={(index) => setSelectedTab(index)}>
-                    <TabList>
-                        <Tab>Sắp diễn ra</Tab>
-                        <Tab>Đang diễn ra</Tab>
-                        <Tab>Đã kết thúc</Tab>
-                    </TabList>
-                    <TabPanel>
-                        <ListTrip listSchedule={getScheduleForStatus('Ready')}></ListTrip>
-                    </TabPanel>
-                    <TabPanel>
-                        <ListTrip listSchedule={getScheduleForStatus('OnGoing')}></ListTrip>
-                    </TabPanel>
-                    <TabPanel>
-                        <ListTrip listSchedule={getScheduleForStatus('Finished')}></ListTrip>
-                    </TabPanel>
-                </Tabs>
+                {loading ? (
+                    <div className="text-center w-100">
+                        <CSpinner></CSpinner>
+                    </div>
+                ) : (
+                    <Tabs selectedIndex={selectedTab} onSelect={(index) => setSelectedTab(index)}>
+                        <TabList>
+                            <Tab>Sắp diễn ra</Tab>
+                            <Tab>Đang diễn ra</Tab>
+                            <Tab>Đã kết thúc</Tab>
+                        </TabList>
+                        <TabPanel>
+                            <ListTrip
+                                listSchedule={getScheduleForStatus('Ready')}
+                                state="Ready"
+                            ></ListTrip>
+                        </TabPanel>
+                        <TabPanel>
+                            <ListTrip
+                                listSchedule={getScheduleForStatus('OnGoing')}
+                                state="OnGoing"
+                            ></ListTrip>
+                        </TabPanel>
+                        <TabPanel>
+                            <ListTrip
+                                listSchedule={getScheduleForStatus('Finished')}
+                                state="Finished"
+                            ></ListTrip>
+                        </TabPanel>
+                    </Tabs>
+                )}
             </div>
         </>
     )

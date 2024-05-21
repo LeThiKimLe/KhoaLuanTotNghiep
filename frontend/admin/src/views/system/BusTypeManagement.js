@@ -785,7 +785,7 @@ const BusType = ({ busType }) => {
                     capacity: busData.capacity,
                     fee: busData.fee,
                     description: busData.description,
-                    image: busData.file,
+                    file: busData.file,
                     seatMapId: busData.seatMap.id,
                 }
                 dispatch(busThunk.updateBusTypeData({ busTypeData }))
