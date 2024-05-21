@@ -22,6 +22,7 @@ public class ScheduleTranDTO {
 	private Time finishTime;
 	private Integer availability;
 	private String note;
+	private String state;
 	private UserDTO driverUser;
 	private UserDTO driverUser2;
 	private BusDTO bus;

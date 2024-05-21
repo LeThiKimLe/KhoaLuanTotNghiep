@@ -14,5 +14,6 @@ public class CreateTrip {
 	private String scheduleReturn;
 	private Integer distance;
 	private float hours;
+	private String routeCode;
 
 }
