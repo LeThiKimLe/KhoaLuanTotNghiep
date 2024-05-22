@@ -20,7 +20,7 @@ import chatbot from '../../assets/images/avatars/chatbot.png'
 import guest from '../../assets/images/avatars/guest-icon.svg'
 import guest_icon from '../../assets/images/avatars/user.png'
 import { useState } from 'react'
-import { selectUser } from 'src/feature/auth/auth.slice'
+import { selectCompanyId, selectUser } from 'src/feature/auth/auth.slice'
 import { useSelector } from 'react-redux'
 import avt1 from '../../assets/images/avatars/avt1.svg'
 import avt2 from '../../assets/images/avatars/avt2.svg'
@@ -170,6 +170,7 @@ const CustomerConversation = ({ chatData, active, onClick, setActiveAVT }) => {
 }
 
 const Chat = () => {
+    const companyId = useSelector(selectCompanyId)
     const [listChatData, setListChatData] = useState([])
     const user = useSelector(selectUser)
     const [activeChat, setActiveChat] = useState(listChatData[0] ? listChatData[0] : null)
@@ -408,8 +409,8 @@ const Chat = () => {
         if (user && user.accessToken) authorizationString = user.accessToken
         let connectionString =
             authorizationString == ''
-                ? `${protocol}://${hostname}/api/socket/chat`
-                : `${protocol}://${hostname}/api/socket/chat?authorization=Bearer%20` +
+                ? `${protocol}://${hostname}/api/socket/company/chat?id=${companyId}`
+                : `${protocol}://${hostname}/api/socket/company/chat?id=${companyId}&authorization=Bearer%20` +
                   user.accessToken
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket

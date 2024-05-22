@@ -94,7 +94,7 @@ const Map = ({ location, setLocation }) => {
                 name: data.name,
             })
         } catch (error) {
-            console.error('Error fetching location data:', error)
+            console.log('Error fetching location data:', error)
         }
     }
 
@@ -178,7 +178,7 @@ const SearchBox = ({ onSearch, onConfirm, preLocation }) => {
                 }
             })
             .catch((error) => {
-                console.error('Error retrieving coordinates:', error)
+                console.log('Error retrieving coordinates:', error)
                 addToast(() =>
                     CustomToast({
                         message: 'Không tìm thấy địa chỉ',

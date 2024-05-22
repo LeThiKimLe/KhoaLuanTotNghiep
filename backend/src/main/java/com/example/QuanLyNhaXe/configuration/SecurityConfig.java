@@ -43,6 +43,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/manager/company/assign-company", "/manager/locations", "/manager/company").hasAnyAuthority(STAFF, ADMIN, MANAGER, DRIVER)
+                        .requestMatchers(HttpMethod.GET, "/manager/company").permitAll()
                         .requestMatchers(HttpMethod.GET, "/manager/**").hasAnyAuthority(ADMIN,MANAGER)
                         .requestMatchers("/admin/stations/**").hasAnyAuthority(ADMIN,MANAGER)
                         .requestMatchers("/manager/**").hasAuthority(MANAGER)                     

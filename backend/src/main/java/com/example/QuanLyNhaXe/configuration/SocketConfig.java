@@ -9,8 +9,9 @@ import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry;
 
+import com.example.QuanLyNhaXe.service.CompanyChatService;
 import com.example.QuanLyNhaXe.service.ManageNotifyService;
-import com.example.QuanLyNhaXe.service.ChatService;
+import com.example.QuanLyNhaXe.service.SystemChatService;
 import com.example.QuanLyNhaXe.util.AuthHandshakeInterceptor;
 
 @Configuration
@@ -22,7 +23,8 @@ public class SocketConfig implements WebSocketConfigurer{
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(new ChatService(), "/socket/chat").addInterceptors(authHandshakeInterceptor).setAllowedOrigins("*");
+        registry.addHandler(new SystemChatService(), "/socket/chat").addInterceptors(authHandshakeInterceptor).setAllowedOrigins("*");
+        registry.addHandler(new CompanyChatService(), "/socket/company/chat").addInterceptors(authHandshakeInterceptor).setAllowedOrigins("*");
         registry.addHandler(new ManageNotifyService(), "/socket/notice").setAllowedOrigins("*");
     }
 }

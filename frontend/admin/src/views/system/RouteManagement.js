@@ -1264,7 +1264,7 @@ const RouteCreatForm = ({ visible, setVisible, finishAdd }) => {
                     }
                 })
             } catch (error) {
-                console.error('Error retrieving directions:', error)
+                console.log('Error retrieving directions:', error)
                 setTime({
                     hours: 0,
                     minutes: 0,

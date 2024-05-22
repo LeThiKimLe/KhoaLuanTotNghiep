@@ -19,7 +19,7 @@ const getStationInfo = createAsyncThunk('map/getStationInfo', async (placeName, 
             return thunkAPI.rejectWithValue('Place not found')
         }
     } catch (error) {
-        console.error(error)
+        console.log(error)
         return thunkAPI.rejectWithValue(error.message)
     }
 })

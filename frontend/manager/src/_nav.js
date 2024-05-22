@@ -48,12 +48,12 @@ const _nav = [
         ],
         protected: true,
     },
-    // {
-    //     component: CNavItem,
-    //     name: 'Cửa sổ khách hàng',
-    //     to: '/chat',
-    //     icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
-    // },
+    {
+        component: CNavItem,
+        name: 'Cửa sổ khách hàng',
+        to: '/chat',
+        icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
+    },
 ]
 
 export default _nav

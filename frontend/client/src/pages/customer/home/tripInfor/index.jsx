@@ -106,7 +106,7 @@ const MapBox = ({ closeForm, showState, tripData }) => {
             {latLng: end}
         ], function(err, routes) {
             if (err) {
-                console.error(err);
+                console.log(err);
             } else {
                 time = routes[0].summary.totalTime/3600;
                 // Check if popup contain time infor
@@ -155,7 +155,7 @@ const MapBox = ({ closeForm, showState, tripData }) => {
                         setRouteData(waypoints)
                     }
                 })
-                .catch(error => console.error(error));
+                .catch(error => console.log(error));
             })
         }
     }

@@ -80,7 +80,7 @@ const refreshAccessToken = () => {
                 // Xử lý lỗi
                 localStorage.setItem('validSession', 'false')
                 window.dispatchEvent(new Event('storage'))
-                console.error(error)
+                console.log(error)
                 reject(error)
             })
     })

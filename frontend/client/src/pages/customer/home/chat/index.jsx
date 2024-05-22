@@ -17,23 +17,35 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faHeadset, faXmark } from "@fortawesome/free-solid-svg-icons";
 import chatbot from "../../../../assets/chatbot.png"
 import guest from "../../../../assets/guest-icon.svg"
+import agent from "../../../../assets/agent.svg"
 import chatThunk from "../../../../feature/chat/chat.service";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
+import { selectListCompany } from "../../../../feature/bus-company/busCompany.slice";
+import busCompanyThunk from "../../../../feature/bus-company/busCompany.service";
 
 
-const OptionBox = ({ option, setOption, closeForm, setUserInfor }) => {
+const OptionBox = ({ option, setOption, closeForm, setUserInfor, company, setCompany }) => {
     const [userOption, setUserOption] = useState(option ? option : 'chatbot')
     const [name, setName] = useState('')
     const [email, setEmail] = useState('')
     const [tel, setTel] = useState('')
     const userInfor = useRef(null)
+    const [err, setErr] = useState('')
+    const dispatch = useDispatch()
+    const listCompany = useSelector(selectListCompany)
     const handleStart = () => {
         if (userOption === 'chatbot') {
             setOption(userOption)
         }
         else {
             if (userInfor.current.checkValidity()) {
+                if (userOption === 'company') {
+                    if (company === 0) {
+                        setErr('Vui lòng chọn nhà xe')
+                        return
+                    }
+                } else setErr('')
                 setUserInfor({
                     name: name,
                     email: email,
@@ -46,6 +58,13 @@ const OptionBox = ({ option, setOption, closeForm, setUserInfor }) => {
             }
         }
     }
+    useEffect(() => {
+        if (userOption === "company")
+        {
+            dispatch(busCompanyThunk.getListBusCompany())
+            .unwrap().then(()=>{}).catch((err)=>{console.log(err)})
+        }
+    }, [userOption])
     return (
         <div className={mystyles.optionBox}>
             <div className={mystyles.header}>
@@ -81,20 +100,49 @@ const OptionBox = ({ option, setOption, closeForm, setUserInfor }) => {
                         checked={userOption === 'agent'}
                         onChange={(e) => setUserOption(e.target.value)}
                     />
-                    <label for="option2">Chat với nhân viên</label>
+                    <label for="option2">Chat với nhân viên hệ thống</label>
                     <br></br>
                     {userOption === 'agent' &&
                         <i className={mystyles.tip}>
-                            Hỏi đáp trực tiếp với nhân viên các vấn đề về đặt vé, giá vé, ...
+                            Hỏi đáp trực tiếp với nhân viên các vấn đề về đặt vé, giá vé, khiếu nại...
                         </i>
                     }
                 </div>
+                <div className={mystyles.optionInput}>
+                    <input
+                        type="radio"
+                        id="option3"
+                        name="option"
+                        value="company"
+                        checked={userOption === 'company'}
+                        onChange={(e) => setUserOption(e.target.value)}
+                    />
+                    <label for="option2">Chat với nhà xe</label>
+                    {userOption === 'company' &&
+                        <>
+                            <select value={company} onChange={(e) => setCompany(parseInt(e.target.value))}>
+                                <option disabled value="0">Chọn nhà xe</option>
+                            {    
+                                listCompany.map((company, index) => (
+                                    <option key={index} value={company.busCompany.id}>
+                                        {company.busCompany.name}
+                                    </option>
+                                ))
+                            }
+                            </select>
+                            <br></br>
+                            <i className={mystyles.tip}>
+                                Hỏi đáp trực tiếp với nhân viên các vấn đề về thông tin đặt vé, hỗ trợ đặt vé, tư vấn đặt vé ...
+                            </i>
+                        </>
+                    }
+                </div>
                 {
-                    userOption === 'agent' && (
+                    (userOption === 'agent' || userOption === 'company') && (
                         <div className={mystyles.chatInfor}>
                             <h2>
                                 <i>
-                                    Để chat với nhân viên, bạn vui lòng cung cấp các thông tin cá nhân sau
+                                    Để chat với nhân viên / nhà xe, bạn vui lòng cung cấp các thông tin cá nhân sau
                                     để chúng tôi thuận tiện hỗ trợ
                                 </i>
                             </h2>
@@ -133,6 +181,7 @@ const OptionBox = ({ option, setOption, closeForm, setUserInfor }) => {
                         </div>
                     )
                 }
+                <i style={{color: 'red'}}>{err}</i>
             </div>
             <div className={mystyles.chatBtn}>
                 <Button
@@ -146,9 +195,11 @@ const OptionBox = ({ option, setOption, closeForm, setUserInfor }) => {
 
 const Chat = () => {
     const [openBox, setOpenBox] = useState(false);
+    const listCompany = useSelector(selectListCompany)
     const [option, setOption] = useState(null);
     const [currentInput, setCurrentInput] = useState('')
     const [userInfor, setUserInfor] = useState({})
+    const [company, setCompany] = useState(0)
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
     const connection = useRef(null)
@@ -215,6 +266,12 @@ const Chat = () => {
         setLoading(false)
     }
 
+    const getAgentName = () => {
+        if (option === 'chatbot') return 'Trợ lý ảo'
+        if (option === 'agent') return 'Nhân viên hệ thống'
+        else if (option === 'company') return listCompany.find(cpn => cpn.busCompany.id === company)?.busCompany?.name
+    }
+
     useEffect(() => {
         setEnableChat(true)
         setlistMesssage([{
@@ -230,9 +287,13 @@ const Chat = () => {
         } else if (window.location.protocol === 'http:') {
             protocol = 'ws'
         }
-        if (openBox && option === 'agent') {
+        if (openBox && (option === 'agent' || option === 'company')) {
             // Tạo kết nối WebSocket khi component được mount
-            const socket = new WebSocket(`${protocol}://${hostname}/api/socket/chat`);
+            let socket = null
+            if (option === 'agent') 
+                socket = new WebSocket(`${protocol}://${hostname}/api/socket/chat`);
+            else if (option === 'company')
+                socket = new WebSocket(`${protocol}://${hostname}/api/socket/company/chat?id=${company}`);
             // Listen for messages
             socket.addEventListener("message", (event) => {
                 handleReceiveMessage(event.data)
@@ -261,13 +322,13 @@ const Chat = () => {
                                 <ConversationHeader>
                                     <ConversationHeader.Back onClick={() => setOption(null)} />
                                     <Avatar
-                                        name={option === 'chatbot' ? 'Trợ lý ảo' : 'Nhân viên tư vấn'}
-                                        src={option === 'chatbot' ? chatbot : 'https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg'}
+                                        name={getAgentName()}
+                                        src={option === 'chatbot' ? chatbot : agent}
                                         status="available"
                                     />
                                     <ConversationHeader.Content
                                         info="Đang hoạt động"
-                                        userName={option === 'chatbot' ? 'Trợ lý ảo' : 'Nhân viên tư vấn'}
+                                        userName={getAgentName()}
                                     />
                                 </ConversationHeader>
                                 <MessageList
@@ -291,7 +352,7 @@ const Chat = () => {
                                                     src={
                                                         mess.direction === 'incoming' ? (
                                                             option === 'chatbot' ? chatbot
-                                                                : 'https://chatscope.io/storybook/react/assets/emily-xzL8sDL2.svg'
+                                                                : agent
                                                         ) : guest
                                                     }
                                                 />
@@ -320,6 +381,8 @@ const Chat = () => {
                         setOption={setOption}
                         closeForm={() => setOpenBox(false)}
                         setUserInfor={setUserInfor}
+                        company={company}
+                        setCompany={setCompany}
                     >
                     </OptionBox>
                 )
