@@ -42,8 +42,7 @@ public class Route {
 	@Column(name = "is_active")
 	private boolean isActive;
 
-	@Column(name = "route_code")
-	private String routeCode;
+	
 
 	@OneToMany(mappedBy = "route")
 	private List<Trip> trips;

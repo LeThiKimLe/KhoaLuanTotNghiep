@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.QuanLyNhaXe.Request.EditStateSchedule;
 import com.example.QuanLyNhaXe.Request.EditTransportationOrder;
 import com.example.QuanLyNhaXe.dto.BusQualityDTO;
 import com.example.QuanLyNhaXe.service.BusService;
@@ -79,6 +80,11 @@ public class DriverController {
 	@PutMapping("/transportation-order")
 	public ResponseEntity<Object> editTransportationOrder(@ModelAttribute EditTransportationOrder editTransportationOrder) throws IOException  {
 		return new ResponseEntity<>(transportationOrderService.updateTransportationOrder(editTransportationOrder), HttpStatus.OK);
+	}
+	
+	@PutMapping("/schedule/state")
+	public ResponseEntity<Object> editScheduleState(EditStateSchedule edit) {
+		return new ResponseEntity<>(scheduleService.updateState(edit), HttpStatus.OK);
 	}
 
 

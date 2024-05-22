@@ -19,8 +19,7 @@ public class RouteFullDTO {
 	private Integer parents;
 
 	private List<TripSimpleDTO> trips;
-	private String routeCode;
-	
+
 	private boolean isActive;
 
 }

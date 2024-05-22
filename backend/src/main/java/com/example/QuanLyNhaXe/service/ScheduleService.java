@@ -12,11 +12,13 @@ import org.springframework.stereotype.Service;
 
 import com.example.QuanLyNhaXe.Request.CreateSchedules;
 import com.example.QuanLyNhaXe.Request.DistributeSchedule;
+import com.example.QuanLyNhaXe.Request.EditStateSchedule;
 import com.example.QuanLyNhaXe.dto.MaximumScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleTranDTO;
 import com.example.QuanLyNhaXe.dto.TripTranDTO;
 import com.example.QuanLyNhaXe.enumration.BusAvailability;
+import com.example.QuanLyNhaXe.enumration.ScheduleState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Bus;
@@ -124,7 +126,8 @@ public class ScheduleService {
 			for (Time scheduleTime : createSchedules.getTimes()) {
 				Schedule schedule = Schedule.builder().availability(avaiability).trip(trip).departTime(scheduleTime)
 						.departDate(scheduleDate).specialDay(specialDay).ticketPrice(price)
-						.finishTime(Time.valueOf("00:00:00")).note(note).build();
+						.state(ScheduleState.VE_BAI_DO.getLabel()).finishTime(Time.valueOf("00:00:00")).note(note)
+						.build();
 				schedules.add(schedule);
 			}
 		}
@@ -181,6 +184,30 @@ public class ScheduleService {
 
 			}
 		}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+
+	}
+
+	public Object updateState(EditStateSchedule edit) {
+
+		Schedule schedule = scheduleRepository.findById(edit.getScheduleId())
+				.orElseThrow(() -> new NotFoundException(Message.SCHEDULE_NOT_FOUND));
+		String state = edit.getState();
+		if (!state.equals(ScheduleState.DANG_DI.getLabel()) && !state.equals(ScheduleState.DEN_BEN_DEN.getLabel())
+				&& !state.equals(ScheduleState.DEN_BEN_DI.getLabel())
+				&& !state.equals(ScheduleState.DEN_TRAM_DON.getLabel())
+				&& !state.equals(ScheduleState.DEN_TRAM_DUNG.getLabel())
+				&& !state.equals(ScheduleState.ROI_BAI_DO.getLabel())
+				&& !state.equals(ScheduleState.VE_BAI_DO.getLabel())) {
+			throw new BadRequestException("Trạng thái không hợp lệ");
+		}
+
+		schedule.setState(state);
+		scheduleRepository.save(schedule);
+		if (schedule.getTransportationOrder() != null) {
+			schedule.getTransportationOrder().setSchedule(null);
+
+		}
+		return modelMapper.map(schedule, ScheduleTranDTO.class);
 
 	}
 

@@ -25,6 +25,7 @@ public class ScheduleDTO {
 	private UserDTO driverUser;
 	private UserDTO driverUser2;
 	private BusDTO bus;
+	private String state;
 	private List<TicketTripDTO> tickets;
 
 	

@@ -39,6 +39,9 @@ public class Trip {
 	@Column(name = "schedule", length = 250)
 	private String schedule;
 	
+	@Column(name = "route_code")
+	private String routeCode;
+	
 	
 	@Column(name = "hours")
 	private float hours;

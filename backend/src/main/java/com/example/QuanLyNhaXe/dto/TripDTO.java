@@ -27,5 +27,6 @@ public class TripDTO {
 	private BusTypeDTO busType;
 	private BusCompanyDTO busCompany;
 	private boolean isActive;
+	private String routeCode;
 
 }

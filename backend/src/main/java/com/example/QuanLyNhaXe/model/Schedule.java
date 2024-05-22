@@ -55,6 +55,9 @@ public class Schedule {
 
 	@Column(name = "note", length = 45)
 	private String note;
+	
+	@Column(name = "state", length = 80)
+	private String state;
 
 	@ManyToOne
 	@JoinColumn(name = "driver_id", referencedColumnName = "driver_id")
