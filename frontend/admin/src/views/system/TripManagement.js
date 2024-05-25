@@ -293,6 +293,270 @@ const ListStopStation = ({ trip, turn }) => {
     )
 }
 
+const ListParkStation = ({ trip, turn }) => {
+    const dispatch = useDispatch()
+    const [isAddStop, setIsAddStop] = useState(false)
+    const [newStation, setNewStation] = useState(0)
+    const listLocation = useSelector(selectListCompanyLocation)
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
+    const [loading, setLoading] = useState(false)
+    const listStation =
+        turn === true
+            ? trip?.turnGo.stopStations.filter((sta) => sta.stationType == 'park-start')
+            : trip?.turnGo.stopStations.filter((sta) => sta.stationType == 'park-end')
+    const getListAvaiStation = () => {
+        const locationId = turn === true ? trip.route.departure.id : trip.route.destination.id
+        const location = listLocation.find((loc) => loc.id === locationId)
+        return location.stations.filter(
+            (sta) => listStation.findIndex((item) => item.id === sta.id) === -1,
+        )
+    }
+    const handleAddStopStation = () => {
+        if (newStation !== 0) {
+            setLoading(true)
+            dispatch(
+                stationThunk.addStopStation({
+                    tripId: turn === true ? trip.turnGo.id : trip.turnBack.id,
+                    stationId: newStation,
+                    stationType: 'park-start',
+                }),
+            )
+                .unwrap()
+                .then(async () => {
+                    await dispatch(
+                        stationThunk.addStopStation({
+                            tripId: turn === true ? trip.turnBack.id : trip.turnGo.id,
+                            stationId: newStation,
+                            stationType: 'park-end',
+                        }),
+                    )
+                        .unwrap()
+                        .then(() => {
+                            setLoading(false)
+                            addToast(() =>
+                                CustomToast({
+                                    message: 'Đã thêm trạm thành công',
+                                    type: 'success',
+                                }),
+                            )
+                            setIsAddStop(false)
+                            setTimeout(() => window.location.reload(), 1000)
+                        })
+                        .catch((error) => {
+                            setLoading(false)
+                            addToast(() => CustomToast({ message: error, type: 'error' }))
+                        })
+                })
+                .catch((error) => {
+                    setLoading(false)
+                    addToast(() => CustomToast({ message: error, type: 'error' }))
+                })
+        }
+    }
+    return (
+        <div>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+            {listStation.map((station, index) => (
+                <StopStation trip={trip} station={station} key={index}></StopStation>
+            ))}
+            {!isAddStop && trip.active === true && (
+                <CButton
+                    id="pick-add"
+                    variant="outline"
+                    color="dark"
+                    onClick={() => setIsAddStop(true)}
+                >
+                    <CIcon icon={cilPlus}></CIcon>
+                    Thêm
+                </CButton>
+            )}
+            {isAddStop && (
+                <CCard>
+                    <CCardHeader>
+                        <b>
+                            <i>Chọn trạm</i>
+                        </b>
+                    </CCardHeader>
+                    <CCardBody>
+                        <CFormSelect
+                            id="pick-select"
+                            value={newStation}
+                            onChange={(e) => setNewStation(parseInt(e.target.value))}
+                        >
+                            <option disabled value={0}>
+                                Chọn trạm
+                            </option>
+                            {getListAvaiStation().map((sta) => (
+                                <option
+                                    key={sta.id}
+                                    value={sta.id}
+                                >{`${sta.name} - ${sta.address}`}</option>
+                            ))}
+                        </CFormSelect>
+                    </CCardBody>
+                    <CCardFooter>
+                        <CRow>
+                            <CustomButton
+                                text="Thêm"
+                                loading={loading}
+                                onClick={handleAddStopStation}
+                                style={{
+                                    width: 'fit-content',
+                                    marginRight: '10px',
+                                }}
+                                color="success"
+                            ></CustomButton>
+                            <CButton
+                                variant="outline"
+                                color="danger"
+                                onClick={() => setIsAddStop(false)}
+                                style={{ width: 'fit-content' }}
+                            >
+                                Hủy
+                            </CButton>
+                        </CRow>
+                    </CCardFooter>
+                </CCard>
+            )}
+        </div>
+    )
+}
+
+const AddRestStation = ({ trip, turn }) => {
+    const dispatch = useDispatch()
+    const [isAddStop, setIsAddStop] = useState(false)
+    const [newStation, setNewStation] = useState(0)
+    const listLocation = useSelector(selectListCompanyLocation)
+    const [toast, addToast] = useState(0)
+    const toaster = useRef('')
+    const [loading, setLoading] = useState(false)
+    const listStation =
+        turn === true
+            ? trip?.turnGo.stopStations.filter((sta) => sta.stationType == 'stop')
+            : trip?.turnGo.stopStations.filter((sta) => sta.stationType == 'stop')
+    const getListAvaiStation = () => {
+        const location1 = listLocation.find((loc) => loc.id === trip.route.departure.id)
+        const location2 = listLocation.find((loc) => loc.id === trip.route.destination.id)
+        const list1 = location1.stations.filter(
+            (sta) => listStation.findIndex((item) => item.id === sta.id) === -1,
+        )
+        const list2 = location2.stations.filter(
+            (sta) => listStation.findIndex((item) => item.id === sta.id) === -1,
+        )
+        return list1.concat(list2)
+    }
+    const handleAddStopStation = () => {
+        if (newStation !== 0) {
+            setLoading(true)
+            dispatch(
+                stationThunk.addStopStation({
+                    tripId: turn === true ? trip.turnGo.id : trip.turnBack.id,
+                    stationId: newStation,
+                    stationType: 'stop',
+                }),
+            )
+                .unwrap()
+                .then(async () => {
+                    await dispatch(
+                        stationThunk.addStopStation({
+                            tripId: turn === true ? trip.turnBack.id : trip.turnGo.id,
+                            stationId: newStation,
+                            stationType: 'stop',
+                        }),
+                    )
+                        .unwrap()
+                        .then(() => {
+                            setLoading(false)
+                            addToast(() =>
+                                CustomToast({
+                                    message: 'Đã thêm trạm thành công',
+                                    type: 'success',
+                                }),
+                            )
+                            setIsAddStop(false)
+                            setTimeout(() => window.location.reload(), 1000)
+                        })
+                        .catch((error) => {
+                            setLoading(false)
+                            addToast(() => CustomToast({ message: error, type: 'error' }))
+                        })
+                })
+                .catch((error) => {
+                    setLoading(false)
+                    addToast(() => CustomToast({ message: error, type: 'error' }))
+                })
+        }
+    }
+    return (
+        <div>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+            {listStation.map((station, index) => (
+                <StopStation trip={trip} station={station} key={index}></StopStation>
+            ))}
+            {!isAddStop && trip.active === true && (
+                <CButton
+                    id="pick-add"
+                    variant="outline"
+                    color="dark"
+                    onClick={() => setIsAddStop(true)}
+                >
+                    <CIcon icon={cilPlus}></CIcon>
+                    Thêm trạm dừng nghỉ
+                </CButton>
+            )}
+            {isAddStop && (
+                <CCard>
+                    <CCardHeader>
+                        <b>
+                            <i>Chọn trạm</i>
+                        </b>
+                    </CCardHeader>
+                    <CCardBody>
+                        <CFormSelect
+                            id="pick-select"
+                            value={newStation}
+                            onChange={(e) => setNewStation(parseInt(e.target.value))}
+                        >
+                            <option disabled value={0}>
+                                Chọn trạm
+                            </option>
+                            {getListAvaiStation().map((sta) => (
+                                <option
+                                    key={sta.id}
+                                    value={sta.id}
+                                >{`${sta.name} - ${sta.address}`}</option>
+                            ))}
+                        </CFormSelect>
+                    </CCardBody>
+                    <CCardFooter>
+                        <CRow>
+                            <CustomButton
+                                text="Thêm"
+                                loading={loading}
+                                onClick={handleAddStopStation}
+                                style={{
+                                    width: 'fit-content',
+                                    marginRight: '10px',
+                                }}
+                                color="success"
+                            ></CustomButton>
+                            <CButton
+                                variant="outline"
+                                color="danger"
+                                onClick={() => setIsAddStop(false)}
+                                style={{ width: 'fit-content' }}
+                            >
+                                Hủy
+                            </CButton>
+                        </CRow>
+                    </CCardFooter>
+                </CCard>
+            )}
+        </div>
+    )
+}
+
 const Status = ({ data }) => {
     return (
         <CTooltip content={data.description}>
@@ -557,7 +821,34 @@ const TripDetail = ({ trip, finishAdd }) => {
                                 <i>Trạm dừng nghỉ</i>
                             </CAccordionHeader>
                             <CAccordionBody>
-                                <div>Trạm dừng nghỉ</div>
+                                <AddRestStation trip={trip} turn={true}></AddRestStation>
+                            </CAccordionBody>
+                        </CAccordionItem>
+                        <CAccordionItem itemKey={2}>
+                            <CAccordionHeader>
+                                <i>Bãi đỗ</i>
+                            </CAccordionHeader>
+                            <CAccordionBody>
+                                <CRow className="justify-content-center gap-2">
+                                    <CCol md="5" className="border-end border-2">
+                                        <b>{trip.route.departure.name}</b>
+                                        <div className="mt-3">
+                                            <ListParkStation
+                                                trip={trip}
+                                                turn={true}
+                                            ></ListParkStation>
+                                        </div>
+                                    </CCol>
+                                    <CCol md="5">
+                                        <b>{trip.route.destination.name}</b>
+                                        <div className="mt-3">
+                                            <ListParkStation
+                                                trip={trip}
+                                                turn={false}
+                                            ></ListParkStation>
+                                        </div>
+                                    </CCol>
+                                </CRow>
                             </CAccordionBody>
                         </CAccordionItem>
                     </CAccordion>

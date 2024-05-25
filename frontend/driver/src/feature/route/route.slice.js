@@ -5,6 +5,7 @@ const initialState = {
     listRoute: [],
     loading: false,
     isUpdateRoute: false,
+    listCompanyRoute: [],
 }
 
 const routeSlice = createSlice({
@@ -13,6 +14,9 @@ const routeSlice = createSlice({
     reducers: {
         setUpdateState: (state, action) => {
             state.isUpdateRoute = action.payload
+        },
+        setCompanyRoute: (state, action) => {
+            state.listCompanyRoute = action.payload
         },
     },
     extraReducers: (builder) => {
@@ -65,5 +69,7 @@ const routeSlice = createSlice({
 
 export const selectListRoute = (state) => state.route.listRoute
 export const selectLoadingState = (state) => state.route.loading
+export const selectListCompanyRoute = (state) => state.route.listCompanyRoute
+
 export const routeAction = routeSlice.actions
 export default routeSlice.reducer

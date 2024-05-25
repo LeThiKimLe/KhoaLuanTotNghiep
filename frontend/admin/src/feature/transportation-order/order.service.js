@@ -68,10 +68,26 @@ const updateOrder = createAsyncThunk(
     },
 )
 
+const deleteOrder = createAsyncThunk('admin/transportation_order/delete', async (id, thunkAPI) => {
+    try {
+        const result = await axiosClient.delete(
+            `admin/transportation_order?transportationOrderId=${id}`,
+        )
+        return result
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const orderThunk = {
     getTransportationOrder,
     createOrder,
     updateOrder,
+    deleteOrder,
 }
 
 export default orderThunk

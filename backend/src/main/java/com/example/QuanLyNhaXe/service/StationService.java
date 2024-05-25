@@ -125,7 +125,7 @@ public class StationService {
 	}
 
 	public Object createStopStation(CreateStopStation createStopStation) {
-		if(!createStopStation.getStationType().equals("pick")&&!createStopStation.getStationType().equals("drop")&&!createStopStation.getStationType().equals("stop")) {
+		if(!createStopStation.getStationType().equals("pick")&&!createStopStation.getStationType().equals("drop")&&!createStopStation.getStationType().equals("stop")&&!createStopStation.getStationType().equals("park-start")&&!createStopStation.getStationType().equals("park-end")) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
 		if(stopStationRepository.existsByTripIdAndStationId(createStopStation.getTripId(), createStopStation.getStationId())) {
@@ -142,7 +142,7 @@ public class StationService {
 	}
 	
 	public Object updateStopStation(EditStopStation editStopStation) {
-		if(!editStopStation.getStationType().equals("pick")&&!editStopStation.getStationType().equals("drop")&&!editStopStation.getStationType().equals("stop")) {
+		if(!editStopStation.getStationType().equals("pick")&&!editStopStation.getStationType().equals("drop")&&!editStopStation.getStationType().equals("stop")&&!editStopStation.getStationType().equals("park-start")&&!editStopStation.getStationType().equals("park-end")) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
 		if(stopStationRepository.existsByTripIdAndStationId(editStopStation.getTripId(),editStopStation.getStationId())) {

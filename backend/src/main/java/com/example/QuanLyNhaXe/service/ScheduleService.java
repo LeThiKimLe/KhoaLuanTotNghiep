@@ -132,9 +132,7 @@ public class ScheduleService {
 			}
 		}
 		scheduleRepository.saveAll(schedules);
-		return schedules.stream().filter(schedule -> schedule.getDepartDate() == departDate).peek(schedule -> {
-			schedule.getTransportationOrder().setSchedule(null);
-		}).map(schedule -> modelMapper.map(schedule, ScheduleDTO.class)).toList();
+		return schedules.stream().filter(schedule -> schedule.getDepartDate() == departDate).map(schedule -> modelMapper.map(schedule, ScheduleDTO.class)).toList();
 	}
 
 	public Object getScheduleByDriver(Integer driverId) {
@@ -197,7 +195,9 @@ public class ScheduleService {
 				&& !state.equals(ScheduleState.DEN_TRAM_DON.getLabel())
 				&& !state.equals(ScheduleState.DEN_TRAM_DUNG.getLabel())
 				&& !state.equals(ScheduleState.ROI_BAI_DO.getLabel())
-				&& !state.equals(ScheduleState.VE_BAI_DO.getLabel())) {
+				&& !state.equals(ScheduleState.VE_BAI_DO.getLabel())
+				&& !state.equals(ScheduleState.HOAN_THANH.getLabel())
+				&& !state.equals(ScheduleState.HUY.getLabel())){
 			throw new BadRequestException("Trạng thái không hợp lệ");
 		}
 

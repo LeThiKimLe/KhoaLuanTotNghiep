@@ -15,6 +15,7 @@ const addTrip = createAsyncThunk('manager/trips', async (tripInfor, thunkAPI) =>
             scheduleReturn: reverseString(tripInfor.schedule, '-'),
             distance: tripInfor.distance,
             hours: tripInfor.hours,
+            routeCode: tripInfor.routeCode,
         })
         return trip
     } catch (error) {

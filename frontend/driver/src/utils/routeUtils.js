@@ -91,3 +91,15 @@ export const getDesandDep = (listRoute, depName, desName) => {
     const destination = desOptions.filter((option) => option.label === desName)[0]
     return { departure, destination }
 }
+
+export const getListAssignLocation = (listRoute) => {
+    const listLocation = []
+    for (let i = 0; i < listRoute.length; i++) {
+        const dep = listLocation.findIndex((loca) => loca.id === listRoute[i].departure.id)
+        const des = listLocation.findIndex((loca) => loca.id === listRoute[i].destination.id)
+        if (dep === -1) listLocation.push(listRoute[i].departure)
+        if (des === -1) listLocation.push(listRoute[i].destination)
+    }
+    console.log(listLocation)
+    return listLocation
+}

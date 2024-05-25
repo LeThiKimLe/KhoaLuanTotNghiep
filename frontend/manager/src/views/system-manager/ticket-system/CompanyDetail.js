@@ -543,6 +543,7 @@ const AddRouteForm = ({ visible, setVisible }) => {
         companyId,
         journey,
         distance,
+        routeCode,
     ) => {
         const tripInfor = {
             routeId: route.id,
@@ -553,6 +554,7 @@ const AddRouteForm = ({ visible, setVisible }) => {
             companyId: companyId,
             distance: distance,
             hours: parseFloat((distance / 75).toFixed(1)),
+            routeCode: routeCode,
         }
         return await dispatch(tripThunk.addTrip(tripInfor))
             .unwrap()
@@ -637,6 +639,7 @@ const AddRouteForm = ({ visible, setVisible }) => {
                                 companyId,
                                 companyRoute.route.journey,
                                 companyRoute.route.distance,
+                                companyRoute.route.id,
                             ).then(async (res) => {
                                 listTrip = res
                                 if (listTrip.length === 2) {

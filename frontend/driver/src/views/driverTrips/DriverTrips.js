@@ -54,14 +54,14 @@ import { useNavigate } from 'react-router-dom'
 import { Navigate } from 'react-router-dom'
 import DetailBus from './DetailBus'
 import { convertTimeToInt } from 'src/utils/convertUtils'
-import { startOfWeek, endOfWeek, format } from 'date-fns'
+import { startOfWeek, endOfWeek, format, setHours } from 'date-fns'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { dayInWeek } from 'src/utils/constants'
 import MediaQuery from 'react-responsive'
 import { useMediaQuery } from 'react-responsive'
 import { subStractDays, addDays, addHours } from 'src/utils/convertUtils'
-import { SCHEDULE_STATUS, ORDER_STATE } from 'src/utils/constants'
+import { SCHEDULE_STATE, ORDER_STATE } from 'src/utils/constants'
 import noImg from 'src/assets/images/no_img.png'
 import CustomButton from '../customButton/CustomButton'
 import orderThunk from 'src/feature/transportation-order/order.service'
@@ -244,7 +244,7 @@ const ScheduleAsTable = ({ currentList, startDate }) => {
     )
 }
 
-const Status = ({ data }) => {
+const OrderStatus = ({ data }) => {
     const [showCondition, setShowCondition] = useState(false)
     return (
         <CTooltip content={data.describe}>
@@ -265,7 +265,7 @@ const Status = ({ data }) => {
     )
 }
 
-const StatusTracker = ({ schedule }) => {
+const OrderStatusTracker = ({ schedule }) => {
     const dispatch = useDispatch()
     const [status, setStatus] = useState(
         ORDER_STATE.map((status) => {
@@ -291,7 +291,71 @@ const StatusTracker = ({ schedule }) => {
     return (
         <div className="d-flex gap-5 align-items-center justify-content-center">
             {status.map((status, index) => (
-                <Status data={status} key={index}></Status>
+                <OrderStatus data={status} key={index}></OrderStatus>
+            ))}
+        </div>
+    )
+}
+
+const ScheduleStatus = ({ data }) => {
+    const [showCondition, setShowCondition] = useState(false)
+    return (
+        <div className="d-flex flex-column align-items-center" role="button">
+            <CIcon
+                icon={data.achived ? cilCheckCircle : cilCircle}
+                size="xl"
+                style={data.achived ? { color: 'green' } : { color: '#ccc' }}
+            ></CIcon>
+            <b
+                style={data.achived ? { color: '#000' } : { color: '#8f938f' }}
+            >{`${data.value}. ${data.label}`}</b>
+        </div>
+    )
+}
+
+const ScheduleStatusTracker = ({ schedule }) => {
+    const dispatch = useDispatch()
+    const listTrip = useSelector(selectDriverTrip)
+    const [status, setStatus] = useState(
+        SCHEDULE_STATE.map((status) => {
+            return {
+                ...status,
+                achived: false,
+                station: null,
+            }
+        }),
+    )
+    useEffect(() => {
+        const newStatus = [...status]
+        const trip = listTrip.find((trip) => trip.id === schedule.tripInfor.id)
+        const tripStations = trip.stopStations
+        const scheduleStatus = SCHEDULE_STATE.find((st) => st.label === schedule.state)
+        console.log(scheduleStatus)
+        let listStation = [],
+            station = []
+        for (let i = 0; i < newStatus.length; i++) {
+            listStation = tripStations.filter((st) =>
+                newStatus[i].stationType.includes(st.stationType),
+            )
+            console.log(listStation)
+            if (listStation.length > 0) {
+                if (newStatus[i].stationType.includes('departure'))
+                    station = listStation.filter((st) => st.id === trip.startStation.id)
+                else if (newStatus[i].stationType.includes('destination'))
+                    station = listStation.filter((st) => st.id === trip.endStation.id)
+                else station = listStation
+            }
+            newStatus[i].station = station
+            if (newStatus[i].value === scheduleStatus.value) {
+                newStatus[i].achived = true
+            }
+        }
+        setStatus(newStatus)
+    }, [schedule])
+    return (
+        <div className="d-flex gap-5 align-items-center justify-content-center">
+            {status.map((status, index) => (
+                <ScheduleStatus data={status} key={index}></ScheduleStatus>
             ))}
         </div>
     )
@@ -301,6 +365,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
     const curCompany = useSelector(selectCurCompany)
     const dispatch = useDispatch()
     const [showOrder, setShowOrder] = useState(false)
+    const [showState, setShowState] = useState(false)
     const [fileURL, setFileURL] = useState(null)
     const [file, setFile] = useState(null)
     const [isUpdating, setIsUpdating] = useState(false)
@@ -387,7 +452,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
             seatNum: schedule.bus?.type?.capacity,
             busType: schedule.bus?.type?.description,
             desdep: getTripJourney(schedule.tripInfor),
-            routeId: '34UFYCHN',
+            routeId: schedule.tripInfor.routeCode,
             route: schedule.tripInfor.schedule,
             dep: getTripJourney(schedule.tripInfor).split('-')[0],
             departTime: schedule.departTime.slice(0, -3),
@@ -484,6 +549,19 @@ const ScheduleItem = ({ schedule, index, time }) => {
                         <i>Chưa có lệnh</i>
                     )}
                 </CTableDataCell>
+                <CTableDataCell className="text-center">
+                    <i>{schedule.state}</i>
+                    <CTooltip content="Cập nhật trạng thái chuyến xe">
+                        <CIcon
+                            id={'status-' + schedule.id}
+                            color="success"
+                            icon={cilPencil}
+                            role="button"
+                            style={{ marginLeft: '5px' }}
+                            onClick={() => setShowState(true)}
+                        ></CIcon>
+                    </CTooltip>
+                </CTableDataCell>
             </CTableRow>
             <CModal visible={showOrder} onClose={() => setShowOrder(false)} size="lg">
                 <CModalHeader>
@@ -492,7 +570,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
                 <CModalBody>
                     <CRow className="border-bottom justify-content-center p-3">
                         <CCol md="12">
-                            <StatusTracker schedule={schedule}></StatusTracker>
+                            <OrderStatusTracker schedule={schedule}></OrderStatusTracker>
                         </CCol>
                     </CRow>
                     <CRow className="justify-content-center p-1">
@@ -539,7 +617,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
                             </CFormSelect>
                             <br></br>
                             <i>* Điều kiện: </i>
-                            <i>{ORDER_STATE.find((st) => st.label === orderStatus).condition}</i>
+                            <i>{ORDER_STATE.find((st) => st.label === orderStatus)?.condition}</i>
                         </CCol>
                     </CRow>
                 </CModalBody>
@@ -558,6 +636,56 @@ const ScheduleItem = ({ schedule, index, time }) => {
                         text={isUpdating ? 'Lưu' : 'Cập nhật'}
                     ></CustomButton>
                     <CButton variant="outline" color="dark" onClick={() => setShowOrder(false)}>
+                        Đóng
+                    </CButton>
+                </CModalFooter>
+            </CModal>
+            <CModal visible={showState} onClose={() => setShowState(false)} size="xl">
+                <CModalHeader>
+                    <b>Trạng thái chuyến xe</b>
+                </CModalHeader>
+                <CModalBody>
+                    <CRow className="border-bottom justify-content-center p-3">
+                        <CCol md="12">
+                            <ScheduleStatusTracker schedule={schedule}></ScheduleStatusTracker>
+                        </CCol>
+                    </CRow>
+                    <CRow className="justify-content-center p-1">
+                        {/* <CCol md="5">
+                            <CFormSelect
+                                value={orderStatus}
+                                onChange={(e) => setOrderStatus(e.target.value)}
+                            >
+                                <option value="0" disabled>
+                                    Chọn trạng thái
+                                </option>
+                                {ORDER_STATE.filter(
+                                    (st) =>
+                                        st.value === currentOrderStatus?.value ||
+                                        st.value === currentOrderStatus?.value + 1,
+                                ).map((status, index) => (
+                                    <option
+                                        key={index}
+                                        value={status.label}
+                                        disabled={status.value === 1}
+                                    >
+                                        {status.label}
+                                    </option>
+                                ))}
+                            </CFormSelect>
+                            <br></br>
+                            <i>* Điều kiện: </i>
+                            <i>{ORDER_STATE.find((st) => st.label === orderStatus)?.condition}</i>
+                        </CCol> */}
+                    </CRow>
+                </CModalBody>
+                <CModalFooter>
+                    <CustomButton
+                        color="success"
+                        onClick={handleUpdate}
+                        text={isUpdating ? 'Lưu' : 'Cập nhật'}
+                    ></CustomButton>
+                    <CButton variant="outline" color="dark" onClick={() => setShowState(false)}>
                         Đóng
                     </CButton>
                 </CModalFooter>
@@ -620,6 +748,9 @@ const ScheduleAsList = ({ listSchedule, time }) => {
                             </CTableHeaderCell>
                             <CTableHeaderCell className="text-center" scope="col">
                                 Lệnh vận chuyển
+                            </CTableHeaderCell>
+                            <CTableHeaderCell className="text-center" scope="col">
+                                Trạng thái chuyến
                             </CTableHeaderCell>
                         </CTableRow>
                     </CTableHead>

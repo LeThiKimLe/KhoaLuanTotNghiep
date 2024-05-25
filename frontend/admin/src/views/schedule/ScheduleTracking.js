@@ -18,10 +18,10 @@ import {
     CFormCheck,
     CRow,
     CButton,
-    CTooltip,
     CModal,
     CModalHeader,
     CModalBody,
+    CModalFooter,
     CFormInput,
     CFormLabel,
     CCardBody,
@@ -30,6 +30,13 @@ import {
     CCardHeader,
     CSpinner,
     CToaster,
+    CDropdown,
+    CDropdownToggle,
+    CDropdownMenu,
+    CDropdownItem,
+    CTooltip,
+    CPopover,
+    CImage,
 } from '@coreui/react'
 import parse from 'date-fns/parse'
 import { addHours } from 'src/utils/convertUtils'
@@ -44,11 +51,70 @@ import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
 import format from 'date-fns/format'
 import orderThunk from 'src/feature/transportation-order/order.service'
 import { CustomToast } from '../customToast/CustomToast'
+import { ORDER_STATE } from 'src/utils/constants'
+import noImg from 'src/assets/images/no_img.png'
+import CIcon from '@coreui/icons-react'
+import { cilCheckCircle, cilCircle } from '@coreui/icons'
+import CustomButton from '../customButton/CustomButton'
+const Status = ({ data }) => {
+    const [showCondition, setShowCondition] = useState(false)
+    return (
+        <CTooltip content={data.describe}>
+            <div className="d-flex flex-column align-items-center" role="button">
+                <CIcon
+                    icon={data.achived ? cilCheckCircle : cilCircle}
+                    size="xl"
+                    style={data.achived ? { color: 'green' } : { color: '#ccc' }}
+                ></CIcon>
+                <b
+                    style={data.achived ? { color: '#000' } : { color: '#8f938f' }}
+                >{`${data.value}. ${data.label}`}</b>
+                <CPopover content={data.condition} placement="bottom">
+                    <small role="button">{'Điều kiện'}</small>
+                </CPopover>
+            </div>
+        </CTooltip>
+    )
+}
+
+const StatusTracker = ({ schedule }) => {
+    const dispatch = useDispatch()
+    const [status, setStatus] = useState(
+        ORDER_STATE.map((status) => {
+            return {
+                ...status,
+                achived: false,
+            }
+        }),
+    )
+    useEffect(() => {
+        const newStatus = [...status]
+        if (schedule.transportationOrder) {
+            const orderStatus = schedule.transportationOrder.status
+            for (let i = 0; i < newStatus.length; i++) {
+                newStatus[i].achived = true
+                if (newStatus[i].label === orderStatus) {
+                    break
+                }
+            }
+        }
+        setStatus(newStatus)
+    }, [schedule])
+    return (
+        <div className="d-flex gap-5 align-items-center justify-content-center">
+            {status.map((status, index) => (
+                <Status data={status} key={index}></Status>
+            ))}
+        </div>
+    )
+}
+
 const ScheduleData = ({ index, schedule, state }) => {
     const [exportCommand, setExportCommand] = useState(false)
     const dispatch = useDispatch()
     const curCompany = useSelector(selectCurCompany)
     const [toast, addToast] = useState(0)
+    const [showOrder, setShowOrder] = useState(false)
     const toaster = useRef('')
     const [viewBusState, setViewBusState] = useState(false)
     //Get list commandData from local storage
@@ -132,7 +198,70 @@ const ScheduleData = ({ index, schedule, state }) => {
                 )
             })
     }
-    console.log(schedule)
+    const getImage = () => {
+        if (schedule.transportationOrder && schedule.transportationOrder.image)
+            return schedule.transportationOrder.image
+        else return noImg
+    }
+    const confirmOrder = () => {
+        if (schedule.transportationOrder && schedule.transportationOrder.status === 'Đến bến') {
+            dispatch(orderThunk.confirmOrder({ orderId: schedule.transportationOrder.id }))
+                .unwrap()
+                .then(() => {
+                    addToast(() =>
+                        CustomToast({
+                            message: 'Xác nhận thành công',
+                            type: 'success',
+                        }),
+                    )
+                })
+                .catch((err) => {
+                    addToast(() =>
+                        CustomToast({
+                            message: err,
+                            type: 'error',
+                        }),
+                    )
+                })
+        } else {
+            addToast(() =>
+                CustomToast({
+                    message: 'Không thể xác nhận lệnh vì chưa hoàn tất chuyến',
+                    type: 'error',
+                }),
+            )
+        }
+    }
+    const deleteOrder = () => {
+        if (schedule.transportationOrder && schedule.transportationOrder.status === 'Đã cấp lệnh') {
+            dispatch(orderThunk.deleteOrder(schedule.transportationOrder.id))
+                .unwrap()
+                .then(() => {
+                    addToast(() =>
+                        CustomToast({
+                            message: 'Thu hồi thành công',
+                            type: 'success',
+                        }),
+                    )
+                })
+                .catch((err) => {
+                    addToast(() =>
+                        CustomToast({
+                            message: err,
+                            type: 'error',
+                        }),
+                    )
+                    window.location.reload()
+                })
+        } else {
+            addToast(() =>
+                CustomToast({
+                    message: 'Không thể thu hồi lệnh',
+                    type: 'error',
+                }),
+            )
+        }
+    }
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -391,21 +520,68 @@ const ScheduleData = ({ index, schedule, state }) => {
                             Cấp lệnh
                         </CButton>
                     ) : schedule.transportationOrder ? (
-                        <i role="button" onClick={viewCommand}>
-                            Xem lệnh
-                        </i>
+                        <>
+                            <i role="button">{schedule.transportationOrder?.status}</i>
+                            <CDropdown className="px-1">
+                                <CDropdownToggle color="light" size="sm"></CDropdownToggle>
+                                <CDropdownMenu>
+                                    <CDropdownItem as="button" onClick={viewCommand}>
+                                        Xem mẫu lệnh
+                                    </CDropdownItem>
+                                    <CDropdownItem as="button" onClick={() => setShowOrder(true)}>
+                                        Chi tiết
+                                    </CDropdownItem>
+                                    <CDropdownItem as="button" onClick={deleteOrder}>
+                                        Thu hồi lệnh
+                                    </CDropdownItem>
+                                </CDropdownMenu>
+                            </CDropdown>
+                        </>
                     ) : (
                         <i>Chưa cấp lệnh</i>
                     )}
                 </CTableDataCell>
                 <CTableDataCell>
-                    {schedule.transportationOrder ? (
-                        <i>{schedule.transportationOrder.status}</i>
-                    ) : (
-                        <i>---</i>
-                    )}
+                    <i>{schedule.state}</i>
                 </CTableDataCell>
             </CTableRow>
+            <CModal visible={showOrder} onClose={() => setShowOrder(false)} size="lg">
+                <CModalHeader>
+                    <b>Lệnh vận chuyển</b>
+                </CModalHeader>
+                <CModalBody>
+                    <CRow className="border-bottom justify-content-center p-3">
+                        <CCol md="12">
+                            <StatusTracker schedule={schedule}></StatusTracker>
+                        </CCol>
+                    </CRow>
+                    <CRow className="justify-content-center p-1">
+                        <CCol md="5">
+                            <div>
+                                <CImage
+                                    rounded
+                                    thumbnail
+                                    src={getImage()}
+                                    width={300}
+                                    height={400}
+                                />
+                            </div>
+                            <div className="text-center mt-2">
+                                <CustomButton
+                                    onClick={confirmOrder}
+                                    text={'Xác nhận hợp lệ'}
+                                    color="success"
+                                ></CustomButton>
+                            </div>
+                        </CCol>
+                    </CRow>
+                </CModalBody>
+                <CModalFooter>
+                    <CButton variant="outline" color="dark" onClick={() => setShowOrder(false)}>
+                        Đóng
+                    </CButton>
+                </CModalFooter>
+            </CModal>
         </>
     )
 }
