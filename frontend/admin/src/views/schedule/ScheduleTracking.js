@@ -172,7 +172,9 @@ const ScheduleData = ({ index, schedule, state }) => {
     const viewCommand = () => {
         const params = new URLSearchParams()
         params.append('id', schedule.id)
-        window.open(`/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
+        let baseUrl = process.env.REACT_APP_BASE_URL
+        if (!baseUrl) baseUrl = ''
+        window.open(`${baseUrl}/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
     }
     const createCommand = () => {
         dispatch(orderThunk.createOrder({ scheduleId: schedule.id, file: null }))

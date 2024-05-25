@@ -353,7 +353,7 @@ const ScheduleStatusTracker = ({ schedule }) => {
         setStatus(newStatus)
     }, [schedule])
     return (
-        <div className="d-flex gap-5 align-items-center justify-content-center">
+        <div className="d-flex flex-column gap-5 align-items-center justify-content-center">
             {status.map((status, index) => (
                 <ScheduleStatus data={status} key={index}></ScheduleStatus>
             ))}
@@ -480,10 +480,12 @@ const ScheduleItem = ({ schedule, index, time }) => {
                 [schedule.id]: commandData,
             }),
         )
+        let baseUrl = process.env.REACT_APP_BASE_URL
+        if (!baseUrl) baseUrl = ''
         setTimeout(() => {
             const params = new URLSearchParams()
             params.append('id', schedule.id)
-            window.open(`/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
+            window.open(`${baseUrl}/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
         }, 1000)
     }
     useEffect(() => {
