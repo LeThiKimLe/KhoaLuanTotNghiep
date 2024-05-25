@@ -898,7 +898,7 @@ const DriverTrip = () => {
         <>
             <CRow className="my-3 gap-2 justify-content-between">
                 <CCol
-                    md={5}
+                    md={7}
                     sm={12}
                     style={{ textAlign: 'right' }}
                     className={`d-flex gap-1 customDatePicker ${
@@ -943,7 +943,7 @@ const DriverTrip = () => {
                     ></CIcon>
                 </CCol>
                 <CCol
-                    md={5}
+                    md={4}
                     sm={12}
                     style={isBigScreen ? { textAlign: 'right' } : { textAlign: 'center' }}
                 >
