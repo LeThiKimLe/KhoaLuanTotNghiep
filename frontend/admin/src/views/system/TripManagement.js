@@ -624,7 +624,7 @@ const StopStationBlock = ({ trip, station, edit, pre, fol, move }) => {
     )
 }
 
-const SortStopStation = ({ trip, turn }) => {
+const SortStopStation = ({ trip, turn, finishAdd }) => {
     const dispatch = useDispatch()
     const [isEdit, setIsEdit] = useState(false)
     const listLocation = useSelector(selectListCompanyLocation)
@@ -707,7 +707,7 @@ const SortStopStation = ({ trip, turn }) => {
     }
     const resetSort = () => {
         setIsEdit(false)
-        const sortList = sortStation([...listProcessStation])
+        const sortList = [...listStation]
         setListProcessStation(
             sortList.map((st) => {
                 return {
@@ -718,15 +718,35 @@ const SortStopStation = ({ trip, turn }) => {
             }),
         )
     }
+    const sortTripBack = (listGoSorted) => {
+        const listStationBack = [...trip?.turnBack.stopStations]
+        const listStationGoSort = [...listGoSorted].map((st) =>
+            listStation.find((sta) => sta.id == st),
+        )
+        const listStationBackSort = listStationGoSort
+            .map((st) => {
+                return listStationBack.find((sta) => sta.station.id === st.station.id)
+            })
+            .map((st) => st.id)
+            .reverse()
+        dispatch(stationThunk.sortStopStation(listStationBackSort))
+            .unwrap()
+            .then(() => {})
+            .catch((error) => {
+                console.log(error)
+            })
+    }
     const handleSort = () => {
         if (isEdit) {
             dispatch(stationThunk.sortStopStation(listProcessStation.map((st) => st.id)))
                 .unwrap()
                 .then(() => {
+                    sortTripBack(listProcessStation.map((st) => st.id))
                     addToast(() =>
                         CustomToast({ message: 'Đã sắp xếp trạm thành công', type: 'success' }),
                     )
-                    setTimeout(() => window.location.reload(), 1000)
+                    setIsEdit(false)
+                    finishAdd()
                 })
                 .catch((error) => {
                     addToast(() => CustomToast({ message: error, type: 'error' }))
@@ -742,7 +762,8 @@ const SortStopStation = ({ trip, turn }) => {
             dispatch(stationThunk.sortStopStation(sortList.map((st) => st.id)))
                 .unwrap()
                 .then(() => {
-                    window.location.reload()
+                    sortTripBack(sortList.map((st) => st.id))
+                    finishAdd()
                 })
                 .catch((err) => {
                     console.log(err)
@@ -1094,8 +1115,14 @@ const TripDetail = ({ trip, finishAdd }) => {
                     </CAccordion>
                 </CCol>
                 <CCol md={12}>
-                    <b>Lộ trình di chuyển qua các trạm</b>
-                    <SortStopStation trip={trip} turn={true}></SortStopStation>
+                    <b>
+                        <i>Lộ trình di chuyển qua các trạm</i>
+                    </b>
+                    <SortStopStation
+                        trip={trip}
+                        turn={true}
+                        finishAdd={finishAdd}
+                    ></SortStopStation>
                 </CCol>
             </CRow>
         </>

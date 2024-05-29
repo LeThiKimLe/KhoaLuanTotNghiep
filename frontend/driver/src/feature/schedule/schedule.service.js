@@ -104,12 +104,33 @@ const updateSchedule = createAsyncThunk('admin/schedules/edit', async (scheduleI
     }
 })
 
+const updateScheduleState = createAsyncThunk(
+    'driver/schedules/edit/state',
+    async (scheduleInfor, thunkAPI) => {
+        try {
+            const response = await axiosClient.put('driver/schedule/state', {
+                scheduleId: scheduleInfor.id,
+                state: scheduleInfor.state,
+                stopStationId: scheduleInfor.currentStation,
+            })
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const scheduleThunk = {
     getSchedules,
     handleSchedule,
     getMaxSchedules,
     getTripBusDriver,
     updateSchedule,
+    updateScheduleState,
 }
 
 export default scheduleThunk

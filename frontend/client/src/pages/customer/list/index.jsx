@@ -61,13 +61,9 @@ const TripSum = ({trip, turn}) => {
             <div className={styles.body}>
                 <b>{`${trip.departTime.slice(0,-3)} - ${convertToDisplayDate(trip.departDate)}`}</b>
                 <br></br>
-                <span>{
-                    trip.tripInfor.turn === true ? trip.tripInfor.startStation.name : trip.tripInfor.endStation.name
-                }</span>
+                <span>{trip.tripInfor.startStation.name}</span>
                 <span>{` - `}</span>
-                <span>{
-                    trip.tripInfor.turn === true ? trip.tripInfor.endStation.name : trip.tripInfor.startStation.name
-                }</span>
+                <span>{trip.tripInfor.endStation.name}</span>
             </div>
         </div>
     )

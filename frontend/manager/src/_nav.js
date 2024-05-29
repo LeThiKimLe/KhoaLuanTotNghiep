@@ -31,6 +31,11 @@ const _nav = [
                 name: 'Quản lý nhà xe',
                 to: '/ticket-system/bus-companies',
             },
+            {
+                component: CNavItem,
+                name: 'Quản lý phí',
+                to: '/ticket-system/fee-manage',
+            },
         ],
         protected: true,
     },

@@ -138,14 +138,7 @@ const TicketInfor = ({booking}) => {
                                     </div>
                                     <div className={styles.ticketDetail}>
                                         <span>Chuyến xe</span>
-                                        {booking.trip.turn === true 
-                                        ? (
-                                            <span>{`${booking.trip.startStation.name} - ${booking.trip.endStation.name}`}</span> 
-                                        )
-                                        : (
-                                            <span>{`${booking.trip.endStation.name} - ${booking.trip.startStation.name}`}</span> 
-                                        )
-                                        }
+                                        <span>{`${booking.trip.startStation.name} - ${booking.trip.endStation.name}`}</span> 
                                     </div>
                                     <div className={styles.ticketDetail}>
                                         <span>Thời gian</span>

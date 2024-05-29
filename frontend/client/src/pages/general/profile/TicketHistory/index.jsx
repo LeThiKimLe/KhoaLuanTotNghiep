@@ -300,11 +300,7 @@ const TicketHistory = () => {
                                                 /></td>
                                                 <td>{`${booking.code}`}</td>
                                                 <td>{booking.ticketNumber}</td>
-                                                {booking.trip.turn === true ? (
-                                                    <td>{`${booking.trip.startStation.name} - ${booking.trip.endStation.name}`}</td>
-                                                ) : (
-                                                    <td>{`${booking.trip.endStation.name} - ${booking.trip.startStation.name}`}</td>
-                                                )}
+                                                <td>{`${booking.trip.startStation.name} - ${booking.trip.endStation.name}`}</td>
                                                 <td>{format(new Date(booking.bookingDate), 'HH:mm dd/MM/yyyy')}</td>
                                                 {booking.transaction ? (
                                                     <>

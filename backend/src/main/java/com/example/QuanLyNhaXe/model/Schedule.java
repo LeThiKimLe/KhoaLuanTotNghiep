@@ -2,6 +2,7 @@ package com.example.QuanLyNhaXe.model;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.Column;
@@ -47,8 +48,8 @@ public class Schedule {
 	@Column(name = "ticket_price", nullable = false)
 	private Integer ticketPrice;
 
-	@Column(name = "finish_time", nullable = false)
-	private Time finishTime;
+	@Column(name = "update_time", nullable = false)
+	private LocalDateTime updateTime;
 
 	@Column(name = "availability")
 	private Integer availability;
@@ -58,6 +59,9 @@ public class Schedule {
 	
 	@Column(name = "state", length = 80)
 	private String state;
+
+	@Column(name = "current_station")
+	private Integer currentStation;
 
 	@ManyToOne
 	@JoinColumn(name = "driver_id", referencedColumnName = "driver_id")

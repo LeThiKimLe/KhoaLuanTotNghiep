@@ -62,7 +62,7 @@ public class TransportationOrderService {
 		if (!status.equals(TransportationStatus.DA_NHAN_LENH.getLabel())
 				&& !status.equals(TransportationStatus.XUAT_BEN.getLabel())
 				&& !status.equals(TransportationStatus.DEN_BEN.getLabel())
-				&& !status.equals(TransportationStatus.DA_TRUYEN_TAI.getLabel())) {
+				&& !status.equals(TransportationStatus.DA_HOAN_THANH.getLabel())) {
 			throw new BadRequestException("Trạng thái không hợp lệ");
 
 		}

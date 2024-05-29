@@ -11,7 +11,7 @@ const TransportManagement = React.lazy(() => import('./views/system-manager/grab
 const CompanyManagement = React.lazy(() => import('./views/system-manager/ticket-system/Company'))
 const SystemRouteManagement = React.lazy(() => import('./views/system-manager/ticket-system/Route'))
 const CompanyDetail = React.lazy(() => import('./views/system-manager/ticket-system/CompanyDetail'))
-
+const FeeManage = React.lazy(() => import('./views/system-manager/ticket-system/FeeManage'))
 //Chat
 const Chat = React.lazy(() => import('./views/chat/Chat'))
 
@@ -26,6 +26,12 @@ const routes = [
         name: 'Hệ thống đặt vé',
         element: SystemRouteManagement,
         exact: true,
+        protected: true,
+    },
+    {
+        path: '/ticket-system/fee-manage',
+        name: 'Quản lý phí',
+        element: FeeManage,
         protected: true,
     },
     {

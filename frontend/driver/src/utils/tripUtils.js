@@ -20,14 +20,10 @@ export const getTripDestination = (trip) => {
         else return trip.route.departure.name
 }
 export const getStartStation = (trip) => {
-    if (trip)
-        if (trip.tripInfor.turn === 1) return trip.tripInfor.startStation.name
-        else return trip.tripInfor.endStation.name
+    if (trip) return trip.tripInfor.startStation.name
 }
 export const getEndStation = (trip) => {
-    if (trip)
-        if (trip.tripInfor.turn === 1) return trip.tripInfor.endStation.name
-        else return trip.tripInfor.startStation.name
+    if (trip) return trip.tripInfor.endStation.name
 }
 export const getRouteName = (trip) => {
     return getDeparture(trip) + '-' + getDestination(trip)
@@ -40,9 +36,7 @@ export const getTripRoute = (trip) => {
 }
 
 export const getBookingTrip = (booking) => {
-    if (booking.trip.turn === 1)
-        return booking.trip.startStation.name + '-' + booking.trip.endStation.name
-    else return booking.trip.endStation.name + '-' + booking.trip.startStation.name
+    return booking.trip.startStation.name + '-' + booking.trip.endStation.name
 }
 
 export const getDateAndTimeTicket = (ticket) => {
@@ -62,17 +56,12 @@ export const getRouteJourney = (route) => {
 }
 
 export const getTripJourney = (trip) => {
-    if (trip.turn === true) return trip.startStation.name + '-' + trip.endStation.name
-    else return trip.endStation.name + '-' + trip.startStation.name
+    return trip.startStation.name + '-' + trip.endStation.name
 }
 
 export const getTripStartStation = (trip) => {
-    if (trip)
-        if (trip.turn === 1) return trip.startStation.name
-        else return trip.endStation.name
+    if (trip) return trip.startStation.name
 }
 export const getTripEndStation = (trip) => {
-    if (trip)
-        if (trip.turn === 1) return trip.endStation.name
-        else return trip.startStation.name
+    if (trip) return trip.endStation.name
 }
