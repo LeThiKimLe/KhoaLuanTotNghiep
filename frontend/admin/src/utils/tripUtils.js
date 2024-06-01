@@ -62,34 +62,36 @@ export const tripProcess = (listRoute, companyId = -1) => {
         listRoute.forEach((route) => {
             const { trips, ...routeInfo } = route
             trips.forEach((trip) => {
-                if (companyId == -1 || (trip?.busCompanyId == companyId && companyId != -1)) {
-                    const { id, turn, stopStations, ...tripInfo } = trip
-                    temp = listTrip.findIndex(
-                        (item) =>
-                            item.startStation.id === trip.startStation.id &&
-                            item.endStation.id === trip.endStation.id &&
-                            (item.schedule === trip.schedule ||
-                                item.schedule === reverseString(trip.schedule)),
-                    )
-                    if (temp != -1) {
-                        listTrip[temp] = {
-                            ...listTrip[temp],
-                            turnBack: {
-                                id: id,
-                                stopStations: stopStations,
-                            },
+                if (trip.active) {
+                    if (companyId == -1 || (trip?.busCompanyId == companyId && companyId != -1)) {
+                        const { id, turn, stopStations, ...tripInfo } = trip
+                        temp = listTrip.findIndex(
+                            (item) =>
+                                item.startStation.id === trip.endStation.id &&
+                                item.endStation.id === trip.startStation.id &&
+                                (item.schedule === trip.schedule ||
+                                    item.schedule === reverseString(trip.schedule)),
+                        )
+                        if (temp != -1) {
+                            listTrip[temp] = {
+                                ...listTrip[temp],
+                                turnBack: {
+                                    id: id,
+                                    stopStations: stopStations,
+                                },
+                            }
+                            return
+                        } else {
+                            listTrip.push({
+                                id: listTrip.length + 1,
+                                ...tripInfo,
+                                turnGo: {
+                                    id: id,
+                                    stopStations: stopStations,
+                                },
+                                route: routeInfo,
+                            })
                         }
-                        return
-                    } else {
-                        listTrip.push({
-                            id: listTrip.length + 1,
-                            ...tripInfo,
-                            turnGo: {
-                                id: id,
-                                stopStations: stopStations,
-                            },
-                            route: routeInfo,
-                        })
                     }
                 }
             })

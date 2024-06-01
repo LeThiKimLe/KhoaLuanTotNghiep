@@ -26,13 +26,13 @@ export const getTripJourney = (trip) => {
 };
 
 export const tripProcess = (listRoute) => {
-  console.log(listRoute)
   const listResult = []
   let temp = -1
   listRoute.forEach((route) => {
       const { trips, ...routeInfo } = route
       const listOut = []
       trips.forEach((trip) => {
+        if (trip.active) {
           const { id, turn, ...tripInfo } = trip
           temp = listOut.findIndex(
               (item) =>
@@ -52,13 +52,13 @@ export const tripProcess = (listRoute) => {
                   turnGo: id,
               })
           }
+        } 
       })
       listResult.push({
           ...routeInfo,
           listTrip: listOut,
       })
   })
-  console.log(listResult)
   return listResult
 }
 

@@ -28,9 +28,9 @@ import { CChart } from '@coreui/react-chartjs'
 import { getStyle } from '@coreui/utils'
 import 'react-time-picker/dist/TimePicker.css'
 import feeThunk from 'src/feature/fee/fee.service'
-import { convertToDisplayDate } from 'src/utils/convertUtils'
+import { addDays, convertToDisplayDate } from 'src/utils/convertUtils'
 import { format, parse } from 'date-fns'
-import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
+import { selectCurCompany, selectListAssign } from 'src/feature/bus-company/busCompany.slice'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
 
 const Expense = () => {
@@ -41,8 +41,8 @@ const Expense = () => {
     const [listTrip, setListTrip] = useState([])
     const [listCompanyServiceFee, setListCompanyServiceFee] = useState([])
     const curCompany = useSelector(selectCurCompany)
-    console.log(curCompany)
-    const startTime = curCompany ? new Date(curCompany?.busCompany.coopDay) : new Date()
+    const listAssign = useSelector(selectListAssign)
+    const startTime = curCompany ? addDays(new Date(curCompany?.busCompany.coopDay), 1) : new Date()
     const today = new Date()
     const [chartData, setChartData] = useState({
         labels: [],
@@ -157,6 +157,36 @@ const Expense = () => {
         } else {
             addToast(() => CustomToast({ message: 'Thanh toán không hợp lệ', type: 'error' }))
         }
+    }
+
+    const getDueState = (dueDate) => {
+        let currentDay = parse(dueDate, 'yyyy-MM-dd', new Date())
+        let today = new Date()
+        const diffTime = Math.abs(currentDay - today)
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+        if (currentDay < today) {
+            return {
+                state: 'overdue',
+                message: `Quá hạn ${diffDays} ngày`,
+                color: 'red',
+            }
+        } else if (diffDays < 5) {
+            return {
+                state: 'not-overdue',
+                message: `Còn ${diffDays} ngày`,
+                color: 'yellow',
+            }
+        } else {
+            return {
+                state: 'not-overdue',
+                message: `Còn ${diffDays} ngày`,
+                color: 'green',
+            }
+        }
+    }
+
+    const getRouteCount = (dueDate) => {
+        return listAssign.filter((assign) => new Date(dueDate) > new Date(assign.assignDate)).length
     }
 
     useEffect(() => {
@@ -408,6 +438,77 @@ const Expense = () => {
                             </CTableRow>
                         </CTableHead>
                         <CTableBody>
+                            {listCompanyServiceFee
+                                .sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
+                                .map((fee, index) => (
+                                    <CTableRow key={index}>
+                                        <CTableHeaderCell
+                                            scope="row"
+                                            className="text-center align-middle"
+                                            align="center"
+                                        >
+                                            {index + 2}
+                                        </CTableHeaderCell>
+                                        <CTableDataCell className="text-center align-middle">
+                                            {format(
+                                                addDays(new Date(fee.dueDate), 1),
+                                                'dd/MM/yyyy',
+                                            )}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center align-middle">
+                                            {getNextDueDay(fee.dueDate)}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center align-middle">
+                                            {convertToDisplayDate(fee.dueDate)}
+                                            {fee.status === 'Chờ thanh toán' && (
+                                                <>
+                                                    <br></br>
+                                                    <i>
+                                                        <small
+                                                            style={{
+                                                                color: getDueState(fee.dueDate)
+                                                                    .color,
+                                                            }}
+                                                        >
+                                                            {getDueState(fee.dueDate).message}
+                                                        </small>
+                                                    </i>
+                                                </>
+                                            )}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center align-middle">
+                                            {getRouteCount(fee.dueDate)}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center align-middle">
+                                            {fee.fee.toLocaleString()}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center align-middle">
+                                            {fee.status}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center align-middle">
+                                            {'Đang cập nhật'}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center align-middle">
+                                            {fee.status === 'Chờ thanh toán' && (
+                                                <CButton
+                                                    variant="outline"
+                                                    onClick={() => handlePay(fee.id)}
+                                                >
+                                                    Thanh toán
+                                                </CButton>
+                                            )}
+                                            {fee.status === 'Đã thanh toán' && (
+                                                <CButton
+                                                    variant="outline"
+                                                    onClick={() => {}}
+                                                    color="success"
+                                                >
+                                                    Chi tiết giao dịch
+                                                </CButton>
+                                            )}
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                ))}
                             <CTableRow>
                                 <CTableHeaderCell
                                     scope="row"
@@ -420,10 +521,7 @@ const Expense = () => {
                                     {convertToDisplayDate(format(startTime, 'yyyy-MM-dd'))}
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center align-middle" align="center">
-                                    {format(
-                                        new Date(startTime.getTime() + 14 * 86400000),
-                                        'dd/MM/yyyy',
-                                    )}
+                                    {format(addDays(startTime, 14), 'dd/MM/yyyy')}
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center" align="center">
                                     {'---'}
@@ -446,57 +544,6 @@ const Expense = () => {
                                     {'---'}
                                 </CTableDataCell>
                             </CTableRow>
-                            {listCompanyServiceFee.map((fee, index) => (
-                                <CTableRow key={index}>
-                                    <CTableHeaderCell
-                                        scope="row"
-                                        className="text-center align-middle"
-                                        align="center"
-                                    >
-                                        {index + 2}
-                                    </CTableHeaderCell>
-                                    <CTableDataCell className="text-center align-middle">
-                                        {convertToDisplayDate(fee.dueDate)}
-                                    </CTableDataCell>
-                                    <CTableDataCell className="text-center align-middle">
-                                        {getNextDueDay(fee.dueDate)}
-                                    </CTableDataCell>
-                                    <CTableDataCell className="text-center align-middle">
-                                        {convertToDisplayDate(fee.dueDate)}
-                                    </CTableDataCell>
-                                    <CTableDataCell className="text-center align-middle">
-                                        {listTrip.length}
-                                    </CTableDataCell>
-                                    <CTableDataCell className="text-center align-middle">
-                                        {fee.fee.toLocaleString()}
-                                    </CTableDataCell>
-                                    <CTableDataCell className="text-center align-middle">
-                                        {fee.status}
-                                    </CTableDataCell>
-                                    <CTableDataCell className="text-center align-middle">
-                                        {'Đang cập nhật'}
-                                    </CTableDataCell>
-                                    <CTableDataCell className="text-center align-middle">
-                                        {fee.status === 'Chờ thanh toán' && (
-                                            <CButton
-                                                variant="outline"
-                                                onClick={() => handlePay(fee.id)}
-                                            >
-                                                Thanh toán
-                                            </CButton>
-                                        )}
-                                        {fee.status === 'Đã thanh toán' && (
-                                            <CButton
-                                                variant="outline"
-                                                onClick={() => handlePay(fee.id)}
-                                                color="success"
-                                            >
-                                                Xem chi tiết
-                                            </CButton>
-                                        )}
-                                    </CTableDataCell>
-                                </CTableRow>
-                            ))}
                         </CTableBody>
                     </CTable>
                 </TabPanel>
