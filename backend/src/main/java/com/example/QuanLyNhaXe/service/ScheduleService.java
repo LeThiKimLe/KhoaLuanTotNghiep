@@ -133,7 +133,10 @@ public class ScheduleService {
 		}
 		scheduleRepository.saveAll(schedules);
 		return schedules.stream().filter(schedule -> schedule.getDepartDate() == departDate).peek(schedule -> {
-			schedule.getTransportationOrder().setSchedule(null);
+			if (schedule.getTransportationOrder() != null) {
+				schedule.getTransportationOrder().setSchedule(null);
+
+			}
 		}).map(schedule -> modelMapper.map(schedule, ScheduleDTO.class)).toList();
 	}
 

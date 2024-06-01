@@ -47,8 +47,8 @@ public class Transaction {
 
 	
 
-	@OneToOne(mappedBy = "transaction")
-	private Booking booking;
+	@OneToMany(mappedBy = "transaction")
+	private List<Booking> bookings;
 
 	@OneToMany(mappedBy = "transaction")
 	private List<History> historys;

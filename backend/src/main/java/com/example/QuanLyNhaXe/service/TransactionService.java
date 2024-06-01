@@ -4,14 +4,15 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.YearMonth;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.yaml.snakeyaml.error.YAMLException;
 
 import com.example.QuanLyNhaXe.Request.CreatePaymentDTO;
+import com.example.QuanLyNhaXe.Request.CreatePaymentReturnTicket;
 import com.example.QuanLyNhaXe.dto.TransactionDTO;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.enumration.TransactionType;
@@ -26,6 +27,7 @@ import com.example.QuanLyNhaXe.repository.BookingRepository;
 import com.example.QuanLyNhaXe.repository.TicketRepository;
 import com.example.QuanLyNhaXe.repository.TransactionRepository;
 import com.example.QuanLyNhaXe.util.Message;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -42,11 +44,12 @@ public class TransactionService {
 	@Transactional
 	public TransactionDTO createTransaction(CreatePaymentDTO createPaymentDTO) {
 		Integer priceBill = 0;
+		List<Booking> bookings=new ArrayList<>();
 
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
 
-		
+		bookings.add(booking);
 
 		List<Ticket> tickets = booking.getTickets();
 		if (!tickets.isEmpty()) {
@@ -67,7 +70,7 @@ public class TransactionService {
 		}
 
 		Transaction transaction = Transaction.builder().paymentTime(utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate()))
-				.booking(booking).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo()).paymentMethod(createPaymentDTO.getPaymentMethod())
+				.bookings(bookings).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo()).paymentMethod(createPaymentDTO.getPaymentMethod())
 				.transactionType(TransactionType.PAYMENT.getLabel()).build();
 		booking.setTransaction(transaction);
 
@@ -146,5 +149,65 @@ public class TransactionService {
 		return sum - sum2;
 
 	}
+	@Transactional
+	public TransactionDTO createReturnTicketTransaction(CreatePaymentReturnTicket createPaymentDTO) {
+		Integer priceBill = 0;
+		List<Booking> bookings=new ArrayList<>();
+
+		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
+				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+		System.out.println(booking.getTickets().size());
+
+		Booking booking2 = bookingRepository.findByCode(createPaymentDTO.getBookingCodeReturn())
+				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+
+		System.out.println(booking2.getTickets().size());
+		bookings.add(booking);
+		bookings.add(booking2);
+
+		List<Ticket> tickets = new ArrayList<>();
+		tickets.addAll(booking.getTickets());
+		System.out.println(tickets.size());
+		tickets.addAll(booking2.getTickets());
+		System.out.println(tickets.size());
+		if (!tickets.isEmpty()) {
+			for (Ticket ticket : tickets) {
+				if (!ticket.getState().equals(TicketState.CANCELED.getLabel())) {
+					String billReferCode = utilityService.generateRandomString(7);
+					while (billRepository.existsByReferCode(billReferCode)) {
+						billReferCode = utilityService.generateRandomString(7);
+					}
+					Bill bill = Bill.builder().referCode(billReferCode).build();
+					priceBill += ticket.getTicketPrice();
+					System.out.println(ticket.getId());
+					billRepository.save(bill);
+					ticket.setBill(bill);
+
+				}
+			}
+
+		}
+
+		Transaction transaction = Transaction.builder().paymentTime(utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate()))
+				.bookings(bookings).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo()).paymentMethod(createPaymentDTO.getPaymentMethod())
+				.transactionType(TransactionType.PAYMENT.getLabel()).build();
+		booking.setTransaction(transaction);
+		booking2.setTransaction(transaction);
+
+		try {
+
+			transactionRepository.save(transaction);
+			ticketRepository.saveAll(tickets);
+			bookingRepository.save(booking);
+			bookingRepository.save(booking2);
+
+		} catch (Exception e) {
+			throw new BadRequestException("Đã xảy ra lỗi trong qua trình giao dịch");
+		}
+
+		return modelMapper.map(transaction, TransactionDTO.class);
+
+	}
+	
 
 }
