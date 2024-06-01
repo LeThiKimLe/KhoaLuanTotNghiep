@@ -55,7 +55,10 @@ const Payment = () => {
     // const [showConfirmOutDialog, setShowConfirmOutDialog] = useState(false)
     const [isValidPayment, setValidPayment] = useState(false)
     const [showCountDown, setShowCountDown] = useState(true)
-    const { bookingCode: urlBookingCode } = useParams()
+    const { bookingCode: urlBookingCodeIn } = useParams()
+    const urlBookingCode = urlBookingCodeIn.includes('and') ? urlBookingCodeIn.split('and')[0] : urlBookingCodeIn
+    const bookingReturnCode = urlBookingCodeIn.includes('and') ? urlBookingCodeIn.split('and')[1] : ''
+    console.log(urlBookingCode, bookingReturnCode)
     const [paid, setPaid] = useState(false)
     const url = new URL(window.location.href);
     const params = new URLSearchParams(url.search);
@@ -93,7 +96,8 @@ const Payment = () => {
 
     const handlePayment = () => {
         dispatch(bookingActions.resetMessage())
-        dispatch(bookingThunk.bookingPayment(
+        if (bookingReturnCode == '') {
+            dispatch(bookingThunk.bookingPayment(
                 { bookingCode: urlBookingCode,
                   payment: 'VNPay',
                   transactionNo: vnp_TransactionNo,
@@ -110,6 +114,26 @@ const Payment = () => {
                 setValidPayment(false)
                 setShowInvalidDialog(true)
             })
+        } else {
+            dispatch(bookingThunk.bookingReturnPayment(
+                { bookingCode: urlBookingCode,
+                  bookingCodeReturn: bookingReturnCode,
+                  payment: 'VNPay',
+                  transactionNo: vnp_TransactionNo,
+                  transactionDate: vnp_TransactionDate}
+            ))
+            .unwrap()
+            .then(() => {
+                setPaid(true)
+                setShowCountDown(false)
+                setShowSuccessDialog(true)
+            })
+            .catch((error) => {
+                setPaid(true)
+                setValidPayment(false)
+                setShowInvalidDialog(true)
+            })
+        }
     }
     const handleBackToHome = () => {
         setPaid(true)
@@ -165,6 +189,12 @@ const Payment = () => {
         if (payURL !== '') {
             window.location.href = payURL
         }
+    }
+
+    const getTotalCost = () => {
+        const costGo = bookingInfor.bookingTrip.ticketPrice * bookingInfor.bookedSeat.length
+        const costReturn = bookingInfor.bookingReturn ? bookingInfor.bookingReturn.bookingTrip.ticketPrice * bookingInfor.bookingReturn.bookedSeat.length : 0
+        return costGo + costReturn
     }
 
     useEffect(() => {
@@ -262,7 +292,7 @@ const Payment = () => {
             navigate('/')
         }
     }, [])
-
+    console.log(bookingInfor)
     return (
         <div>
             {message !== '' && <Message message={message} messagetype={error ? 2 : 1} />}
@@ -315,7 +345,7 @@ const Payment = () => {
                                         </Col>
                                         <Col lg={7} md={7} className={styles.qrCol}>
                                             <h4 className={styles.colTitle}>Tổng thanh toán</h4>
-                                            <h2>{`${(bookingInfor.bookingTrip.ticketPrice * bookingInfor.bookedSeat.length).toLocaleString()} đ`}</h2>
+                                            <h2>{`${getTotalCost().toLocaleString()} đ`}</h2>
                                             <i style={{ color: 'red', fontSize: '14px' }}>{`Thời gian giữ chỗ còn lại `}
                                                 {showCountDown ? <CountDown onTimeout={handleTimeout}></CountDown> : <i>00:00</i>}
                                             </i>
@@ -375,6 +405,35 @@ const Payment = () => {
                                             <span className={styles.sum_infor_value}>{`${(bookingInfor.bookingTrip.ticketPrice * bookingInfor.bookedSeat.length).toLocaleString()} đ`}</span>
                                         </div>
                                     </div>
+                                    {
+                                        bookingInfor.bookingReturn && (
+                                            <div className={styles.trip_sum}>
+                                                <h3 className={styles.sum_title}>Thông tin lượt v</h3>
+                                                <div className={styles.sum_infor}>
+                                                    <span className={styles.sum_infor_title}>Chuyến xe</span>
+                                                    <span className={styles.sum_infor_value}>
+                                                        {`${bookingInfor.bookingReturn.bookingTrip.tripInfor.startStation.name} ⇒ ${bookingInfor.bookingReturn.bookingTrip.tripInfor.endStation.name}`}
+                                                    </span>
+                                                </div>
+                                                <div className={styles.sum_infor}>
+                                                    <span className={styles.sum_infor_title}>Thời gian</span>
+                                                    <span className={styles.sum_infor_value}>{`${(bookingInfor.bookingReturn.bookingTrip.departTime).slice(0, -3)} ${bookingInfor.bookingReturn.bookingTrip.departDate}`}</span>
+                                                </div>
+                                                <div className={styles.sum_infor}>
+                                                    <span className={styles.sum_infor_title}>Số lượng ghế</span>
+                                                    <span className={styles.sum_infor_value}>{`${bookingInfor.bookingReturn.bookedSeat.length} ghế`}</span>
+                                                </div>
+                                                <div className={styles.sum_infor}>
+                                                    <span className={styles.sum_infor_title}>Vị trí ghế</span>
+                                                    <span className={styles.sum_infor_value}>{bookingInfor.bookingReturn.bookedSeat.join(', ')}</span>
+                                                </div>
+                                                <div className={styles.sum_infor}>
+                                                    <span className={styles.sum_infor_title}>Tổng tiền</span>
+                                                    <span className={styles.sum_infor_value}>{`${(bookingInfor.bookingReturn.bookingTrip.ticketPrice * bookingInfor.bookingReturn.bookedSeat.length).toLocaleString()} đ`}</span>
+                                                </div>
+                                            </div>
+                                        )
+                                    }
                                 </Col>
                             </Row>
                         </Container>

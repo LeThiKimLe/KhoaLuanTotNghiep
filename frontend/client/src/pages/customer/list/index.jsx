@@ -48,7 +48,6 @@ const ListResult = ({filterResult}) => {
 }
 
 const TripSum = ({trip, turn}) => {
-    console.log(trip)
     return (
         <div className={styles.tripSum}>
             <div className={`${styles.header}`}>
@@ -74,7 +73,6 @@ const List = () => {
     const dispatch = useDispatch()
     const listRoute = useSelector(selectListRoute)
     const {listTripGo, listTripReturn} = useSelector(selectSearchResult)
-    console.log(listTripGo, listTripReturn)
     const [selectedTab, setSelectedTab] = useState(0)
     const [search, setSearch] = useState(true)
     const seatMap = useSelector(selectSeatMap)
@@ -237,15 +235,16 @@ const List = () => {
     }, [selectedTab, listTripGo, listTripReturn])
 
     useEffect(() => {
-        if (currentTrip && !returnTrip)
-        {
-            setSelectedTab(1)
-        } else if (!currentTrip && returnTrip)
-        {
-            setSelectedTab(0)
+        if (searchInfor.oneway === false) {
+            if (currentTrip && !returnTrip)
+                {
+                    setSelectedTab(1)
+                } else if (!currentTrip && returnTrip)
+                {
+                    setSelectedTab(0)
+                }
         }
     }, [currentTrip, returnTrip])
-    console.log(filterResult)
     return (
         <div>
             <Navbar></Navbar>
