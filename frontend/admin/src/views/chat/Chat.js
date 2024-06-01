@@ -20,13 +20,14 @@ import chatbot from '../../assets/images/avatars/chatbot.png'
 import guest from '../../assets/images/avatars/guest-icon.svg'
 import guest_icon from '../../assets/images/avatars/user.png'
 import { useState } from 'react'
-import { selectUser } from 'src/feature/auth/auth.slice'
-import { useSelector } from 'react-redux'
+import { selectCompanyId, selectUser } from 'src/feature/auth/auth.slice'
+import { useDispatch, useSelector } from 'react-redux'
 import avt1 from '../../assets/images/avatars/avt1.svg'
 import avt2 from '../../assets/images/avatars/avt2.svg'
 import avt3 from '../../assets/images/avatars/avt3.svg'
 import avt4 from '../../assets/images/avatars/avt4.svg'
 import noMessage from '../../assets/images/no_message.png'
+import authThunk from 'src/feature/auth/auth.service'
 
 const ChatBox = ({ chatData, handleSendMessage, avt }) => {
     const user = useSelector(selectUser)
@@ -170,6 +171,8 @@ const CustomerConversation = ({ chatData, active, onClick, setActiveAVT }) => {
 }
 
 const Chat = () => {
+    const dispatch = useDispatch()
+    const companyId = useSelector(selectCompanyId)
     const [listChatData, setListChatData] = useState([])
     const user = useSelector(selectUser)
     const [activeChat, setActiveChat] = useState(listChatData[0] ? listChatData[0] : null)
@@ -293,8 +296,23 @@ const Chat = () => {
     const handleReceiveMessageRef = useRef(handleReceiveMessage)
 
     const handleConnectError = (error) => {
-        //Refresh lại trang hiện tại
-        // window.location.reload()
+        // Check if retry = true in local storage
+        const retry = localStorage.getItem('retry_socket_admin')
+        if (retry === 'true') {
+            return
+        } else {
+            //Get new access token
+            dispatch(authThunk.getNewAccessToken())
+                .unwrap()
+                .then(() => {
+                    // Set retry = true in local storage
+                    localStorage.setItem('retry_socket_admin', 'true')
+                    window.location.reload()
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
     }
 
     const handleAddMessage = (listData) => {
@@ -408,11 +426,17 @@ const Chat = () => {
         if (user && user.accessToken) authorizationString = user.accessToken
         let connectionString =
             authorizationString == ''
-                ? `${protocol}://${hostname}/api/socket/chat`
-                : `${protocol}://${hostname}/api/socket/chat?authorization=Bearer%20` +
+                ? `${protocol}://${hostname}/api/socket/company/chat?id=${companyId}`
+                : `${protocol}://${hostname}/api/socket/company/chat?id=${companyId}&authorization=Bearer%20` +
                   user.accessToken
         const newSocket = new WebSocket(connectionString)
         connection.current = newSocket
+
+        // Listen for open event
+        connection.current.addEventListener('open', (event) => {
+            //remove admin_retry from local storage
+            localStorage.removeItem('retry_socket_admin')
+        })
 
         // Listen for messages
         connection.current.addEventListener('message', (event) => {

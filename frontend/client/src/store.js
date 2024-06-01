@@ -14,6 +14,7 @@ import bookingReducer from "./feature/booking/booking.slice";
 import navigationReducer from "./feature/navigation/navigation.slice";
 import reviewReducer from "./feature/review/review.slice";
 import paymentReducer from "./feature/payment/payment.slice";
+import busCompanyReducer from "./feature/bus-company/busCompany.slice";
 
 const rootPersistConfig = {
   key: "root",
@@ -37,6 +38,7 @@ const rootReducer = combineReducers({
   navigation: navigationReducer,
   review: reviewReducer,
   payment: paymentReducer,
+  busCompany: busCompanyReducer,
 });
 
 const persitedReducer = persistReducer(rootPersistConfig, rootReducer);

@@ -31,6 +31,11 @@ const _nav = [
                 name: 'Quản lý nhà xe',
                 to: '/ticket-system/bus-companies',
             },
+            {
+                component: CNavItem,
+                name: 'Quản lý phí',
+                to: '/ticket-system/fee-manage',
+            },
         ],
         protected: true,
     },
@@ -48,12 +53,12 @@ const _nav = [
         ],
         protected: true,
     },
-    // {
-    //     component: CNavItem,
-    //     name: 'Cửa sổ khách hàng',
-    //     to: '/chat',
-    //     icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
-    // },
+    {
+        component: CNavItem,
+        name: 'Cửa sổ khách hàng',
+        to: '/chat',
+        icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
+    },
 ]
 
 export default _nav

@@ -5,7 +5,7 @@ public enum TransportationStatus {
 	DA_NHAN_LENH("Đã nhận lệnh"),
 	XUAT_BEN("Xuất bến"),
 	DEN_BEN("Đến bến"), 
-	DA_TRUYEN_TAI("Đã truyền tải"),
+	DA_HOAN_THANH("Đã hoàn thành"),
 	DA_CAP_LENH("Đã cấp lệnh");
 	
 

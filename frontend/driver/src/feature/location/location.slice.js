@@ -4,11 +4,17 @@ import { createSlice } from '@reduxjs/toolkit'
 const initialState = {
     listLocations: [],
     loading: false,
+    listCompanyLocation: [],
 }
 
 const locationSlice = createSlice({
     name: 'location',
     initialState,
+    reducers: {
+        setCompanyLocation: (state, action) => {
+            state.listCompanyLocation = action.payload
+        },
+    },
     extraReducers: (builder) => {
         builder
             .addCase(locationThunk.getLocations.pending, (state) => {
@@ -54,4 +60,7 @@ const locationSlice = createSlice({
 
 export const selectListLocation = (state) => state.location.listLocations
 export const selectLoadingState = (state) => state.location.loading
+export const selectListCompanyLocation = (state) => state.location.listCompanyLocation
+export const locationAction = locationSlice.actions
+
 export default locationSlice.reducer

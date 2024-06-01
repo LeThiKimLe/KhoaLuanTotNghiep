@@ -355,9 +355,7 @@ const Payment = () => {
                                         <div className={styles.sum_infor}>
                                             <span className={styles.sum_infor_title}>Chuyến xe</span>
                                             <span className={styles.sum_infor_value}>
-                                                {bookingInfor.bookingTrip.tripInfor.turn === true ?
-                                                    `${bookingInfor.bookingTrip.tripInfor.startStation.name} ⇒ ${bookingInfor.bookingTrip.tripInfor.endStation.name}`
-                                                    : `${bookingInfor.bookingTrip.tripInfor.endStation.name} ⇒ ${bookingInfor.bookingTrip.tripInfor.startStation.name}`}
+                                                {`${bookingInfor.bookingTrip.tripInfor.startStation.name} ⇒ ${bookingInfor.bookingTrip.tripInfor.endStation.name}`} 
                                             </span>
                                         </div>
                                         <div className={styles.sum_infor}>

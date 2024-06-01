@@ -6,5 +6,6 @@ import lombok.Data;
 public class EditStateSchedule {
 	private Integer scheduleId;
 	private String state;
+	private Integer stopStationId;
 
 }

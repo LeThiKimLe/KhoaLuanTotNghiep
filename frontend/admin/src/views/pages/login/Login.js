@@ -90,11 +90,11 @@ const Login = () => {
                         <CCol md={10}>
                             <CCardGroup>
                                 <CCard className="p-4">
-                                    <CCardBody className="d-flex align-items-center">
+                                    <CCardBody className="d-flex align-items-center gap-2">
                                         <CCol md={4}>
                                             <img src={loginImg} style={{ width: '100%' }}></img>
                                         </CCol>
-                                        <CForm ref={loginForm}>
+                                        <CForm ref={loginForm} className="col-md-8">
                                             <div className="d-flex flex-column justify-content-center align-items-center h-100">
                                                 <CIcon
                                                     icon={kimnguyenlogo}

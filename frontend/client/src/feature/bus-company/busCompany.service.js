@@ -28,8 +28,27 @@ const registerBusCompany = createAsyncThunk(
   },
 );
 
+const getListBusCompany = createAsyncThunk(
+  "/buscompany-get",
+  async (_, thunkAPI) => {
+    try {
+      const response = await axiosClient.get("chat/company");
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 const busCompanyThunk = {
   registerBusCompany,
+  getListBusCompany,
 };
 
 export default busCompanyThunk;

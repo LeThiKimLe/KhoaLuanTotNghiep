@@ -22,9 +22,7 @@ export const getRouteJourney = (route) => {
 };
 
 export const getTripJourney = (trip) => {
-  if (trip.turn === true)
     return trip.startStation.name + "-" + trip.endStation.name;
-  else return trip.endStation.name + "-" + trip.startStation.name;
 };
 
 export const tripProcess = (listRoute) => {
@@ -38,8 +36,8 @@ export const tripProcess = (listRoute) => {
           const { id, turn, ...tripInfo } = trip
           temp = listOut.findIndex(
               (item) =>
-                  item.startStation.id === trip.startStation.id &&
-                  item.endStation.id === trip.endStation.id &&
+                  item.startStation.id === trip.endStation.id &&
+                  item.endStation.id === trip.startStation.id &&
                   item.schedule === trip.schedule,
           )
           if (temp != -1) {

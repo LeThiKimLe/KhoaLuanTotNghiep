@@ -410,6 +410,7 @@ const TimeTable = ({
         month: 0,
     })
     const filterTime = (listSchd, time) => {
+        if (!listSchd) return []
         if (time === 'morning')
             return listSchd.filter(
                 (schd) =>
@@ -583,7 +584,7 @@ const TimeTable = ({
                                                         (schedule) =>
                                                             schedule.date ===
                                                             dayStart.getDate() + dayIndex,
-                                                    ).schedules,
+                                                    )?.schedules,
                                                     'morning',
                                                 ).map((schedule) => (
                                                     <Schedule
@@ -608,7 +609,7 @@ const TimeTable = ({
                                                         (schedule) =>
                                                             schedule.date ===
                                                             dayStart.getDate() + dayIndex,
-                                                    ).schedules,
+                                                    )?.schedules,
                                                     'afternoon',
                                                 ).map((schedule) => (
                                                     <Schedule
@@ -633,7 +634,7 @@ const TimeTable = ({
                                                         (schedule) =>
                                                             schedule.date ===
                                                             dayStart.getDate() + dayIndex,
-                                                    ).schedules,
+                                                    )?.schedules,
                                                     'evening',
                                                 ).map((schedule) => (
                                                     <Schedule
@@ -658,7 +659,7 @@ const TimeTable = ({
                                                         (schedule) =>
                                                             schedule.date ===
                                                             dayStart.getDate() + dayIndex,
-                                                    ).schedules,
+                                                    )?.schedules,
                                                     'late',
                                                 ).map((schedule) => (
                                                     <Schedule

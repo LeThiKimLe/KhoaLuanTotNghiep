@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import axiosClient from '../../api/axios'
+import axios from 'axios'
 
 const login = createAsyncThunk('auth/login', async ({ username, password }, thunkAPI) => {
     try {
@@ -100,12 +101,58 @@ const changePassword = createAsyncThunk(
     },
 )
 
+const getRefreshToken = () => {
+    const user = JSON.parse(localStorage.getItem('manager_user'))
+    if (user && user.refreshToken) {
+        return user.refreshToken
+    } else return ''
+}
+
+const getNewAccessToken = createAsyncThunk('auth/refresh-token', async (_, thunkAPI) => {
+    try {
+        const API_URL = process.env.REACT_APP_API_URL
+        const refreshToken = getRefreshToken()
+        const axiosRefreshClient = axios.create({
+            baseURL: API_URL,
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${refreshToken}`,
+            },
+        })
+        axiosRefreshClient
+            .post('/auth/refresh-token')
+            .then((response) => {
+                // Xử lý phản hồi thành công
+                const user = JSON.parse(localStorage.getItem('manager_user'))
+                const updatedUser = {
+                    ...user,
+                    accessToken: response.data.accessToken,
+                    refreshToken: response.data.refreshToken,
+                }
+                localStorage.setItem('manager_user', JSON.stringify(updatedUser))
+                localStorage.setItem('validSession', 'true')
+                window.dispatchEvent(new Event('storage'))
+                return response.data.accessToken
+            })
+            .catch((err) => {
+                localStorage.setItem('validSession', 'false')
+            })
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const authThunk = {
     register,
     login,
     logout,
     updateProfile,
     changePassword,
+    getNewAccessToken,
 }
 
 export default authThunk

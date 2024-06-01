@@ -258,8 +258,8 @@ const Trip = ({ route, trip }) => {
     const getReverseTrip = () => {
         const reverseTrip = route.trips.filter(
             (tp) =>
-                tp.startStation.id === trip.startStation.id &&
-                tp.endStation.id === trip.endStation.id &&
+                tp.startStation.id === trip.endStation.id &&
+                tp.endStation.id === trip.startStation.id &&
                 tp.turn !== trip.turn,
         )
         return reverseTrip[0]
@@ -775,8 +775,8 @@ const Route = ({ route }) => {
         route.trips.forEach((trip) => {
             tempTrip = listTrip.find(
                 (tr) =>
-                    tr.startStation.id === trip.startStation.id &&
-                    tr.endStation.id === trip.endStation.id,
+                    tr.startStation.id === trip.endStation.id &&
+                    tr.endStation.id === trip.startStation.id,
             )
             if (!tempTrip) listTrip.push(trip)
         })
@@ -1264,7 +1264,7 @@ const RouteCreatForm = ({ visible, setVisible, finishAdd }) => {
                     }
                 })
             } catch (error) {
-                console.error('Error retrieving directions:', error)
+                console.log('Error retrieving directions:', error)
                 setTime({
                     hours: 0,
                     minutes: 0,

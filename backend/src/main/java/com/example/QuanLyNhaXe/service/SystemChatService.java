@@ -21,7 +21,7 @@ import com.google.gson.JsonObject;
 @Component
 @Service
 @RequiredArgsConstructor
-public class ChatService implements WebSocketHandler {
+public class SystemChatService implements WebSocketHandler {
     private static final List<WebSocketSession> guestSessions = new ArrayList<>();
     private static final List<WebSocketSession> staffSessions = new ArrayList<>();
     @Autowired
@@ -34,12 +34,13 @@ public class ChatService implements WebSocketHandler {
         // Truy cập vào các giá trị trong attributes
         Integer role = (Integer) attributes.get("role");
         // Sử dụng các giá trị attributes trong xử lý sau này
+        System.out.println("Role" + role);
         if (role == 0)
             guestSessions.add(session);
         // Khi kết nối WebSocket được thiết lập
-        else if (role == 1 || role == 2) {
+        else if (role == 5) {
             staffSessions.add(session);
-            // Gửi tin nhắn lưu trữ của khách hàng tới nhân viên
+            // Gửi tin nhắn lưu trữ của khách hàng tới manager
             session.sendMessage(
                     new TextMessage("Backup: " + new Gson().toJson(sessionMessageManager.getSessionMessages())));
         }
@@ -62,7 +63,7 @@ public class ChatService implements WebSocketHandler {
             for (WebSocketSession webSocketSession : staffSessions) {
                 webSocketSession.sendMessage(new TextMessage(sessionId + ": " + receivedMessage));
             }
-        } else if (role == 1 || role == 2) {
+        } else if (role == 5) {
             // Xử lý tin nhắn từ máy nhân viên
             // Kiểm tra xem có phải yêu cầu đóng kết nối không
             if (receivedMessage.startsWith("Close: ")) {
@@ -125,7 +126,7 @@ public class ChatService implements WebSocketHandler {
         if (role == 0) {
             sessionMessageManager.removeSession(sessionId);
             guestSessions.remove(session);
-        } else if (role == 1 || role == 2)
+        } else if (role == 5)
             staffSessions.remove(session);
     }
 

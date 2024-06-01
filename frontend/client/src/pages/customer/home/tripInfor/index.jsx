@@ -106,7 +106,7 @@ const MapBox = ({ closeForm, showState, tripData }) => {
             {latLng: end}
         ], function(err, routes) {
             if (err) {
-                console.error(err);
+                console.log(err);
             } else {
                 time = routes[0].summary.totalTime/3600;
                 // Check if popup contain time infor
@@ -155,7 +155,7 @@ const MapBox = ({ closeForm, showState, tripData }) => {
                         setRouteData(waypoints)
                     }
                 })
-                .catch(error => console.error(error));
+                .catch(error => console.log(error));
             })
         }
     }
@@ -455,15 +455,9 @@ const TripInfor = () => {
                         <p className={styles.infor}>
                             <i>Chuyến xe: </i>
                             {
-                                currentTicket[0].bookingInfor.trip.turn === true ? (
-                                    <b>{currentTicket[0].bookingInfor.trip.startStation.name} -
-                                        {currentTicket[0].bookingInfor.trip.endStation.name}
-                                    </b>
-                                ) : (
-                                    <b>{currentTicket[0].bookingInfor.trip.endStation.name} -
-                                        {currentTicket[0].bookingInfor.trip.startStation.name}
-                                    </b>
-                                )
+                                <b>{currentTicket[0].bookingInfor.trip.startStation.name} -
+                                    {currentTicket[0].bookingInfor.trip.endStation.name}
+                                </b>
                             }
                             <b></b>
                         </p>
@@ -501,15 +495,9 @@ const TripInfor = () => {
                     <p className={styles.infor}>
                         <i>Chuyến xe: </i>
                         {
-                            onGoingTrip[0].bookingInfor.trip.turn === true ? (
-                                <b>{onGoingTrip[0].bookingInfor.trip.startStation.name} -
-                                    {onGoingTrip[0].bookingInfor.trip.endStation.name}
-                                </b>
-                            ) : (
-                                <b>{onGoingTrip[0].bookingInfor.trip.endStation.name} -
-                                    {onGoingTrip[0].bookingInfor.trip.startStation.name}
-                                </b>
-                            )
+                            <b>{onGoingTrip[0].bookingInfor.trip.startStation.name} -
+                                {onGoingTrip[0].bookingInfor.trip.endStation.name}
+                            </b>
                         }
                         <b></b>
                     </p>

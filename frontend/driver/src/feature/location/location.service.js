@@ -3,7 +3,7 @@ import axiosClient from 'src/api/axios'
 
 const getLocations = createAsyncThunk('admin/locations/get', async (_, thunkAPI) => {
     try {
-        const listLocations = await axiosClient.get('admin/locations')
+        const listLocations = await axiosClient.get('manager/locations')
         return listLocations
     } catch (error) {
         const message =

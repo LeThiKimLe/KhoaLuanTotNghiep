@@ -23,8 +23,8 @@ const Trip = ({trip, reverse}) => {
 
     const cusTrip = reverse 
                     ? {...trip, 
-                        startStation: trip.endStation,
-                        endStation: trip.startStation,
+                        startStation: trip.startStation,
+                        endStation: trip.endStation,
                         schedule: reverseSchedule(trip.schedule),
                     } : trip
 

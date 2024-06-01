@@ -11,21 +11,27 @@ const TransportManagement = React.lazy(() => import('./views/system-manager/grab
 const CompanyManagement = React.lazy(() => import('./views/system-manager/ticket-system/Company'))
 const SystemRouteManagement = React.lazy(() => import('./views/system-manager/ticket-system/Route'))
 const CompanyDetail = React.lazy(() => import('./views/system-manager/ticket-system/CompanyDetail'))
-
+const FeeManage = React.lazy(() => import('./views/system-manager/ticket-system/FeeManage'))
 //Chat
-// const Chat = React.lazy(() => import('./views/chat/Chat'))
+const Chat = React.lazy(() => import('./views/chat/Chat'))
 
 const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
     { path: '/profile/infor', name: 'Thông tin tài xế', element: UserProfile },
     { path: '/profile/change-password', name: 'Đổi mật khẩu', element: ChangePassword },
-    // { path: '/chat', name: 'Cửa sổ khách hàng', element: Chat },
+    { path: '/chat', name: 'Cửa sổ khách hàng', element: Chat },
     {
         path: '/ticket-system',
         name: 'Hệ thống đặt vé',
         element: SystemRouteManagement,
         exact: true,
+        protected: true,
+    },
+    {
+        path: '/ticket-system/fee-manage',
+        name: 'Quản lý phí',
+        element: FeeManage,
         protected: true,
     },
     {

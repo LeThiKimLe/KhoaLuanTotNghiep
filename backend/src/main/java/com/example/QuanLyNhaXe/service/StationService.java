@@ -13,6 +13,7 @@ import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditStationDTO;
 import com.example.QuanLyNhaXe.Request.EditStopStation;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO;
+import com.example.QuanLyNhaXe.Request.SortStation;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO.StationOfLocation;
 import com.example.QuanLyNhaXe.dto.StationDTO;
 import com.example.QuanLyNhaXe.dto.StopStationDTO;
@@ -125,7 +126,7 @@ public class StationService {
 	}
 
 	public Object createStopStation(CreateStopStation createStopStation) {
-		if(!createStopStation.getStationType().equals("pick")&&!createStopStation.getStationType().equals("drop")&&!createStopStation.getStationType().equals("stop")) {
+		if(!createStopStation.getStationType().equals("pick")&&!createStopStation.getStationType().equals("drop")&&!createStopStation.getStationType().equals("stop")&&!createStopStation.getStationType().equals("park-start")&&!createStopStation.getStationType().equals("park-end")) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
 		if(stopStationRepository.existsByTripIdAndStationId(createStopStation.getTripId(), createStopStation.getStationId())) {
@@ -142,7 +143,7 @@ public class StationService {
 	}
 	
 	public Object updateStopStation(EditStopStation editStopStation) {
-		if(!editStopStation.getStationType().equals("pick")&&!editStopStation.getStationType().equals("drop")&&!editStopStation.getStationType().equals("stop")) {
+		if(!editStopStation.getStationType().equals("pick")&&!editStopStation.getStationType().equals("drop")&&!editStopStation.getStationType().equals("stop")&&!editStopStation.getStationType().equals("park-start")&&!editStopStation.getStationType().equals("park-end")) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
 		if(stopStationRepository.existsByTripIdAndStationId(editStopStation.getTripId(),editStopStation.getStationId())) {
@@ -161,10 +162,15 @@ public class StationService {
 		stopStation.setStationType(editStopStation.getStationType());
 		stopStationRepository.save(stopStation);
 		return modelMapper.map(stopStation, StopStationDTO.class);
-		
+	}
 
-				
-		
-		
+	public Object sortStopStation(SortStation sortStation) {
+		for (int i = 0; i < sortStation.getListSortedStationId().size(); i++) {
+			StopStation stopStation = stopStationRepository.findById(sortStation.getListSortedStationId().get(i))
+					.orElseThrow(() -> new NotFoundException(Message.STOPSTATION_NOT_FOUND));
+			stopStation.setArrivalTime(i + 1);
+			stopStationRepository.save(stopStation);
+		}
+		return new ResponseMessage(Message.UPDATE_SUCCESS);
 	}
 }

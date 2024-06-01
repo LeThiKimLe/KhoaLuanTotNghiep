@@ -26,7 +26,7 @@ import { selectLoading } from 'src/feature/auth/auth.slice'
 import CustomButton from 'src/views/customButton/CustomButton'
 import { selectUserRoleId } from 'src/feature/auth/auth.slice'
 import { CustomToast } from 'src/views/customToast/CustomToast'
-
+import loginImg from 'src/assets/images/loginImg.png'
 const Login = () => {
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -88,12 +88,22 @@ const Login = () => {
             <CToaster ref={toaster} push={toast} placement="top-end" />
             <div className="bg-light min-vh-100 d-flex flex-row align-items-center">
                 <CContainer>
-                    <CRow className="justify-content-center">
-                        <CCol md={8}>
+                    <CRow className="justify-content-center gap-2">
+                        <CCol md={10}>
                             <CCardGroup>
                                 <CCard className="p-4">
-                                    <CCardBody>
-                                        <CForm ref={loginForm}>
+                                    <CCardBody className="d-flex align-items-center gap-2">
+                                        <CCol md={4}>
+                                            <img
+                                                src={loginImg}
+                                                style={{
+                                                    width: '100%',
+                                                    borderRadius: '10px',
+                                                    marginRight: '5px',
+                                                }}
+                                            ></img>
+                                        </CCol>
+                                        <CForm ref={loginForm} className="col-md-8">
                                             <div className="d-flex flex-column justify-content-center align-items-center h-100">
                                                 <CIcon
                                                     icon={kimnguyenlogo}
