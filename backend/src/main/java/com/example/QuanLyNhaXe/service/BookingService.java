@@ -522,8 +522,6 @@ public class BookingService {
 			ticketRepository.saveAll(ticketsReturn);
 
 		}
-		
-
 		catch (DataAccessException e) {
 			return new ResponseMessage(Message.INACCURATE_DATA);
 		}
