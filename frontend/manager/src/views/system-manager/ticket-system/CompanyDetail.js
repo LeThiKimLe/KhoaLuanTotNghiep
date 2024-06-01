@@ -1465,7 +1465,9 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                         {fee.status}
                                     </CTableDataCell>
                                     <CTableDataCell className="text-center">
-                                        {'Đang cập nhật'}
+                                        {fee.systemTransaction
+                                            ? fee.systemTransaction.transactionNo
+                                            : '---'}
                                     </CTableDataCell>
                                 </CTableRow>
                             ))}

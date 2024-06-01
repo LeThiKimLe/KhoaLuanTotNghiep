@@ -13,6 +13,11 @@ import {
     CButton,
     CToast,
     CToaster,
+    CModalHeader,
+    CModalBody,
+    CModal,
+    CFormLabel,
+    CFormInput,
 } from '@coreui/react'
 import { selectListCompanyRoute } from 'src/feature/route/route.slice'
 import { useState, useRef } from 'react'
@@ -28,7 +33,7 @@ import { CChart } from '@coreui/react-chartjs'
 import { getStyle } from '@coreui/utils'
 import 'react-time-picker/dist/TimePicker.css'
 import feeThunk from 'src/feature/fee/fee.service'
-import { addDays, convertToDisplayDate } from 'src/utils/convertUtils'
+import { addDays, convertToDisplayDate, convertToDisplayTimeStamp } from 'src/utils/convertUtils'
 import { format, parse } from 'date-fns'
 import { selectCurCompany, selectListAssign } from 'src/feature/bus-company/busCompany.slice'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
@@ -44,6 +49,8 @@ const Expense = () => {
     const listAssign = useSelector(selectListAssign)
     const startTime = curCompany ? addDays(new Date(curCompany?.busCompany.coopDay), 1) : new Date()
     const today = new Date()
+    const [showTransactionDetail, setShowTransactionDetail] = useState(false)
+    const [currentFee, setCurrentFee] = useState(null)
     const [chartData, setChartData] = useState({
         labels: [],
         backGroundColor: [],
@@ -486,7 +493,9 @@ const Expense = () => {
                                             {fee.status}
                                         </CTableDataCell>
                                         <CTableDataCell className="text-center align-middle">
-                                            {'Đang cập nhật'}
+                                            {fee.systemTransaction
+                                                ? fee.systemTransaction.transactionNo
+                                                : '---'}
                                         </CTableDataCell>
                                         <CTableDataCell className="text-center align-middle">
                                             {fee.status === 'Chờ thanh toán' && (
@@ -500,7 +509,10 @@ const Expense = () => {
                                             {fee.status === 'Đã thanh toán' && (
                                                 <CButton
                                                     variant="outline"
-                                                    onClick={() => {}}
+                                                    onClick={() => {
+                                                        setShowTransactionDetail(true)
+                                                        setCurrentFee(fee)
+                                                    }}
                                                     color="success"
                                                 >
                                                     Chi tiết giao dịch
@@ -548,6 +560,66 @@ const Expense = () => {
                     </CTable>
                 </TabPanel>
             </Tabs>
+            <CModal visible={showTransactionDetail} onClose={() => setShowTransactionDetail(false)}>
+                <CModalHeader>
+                    <b>{`Chi tiết giao dịch ${currentFee?.systemTransaction?.transactionNo}`}</b>
+                </CModalHeader>
+                <CModalBody>
+                    {currentFee && currentFee.systemTransaction && (
+                        <>
+                            <CRow className="mb-3 justify-content-center">
+                                <CFormLabel htmlFor="time" className="col-sm-5 col-form-label">
+                                    <b>Thời gian giao dịch</b>
+                                </CFormLabel>
+                                <CCol sm={5}>
+                                    <CFormInput
+                                        type="text"
+                                        id="time"
+                                        defaultValue={convertToDisplayTimeStamp(
+                                            currentFee.systemTransaction.paymentTime,
+                                        )}
+                                        readOnly
+                                        plainText
+                                        style={{ textAlign: 'right' }}
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3 justify-content-center">
+                                <CFormLabel htmlFor="money" className="col-sm-5 col-form-label">
+                                    <b>Số tiền giao dịch</b>
+                                </CFormLabel>
+                                <CCol sm={5}>
+                                    <CFormInput
+                                        type="text"
+                                        id="money"
+                                        defaultValue={`${Math.floor(
+                                            currentFee.systemTransaction.amount,
+                                        ).toLocaleString()} VND`}
+                                        readOnly
+                                        plainText
+                                        style={{ textAlign: 'right' }}
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3 justify-content-center">
+                                <CFormLabel htmlFor="method" className="col-sm-5 col-form-label">
+                                    <b>Phương thức thanh toán</b>
+                                </CFormLabel>
+                                <CCol sm={5}>
+                                    <CFormInput
+                                        type="text"
+                                        id="method"
+                                        defaultValue={currentFee.systemTransaction.paymentMethod}
+                                        readOnly
+                                        plainText
+                                        style={{ textAlign: 'right' }}
+                                    />
+                                </CCol>
+                            </CRow>
+                        </>
+                    )}
+                </CModalBody>
+            </CModal>
         </div>
     )
 }

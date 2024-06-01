@@ -329,7 +329,9 @@ const FeeManage = () => {
                                         {fee.status}
                                     </CTableDataCell>
                                     <CTableDataCell className="text-center">
-                                        {'Đang cập nhật'}
+                                        {fee.systemTransaction
+                                            ? fee.systemTransaction.transactionNo
+                                            : '---'}
                                     </CTableDataCell>
                                     <CTableDataCell className="text-center">
                                         <CDropdown variant="btn-group" key={index}>

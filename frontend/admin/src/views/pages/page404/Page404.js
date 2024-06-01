@@ -18,10 +18,11 @@ const Page404 = () => {
                 <CRow className="justify-content-center">
                     <CCol md={6}>
                         <div className="clearfix">
-                            <h1 className="float-start display-3 me-4">404</h1>
-                            <h4 className="pt-3">Oops! You{"'"}re lost.</h4>
+                            <h1 className="float-start display-3 me-4">Dịch vụ bị hạn chế</h1>
+                            <h4 className="pt-3">Oops! Không thể truy cập dịch vụ</h4>
+                            <p> Bạn có thể gặp vấn đề với việc đóng phí duy trì hệ thống</p>
                             <p className="text-medium-emphasis float-start">
-                                The page you are looking for was not found.
+                                Liên hệ với quản trị viên để biết thêm chi tiết.
                             </p>
                         </div>
                         <CInputGroup className="input-prepend">
