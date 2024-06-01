@@ -1807,13 +1807,17 @@ const Company = () => {
             )}
             <div className="d-flex justify-content-between align-items-center">
                 <b>DANH SÁCH CÁC NHÀ XE</b>
-                <CButton
-                    variant="outline"
-                    onClick={() => dispatch(companyActions.setOpenListRequest(!openListRequest))}
-                >
-                    Danh sách yêu cầu mở bán vé
-                </CButton>
-                <CButton onClick={() => setOpenAddForm(true)}>Thêm nhà xe</CButton>
+                <div>
+                    <CButton
+                        variant="outline"
+                        onClick={() =>
+                            dispatch(companyActions.setOpenListRequest(!openListRequest))
+                        }
+                    >
+                        Danh sách yêu cầu mở bán vé
+                    </CButton>
+                    <CButton onClick={() => setOpenAddForm(true)}>Thêm nhà xe</CButton>
+                </div>
             </div>
             <CCollapse
                 visible={openListRequest}
