@@ -29,11 +29,7 @@ const TripSum = ({ turn, trip, selectedSeats }) => {
             <h3 className={styles.sum_title}>{turn ? 'Thông tin lượt đi' : 'Thông tin lượt về'}</h3>
             <div className={styles.sum_infor}>
                 <span className={styles.sum_infor_title}>Chuyến xe</span>
-                {trip.tripInfor.turn === true ? (
-                    <span className={styles.sum_infor_value}>{`${trip.tripInfor.startStation.name} ⇒ ${trip.tripInfor.endStation.name}`}</span>
-                ) : (
-                    <span className={styles.sum_infor_value}>{`${trip.tripInfor.endStation.name} ⇒ ${trip.tripInfor.startStation.name}`}</span>
-                )}
+                <span className={styles.sum_infor_value}>{`${trip.tripInfor.startStation.name} ⇒ ${trip.tripInfor.endStation.name}`}</span>
             </div>
             <div className={styles.sum_infor}>
                 <span className={styles.sum_infor_title}>Thời gian</span>
@@ -66,26 +62,18 @@ const Trip = ({ tabStyle }) => {
     const loading = useSelector(selectLoading)
     const bookingCode = useSelector(selectBookingCode)
     const [pickLocation, setPickLocation] = useState(currentTrip?.tripInfor.stopStations.filter((stop) => (
-        currentTrip.tripInfor.turn === true ?
             stop.station.id === currentTrip.tripInfor.startStation.id
-            : stop.station.id === currentTrip.tripInfor.endStation.id
     )
     )[0].id)
     const [dropLocation, setDropLocation] = useState(currentTrip?.tripInfor.stopStations.filter((stop) =>
-        currentTrip.tripInfor.turn === true ?
             stop.station.id === currentTrip.tripInfor.endStation.id
-            : stop.station.id === currentTrip.tripInfor.startStation.id
     )[0].id)
     const [pickReturnLocation, setPickReturnLocation] = useState(returnTrip?.tripInfor.stopStations.filter((stop) => (
-        returnTrip?.tripInfor.turn === true ?
             stop.station.id === returnTrip?.tripInfor.startStation.id
-            : stop.station.id === returnTrip?.tripInfor.endStation.id
     )
     )[0].id)
     const [dropReturnLocation, setDropReturnLocation] = useState(returnTrip?.tripInfor.stopStations.filter((stop) =>
-        returnTrip?.tripInfor.turn === true ?
             stop.station.id === returnTrip?.tripInfor.endStation.id
-            : stop.station.id === returnTrip?.tripInfor.startStation.id
     )[0].id)
     const handlePickLocation = useCallback((locationId) => {
         setPickLocation(locationId)

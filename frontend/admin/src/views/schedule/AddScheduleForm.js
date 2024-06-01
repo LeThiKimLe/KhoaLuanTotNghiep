@@ -72,6 +72,7 @@ import { TIME_TABLE, dayInWeek } from 'src/utils/constants'
 import parse from 'date-fns/parse'
 import { shortenName } from 'src/utils/convertUtils'
 import { check } from 'prettier'
+import { selectServiceDueDate } from 'src/feature/fee/fee.slice'
 const TimeBox = ({ time, removeTime, fix }) => {
     const [showRemove, setShowRemove] = useState(false)
     const handleRemove = () => {
@@ -280,6 +281,7 @@ const AddScheduleForm = ({
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const requestCount = useRef(0)
+    const dueTime = useSelector(selectServiceDueDate)
     const [dateRange, setDateRange] = useState([
         {
             startDate: currentDay,
@@ -381,8 +383,23 @@ const AddScheduleForm = ({
         if (count <= tripInfor.busCount && count <= tripInfor.driverCount) return true
         else return false
     }
+    const checkTime = () => {
+        if (dueTime < dateRange[0].endDate) {
+            addToast(() =>
+                CustomToast({
+                    message: `Không thể thêm lịch quá hạn dịch vụ - Ngày ${format(
+                        dueTime,
+                        'dd/MM/yyyy',
+                    )}`,
+                    type: 'error',
+                }),
+            )
+            return false
+        }
+        return true
+    }
     const handleSchedule = () => {
-        if (listTimeGo.length > 0) {
+        if (listTimeGo.length > 0 && checkTime()) {
             requestCount.current = 0
             let maxCount = 0
             const scheduleGoInfor = {

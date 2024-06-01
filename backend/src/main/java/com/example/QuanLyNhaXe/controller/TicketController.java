@@ -18,6 +18,7 @@ import com.example.QuanLyNhaXe.Request.CancelTicketApproval;
 import com.example.QuanLyNhaXe.Request.CancelTicketsDTO;
 import com.example.QuanLyNhaXe.Request.ChangeTicketDTO;
 import com.example.QuanLyNhaXe.Request.CreatePaymentDTO;
+import com.example.QuanLyNhaXe.Request.CreatePaymentReturnTicket;
 import com.example.QuanLyNhaXe.Request.EditTicketDTO;
 import com.example.QuanLyNhaXe.dto.CancelRequestDTO;
 import com.example.QuanLyNhaXe.dto.TicketDTO;
@@ -67,6 +68,11 @@ public class TicketController {
 	@GetMapping("/bill")
 	public ResponseEntity<Object> getBill(@Parameter String referCode){
 		return new ResponseEntity<>(ticketService.searchTicketBill(referCode), HttpStatus.OK);
+	}
+	
+	@PutMapping("/payments")
+	public ResponseEntity<Object> payments(@RequestBody CreatePaymentReturnTicket createPaymentDTO){
+		return new ResponseEntity<>(ticketService.paymentReturnTicket(createPaymentDTO), HttpStatus.OK);
 	}
 	
 	

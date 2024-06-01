@@ -13,6 +13,7 @@ import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditStationDTO;
 import com.example.QuanLyNhaXe.Request.EditStopStation;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO;
+import com.example.QuanLyNhaXe.Request.SortStation;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO.StationOfLocation;
 import com.example.QuanLyNhaXe.dto.StationDTO;
 import com.example.QuanLyNhaXe.dto.StopStationDTO;
@@ -161,10 +162,15 @@ public class StationService {
 		stopStation.setStationType(editStopStation.getStationType());
 		stopStationRepository.save(stopStation);
 		return modelMapper.map(stopStation, StopStationDTO.class);
-		
+	}
 
-				
-		
-		
+	public Object sortStopStation(SortStation sortStation) {
+		for (int i = 0; i < sortStation.getListSortedStationId().size(); i++) {
+			StopStation stopStation = stopStationRepository.findById(sortStation.getListSortedStationId().get(i))
+					.orElseThrow(() -> new NotFoundException(Message.STOPSTATION_NOT_FOUND));
+			stopStation.setArrivalTime(i + 1);
+			stopStationRepository.save(stopStation);
+		}
+		return new ResponseMessage(Message.UPDATE_SUCCESS);
 	}
 }

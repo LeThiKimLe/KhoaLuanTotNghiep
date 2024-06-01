@@ -51,8 +51,8 @@ const SearchItem = ({ trip, sameTrip }) => {
             dispatch(ticketAction.setNewTrip(trip))
     }
     
-    const startStation = trip.tripInfor.turn === true ? trip.tripInfor.startStation : trip.tripInfor.endStation
-    const endStation = trip.tripInfor.turn === true ? trip.tripInfor.endStation : trip.tripInfor.startStation
+    const startStation = trip.tripInfor.startStation
+    const endStation =  trip.tripInfor.endStation
     const departure = trip.tripInfor.turn ===  true? trip.tripInfor.route.departure : trip.tripInfor.route.destination
     const destination = trip.tripInfor.turn === true ? trip.tripInfor.route.destination : trip.tripInfor.route.departure
 

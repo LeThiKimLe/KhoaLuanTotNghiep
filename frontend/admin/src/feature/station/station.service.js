@@ -140,6 +140,24 @@ const activeStopStation = createAsyncThunk(
     },
 )
 
+const sortStopStation = createAsyncThunk(
+    'admin/stations/stop-station/sort',
+    async (listSortId, thunkAPI) => {
+        try {
+            const result = await axiosClient.put('admin/stations/stop-station/sort', {
+                listSortedStationId: listSortId,
+            })
+            return result
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const stationThunk = {
     addStation,
     editStation,
@@ -148,5 +166,6 @@ const stationThunk = {
     addStopStation,
     editStopStation,
     activeStopStation,
+    sortStopStation,
 }
 export default stationThunk

@@ -72,7 +72,7 @@ public class Booking {
     @JoinColumn(name = "conduct_staff_id", referencedColumnName = "staff_id")
     private Staff conductStaff;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "transaction_id", referencedColumnName = "id")
     private Transaction transaction;
     

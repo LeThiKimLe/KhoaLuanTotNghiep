@@ -55,15 +55,11 @@ const BookingForm = ({ visible, handleShow }) => {
         },
         bookedSeat: listChosen,
         bookingTrip: currentTrip,
-        pickPoint: currentTrip.tripInfor.stopStations.filter((stop) =>
-            currentTrip.tripInfor.turn === true
-                ? stop.station.id === currentTrip.tripInfor.startStation.id
-                : stop.station.id === currentTrip.tripInfor.endStation.id,
+        pickPoint: currentTrip.tripInfor.stopStations.filter(
+            (stop) => stop.station.id === currentTrip.tripInfor.startStation.id,
         )[0].id,
-        dropPoint: currentTrip.tripInfor.stopStations.filter((stop) =>
-            currentTrip.tripInfor.turn === true
-                ? stop.station.id === currentTrip.tripInfor.endStation.id
-                : stop.station.id === currentTrip.tripInfor.startStation.id,
+        dropPoint: currentTrip.tripInfor.stopStations.filter(
+            (stop) => stop.station.id === currentTrip.tripInfor.endStation.id,
         )[0].id,
     })
     const handleSubmit = () => {

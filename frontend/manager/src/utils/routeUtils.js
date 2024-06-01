@@ -140,8 +140,8 @@ export const tripProcess = (listRoute, companyId = -1) => {
                     const { id, turn, stopStations, ...tripInfo } = trip
                     temp = listTrip.findIndex(
                         (item) =>
-                            item.startStation.id === trip.startStation.id &&
-                            item.endStation.id === trip.endStation.id &&
+                            item.startStation.id === trip.endStation.id &&
+                            item.endStation.id === trip.startStation.id &&
                             (item.schedule === trip.schedule ||
                                 item.schedule === reverseString(trip.schedule)),
                     )

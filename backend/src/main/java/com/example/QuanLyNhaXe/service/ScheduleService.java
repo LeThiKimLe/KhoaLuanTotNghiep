@@ -25,11 +25,13 @@ import com.example.QuanLyNhaXe.model.Bus;
 import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.SpecialDay;
+import com.example.QuanLyNhaXe.model.StopStation;
 import com.example.QuanLyNhaXe.model.Trip;
 import com.example.QuanLyNhaXe.repository.BusRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.ScheduleRepository;
 import com.example.QuanLyNhaXe.repository.SpecialDayRepository;
+import com.example.QuanLyNhaXe.repository.StopStationRepository;
 import com.example.QuanLyNhaXe.repository.TripBusRepository;
 import com.example.QuanLyNhaXe.repository.TripDriverRepository;
 import com.example.QuanLyNhaXe.repository.TripRepository;
@@ -42,6 +44,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ScheduleService {
 	private final ScheduleRepository scheduleRepository;
+	private final StopStationRepository stopStationRepository;
 	private final ModelMapper modelMapper;
 	private final TripRepository tripRepository;
 	private final TripBusRepository tripBusRepository;
@@ -49,6 +52,7 @@ public class ScheduleService {
 	private final BusRepository busRepository;
 	private final DriverRepository driverRepository;
 	private final SpecialDayRepository specialDayRepository;
+	private final UtilityService utilityService;
 
 	public Object maximumSchedule(Integer tripId) {
 		Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
@@ -126,13 +130,15 @@ public class ScheduleService {
 			for (Time scheduleTime : createSchedules.getTimes()) {
 				Schedule schedule = Schedule.builder().availability(avaiability).trip(trip).departTime(scheduleTime)
 						.departDate(scheduleDate).specialDay(specialDay).ticketPrice(price)
-						.state(ScheduleState.VE_BAI_DO.getLabel()).finishTime(Time.valueOf("00:00:00")).note(note)
+						.state(null).updateTime(utilityService.convertHCMDateTime()).note(note).currentStation(0)
 						.build();
 				schedules.add(schedule);
 			}
 		}
 		scheduleRepository.saveAll(schedules);
+
 		return schedules.stream().filter(schedule -> schedule.getDepartDate() == departDate).map(schedule -> modelMapper.map(schedule, ScheduleDTO.class)).toList();
+
 	}
 
 	public Object getScheduleByDriver(Integer driverId) {
@@ -186,13 +192,14 @@ public class ScheduleService {
 	}
 
 	public Object updateState(EditStateSchedule edit) {
-
+		System.out.print(edit.toString());
 		Schedule schedule = scheduleRepository.findById(edit.getScheduleId())
 				.orElseThrow(() -> new NotFoundException(Message.SCHEDULE_NOT_FOUND));
 		String state = edit.getState();
 		if (!state.equals(ScheduleState.DANG_DI.getLabel()) && !state.equals(ScheduleState.DEN_BEN_DEN.getLabel())
 				&& !state.equals(ScheduleState.DEN_BEN_DI.getLabel())
 				&& !state.equals(ScheduleState.DEN_TRAM_DON.getLabel())
+				&& !state.equals(ScheduleState.DEN_TRAM_TRA.getLabel())
 				&& !state.equals(ScheduleState.DEN_TRAM_DUNG.getLabel())
 				&& !state.equals(ScheduleState.ROI_BAI_DO.getLabel())
 				&& !state.equals(ScheduleState.VE_BAI_DO.getLabel())
@@ -200,15 +207,23 @@ public class ScheduleService {
 				&& !state.equals(ScheduleState.HUY.getLabel())){
 			throw new BadRequestException("Trạng thái không hợp lệ");
 		}
-
+		if (edit.getStopStationId() == 0) {
+			throw new BadRequestException(Message.INVALID_STATE);
+		}
+		if (edit.getStopStationId() != 0)
+		{
+			StopStation stopStation = stopStationRepository.findById(edit.getStopStationId())
+				.orElseThrow(() -> new NotFoundException(Message.STOPSTATION_NOT_FOUND));
+		}		
 		schedule.setState(state);
+		schedule.setCurrentStation(edit.getStopStationId());
+		//Get current time
+		schedule.setUpdateTime(utilityService.convertHCMDateTime());
 		scheduleRepository.save(schedule);
 		if (schedule.getTransportationOrder() != null) {
 			schedule.getTransportationOrder().setSchedule(null);
-
 		}
 		return modelMapper.map(schedule, ScheduleTranDTO.class);
-
 	}
 
 }

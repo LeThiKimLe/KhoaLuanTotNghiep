@@ -414,9 +414,6 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
                 route.journey.indexOf(listStartStation[curStartStation]) >
                 route.journey.indexOf(listEndStation[curEndStation])
             ) {
-                console.log('reverse')
-                console.log(route.journey)
-                console.log(reverseString(route.journey))
                 listJourneyNew.push(reverseString(route.journey))
             } else listJourneyNew.push(route.journey)
         })
@@ -590,7 +587,9 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
             listSta.listEndStation[initEndStation],
         ).map((route) => route.journey)
         const initJourney = listAvaiRoute.findIndex(
-            (journey) => journey === companyRoute.route.journey,
+            (journey) =>
+                journey === companyRoute.route.journey ||
+                journey === reverseString(companyRoute.route.journey),
         )
         setCurDeparture(initDep)
         setListDestination(listDes)
@@ -665,7 +664,11 @@ export const CompanyRoute = ({ id, addCompanyRoute, companyRoute }) => {
                     listDestination[curDestination].name,
                     listStartStation[curStartStation],
                     listEndStation[curEndStation],
-                ).find((route) => route.journey === listJourney[curJourney]),
+                ).find(
+                    (route) =>
+                        route.journey === listJourney[curJourney] ||
+                        route.journey === reverseString(listJourney[curJourney]),
+                ),
             )
         }
     }, [curJourney])
@@ -842,10 +845,10 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
         firmName: preInfo?.businessName,
         representName: preInfo?.name,
         email: preInfo?.email,
-        idCard: preInfo.idCard ? preInfo.idCard : '',
+        idCard: preInfo?.idCard ? preInfo.idCard : '',
         telephone: preInfo?.tel,
         businessLicense: preInfo?.businessLicense,
-        address: preInfo.address ? preInfo.address : '',
+        address: preInfo?.address ? preInfo.address : '',
     })
     const [error, setError] = useState('')
     const [validated, setValidated] = useState(false)
@@ -906,6 +909,7 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
     }
     const addRouteTab = () => {
         let newRoutes = []
+        console.log(listCompanyRoute)
         if (listCompanyRoute.every((route) => route.route !== null)) {
             setListCompanyRoute((prevRoutes) => {
                 newRoutes = [...prevRoutes]
@@ -1077,8 +1081,20 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                     window.location.reload()
                 }, 1000)
             })
-            .catch((err) => {
-                throw err
+            .catch(async (err) => {
+                if (err === 'Một trong các phân công đã tồn tại trong hệ thống') {
+                    addToast(() =>
+                        CustomToast({
+                            message: 'Thêm nhà xe và gửi email xác nhận thành công',
+                            type: 'success',
+                        }),
+                    )
+                    // wait 1s to reload page
+                    await dispatch(companyThunk.noticeCompany(companyId)).unwrap()
+                    setTimeout(() => {
+                        window.location.reload()
+                    }, 1000)
+                } else throw err
             })
     }
     const handleAddTrip = async (
@@ -1209,6 +1225,22 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                     })
     }
 
+    const checkSameRoute = () => {
+        for (let i = 0; i < listCompanyRoute.length - 1; i++)
+            for (let j = i + 1; j < listCompanyRoute.length; j++)
+                if (
+                    (listCompanyRoute[i].route.departure === listCompanyRoute[j].route.departure &&
+                        listCompanyRoute[i].route.destination ===
+                            listCompanyRoute[j].route.destination) ||
+                    (listCompanyRoute[i].route.departure ===
+                        listCompanyRoute[j].route.destination &&
+                        listCompanyRoute[i].route.destination ===
+                            listCompanyRoute[j].route.departure)
+                )
+                    return true
+        return false
+    }
+
     const handleSaveInfo = async () => {
         if (activeTab !== 0) {
             setActiveTab(0)
@@ -1219,114 +1251,127 @@ const OpenForm = ({ visible, setVisible, preInfo }) => {
                 listCompanyRoute.length > 0 &&
                 listCompanyRoute.every((route) => route.route)
             ) {
-                setValidated(true)
-                setLoading(true)
-                let companyId = -1
-                await handleAddCompany()
-                    .then(async (res) => {
-                        companyId = res
-                        console.log(companyId)
-                        if (companyId != -1) {
-                            let route = null
-                            let listTrip = []
-                            const listRouteId = []
-                            for (let i = 0; i < listCompanyRoute.length; i++) {
-                                await handleAddRoute(listCompanyRoute[i].route)
-                                    .then(async (res) => {
-                                        route = res
-                                        let startStationId = -1
-                                        let endStationId = -1
-                                        if (route) {
-                                            await handleAddStation(
-                                                route.departure.id,
-                                                listCompanyRoute[i].route.departure ===
-                                                    route.departure.name
-                                                    ? listCompanyRoute[i].route.startStation
-                                                    : listCompanyRoute[i].route.endStation,
-                                            ).then((res) => (startStationId = res))
-                                            await handleAddStation(
-                                                route.destination.id,
-                                                listCompanyRoute[i].route.destination ===
-                                                    route.destination.name
-                                                    ? listCompanyRoute[i].route.endStation
-                                                    : listCompanyRoute[i].route.startStation,
-                                            ).then((res) => (endStationId = res))
-                                            if (startStationId === -1 || endStationId === -1) {
-                                                throw new Error('Invalid ID')
-                                            }
-                                            await handleAddTrip(
-                                                route,
-                                                startStationId,
-                                                endStationId,
-                                                companyId,
-                                                listCompanyRoute[i].route.journey,
-                                                listCompanyRoute[i].route.distance,
-                                                listCompanyRoute[i].route.id,
-                                            ).then(async (res) => {
-                                                listTrip = res
-                                                if (listTrip.length === 2) {
-                                                    for (
-                                                        let j = 0;
-                                                        j < listCompanyRoute[i].listTimeGo.length;
-                                                        j++
-                                                    ) {
-                                                        await handleAddFixSchedule(
-                                                            listTrip[0],
-                                                            listCompanyRoute[i].listTimeGo[
-                                                                j
-                                                            ].listTime.map((time) => time.time),
-                                                            listCompanyRoute[i].listTimeGo[j]
-                                                                .listRepeat,
-                                                        )
-                                                    }
-                                                    for (
-                                                        let j = 0;
-                                                        j <
-                                                        listCompanyRoute[i].listTimeReturn.length;
-                                                        j++
-                                                    ) {
-                                                        await handleAddFixSchedule(
-                                                            listTrip[1],
-                                                            listCompanyRoute[i].listTimeReturn[
-                                                                j
-                                                            ].listTime.map((time) => time.time),
-                                                            listCompanyRoute[i].listTimeReturn[j]
-                                                                .listRepeat,
-                                                        )
-                                                    }
-                                                    handleAddStopStation(
-                                                        listTrip,
-                                                        startStationId,
-                                                        endStationId,
-                                                    )
+                if (checkSameRoute()) {
+                    addToast(() =>
+                        CustomToast({
+                            message: 'Không thể chọn cùng một tuyến xe cho nhiều lịch trình',
+                            type: 'error',
+                        }),
+                    )
+                    return
+                } else {
+                    setValidated(true)
+                    setLoading(true)
+                    let companyId = -1
+                    await handleAddCompany()
+                        .then(async (res) => {
+                            companyId = res
+                            console.log(companyId)
+                            if (companyId != -1) {
+                                let route = null
+                                let listTrip = []
+                                const listRouteId = []
+                                for (let i = 0; i < listCompanyRoute.length; i++) {
+                                    await handleAddRoute(listCompanyRoute[i].route)
+                                        .then(async (res) => {
+                                            route = res
+                                            let startStationId = -1
+                                            let endStationId = -1
+                                            if (route) {
+                                                await handleAddStation(
+                                                    route.departure.id,
+                                                    listCompanyRoute[i].route.departure ===
+                                                        route.departure.name
+                                                        ? listCompanyRoute[i].route.startStation
+                                                        : listCompanyRoute[i].route.endStation,
+                                                ).then((res) => (startStationId = res))
+                                                await handleAddStation(
+                                                    route.destination.id,
+                                                    listCompanyRoute[i].route.destination ===
+                                                        route.destination.name
+                                                        ? listCompanyRoute[i].route.endStation
+                                                        : listCompanyRoute[i].route.startStation,
+                                                ).then((res) => (endStationId = res))
+                                                if (startStationId === -1 || endStationId === -1) {
+                                                    throw new Error('Invalid ID')
                                                 }
-                                            })
-                                            listRouteId.push(route.id)
-                                            if (listRouteId.length === listCompanyRoute.length)
-                                                await handleAssignRoute(
+                                                await handleAddTrip(
+                                                    route,
+                                                    startStationId,
+                                                    endStationId,
                                                     companyId,
-                                                    listRouteId,
-                                                ).then(() => {
-                                                    setLoading(false)
-                                                    setTimeout(() => {
-                                                        solveCompany(preInfo.tel)
-                                                        dispatch(companyThunk.getCompany())
-                                                        setVisible(false)
-                                                    }, 1000)
+                                                    listCompanyRoute[i].route.journey,
+                                                    listCompanyRoute[i].route.distance,
+                                                    listCompanyRoute[i].route.id,
+                                                ).then(async (res) => {
+                                                    listTrip = res
+                                                    if (listTrip.length === 2) {
+                                                        for (
+                                                            let j = 0;
+                                                            j <
+                                                            listCompanyRoute[i].listTimeGo.length;
+                                                            j++
+                                                        ) {
+                                                            await handleAddFixSchedule(
+                                                                listTrip[0],
+                                                                listCompanyRoute[i].listTimeGo[
+                                                                    j
+                                                                ].listTime.map((time) => time.time),
+                                                                listCompanyRoute[i].listTimeGo[j]
+                                                                    .listRepeat,
+                                                            )
+                                                        }
+                                                        for (
+                                                            let j = 0;
+                                                            j <
+                                                            listCompanyRoute[i].listTimeReturn
+                                                                .length;
+                                                            j++
+                                                        ) {
+                                                            await handleAddFixSchedule(
+                                                                listTrip[1],
+                                                                listCompanyRoute[i].listTimeReturn[
+                                                                    j
+                                                                ].listTime.map((time) => time.time),
+                                                                listCompanyRoute[i].listTimeReturn[
+                                                                    j
+                                                                ].listRepeat,
+                                                            )
+                                                        }
+                                                        handleAddStopStation(
+                                                            listTrip,
+                                                            startStationId,
+                                                            endStationId,
+                                                        )
+                                                    }
                                                 })
-                                        }
-                                    })
-                                    .catch((err) => {
-                                        console.log(err)
-                                        setLoading(false)
-                                    })
+                                                listRouteId.push(route.id)
+                                                if (listRouteId.length === listCompanyRoute.length)
+                                                    await handleAssignRoute(
+                                                        companyId,
+                                                        listRouteId,
+                                                    ).then(() => {
+                                                        setLoading(false)
+                                                        setTimeout(() => {
+                                                            solveCompany(preInfo.tel)
+                                                            dispatch(companyThunk.getCompany())
+                                                            setVisible(false)
+                                                        }, 1000)
+                                                    })
+                                            }
+                                        })
+                                        .catch((err) => {
+                                            console.log(err)
+                                            setLoading(false)
+                                        })
+                                }
                             }
-                        }
-                    })
-                    .catch((err) => {
-                        addToast(() => CustomToast({ message: err, type: 'error' }))
-                        setLoading(false)
-                    })
+                        })
+                        .catch((err) => {
+                            addToast(() => CustomToast({ message: err, type: 'error' }))
+                            setLoading(false)
+                        })
+                }
             } else {
                 setValidated(true)
                 addToast(() =>
@@ -1768,6 +1813,7 @@ const Company = () => {
                 >
                     Danh sách yêu cầu mở bán vé
                 </CButton>
+                <CButton onClick={() => setOpenAddForm(true)}>Thêm nhà xe</CButton>
             </div>
             <CCollapse
                 visible={openListRequest}

@@ -100,6 +100,5 @@ export const getListAssignLocation = (listRoute) => {
         if (dep === -1) listLocation.push(listRoute[i].departure)
         if (des === -1) listLocation.push(listRoute[i].destination)
     }
-    console.log(listLocation)
     return listLocation
 }

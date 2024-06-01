@@ -17,6 +17,10 @@ import {
     selectListCompany,
     selectUpdate,
 } from 'src/feature/bus-company/busCompany.slice'
+import feeThunk from 'src/feature/fee/fee.service'
+import { feeAction } from 'src/feature/fee/fee.slice'
+import { subStractDays } from 'src/utils/convertUtils'
+import parse from 'date-fns/parse'
 
 // const AppContent = () => {
 //     return (
@@ -103,6 +107,9 @@ const AppContent = () => {
             .then(() => {
                 dispatch(companyActions.setUpdate(false))
             })
+            .catch((err) => {
+                console.log(err)
+            })
     }
     const getCompanyData = () => {
         dispatch(companyThunk.getCompany())
@@ -111,10 +118,47 @@ const AppContent = () => {
                 const company = listCompany.find((company) => company.busCompany.id === companyId)
                 if (company) dispatch(companyActions.setCurCompany(company))
             })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+    const getNextDueDay = (day) => {
+        var currentDay = parse(day, 'yyyy-MM-dd', new Date())
+        var currentMonth = currentDay.getMonth()
+        var nextDate = new Date(currentDay.getTime())
+        nextDate.setDate(5)
+        nextDate.setMonth(currentMonth + 1)
+        return nextDate
+    }
+
+    const getServiceData = () => {
+        dispatch(feeThunk.getFee())
+            .unwrap()
+            .then((res) => {
+                const companyFee = res.filter((fee) => fee.company.id == companyId)
+                // Sort fees based on status and dueDate
+                const sortedFees = companyFee.sort((a, b) => {
+                    return new Date(b.dueDate) - new Date(a.dueDate)
+                })
+                // Get the first fee from the sorted array
+                const lastestFee = sortedFees[0]
+                if (lastestFee) {
+                    if (lastestFee.status === 'Đã thanh toán') {
+                        const dueDate = getNextDueDay(lastestFee.dueDate)
+                        dispatch(feeAction.setServiceDueDate(dueDate))
+                    } else {
+                        dispatch(feeAction.setServiceDueDate(new Date(lastestFee.dueDate)))
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
     useEffect(() => {
         getCompanyRouteData()
         getCompanyData()
+        getServiceData()
     }, [])
     useEffect(() => {
         if (update) getCompanyRouteData()

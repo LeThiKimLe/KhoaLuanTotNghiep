@@ -128,7 +128,7 @@ public class BusCompanyService {
 
 			Route route = routeRepository.findById(routeId)
 					.orElseThrow(() -> new NotFoundException(Message.ROUTE_NOT_FOUND));
-			RouteAssign routeAssign = RouteAssign.builder().busCompany(busCompany).route(route).build();
+			RouteAssign routeAssign = RouteAssign.builder().busCompany(busCompany).route(route).assignDate(utilityService.convertHCMDateTime()).build();
 			routeAssigns.add(routeAssign);
 		}
 

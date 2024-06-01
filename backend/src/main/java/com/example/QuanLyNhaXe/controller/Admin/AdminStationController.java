@@ -13,6 +13,7 @@ import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditStationDTO;
 import com.example.QuanLyNhaXe.Request.EditStopStation;
 import com.example.QuanLyNhaXe.Request.RequestStationDTO;
+import com.example.QuanLyNhaXe.Request.SortStation;
 import com.example.QuanLyNhaXe.service.StationService;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -57,6 +58,8 @@ public class AdminStationController {
 		return new ResponseEntity<>(stationService.createStopStation(createStopStation), HttpStatus.OK);
 	}
 
-
-
+	@PutMapping("/stop-station/sort")
+	public ResponseEntity<Object> sortStopStation(@RequestBody SortStation sortStopStation) {
+		return new ResponseEntity<>(stationService.sortStopStation(sortStopStation), HttpStatus.OK);
+	}
 }

@@ -249,9 +249,7 @@ const DriverScheduleHistory = ({ listSchedule, listTrip }) => {
                                     {schedule.departTime.slice(0, -3)}
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center">
-                                    {schedule.finishTime === '00:00:00'
-                                        ? 'Đang cập nhật'
-                                        : schedule.finishTime.slice(0, -3)}
+                                    {schedule.updateTime}
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center">
                                     {schedule.bus ? schedule.bus.licensePlate : 'Đang cập nhật'}

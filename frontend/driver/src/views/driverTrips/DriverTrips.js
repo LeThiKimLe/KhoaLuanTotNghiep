@@ -38,7 +38,7 @@ import { selectListRoute } from 'src/feature/route/route.slice'
 import { selectDriverRoute } from 'src/feature/driver/driver.slice'
 import routeThunk from 'src/feature/route/route.service'
 import { driverAction } from 'src/feature/driver/driver.slice'
-import { convertToDisplayDate } from 'src/utils/convertUtils'
+import { convertToDisplayDate, convertToDisplayTimeStamp } from 'src/utils/convertUtils'
 import {
     cilPencil,
     cilArrowRight,
@@ -68,6 +68,8 @@ import orderThunk from 'src/feature/transportation-order/order.service'
 import { CustomToast } from '../customToast/CustomToast'
 import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
 import parse from 'date-fns/parse'
+import scheduleThunk from 'src/feature/schedule/schedule.service'
+import travelingImg from 'src/assets/images/loadingdots2.gif'
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.tripInfor && schedule.tripInfor.turn === true) return 'success'
@@ -297,10 +299,10 @@ const OrderStatusTracker = ({ schedule }) => {
     )
 }
 
-const ScheduleStatus = ({ data }) => {
+const ScheduleStatus = ({ data, following }) => {
     const [showCondition, setShowCondition] = useState(false)
     return (
-        <div className="d-flex flex-column align-items-center" role="button">
+        <CCol md="2" className="d-flex flex-column align-items-center my-2" role="button">
             <CIcon
                 icon={data.achived ? cilCheckCircle : cilCircle}
                 size="xl"
@@ -308,61 +310,203 @@ const ScheduleStatus = ({ data }) => {
             ></CIcon>
             <b
                 style={data.achived ? { color: '#000' } : { color: '#8f938f' }}
-            >{`${data.value}. ${data.label}`}</b>
-        </div>
+            >{`${data.stationData.arrivalTime}. ${data.state?.label}`}</b>
+            <small>{data.stationData?.station?.name}</small>
+        </CCol>
     )
 }
 
-const ScheduleStatusTracker = ({ schedule }) => {
+const ScheduleStatusTracker = ({ schedule, openOrderForm, closeForm }) => {
     const dispatch = useDispatch()
+    const user = useSelector(selectUser)
     const listTrip = useSelector(selectDriverTrip)
-    const [status, setStatus] = useState(
-        SCHEDULE_STATE.map((status) => {
+    const [status, setStatus] = useState([])
+    const scheduleStatus = SCHEDULE_STATE.find((st) => st.data === schedule.state)
+    const currenStation = schedule.currentStation
+    const toaster = useRef('')
+    const [toast, addToast] = useState(0)
+    const updateTime = schedule.updateTime
+    const [nextAction, setNextAction] = useState(null)
+    const [loading, setLoading] = useState(false)
+    const getStationType = (station) => {
+        if (station.stationType === 'pick')
+            if (station.station.id == schedule.tripInfor.startStation.id)
+                return {
+                    name: 'Trạm đi',
+                    state: SCHEDULE_STATE.find((st) => st.label === 'Đến bến đi'),
+                }
+            else
+                return {
+                    name: 'Trạm đón',
+                    state: SCHEDULE_STATE.find((st) => st.label === 'Đến trạm đón'),
+                }
+        else if (station.stationType === 'drop')
+            if (station.station.id == schedule.tripInfor.endStation.id)
+                return {
+                    name: 'Trạm đến',
+                    state: SCHEDULE_STATE.find((st) => st.label === 'Đến bến đến'),
+                }
+            else
+                return {
+                    name: 'Trạm trả',
+                    state: SCHEDULE_STATE.find((st) => st.label === 'Đến trạm trả'),
+                }
+        else if (station.stationType === 'stop')
             return {
-                ...status,
-                achived: false,
-                station: null,
+                name: 'Trạm dừng nghỉ',
+                state: SCHEDULE_STATE.find((st) => st.label === 'Đến trạm dừng chân'),
             }
-        }),
-    )
-    useEffect(() => {
-        const newStatus = [...status]
-        const trip = listTrip.find((trip) => trip.id === schedule.tripInfor.id)
-        const tripStations = trip.stopStations
-        const scheduleStatus = SCHEDULE_STATE.find((st) => st.label === schedule.state)
-        console.log(scheduleStatus)
-        let listStation = [],
-            station = []
-        for (let i = 0; i < newStatus.length; i++) {
-            listStation = tripStations.filter((st) =>
-                newStatus[i].stationType.includes(st.stationType),
-            )
-            console.log(listStation)
-            if (listStation.length > 0) {
-                if (newStatus[i].stationType.includes('departure'))
-                    station = listStation.filter((st) => st.id === trip.startStation.id)
-                else if (newStatus[i].stationType.includes('destination'))
-                    station = listStation.filter((st) => st.id === trip.endStation.id)
-                else station = listStation
+        else if (station.stationType === 'park-start')
+            return {
+                name: 'Bãi đỗ đầu',
+                state: SCHEDULE_STATE.find((st) => st.label === 'Rời bãi đỗ'),
             }
-            newStatus[i].station = station
-            if (newStatus[i].value === scheduleStatus.value) {
-                newStatus[i].achived = true
+        else
+            return {
+                name: 'Bãi đỗ cuối',
+                state: SCHEDULE_STATE.find((st) => st.label === 'Về bãi đỗ'),
+            }
+    }
+    const handleUpdateState = () => {
+        if (!schedule.transportationOrder) {
+            addToast(() => CustomToast({ message: 'Cần được cấp lệnh vận chuyển', type: 'error' }))
+            return
+        }
+        let scheduleInfor = null
+        if (nextAction.state.label === 'Tiếp tục hành trình') {
+            scheduleInfor = {
+                id: schedule.id,
+                state: 'Đang đi',
+                currentStation: nextAction.stationData.id,
+            }
+        } else {
+            scheduleInfor = {
+                id: schedule.id,
+                state: nextAction.state.label,
+                currentStation: nextAction.stationData.id,
+            }
+            if (nextAction.state.needOrder !== '') {
+                if (nextAction.state.needOrder !== schedule.transportationOrder.status) {
+                    addToast(() =>
+                        CustomToast({
+                            message: nextAction.state.condition,
+                            type: 'warning',
+                        }),
+                    )
+                    return
+                }
             }
         }
-        setStatus(newStatus)
+        setLoading(true)
+        dispatch(scheduleThunk.updateScheduleState(scheduleInfor))
+            .unwrap()
+            .then(async () => {
+                addToast(() => CustomToast({ message: 'Đã cập nhật thành công', type: 'success' }))
+                setLoading(false)
+                await dispatch(driverThunk.getDriverSchedules(user.user.driver.driverId)).unwrap()
+                await dispatch(driverThunk.getDriverTrip(user.user.driver.driverId)).unwrap()
+                setTimeout(() => closeForm(), 1000)
+            })
+            .catch((err) => {
+                setLoading(false)
+                addToast(() => CustomToast({ message: err, type: 'error' }))
+            })
+    }
+    useEffect(() => {
+        const trip = listTrip.find((trip) => trip.id === schedule.tripInfor.id)
+        const listState = [...trip.stopStations]
+            .sort((a, b) => a.arrivalTime - b.arrivalTime)
+            .map((st) => {
+                return {
+                    stationData: st,
+                    stationType: getStationType(st).name,
+                    state: getStationType(st).state,
+                    achived: false,
+                }
+            })
+        const currentStopStation = trip.stopStations.find((st) => st.id == currenStation)
+        let currentIndex = currentStopStation ? currentStopStation.arrivalTime : 0
+        for (let i = 0; i < listState.length; i++) {
+            if (listState[i].stationData.arrivalTime <= currentIndex) {
+                listState[i].achived = true
+            }
+        }
+        setStatus(listState)
     }, [schedule])
+    useEffect(() => {
+        if (status.length > 0) {
+            const currentStopStation = schedule.tripInfor.stopStations.find(
+                (st) => st.id == currenStation,
+            )
+            if (scheduleStatus)
+                if (
+                    scheduleStatus.data === 'Đang đi' ||
+                    scheduleStatus.data === 'Về bãi đỗ' ||
+                    scheduleStatus.data === 'Hoàn thành'
+                )
+                    setNextAction(
+                        status.find(
+                            (st) =>
+                                st.stationData.arrivalTime === currentStopStation.arrivalTime + 1,
+                        ),
+                    )
+                else {
+                    const newState = {
+                        stationData: currentStopStation,
+                        stationStatus: '',
+                        state: SCHEDULE_STATE.find((st) => st.label === 'Tiếp tục hành trình'),
+                        achived: false,
+                    }
+                    setNextAction(newState)
+                }
+            else setNextAction(status[0])
+        }
+    }, [status])
     return (
-        <div className="d-flex flex-column gap-5 align-items-center justify-content-center">
-            {status.map((status, index) => (
-                <ScheduleStatus data={status} key={index}></ScheduleStatus>
-            ))}
-        </div>
+        <>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
+            <CRow className="gap-2 justify-content-center">
+                {status.map((status, index) => (
+                    <>
+                        {scheduleStatus &&
+                            scheduleStatus.data == 'Đang đi' &&
+                            nextAction &&
+                            status.state.label === nextAction.state.label && (
+                                <img
+                                    src={travelingImg}
+                                    style={{ width: '90px', height: '55px' }}
+                                ></img>
+                            )}
+                        <ScheduleStatus data={status} key={index}></ScheduleStatus>
+                    </>
+                ))}
+            </CRow>
+            <CRow className="justify-content-center my-3 gap-2">
+                {nextAction && !nextAction.state.admin && (
+                    <CustomButton
+                        loading={loading}
+                        text={nextAction?.state?.label}
+                        style={{ maxWidth: '250px' }}
+                        onClick={handleUpdateState}
+                        color="success"
+                    ></CustomButton>
+                )}
+                <CButton
+                    onClick={openOrderForm}
+                    variant="outline"
+                    color="info"
+                    style={{ maxWidth: '250px' }}
+                >
+                    Cập nhật lệnh vận chuyển
+                </CButton>
+            </CRow>
+        </>
     )
 }
 
 const ScheduleItem = ({ schedule, index, time }) => {
     const curCompany = useSelector(selectCurCompany)
+    const user = useSelector(selectUser)
     const dispatch = useDispatch()
     const [showOrder, setShowOrder] = useState(false)
     const [showState, setShowState] = useState(false)
@@ -399,19 +543,23 @@ const ScheduleItem = ({ schedule, index, time }) => {
                 }),
             )
                 .unwrap()
-                .then(() => {
+                .then(async () => {
                     setLoading(false)
                     addToast(() =>
                         CustomToast({ message: 'Đã cập nhật thành công', type: 'success' }),
                     )
-                    setShowOrder(false)
+                    await dispatch(
+                        driverThunk.getDriverSchedules(user.user.driver.driverId),
+                    ).unwrap()
+                    await dispatch(driverThunk.getDriverTrip(user.user.driver.driverId)).unwrap()
                     setTimeout(() => {
-                        window.location.reload()
+                        setShowOrder(false)
                     }, 1000)
                 })
                 .catch((err) => {
                     console.log(err)
                     setLoading(false)
+                    addToast(() => CustomToast({ message: err, type: 'error' }))
                 })
         } else {
             setIsUpdating(true)
@@ -428,7 +576,6 @@ const ScheduleItem = ({ schedule, index, time }) => {
         setShowDetailBus(true)
     }
     const openOrderForm = () => {
-        console.log(schedule)
         const listCommandData = JSON.parse(localStorage.getItem('commandData'))
         const commandData = {
             companyName: curCompany.busCompany.name,
@@ -507,9 +654,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
                     {schedule.departTime.slice(0, -3)}
                 </CTableDataCell>
                 <CTableDataCell className="text-center">
-                    {schedule.finishTime !== '00:00:00'
-                        ? schedule.finishTime.slice(0, -3)
-                        : 'Đang cập nhật'}
+                    {convertToDisplayTimeStamp(schedule.updateTime)}
                 </CTableDataCell>
                 <CTableDataCell className="text-center">
                     {schedule.bus ? schedule.bus.licensePlate : 'Đang cập nhật'}
@@ -552,7 +697,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
                     )}
                 </CTableDataCell>
                 <CTableDataCell className="text-center">
-                    <i>{schedule.state}</i>
+                    <i>{schedule.state ? schedule.state : '---'}</i>
                     <CTooltip content="Cập nhật trạng thái chuyến xe">
                         <CIcon
                             id={'status-' + schedule.id}
@@ -597,6 +742,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
                         </CCol>
                         <CCol md="5">
                             <CFormSelect
+                                disabled={!isUpdating}
                                 value={orderStatus}
                                 onChange={(e) => setOrderStatus(e.target.value)}
                             >
@@ -635,9 +781,33 @@ const ScheduleItem = ({ schedule, index, time }) => {
                     <CustomButton
                         color="success"
                         onClick={handleUpdate}
+                        disabled={
+                            (isUpdating && currentOrderStatus?.value >= 4) || isUpdating === false
+                        }
                         text={isUpdating ? 'Lưu' : 'Cập nhật'}
                     ></CustomButton>
-                    <CButton variant="outline" color="dark" onClick={() => setShowOrder(false)}>
+                    {isUpdating && (
+                        <CButton
+                            variant="outline"
+                            color="danger"
+                            onClick={() => {
+                                setFileURL(null)
+                                setFile(null)
+                                setIsUpdating(false)
+                                setOrderStatus(currentOrderStatus?.label)
+                            }}
+                        >
+                            Hủy
+                        </CButton>
+                    )}
+                    <CButton
+                        variant="outline"
+                        color="dark"
+                        onClick={() => {
+                            setShowOrder(false)
+                            setIsUpdating(false)
+                        }}
+                    >
                         Đóng
                     </CButton>
                 </CModalFooter>
@@ -647,46 +817,17 @@ const ScheduleItem = ({ schedule, index, time }) => {
                     <b>Trạng thái chuyến xe</b>
                 </CModalHeader>
                 <CModalBody>
-                    <CRow className="border-bottom justify-content-center p-3">
+                    <CRow className="justify-content-center p-3">
                         <CCol md="12">
-                            <ScheduleStatusTracker schedule={schedule}></ScheduleStatusTracker>
+                            <ScheduleStatusTracker
+                                schedule={schedule}
+                                openOrderForm={() => setShowOrder(true)}
+                                closeForm={() => setShowState(false)}
+                            ></ScheduleStatusTracker>
                         </CCol>
-                    </CRow>
-                    <CRow className="justify-content-center p-1">
-                        {/* <CCol md="5">
-                            <CFormSelect
-                                value={orderStatus}
-                                onChange={(e) => setOrderStatus(e.target.value)}
-                            >
-                                <option value="0" disabled>
-                                    Chọn trạng thái
-                                </option>
-                                {ORDER_STATE.filter(
-                                    (st) =>
-                                        st.value === currentOrderStatus?.value ||
-                                        st.value === currentOrderStatus?.value + 1,
-                                ).map((status, index) => (
-                                    <option
-                                        key={index}
-                                        value={status.label}
-                                        disabled={status.value === 1}
-                                    >
-                                        {status.label}
-                                    </option>
-                                ))}
-                            </CFormSelect>
-                            <br></br>
-                            <i>* Điều kiện: </i>
-                            <i>{ORDER_STATE.find((st) => st.label === orderStatus)?.condition}</i>
-                        </CCol> */}
                     </CRow>
                 </CModalBody>
                 <CModalFooter>
-                    <CustomButton
-                        color="success"
-                        onClick={handleUpdate}
-                        text={isUpdating ? 'Lưu' : 'Cập nhật'}
-                    ></CustomButton>
                     <CButton variant="outline" color="dark" onClick={() => setShowState(false)}>
                         Đóng
                     </CButton>
@@ -697,10 +838,6 @@ const ScheduleItem = ({ schedule, index, time }) => {
     )
 }
 const ScheduleAsList = ({ listSchedule, time }) => {
-    const dispatch = useDispatch()
-    const listTrip = useSelector(selectDriverTrip)
-    const [listGo, setListGo] = useState([])
-    const [listReturn, setListReturn] = useState([])
     const sortTime = (a, b) => {
         const timeA = new Date(a.departDate + 'T' + a.departTime).getTime()
         const timeB = new Date(b.departDate + 'T' + b.departTime).getTime()
@@ -737,7 +874,7 @@ const ScheduleAsList = ({ listSchedule, time }) => {
                                 Khởi hành
                             </CTableHeaderCell>
                             <CTableHeaderCell className="text-center" scope="col">
-                                Kết thúc
+                                Cập nhật gần nhất
                             </CTableHeaderCell>
                             <CTableHeaderCell className="text-center" scope="col">
                                 Xe bus
@@ -824,7 +961,7 @@ const DriverTrip = () => {
                 setTurnList(tempList)
             }
         }
-    }, [listSchedule.length, listTrip.length])
+    }, [listSchedule, listTrip])
 
     const getListSchedule = (time) => {
         var result = []
@@ -898,7 +1035,7 @@ const DriverTrip = () => {
         <>
             <CRow className="my-3 gap-2 justify-content-between">
                 <CCol
-                    md={5}
+                    md={7}
                     sm={12}
                     style={{ textAlign: 'right' }}
                     className={`d-flex gap-1 customDatePicker ${
@@ -943,7 +1080,7 @@ const DriverTrip = () => {
                     ></CIcon>
                 </CCol>
                 <CCol
-                    md={5}
+                    md={4}
                     sm={12}
                     style={isBigScreen ? { textAlign: 'right' } : { textAlign: 'center' }}
                 >
@@ -990,7 +1127,7 @@ const DriverTrip = () => {
                     <div style={{ width: '100%', overflowX: 'auto' }}>
                         {listForm === 'list' ? (
                             <CRow className="tabStyle">
-                                {listSchedule.length > 0 ? (
+                                {listSchedule && listSchedule.length > 0 ? (
                                     <Tabs
                                         className="mt-3"
                                         selectedIndex={selectedTab}

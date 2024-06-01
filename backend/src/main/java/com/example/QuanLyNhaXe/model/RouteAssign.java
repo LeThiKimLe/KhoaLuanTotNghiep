@@ -1,5 +1,8 @@
 package com.example.QuanLyNhaXe.model;
 
+import java.sql.Date;
+import java.time.LocalDateTime;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -35,5 +38,8 @@ public class RouteAssign {
     @ManyToOne
     @JoinColumn(name = "route_id",referencedColumnName = "id")
     private Route route;
+
+    @Column(name = "assign_date")
+	private LocalDateTime assignDate;
 
 }

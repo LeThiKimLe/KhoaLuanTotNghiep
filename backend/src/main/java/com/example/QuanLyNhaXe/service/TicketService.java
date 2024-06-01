@@ -15,6 +15,7 @@ import com.example.QuanLyNhaXe.Request.CancelTicketApproval;
 import com.example.QuanLyNhaXe.Request.CancelTicketsDTO;
 import com.example.QuanLyNhaXe.Request.ChangeTicketDTO;
 import com.example.QuanLyNhaXe.Request.CreatePaymentDTO;
+import com.example.QuanLyNhaXe.Request.CreatePaymentReturnTicket;
 import com.example.QuanLyNhaXe.Request.EditBookingDTO;
 import com.example.QuanLyNhaXe.Request.EditTicketDTO;
 import com.example.QuanLyNhaXe.Request.TicketForChangeDTO;
@@ -485,9 +486,9 @@ public class TicketService {
 							response.getTransaction().getAmount(),null);
 					transactionRepository.save(transaction);
 					policy = modelMapper.map(response.getPolicy(), Policy.class);
-					Transaction transactionPayment=transactionRepository.findByBookingCode(cancelTicketsDTO.getBookingCode())
+					Transaction transactionPayment=transactionRepository.findByBookingsCode(cancelTicketsDTO.getBookingCode())
 							.orElseThrow(() -> new NotFoundException("Không tìm thấy giao dịch đã thanh toán"));
-					String orderId=transactionPayment.getBooking().getOrder_id();
+					String orderId=transactionPayment.getBookings().get(0).getOrder_id();
 					String transactionDate=utilityService.convertDateTimeToString(transactionPayment.getPaymentTime());
 					vnPayService.refund("03",orderId , (int)response.getTransaction().getAmount(), transactionDate,  "xeKimNguyen",transactionPayment.getTransactionNo(), httpServletRequest);
 				}
@@ -597,7 +598,50 @@ public class TicketService {
 		ticket.getBooking().setTickets(null);
 		return modelMapper.map(ticket, TicKetFullDTO.class);
 		
-	}		
+	}	
+	
+	@Transactional
+	public Object paymentReturnTicket(CreatePaymentReturnTicket createPaymentDTO) {
+		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
+				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+		Booking booking2 = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
+				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+		if (!booking.getStatus().equals(BookingStatus.RESERVE.getLabel())) {
+			throw new BadRequestException("Thanh toán không hợp lệ do đã hủy booking");
+
+		}
+		String pay = createPaymentDTO.getPaymentMethod();
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) )
+				 {
+			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
+		}
+
+		LocalDateTime currentDateTime = utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate());
+		LocalDateTime bookingDateTime = booking.getBookingDate();
+		boolean isExpired = bookingDateTime.plusMinutes(10).isBefore(currentDateTime);
+		if (!isExpired) {
+			List<Ticket> tickets = booking.getTickets();
+			tickets.addAll(booking2.getTickets());
+			for (Ticket ticket : tickets) {
+				if (!ticket.getState().equals(TicketState.CANCELED.getLabel())) {
+			        ticket.setState(TicketState.PAID.getLabel());
+			        ticketRepository.save(ticket);
+			    }
+			}
+			booking.setStatus(BookingStatus.SUCCESS.getLabel());
+			bookingRepository.save(booking);
+			booking2.setStatus(BookingStatus.SUCCESS.getLabel());
+			bookingRepository.save(booking2);
+			if (emailService.checkEmail(booking.getEmail())) {
+				emailService.sendBookingInformation(booking);
+				emailService.sendBookingInformation(booking2);
+			}
+			return transactionService.createReturnTicketTransaction(createPaymentDTO);
+
+		}
+		throw new BadRequestException("Thanh toán không hợp lệ do hết thời gian chờ");
+	}
+
 		
 	
 }

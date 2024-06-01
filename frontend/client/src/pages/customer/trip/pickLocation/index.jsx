@@ -34,7 +34,7 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
     const getTimePick = () => {
         var count = 0
         var updateList = []
-        const locationDep = trip.tripInfor.turn === true ? trip.tripInfor.startStation : trip.tripInfor.endStation
+        const locationDep = trip.tripInfor.startStation
         listLocation.forEach((locationDes) => {
             try {
                 const url = `https://router.project-osrm.org/route/v1/driving/${encodeURI(
@@ -92,7 +92,7 @@ const PickLocation = ({ pick, listLocation, setLocation, selected, getObject, mo
         const arrivalTime = addHoursToTime(trip.departTime, trip.tripInfor.hours)
         var count = 0
         var updateList = []
-        const locationDep = trip.tripInfor.turn === true ? trip.tripInfor.endStation : trip.tripInfor.startStation
+        const locationDep = trip.tripInfor.endStation
         listLocation.forEach((locationDes) => {
             try {
                 const url = `https://router.project-osrm.org/route/v1/driving/${encodeURI(

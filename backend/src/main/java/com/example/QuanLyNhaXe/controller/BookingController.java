@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.QuanLyNhaXe.Request.BookingReturnTicket;
 import com.example.QuanLyNhaXe.Request.CreateBookingDTO;
 import com.example.QuanLyNhaXe.Request.CreateReview;
 import com.example.QuanLyNhaXe.Request.SearchBookingDTO;
@@ -76,6 +77,11 @@ public class BookingController {
 	@GetMapping("/schedules/my-reviews")
 	public ResponseEntity<Object> getMyReviews(@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization){
 		return new ResponseEntity<>(reviewService.getMyReview(authorization), HttpStatus.OK);
+	}
+	
+	@PostMapping("/booking-return-ticket")
+	public ResponseEntity<Object> createBookingReturnTicket(@RequestBody BookingReturnTicket createBookingDTO,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false)  String authorizationHeader, HttpServletRequest request) {
+		return new ResponseEntity<>(bookingService.bookingReturnTicket(createBookingDTO, authorizationHeader, request), HttpStatus.OK);
 	}
 
 }

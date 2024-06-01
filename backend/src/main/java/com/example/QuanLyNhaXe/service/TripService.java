@@ -303,7 +303,7 @@ public class TripService {
 				.price(createTrip.getPrice()).busCompany(busCompany).isActive(true).turn(true).busType(busType).routeCode(createTrip.getRouteCode())
 				.schedule(createTrip.getSchedule()).distance(createTrip.getDistance()).hours(createTrip.getHours())
 				.build();
-		Trip returnTrip = Trip.builder().startStation(startStation).endStation(endStation).price(createTrip.getPrice())
+		Trip returnTrip = Trip.builder().startStation(endStation).endStation(startStation).price(createTrip.getPrice())
 				.busCompany(busCompany).route(route).isActive(true).turn(false).busType(busType).routeCode(createTrip.getRouteCode())
 				.schedule(createTrip.getScheduleReturn()).distance(createTrip.getDistance())
 				.hours(createTrip.getHours()).build();
