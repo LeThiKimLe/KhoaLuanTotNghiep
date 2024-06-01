@@ -276,5 +276,20 @@ public class UserService {
 		return user;
 		
 	}
+	
+	public User getByAuthorizationHeader(String authorizationHeader) {
+		User user=null;
+		if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+			String jwt = authorizationHeader.substring(7);
+			Integer userId = Integer.valueOf(jwtService.extractUsername(jwt));
+
+			user = userRepository.findById(userId)
+					.orElseThrow(() -> new NotFoundException(Message.USER_NOT_FOUND));
+			if (!user.getAccount().isActive()) {
+				throw new BadRequestException(Message.ACCOUNT_DISABLED);
+			}
+		}
+		return user;
+	}
 
 }

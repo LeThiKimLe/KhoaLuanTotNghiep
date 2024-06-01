@@ -12,6 +12,6 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 	
 
 	List<Transaction> findByPaymentTimeBetweenAndTransactionType(LocalDateTime startDateTime, LocalDateTime endDateTime, String transactionType);
-	Optional<Transaction> findByBookingCode(String bookingCode);
+	Optional<Transaction> findByBookingsCode(String bookingCode);
 
 }

@@ -15,6 +15,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.example.QuanLyNhaXe.Request.BookingReturnTicket;
 import com.example.QuanLyNhaXe.Request.CreateBookingDTO;
 import com.example.QuanLyNhaXe.Request.SearchBookingDTO;
 import com.example.QuanLyNhaXe.dto.BookingDTO;
@@ -57,6 +58,7 @@ public class BookingService {
 	private final EmailService emailService;
 	private final UtilityService utilityService;
 	private final VNPayService vnPayService;
+	
 
 	@Transactional
 	public Object booking(CreateBookingDTO createBookingDTO, String authorization, HttpServletRequest request) {
@@ -403,6 +405,147 @@ public class BookingService {
 
 		}
 		return sumTicKets;
+	}
+	
+	public Object bookingReturnTicket(BookingReturnTicket createBookingDTO, String authorizationHeader, HttpServletRequest request) {
+		
+		User user=userService.getByAuthorizationHeader(authorizationHeader);
+		Staff staff = null;
+		if ( user!=null &&user.getAccount().getRole().getId() != 3) {
+			staff = user.getStaff();
+			user = null;
+		}
+		Trip trip = tripRepository.findById(createBookingDTO.getTripId())
+				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
+		Schedule schedule = scheduleRepository.findById(createBookingDTO.getScheduleId())
+				.orElseThrow(() -> new NotFoundException(Message.SCHEDULE_NOT_FOUND));
+
+		StopStation pickStation = stopStationRepository
+				.findByIdAndTripIdAndStationType(createBookingDTO.getPickStationId(), createBookingDTO.getTripId(),
+						"pick")
+				.orElseThrow(() -> new NotFoundException(Message.STATION_NOT_FOUND));
+		StopStation dropStation = stopStationRepository
+				.findByIdAndTripIdAndStationType(createBookingDTO.getDropStationId(), createBookingDTO.getTripId(),
+						"drop")
+				.orElseThrow(() -> new NotFoundException(Message.STATION_NOT_FOUND));
+		if (createBookingDTO.getSeatName().size() != createBookingDTO.getTicketNumber()) {
+			throw new BadRequestException("Số lượng vé và danh sách tên ghế chưa khớp");
+		}
+		Trip trip2 = tripRepository.findById(createBookingDTO.getTripReturnId())
+				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
+		Schedule schedule2 = scheduleRepository.findById(createBookingDTO.getScheduleReturnId())
+				.orElseThrow(() -> new NotFoundException(Message.SCHEDULE_NOT_FOUND));
+
+		StopStation pickStation2 = stopStationRepository
+				.findByIdAndTripIdAndStationType(createBookingDTO.getPickStationReturnId(), createBookingDTO.getTripReturnId(),
+						"pick")
+				.orElseThrow(() -> new NotFoundException(Message.STATION_NOT_FOUND));
+		StopStation dropStation2 = stopStationRepository
+				.findByIdAndTripIdAndStationType(createBookingDTO.getDropStationReturnId(), createBookingDTO.getTripReturnId(),
+						"drop")
+				.orElseThrow(() -> new NotFoundException(Message.STATION_NOT_FOUND));
+		if (createBookingDTO.getSeatNameReturn().size() != createBookingDTO.getTicketNumberReturn()) {
+			throw new BadRequestException("Số lượng vé và danh sách tên ghế chưa khớp");
+		}
+
+		String bookingCode = utilityService.generateRandomString(6);
+		while (bookingRepository.existsByCode(bookingCode)) {
+			bookingCode = utilityService.generateRandomString(6);
+		}
+		String bookingCode2 = utilityService.generateRandomString(6);
+		while (bookingRepository.existsByCode(bookingCode2)) {
+			bookingCode2 = utilityService.generateRandomString(6);
+		}
+		String orderId = utilityService.getRandomNumber(8);
+
+		Integer price = schedule.getTicketPrice();
+		if (schedule.getSpecialDay() != null) {
+			price += schedule.getSpecialDay().getFee();
+		}
+		Integer price2 = schedule2.getTicketPrice();
+		if (schedule2.getSpecialDay() != null) {
+			price2 += schedule2.getSpecialDay().getFee();
+		}
+
+		Booking booking = Booking.builder().code(bookingCode).trip(trip).bookingUser(user).conductStaff(staff)
+				.pickStation(pickStation).dropStation(dropStation).tel(createBookingDTO.getTel())
+				.name(createBookingDTO.getName()).email(createBookingDTO.getEmail())
+				.ticketNumber(createBookingDTO.getTicketNumber()).status(BookingStatus.RESERVE.getLabel())
+				.bookingDate(utilityService.convertHCMDateTime()).build();
+		
+		Booking bookingReturn = Booking.builder().code(bookingCode2).trip(trip2).bookingUser(user).conductStaff(staff)
+				.pickStation(pickStation2).dropStation(dropStation2).tel(createBookingDTO.getTel())
+				.name(createBookingDTO.getName()).email(createBookingDTO.getEmail())
+				.ticketNumber(createBookingDTO.getTicketNumber()).status(BookingStatus.RESERVE.getLabel())
+				.bookingDate(utilityService.convertHCMDateTime()).build();
+		try {
+
+			if (schedule.getAvailability() - createBookingDTO.getTicketNumber() >= 0) {
+				schedule.setAvailability(schedule.getAvailability() - createBookingDTO.getTicketNumber());
+				scheduleRepository.save(schedule);
+			} else
+				throw new BadRequestException("Vé chỉ còn lại: " + schedule.getAvailability().toString());
+
+			List<Ticket> tickets = new ArrayList<>();
+			for (String name : createBookingDTO.getSeatName()) {
+				if (ticketRepository.existsByScheduleIdAndSeatAndStateNot(createBookingDTO.getScheduleId(), name,
+						TicketState.CANCELED.getLabel()))
+					throw new BadRequestException(
+							"Một hoặc nhiều vé đã chọn đã có người đặt rồi!!! Vui lòng chọn vé khác");
+				Ticket ticket = Ticket.builder().booking(booking).schedule(schedule).seat(name).ticketPrice(price)
+						.state(TicketState.PENDING_PAYMENT.getLabel()).build();
+				tickets.add(ticket);
+			}
+			if (schedule2.getAvailability() - createBookingDTO.getTicketNumberReturn() >= 0) {
+				schedule2.setAvailability(schedule2.getAvailability() - createBookingDTO.getTicketNumberReturn());
+				scheduleRepository.save(schedule2);
+			} else
+				throw new BadRequestException("Vé lượt về chỉ còn lại: " + schedule.getAvailability().toString());
+
+			List<Ticket> ticketsReturn = new ArrayList<>();
+			for (String name : createBookingDTO.getSeatNameReturn()) {
+				if (ticketRepository.existsByScheduleIdAndSeatAndStateNot(createBookingDTO.getScheduleReturnId(), name,
+						TicketState.CANCELED.getLabel()))
+					throw new BadRequestException(
+							"Một hoặc nhiều vé đã chọn ở lượt về đã có người đặt rồi!!! Vui lòng chọn vé khác");
+				Ticket ticket2 = Ticket.builder().booking(bookingReturn).schedule(schedule2).seat(name).ticketPrice(price2)
+						.state(TicketState.PENDING_PAYMENT.getLabel()).build();
+				ticketsReturn.add(ticket2);
+			}
+			booking.setTickets(tickets);
+			booking.setOrder_id(orderId);
+			bookingReturn.setTickets(ticketsReturn);
+			bookingReturn.setOrder_id(orderId);
+			bookingRepository.save(booking);
+			ticketRepository.saveAll(tickets);
+			bookingRepository.save(bookingReturn);
+			ticketRepository.saveAll(ticketsReturn);
+
+		}
+		
+
+		catch (DataAccessException e) {
+			return new ResponseMessage(Message.INACCURATE_DATA);
+		}
+		List<BookingSimpleDTO> bookingSimpleDTOs = new ArrayList<>();
+		BookingSimpleDTO bookingSimpleDTO = modelMapper.map(booking, BookingSimpleDTO.class);
+		bookingSimpleDTOs.add(bookingSimpleDTO);
+		BookingSimpleDTO bookingSimpleDTO2 = modelMapper.map(bookingReturn, BookingSimpleDTO.class);
+		bookingSimpleDTOs.add(bookingSimpleDTO2);
+		try {
+			Integer sumPrice=price*createBookingDTO.getTicketNumber()+price2*createBookingDTO.getTicketNumberReturn();
+			String bookingInfor=booking.getCode()+"and"+bookingReturn.getCode();
+			String paymentURL = vnPayService.generatePaymentUrl(request, sumPrice, orderId, bookingInfor);
+
+			bookingSimpleDTO.setPaymentURL(paymentURL);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		return bookingSimpleDTOs;
+		
+		
+		
 	}
 
 }

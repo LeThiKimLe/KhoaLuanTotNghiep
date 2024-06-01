@@ -136,7 +136,9 @@ public class ScheduleService {
 			}
 		}
 		scheduleRepository.saveAll(schedules);
+
 		return schedules.stream().filter(schedule -> schedule.getDepartDate() == departDate).map(schedule -> modelMapper.map(schedule, ScheduleDTO.class)).toList();
+
 	}
 
 	public Object getScheduleByDriver(Integer driverId) {
