@@ -604,14 +604,13 @@ public class TicketService {
 	public Object paymentReturnTicket(CreatePaymentReturnTicket createPaymentDTO) {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
-		Booking booking2 = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
+		Booking booking2 = bookingRepository.findByCode(createPaymentDTO.getBookingCodeReturn())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
 		if (!booking.getStatus().equals(BookingStatus.RESERVE.getLabel())) {
 			throw new BadRequestException("Thanh toán không hợp lệ do đã hủy booking");
-
 		}
 		String pay = createPaymentDTO.getPaymentMethod();
-		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) )
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel()))
 				 {
 			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
 		}
@@ -620,13 +619,13 @@ public class TicketService {
 		LocalDateTime bookingDateTime = booking.getBookingDate();
 		boolean isExpired = bookingDateTime.plusMinutes(10).isBefore(currentDateTime);
 		if (!isExpired) {
-			List<Ticket> tickets = booking.getTickets();
+			List<Ticket> tickets = new ArrayList<>(booking.getTickets());
 			tickets.addAll(booking2.getTickets());
 			for (Ticket ticket : tickets) {
 				if (!ticket.getState().equals(TicketState.CANCELED.getLabel())) {
-			        ticket.setState(TicketState.PAID.getLabel());
-			        ticketRepository.save(ticket);
-			    }
+					ticket.setState(TicketState.PAID.getLabel());
+					ticketRepository.save(ticket);
+				}
 			}
 			booking.setStatus(BookingStatus.SUCCESS.getLabel());
 			bookingRepository.save(booking);

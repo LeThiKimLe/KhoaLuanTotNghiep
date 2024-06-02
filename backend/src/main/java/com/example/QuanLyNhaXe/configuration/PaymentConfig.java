@@ -20,22 +20,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.web.client.RestTemplate;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
-@Configuration
+@Configuration()
 @RequiredArgsConstructor
+
 public class PaymentConfig {
-
-	
-
+		public static String vnpayUrl;
 		public static String vnp_TmnCode = "UHANIMVU";
-		public static  String vnp_Returnurl = "https://vexe.workon.space/payment/";
+		public static  String vnp_Returnurl = "/payment/";
 		public static String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 		public  static String vnp_HashSecret = "HESYEZSHYLQULKQSJTOAXSWQKAQXCVYX";		
 		public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-		public static  String vnp_ReturnFeeUrl = "http://localhost:3001/#/system-manage/expense/";
+		public static  String vnp_ReturnFeeUrl = "/system-manage/expense/";
 
 		 public static String md5(String message) {
 		        String digest = null;

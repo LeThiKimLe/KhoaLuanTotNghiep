@@ -27,14 +27,19 @@ import com.example.QuanLyNhaXe.model.Booking;
 import com.example.QuanLyNhaXe.model.ServiceFee;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-
+import org.springframework.beans.factory.annotation.Value;
 import jakarta.servlet.http.HttpServletRequest;
 
 @Service
 
 public class VNPayService {
 	
+	@Value("${base.url}")
+    private String baseUrl;
 
+	@Value("${base.adminUrl}")
+    private String baseAdminUrl;
+	
 	public String queryDR(String orderId, String transDate, HttpServletRequest request) {
 		try {
 			String vnp_RequestId = PaymentConfig.getRandomNumber(8);
@@ -128,9 +133,9 @@ public class VNPayService {
 
 		vnp_Params.put("vnp_Locale", "vn");
 
-		vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_Returnurl + bookingInfor + "/");
+		vnp_Params.put("vnp_ReturnUrl", baseUrl + PaymentConfig.vnp_Returnurl + bookingInfor + "/");
 		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
-
+		
 		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMddHHmmss");
 		formatter.setTimeZone(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));
@@ -276,7 +281,7 @@ public class VNPayService {
 
 		vnp_Params.put("vnp_Locale", "vn");
 
-		vnp_Params.put("vnp_ReturnUrl", PaymentConfig.vnp_ReturnFeeUrl);
+		vnp_Params.put("vnp_ReturnUrl", baseAdminUrl + PaymentConfig.vnp_ReturnFeeUrl);
 		vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
 		Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Asia/Ho_Chi_Minh"));

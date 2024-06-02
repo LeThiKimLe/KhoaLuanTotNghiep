@@ -246,7 +246,7 @@ const Trip = ({ tabStyle }) => {
                 .unwrap()
                 .then((response) => {
                     dispatch(setPaymentURL(response[0].paymentURL))
-                    navigate(`/payment/${response[0].code}`)
+                    navigate(`/payment/${response[0].code}and${response[1].code}`)
                 })
                 .catch((error) => {
                     setMessage({ message: error, messagetype: 2 })
