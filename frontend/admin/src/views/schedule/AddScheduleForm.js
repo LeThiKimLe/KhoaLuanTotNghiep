@@ -258,20 +258,21 @@ const AddScheduleForm = ({
     fixSchedule,
 }) => {
     const curTrip = useSelector(selectCurrentTrip)
+    console.log(curTrip)
     const curRoute = useSelector(selectCurrentRoute)
     const [openDateRange, setOpenDateRange] = useState(false)
     const [listTimeGo, setListTimeGo] = useState(
         listPreTimeGo.length > 0
             ? listPreTimeGo.map((time) => ({ time: time, fix: true }))
             : fixSchedule
-                  .filter((schd) => schd.trip.id === curTrip.turnGo.id)
+                  .filter((schd) => schd.trip.id === curTrip?.turnGo.id)
                   .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
     )
     const [listTimeReturn, setListTimeReturn] = useState(
         listPreTimeReturn.length > 0
             ? listPreTimeReturn.map((time) => ({ time: time, fix: true }))
             : fixSchedule
-                  .filter((schd) => schd.trip.id === curTrip.turnBack.id)
+                  .filter((schd) => schd.trip.id === curTrip?.turnBack.id)
                   .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
     )
     const [note, setNote] = useState('')
@@ -521,7 +522,7 @@ const AddScheduleForm = ({
             listPreTimeGo.length > 0
                 ? listPreTimeGo.map((time) => ({ time: time, fix: true }))
                 : fixSchedule
-                      .filter((schd) => schd.trip.id === curTrip.turnGo.id)
+                      .filter((schd) => schd.trip.id === curTrip?.turnGo.id)
                       .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
         )
 
@@ -529,7 +530,7 @@ const AddScheduleForm = ({
             listPreTimeReturn.length > 0
                 ? listPreTimeReturn.map((time) => ({ time: time, fix: true }))
                 : fixSchedule
-                      .filter((schd) => schd.trip.id === curTrip.turnBack.id)
+                      .filter((schd) => schd.trip.id === curTrip?.turnBack.id)
                       .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
         )
     }, [curTrip, fixSchedule, listPreTimeReturn, listPreTimeGo])

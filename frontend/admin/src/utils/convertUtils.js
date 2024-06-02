@@ -43,7 +43,8 @@ export const addHoursToTime = (timeString, hours) => {
 }
 
 export const convertToDisplayDate = (dataDate) => {
-    return format(parse(dataDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy')
+    if (dataDate) return format(parse(dataDate, 'yyyy-MM-dd', new Date()), 'dd/MM/yyyy')
+    else return ''
 }
 
 export const convertToDataDate = (displayDate) => {

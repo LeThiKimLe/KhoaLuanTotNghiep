@@ -862,6 +862,8 @@ const StatusTracker = ({ trip }) => {
         }
         if (trip.price !== 0) {
             newStatus[2].achived = true
+        }
+        if (trip.turnGo.stopStations.some((sta) => sta.stationType.includes('park'))) {
             newStatus[3].achived = true
         }
         if (newStatus.slice(0, newStatus.length - 1).every((status) => status.achived === true))

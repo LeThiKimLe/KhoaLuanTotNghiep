@@ -1,14 +1,17 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { NavLink, useLocation } from 'react-router-dom'
 import PropTypes from 'prop-types'
 import { CBadge } from '@coreui/react'
 import { useSelector } from 'react-redux'
 import { selectCancelRequest } from 'src/feature/cancel-request/request.slice'
 import { selectUserRoleId } from 'src/feature/auth/auth.slice'
+import { selectServiceDueDate } from 'src/feature/fee/fee.slice'
 export const AppSidebarNav = ({ items }) => {
     const listCancelRequest = useSelector(selectCancelRequest)
     const location = useLocation()
     const userRole = useSelector(selectUserRoleId)
+    const dueDate = useSelector(selectServiceDueDate)
+    const [allowAccess, setAllowAccess] = React.useState(true)
     const getNumberRequest = () => {
         const numberReq = listCancelRequest.filter((req) => req.state === 'Chờ phê duyệt').length
         if (numberReq > 0) return numberReq
@@ -73,13 +76,19 @@ export const AppSidebarNav = ({ items }) => {
         if (item.items) return navGroup(item, index)
         else return navItem(item, index)
     }
+    useEffect(() => {
+        if (dueDate < new Date()) setAllowAccess(false)
+        else setAllowAccess(true)
+    }, [dueDate])
 
     return (
         <React.Fragment>
             {items &&
-                items.map((item, index) =>
-                    item.protected ? adminItem(item, index) : staffItem(item, index),
-                )}
+                items
+                    .filter((it) => allowAccess || (!allowAccess && it.limit === false))
+                    .map((item, index) =>
+                        item.protected ? adminItem(item, index) : staffItem(item, index),
+                    )}
         </React.Fragment>
     )
 }

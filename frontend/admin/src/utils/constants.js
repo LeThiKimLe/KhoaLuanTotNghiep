@@ -183,19 +183,20 @@ export const TRIP_STATUS = [
     {
         value: 1,
         label: 'Chọn loại xe',
-        description: 'Nhà xe đã tạo loại phương tiện cho tuyến',
+        description: 'Tạo loại phương tiện và phân cho tuyến xe',
         helpDocument: 'https://www.google.com',
     },
     {
         value: 2,
         label: 'Cập nhật giá vé',
-        description: 'Nhà xe cập nhật giá vé cho tuyến',
+        description: 'Cập nhật giá vé cho tuyến xe',
         helpDocument: 'https://www.google.com',
     },
     {
         value: 3,
-        label: 'Kiểm tra & Cập nhật trạm',
-        description: 'Nhà xe cập nhật thông tin các trạm đón - trả, dừng nghỉ cho tuyến',
+        label: 'Cập nhật trạm',
+        description:
+            'Cập nhật thông tin về bãi đỗ, trạm đón - trả (nếu có), dừng nghỉ (nếu có) cho tuyến',
         helpDocument: 'https://www.google.com',
     },
     {

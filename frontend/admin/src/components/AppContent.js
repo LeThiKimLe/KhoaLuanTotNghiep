@@ -18,9 +18,10 @@ import {
     selectUpdate,
 } from 'src/feature/bus-company/busCompany.slice'
 import feeThunk from 'src/feature/fee/fee.service'
-import { feeAction } from 'src/feature/fee/fee.slice'
+import { feeAction, selectServiceDueDate } from 'src/feature/fee/fee.slice'
 import { subStractDays } from 'src/utils/convertUtils'
 import parse from 'date-fns/parse'
+import { useNavigate } from 'react-router-dom'
 
 // const AppContent = () => {
 //     return (
@@ -51,6 +52,9 @@ const AppContent = () => {
     const dispatch = useDispatch()
     const companyId = useSelector(selectCompanyId)
     const update = useSelector(selectUpdate)
+    const dueDate = useSelector(selectServiceDueDate)
+    const [allowAccess, setAllowAccess] = React.useState(true)
+    const navigate = useNavigate()
     //Get company route info
     const getCompanyRouteData = () => {
         dispatch(routeThunk.getRoute())
@@ -163,14 +167,33 @@ const AppContent = () => {
     useEffect(() => {
         if (update) getCompanyRouteData()
     }, [update])
+    useEffect(() => {
+        if (dueDate < new Date()) {
+            setAllowAccess(false)
+        } else {
+            setAllowAccess(true)
+        }
+    }, [dueDate])
     return (
         <CContainer lg>
             <Suspense fallback={<CSpinner color="primary" />}>
                 <Routes>
-                    {routes.map((route, idx) =>
-                        route.protected
-                            ? route.element && (
-                                  <Route element={<AdminProtectedRoute />}>
+                    {routes
+                        .filter((rt) => allowAccess || (!allowAccess && rt.limit === false))
+                        .map((route, idx) =>
+                            route.protected
+                                ? route.element && (
+                                      <Route element={<AdminProtectedRoute />}>
+                                          <Route
+                                              key={idx}
+                                              path={route.path}
+                                              exact={route.exact}
+                                              name={route.name}
+                                              element={<route.element />}
+                                          />
+                                      </Route>
+                                  )
+                                : route.element && (
                                       <Route
                                           key={idx}
                                           path={route.path}
@@ -178,18 +201,8 @@ const AppContent = () => {
                                           name={route.name}
                                           element={<route.element />}
                                       />
-                                  </Route>
-                              )
-                            : route.element && (
-                                  <Route
-                                      key={idx}
-                                      path={route.path}
-                                      exact={route.exact}
-                                      name={route.name}
-                                      element={<route.element />}
-                                  />
-                              ),
-                    )}
+                                  ),
+                        )}
                     <Route path="/" element={<Navigate to="dashboard" replace />} />
                 </Routes>
             </Suspense>

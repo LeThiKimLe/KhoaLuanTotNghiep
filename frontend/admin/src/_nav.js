@@ -128,13 +128,16 @@ const _nav = [
                 name: 'Quản lý đánh giá',
                 to: '/system-manage/reviews',
             },
-            {
-                component: CNavItem,
-                name: 'Quản lý chi phí',
-                to: '/system-manage/expense',
-            },
         ],
         protected: true,
+    },
+    {
+        component: CNavItem,
+        name: 'Quản lý chi phí',
+        to: '/system-manage/expense',
+        icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
+        protected: true,
+        limit: false,
     },
     {
         component: CNavGroup,

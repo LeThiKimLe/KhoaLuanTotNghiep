@@ -37,6 +37,8 @@ import { addDays, convertToDisplayDate, convertToDisplayTimeStamp } from 'src/ut
 import { format, parse } from 'date-fns'
 import { selectCurCompany, selectListAssign } from 'src/feature/bus-company/busCompany.slice'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
+import { selectServiceDueDate } from 'src/feature/fee/fee.slice'
+import { feeAction } from 'src/feature/fee/fee.slice'
 
 const Expense = () => {
     const dispatch = useDispatch()
@@ -64,6 +66,7 @@ const Expense = () => {
     })
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
+    const dueDate = useSelector(selectServiceDueDate)
     const getYearRange = () => {
         var year = []
         const startYear = startTime.getFullYear()
@@ -109,7 +112,22 @@ const Expense = () => {
         dispatch(feeThunk.getFee())
             .unwrap()
             .then((res) => {
-                setListCompanyServiceFee(res.filter((fee) => fee.company.id === companyId))
+                const companyFee = res.filter((fee) => fee.company.id == companyId)
+                setListCompanyServiceFee(companyFee)
+                // Sort fees based on status and dueDate
+                const sortedFees = companyFee.sort((a, b) => {
+                    return new Date(b.dueDate) - new Date(a.dueDate)
+                })
+                // Get the first fee from the sorted array
+                const lastestFee = sortedFees[0]
+                if (lastestFee) {
+                    if (lastestFee.status === 'Đã thanh toán') {
+                        const dueDate = getNextDueDay(lastestFee.dueDate)
+                        dispatch(feeAction.setServiceDueDate(dueDate))
+                    } else {
+                        dispatch(feeAction.setServiceDueDate(new Date(lastestFee.dueDate)))
+                    }
+                }
             })
     }
 
@@ -127,6 +145,7 @@ const Expense = () => {
             .unwrap()
             .then((res) => {
                 //nav to res url in the same tab
+                // console.log(res)
                 window.location.href = res
             })
     }
@@ -215,7 +234,11 @@ const Expense = () => {
         getData()
         verifyPaymentStatus()
     }, [])
-
+    useEffect(() => {
+        if (dueDate < new Date()) {
+            setActiveTab(1)
+        }
+    }, [dueDate])
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -383,6 +406,14 @@ const Expense = () => {
                     </CRow>
                 </TabPanel>
                 <TabPanel className="px-3">
+                    {dueDate < new Date() && (
+                        <b style={{ color: 'red' }}>
+                            <i>{`Dịch vụ quá hạn. Vui lòng thanh toán phí dịch vụ trước ngày ${format(
+                                addDays(dueDate, 5),
+                                'dd/MM/yyyy',
+                            )} để tiếp tục sử dụng dịch vụ. Sau thời gian trên, hệ thống sẽ ngừng cung cấp dịch vụ cho nhà xe của bạn.`}</i>
+                        </b>
+                    )}
                     <CTable striped bordered>
                         <CTableHead>
                             <CTableRow>
