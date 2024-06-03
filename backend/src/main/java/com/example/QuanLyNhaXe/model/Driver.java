@@ -33,6 +33,10 @@ public class Driver {
 
     @Column(name = "address", nullable = false, length = 200)
     private String address;
+    
+    
+    @Column(name = "diriver_license")
+    private String driverLicense;
 
     @Column(name = "img")
     private String img;

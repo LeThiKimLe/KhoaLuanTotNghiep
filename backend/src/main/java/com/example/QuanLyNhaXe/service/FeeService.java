@@ -2,6 +2,7 @@ package com.example.QuanLyNhaXe.service;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDate;
+import java.util.Iterator;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -15,8 +16,11 @@ import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Admin;
 import com.example.QuanLyNhaXe.model.BusCompany;
+import com.example.QuanLyNhaXe.model.Route;
+import com.example.QuanLyNhaXe.model.RouteAssign;
 import com.example.QuanLyNhaXe.model.ServiceFee;
 import com.example.QuanLyNhaXe.model.SystemTransaction;
+import com.example.QuanLyNhaXe.model.Trip;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.AdminRepository;
 import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
@@ -50,7 +54,17 @@ public class FeeService {
 
 		String orderId = utilityService.getRandomNumber(8);
 
-		Integer routeTotal = routeAssignRepository.countBybusCompanyId(companyId);
+		Integer routeTotal =0;
+		List<RouteAssign> routeAssigns=routeAssignRepository.findBybusCompanyId(companyId);
+		if(!routeAssigns.isEmpty()) {
+			for(RouteAssign routeAssign: routeAssigns) {
+				if(checkTripActive(routeAssign.getRoute()))
+				{
+					routeTotal+=1;
+				}
+			}
+		}
+				
 
 		LocalDate dueDate = utilityService.addDays(busCompany.getCoopDay(), 15);
 		long days = utilityService.countDaysToEndOfMonth(dueDate);
@@ -96,7 +110,16 @@ public class FeeService {
 	}
 
 	public ServiceFee createDdefaultFee(LocalDate day, Integer companyId) {
-		Integer routeTotal = routeAssignRepository.countBybusCompanyId(companyId);
+		Integer routeTotal = 0;
+		List<RouteAssign> routeAssigns=routeAssignRepository.findBybusCompanyId(companyId);
+		if(!routeAssigns.isEmpty()) {
+			for(RouteAssign routeAssign: routeAssigns) {
+				if(checkTripActive(routeAssign.getRoute()))
+				{
+					routeTotal+=1;
+				}
+			}
+		}
 		LocalDate nextMonthFirstDay = day.plusMonths(1).withDayOfMonth(1);
 		LocalDate dueDate = nextMonthFirstDay.withDayOfMonth(5);
 		int lastDayOfMonth = nextMonthFirstDay.lengthOfMonth();
@@ -150,6 +173,18 @@ public class FeeService {
 		}
 		return serviceFees.stream().map(serviceFee -> modelMapper.map(serviceFee, ServiceFeeDTO.class)).toList();
 
+	}
+	
+	
+	public boolean checkTripActive (Route route) {
+		
+		for(Trip trip: route.getTrips()) {
+			if(trip.isActive()==true) {
+				return true;
+			}
+			
+		}
+		return false;
 	}
 
 }
