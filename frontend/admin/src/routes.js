@@ -141,6 +141,7 @@ const routes = [
         name: 'Quản lý chi phí',
         element: Expense,
         protected: true,
+        limit: false,
     },
     {
         path: '/schedule-manage',

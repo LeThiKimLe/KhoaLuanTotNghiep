@@ -285,7 +285,6 @@ const ScheduleStatusTracker = ({ schedule, openOrderForm, closeForm, finishAdd }
             else setNextAction(status[0])
         }
     }, [status])
-    console.log(nextAction)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -397,29 +396,39 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
         window.open(`${baseUrl}/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
     }
     const createCommand = () => {
-        dispatch(orderThunk.createOrder({ scheduleId: schedule.id, file: null }))
-            .unwrap()
-            .then(() => {
-                //reload page
-                addToast(() =>
-                    CustomToast({
-                        message: 'Đã cấp lệnh thành công',
-                        type: 'success',
-                    }),
-                )
-                setTimeout(() => {
-                    finishAdd()
-                }, 1000)
-            })
-            .catch((err) => {
-                addToast(() =>
-                    CustomToast({
-                        message: err,
-                        type: 'error',
-                    }),
-                )
-            })
+        if (schedule.bus && schedule.driverUser)
+            dispatch(orderThunk.createOrder({ scheduleId: schedule.id, file: null }))
+                .unwrap()
+                .then(() => {
+                    //reload page
+                    addToast(() =>
+                        CustomToast({
+                            message: 'Đã cấp lệnh thành công',
+                            type: 'success',
+                        }),
+                    )
+                    setTimeout(() => {
+                        finishAdd()
+                    }, 1000)
+                })
+                .catch((err) => {
+                    addToast(() =>
+                        CustomToast({
+                            message: err,
+                            type: 'error',
+                        }),
+                    )
+                })
+        else {
+            addToast(() =>
+                CustomToast({
+                    message: 'Cần phân công tài xế và xe cho chuyến để cấp lệnh',
+                    type: 'error',
+                }),
+            )
+        }
     }
+
     const getImage = () => {
         if (schedule.transportationOrder && schedule.transportationOrder.image)
             return schedule.transportationOrder.image
@@ -1052,11 +1061,20 @@ const ScheduleTracking = () => {
         setListScheduleData([...listSchedule])
     }
     useEffect(() => {
-        if (listTrip.length === 0) {
-            const listTripIn = tripProcess(listRoute, companyId)
+        if (currentRoute !== -1) {
+            const listTripIn = tripProcess(listRoute, companyId).filter(
+                (trip) =>
+                    trip.route.id == currentRoute &&
+                    trip.price !== 0 &&
+                    trip.active &&
+                    trip.busType &&
+                    trip.turnGo.stopStations.some((st) => st.stationType.includes('park')),
+            )
             setListTrip(listTripIn)
+            if (listTripIn.length > 0) {
+                setCurrentTrip(listTripIn[0])
+            } else setCurrentTrip(null)
         }
-        setCurrentTrip(null)
     }, [currentRoute])
     useEffect(() => {
         const schdShowList = []
@@ -1074,6 +1092,7 @@ const ScheduleTracking = () => {
         setShowList(schdShowList)
     }, [listScheduleData])
     useEffect(() => {
+        console.log('change trip')
         if (currentTrip) {
             const schdShowList = []
             listScheduleData
@@ -1084,7 +1103,7 @@ const ScheduleTracking = () => {
                     }
                 })
             setShowList(schdShowList)
-        }
+        } else setShowList([])
     }, [currentTrip])
     useEffect(() => {
         if (currentDay) {
@@ -1128,7 +1147,7 @@ const ScheduleTracking = () => {
             </CRow>
             {currentRoute !== 0 && (
                 <div className="mt-3">
-                    {listTrip
+                    {/* {listTrip
                         .filter((trip) => trip.route.id == currentRoute)
                         .map((trip, index) => (
                             <CFormCheck
@@ -1143,9 +1162,11 @@ const ScheduleTracking = () => {
                                 checked={currentTrip ? currentTrip.id == trip.id : false}
                                 onChange={() => setCurrentTrip(trip)}
                             />
-                        ))}
+                        ))} */}
+                    <i>{currentTrip ? getTripJourney(currentTrip) : 'Tuyến chưa có chuyến xe'}</i>
                 </div>
             )}
+
             <div className="tabStyle">
                 {loading ? (
                     <div className="text-center w-100">

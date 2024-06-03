@@ -631,7 +631,9 @@ const SortStopStation = ({ trip, turn, finishAdd }) => {
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const [loading, setLoading] = useState(false)
-    const listStation = [...trip?.turnGo.stopStations].sort((a, b) => a.arrivalTime - b.arrivalTime)
+    const [listStation, setListStation] = useState(
+        [...trip?.turnGo.stopStations].sort((a, b) => a.arrivalTime - b.arrivalTime),
+    )
     const getStationType = (station) => {
         if (station.stationType === 'pick')
             if (station.station.id === trip.startStation.id)
@@ -779,6 +781,9 @@ const SortStopStation = ({ trip, turn, finishAdd }) => {
             }),
         )
     }, [listStation])
+    useEffect(() => {
+        setListStation([...trip?.turnGo.stopStations].sort((a, b) => a.arrivalTime - b.arrivalTime))
+    }, [trip])
     return (
         <div className="my-2">
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -857,6 +862,8 @@ const StatusTracker = ({ trip }) => {
         }
         if (trip.price !== 0) {
             newStatus[2].achived = true
+        }
+        if (trip.turnGo.stopStations.some((sta) => sta.stationType.includes('park'))) {
             newStatus[3].achived = true
         }
         if (newStatus.slice(0, newStatus.length - 1).every((status) => status.achived === true))

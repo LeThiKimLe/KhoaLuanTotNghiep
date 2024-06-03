@@ -769,17 +769,20 @@ const ScheduleManagement = () => {
                     trip.route.id == currentRoute &&
                     trip.price !== 0 &&
                     trip.active &&
-                    trip.busType,
+                    trip.busType &&
+                    trip.turnGo.stopStations.some((st) => st.stationType.includes('park')),
             )
             setListTrip(listTripIn)
-            console.log(listRoute)
-            if (!curTrip) setCurrentTrip(-1)
-            else
+            if (!curTrip) {
+                if (listTripIn.length > 0) setCurrentTrip(0)
+                else setCurrentTrip(-1)
+            } else
                 setCurrentTrip(listTripIn.findIndex((trip) => trip.turnGo.id === curTrip.turnGo.id))
         }
     }, [currentRoute])
     useEffect(() => {
-        if (currentTrip !== -1 && curTrip) {
+        if (currentTrip !== -1) {
+            dispatch(scheduleAction.setCurrentTrip(listTrip[currentTrip]))
             dispatch(scheduleThunk.getMaxSchedules(currentTrip))
                 .unwrap()
                 .then((res) => {
@@ -792,7 +795,7 @@ const ScheduleManagement = () => {
                 .catch((error) => {})
             dispatch(
                 scheduleThunk.getTripBusDriver({
-                    tripId: curTrip.turnGo.id,
+                    tripId: listTrip[currentTrip].turnGo.id,
                 }),
             )
                 .unwrap()
@@ -907,7 +910,7 @@ const ScheduleManagement = () => {
             </CRow>
             {currentRoute !== 0 && (
                 <div className="mt-3">
-                    {listTrip.map((trip, index) => (
+                    {/* {listTrip.map((trip, index) => (
                         <CFormCheck
                             inline
                             type="radio"
@@ -920,7 +923,12 @@ const ScheduleManagement = () => {
                             checked={currentTrip == index}
                             onChange={() => handleSelectTrip(trip, index)}
                         />
-                    ))}
+                    ))} */}
+                    <i>
+                        {currentTrip !== -1
+                            ? getTripJourney(listTrip[currentTrip])
+                            : 'Tuyến chưa đủ điều kiện mở bán vé'}
+                    </i>
                 </div>
             )}
             {currentTrip !== -1 && (

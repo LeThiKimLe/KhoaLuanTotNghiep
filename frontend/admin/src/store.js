@@ -21,6 +21,8 @@ import statisticsReducer from './feature/statistics/statistics.slice'
 import specialReducer from './feature/special-day/specialDay.slice'
 import reviewReducer from './feature/review/review.slice'
 import companyReducer from './feature/bus-company/busCompany.slice'
+import feeReducer from './feature/fee/fee.slice'
+import noticeReducer from './feature/notification/notice.slice'
 
 const rootPersistConfig = {
     key: 'root',
@@ -48,6 +50,8 @@ const rootReducer = combineReducers({
     special: specialReducer,
     review: reviewReducer,
     company: companyReducer,
+    fee: feeReducer,
+    notice: noticeReducer,
 })
 
 const persitedReducer = persistReducer(rootPersistConfig, rootReducer)

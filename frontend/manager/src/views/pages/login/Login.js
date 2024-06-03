@@ -74,7 +74,7 @@ const Login = () => {
     useEffect(() => {
         if (reload) {
             if (!!userRole) {
-                if (userRole === 5) navigate('/')
+                if (userRole === 5) navigate('/dashboard')
                 else
                     addToast(() =>
                         CustomToast({ message: 'Bạn không có quyền truy cập', type: 'error' }),

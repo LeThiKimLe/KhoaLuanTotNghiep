@@ -78,7 +78,23 @@ const bookingSlice = createSlice({
         state.loading = false;
         state.message = action.payload;
       })
-
+      .addCase(bookingThunk.bookingReturn.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(bookingThunk.bookingReturn.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message =
+          action.payload.message ||
+          "Đã đặt giữ chỗ thành công. Hãy thanh toán trong 10 phút";
+        state.bookingCode = action.payload[0].code;
+        state.bookingSessionTime = action.payload[0].bookingDate;
+        state.error = false;
+      })
+      .addCase(bookingThunk.bookingReturn.rejected, (state, action) => {
+        state.error = true;
+        state.loading = false;
+        state.message = action.payload;
+      })
       .addCase(bookingThunk.getBookingInfor.pending, (state) => {
         state.loading = true;
       })
@@ -93,7 +109,6 @@ const bookingSlice = createSlice({
         state.message = action.payload;
         state.bookingHistory = null;
       })
-
       .addCase(bookingThunk.bookingPayment.pending, (state) => {
         state.loading = true;
       })

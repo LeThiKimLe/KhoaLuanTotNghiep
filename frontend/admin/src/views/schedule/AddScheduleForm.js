@@ -72,6 +72,7 @@ import { TIME_TABLE, dayInWeek } from 'src/utils/constants'
 import parse from 'date-fns/parse'
 import { shortenName } from 'src/utils/convertUtils'
 import { check } from 'prettier'
+import { selectServiceDueDate } from 'src/feature/fee/fee.slice'
 const TimeBox = ({ time, removeTime, fix }) => {
     const [showRemove, setShowRemove] = useState(false)
     const handleRemove = () => {
@@ -257,20 +258,21 @@ const AddScheduleForm = ({
     fixSchedule,
 }) => {
     const curTrip = useSelector(selectCurrentTrip)
+    console.log(curTrip)
     const curRoute = useSelector(selectCurrentRoute)
     const [openDateRange, setOpenDateRange] = useState(false)
     const [listTimeGo, setListTimeGo] = useState(
         listPreTimeGo.length > 0
             ? listPreTimeGo.map((time) => ({ time: time, fix: true }))
             : fixSchedule
-                  .filter((schd) => schd.trip.id === curTrip.turnGo.id)
+                  .filter((schd) => schd.trip.id === curTrip?.turnGo.id)
                   .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
     )
     const [listTimeReturn, setListTimeReturn] = useState(
         listPreTimeReturn.length > 0
             ? listPreTimeReturn.map((time) => ({ time: time, fix: true }))
             : fixSchedule
-                  .filter((schd) => schd.trip.id === curTrip.turnBack.id)
+                  .filter((schd) => schd.trip.id === curTrip?.turnBack.id)
                   .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
     )
     const [note, setNote] = useState('')
@@ -280,6 +282,7 @@ const AddScheduleForm = ({
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const requestCount = useRef(0)
+    const dueTime = useSelector(selectServiceDueDate)
     const [dateRange, setDateRange] = useState([
         {
             startDate: currentDay,
@@ -381,8 +384,23 @@ const AddScheduleForm = ({
         if (count <= tripInfor.busCount && count <= tripInfor.driverCount) return true
         else return false
     }
+    const checkTime = () => {
+        if (dueTime < dateRange[0].endDate) {
+            addToast(() =>
+                CustomToast({
+                    message: `Không thể thêm lịch quá hạn dịch vụ - Ngày ${format(
+                        dueTime,
+                        'dd/MM/yyyy',
+                    )}`,
+                    type: 'error',
+                }),
+            )
+            return false
+        }
+        return true
+    }
     const handleSchedule = () => {
-        if (listTimeGo.length > 0) {
+        if (listTimeGo.length > 0 && checkTime()) {
             requestCount.current = 0
             let maxCount = 0
             const scheduleGoInfor = {
@@ -504,7 +522,7 @@ const AddScheduleForm = ({
             listPreTimeGo.length > 0
                 ? listPreTimeGo.map((time) => ({ time: time, fix: true }))
                 : fixSchedule
-                      .filter((schd) => schd.trip.id === curTrip.turnGo.id)
+                      .filter((schd) => schd.trip.id === curTrip?.turnGo.id)
                       .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
         )
 
@@ -512,7 +530,7 @@ const AddScheduleForm = ({
             listPreTimeReturn.length > 0
                 ? listPreTimeReturn.map((time) => ({ time: time, fix: true }))
                 : fixSchedule
-                      .filter((schd) => schd.trip.id === curTrip.turnBack.id)
+                      .filter((schd) => schd.trip.id === curTrip?.turnBack.id)
                       .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
         )
     }, [curTrip, fixSchedule, listPreTimeReturn, listPreTimeGo])

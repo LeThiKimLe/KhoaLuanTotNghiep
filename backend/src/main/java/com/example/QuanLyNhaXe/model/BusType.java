@@ -2,8 +2,14 @@ package com.example.QuanLyNhaXe.model;
 
 import java.util.List;
 
-import jakarta.persistence.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+import com.example.QuanLyNhaXe.service.ReadBaseProperty;
+import com.google.api.client.util.Value;
+
+import jakarta.persistence.*;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +23,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Component
 public class BusType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,4 +61,8 @@ public class BusType {
     
     @Column(name = "is_active")
 	private boolean isActive;
+
+    public String getImage() {
+        return "http://localhost:5000" + this.image;
+    }
 }

@@ -57,6 +57,7 @@ const Trip = ({ tabStyle }) => {
     const user = useSelector(selectUser)
     const currentTrip = useSelector(selectCurrentTrip)
     const returnTrip = useSelector(selectReturnTrip)
+    console.log(returnTrip)
     const inforForm = useRef(null)
     const [message, setMessage] = useState({ message: '', messagetype: 2 })
     const loading = useSelector(selectLoading)
@@ -165,6 +166,7 @@ const Trip = ({ tabStyle }) => {
     }, [selectedReturnSeats, message.messagetype]);
 
     const handlePayment = () => {
+        console.log('Đặt 1 chiều')
         if (selectedSeats.length === 0)
             setMessage({ message: 'Vui lòng chọn đủ chỗ', messagetype: message.messagetype + 1 })
         else if (!(inforForm.current.checkValidity()))
@@ -202,6 +204,53 @@ const Trip = ({ tabStyle }) => {
                         setMessage({ message: error, messagetype: 2 })
                     })
             }
+        }
+    }
+
+    const handlePaymentReturn = () => {
+        console.log('Đặt 2 chiều')
+        if (selectedSeats.length === 0 || selectedReturnSeats.length === 0)
+            setMessage({ message: 'Vui lòng chọn đủ chỗ', messagetype: message.messagetype + 1 })
+        else if (!(inforForm.current.checkValidity()))
+            setMessage({ message: 'Vui lòng điền đủ thông tin người mua', messagetype: message.messagetype + 1 })
+        else if (isConfirmed === false)
+            setMessage({ message: 'Vui lòng tích xác nhận điều khoản', messagetype: message.messagetype + 1 })
+        else {
+            const bookingGo = {
+                bookingTrip: currentTrip,
+                bookedSeat: selectedSeats,
+                pickPoint: pickLocation,
+                dropPoint: dropLocation
+            }
+            const bookingReturn = {
+                bookingTrip: returnTrip,
+                bookedSeat: selectedReturnSeats,
+                pickPoint: pickReturnLocation,
+                dropPoint: dropReturnLocation
+            }
+            const bookingInfor = {
+                bookingTrip: currentTrip,
+                bookingUser: userInfor,
+                bookedSeat: selectedSeats,
+                pickPoint: pickLocation,
+                dropPoint: dropLocation,
+                bookingReturn: bookingReturn
+            }
+            dispatch(bookingActions.saveInfor(bookingInfor))
+            setMessage({ message: '', messagetype: 3 })
+            dispatch(bookingThunk.bookingReturn({
+                bookingGo: bookingGo,
+                bookingReturn: bookingReturn,
+                userInfo: userInfor,
+            }))
+                .unwrap()
+                .then((response) => {
+                    dispatch(setPaymentURL(response[0].paymentURL))
+                    navigate(`/payment/${response[0].code}and${response[1].code}`)
+                })
+                .catch((error) => {
+                    setMessage({ message: error, messagetype: 2 })
+                })
         }
     }
 
@@ -342,7 +391,7 @@ const Trip = ({ tabStyle }) => {
                                         </span>
                                         <Button text="Thanh toán"
                                             className={styles.btnCheckout}
-                                            onClick={handlePayment}
+                                            onClick={returnTrip ? handlePaymentReturn : handlePayment}
                                             loading={loading}
                                         >
                                         </Button>

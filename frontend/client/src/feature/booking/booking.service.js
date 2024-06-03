@@ -178,6 +178,67 @@ const keepPayment = createAsyncThunk(
   },
 );
 
+const bookingReturn = createAsyncThunk(
+  "bookings/return",
+  async ({bookingGo, bookingReturn, userInfo}, thunkAPI) => {
+    try {
+      const response = await axiosClient.post("/bookings/booking-return-ticket", {
+          ticketNumber: bookingGo.bookedSeat.length,
+          name: userInfo.name,
+          email: userInfo.email,
+          tel: userInfo.tel,
+          tripId: bookingGo.bookingTrip.tripInfor.id,
+          scheduleId: bookingGo.bookingTrip.id,
+          pickStationId: bookingGo.pickPoint,
+          dropStationId: bookingGo.dropPoint,
+          seatName: bookingGo.bookedSeat,
+          ticketNumberReturn: bookingReturn.bookedSeat.length,
+          tripReturnId:  bookingReturn.bookingTrip.tripInfor.id,
+          scheduleReturnId: bookingReturn.bookingTrip.id,
+          pickStationReturnId: bookingReturn.pickPoint,
+          dropStationReturnId: bookingReturn.dropPoint,
+          seatNameReturn: bookingReturn.bookedSeat,      
+      });
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
+const bookingReturnPayment = createAsyncThunk(
+  "tickets/return/payment",
+  async (
+    { bookingCode, bookingCodeReturn, payment, transactionNo, transactionDate },
+    thunkAPI,
+  ) => {
+    try {
+      const response = await axiosClient.put("tickets/payments", {
+          bookingCode: bookingCode,
+          bookingCodeReturn: bookingCodeReturn,
+          paymentMethod: payment,
+          transactionNo: transactionNo,
+          transactionDate: transactionDate,
+      });
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
+
 const bookingThunk = {
   bookingForGuest,
   bookingForUser,
@@ -186,6 +247,8 @@ const bookingThunk = {
   cancelPayment,
   getUserHistory,
   keepPayment,
+  bookingReturn,
+  bookingReturnPayment,
 };
 
 export default bookingThunk;

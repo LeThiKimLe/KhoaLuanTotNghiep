@@ -17,6 +17,12 @@ import {
     selectListCompany,
     selectUpdate,
 } from 'src/feature/bus-company/busCompany.slice'
+import feeThunk from 'src/feature/fee/fee.service'
+import { feeAction, selectListFee, selectServiceDueDate } from 'src/feature/fee/fee.slice'
+import { convertToDisplayDate, subStractDays } from 'src/utils/convertUtils'
+import parse from 'date-fns/parse'
+import { useNavigate } from 'react-router-dom'
+import { noticeAction } from 'src/feature/notification/notice.slice'
 
 // const AppContent = () => {
 //     return (
@@ -47,6 +53,10 @@ const AppContent = () => {
     const dispatch = useDispatch()
     const companyId = useSelector(selectCompanyId)
     const update = useSelector(selectUpdate)
+    const dueDate = useSelector(selectServiceDueDate)
+    const [allowAccess, setAllowAccess] = React.useState(true)
+    const navigate = useNavigate()
+    const listFee = useSelector(selectListFee)
     //Get company route info
     const getCompanyRouteData = () => {
         dispatch(routeThunk.getRoute())
@@ -103,6 +113,9 @@ const AppContent = () => {
             .then(() => {
                 dispatch(companyActions.setUpdate(false))
             })
+            .catch((err) => {
+                console.log(err)
+            })
     }
     const getCompanyData = () => {
         dispatch(companyThunk.getCompany())
@@ -111,22 +124,117 @@ const AppContent = () => {
                 const company = listCompany.find((company) => company.busCompany.id === companyId)
                 if (company) dispatch(companyActions.setCurCompany(company))
             })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+    const getNextDueDay = (day) => {
+        var currentDay = parse(day, 'yyyy-MM-dd', new Date())
+        var currentMonth = currentDay.getMonth()
+        var nextDate = new Date(currentDay.getTime())
+        nextDate.setDate(5)
+        nextDate.setMonth(currentMonth + 1)
+        return nextDate
+    }
+
+    const getServiceData = () => {
+        dispatch(feeThunk.getFee())
+            .unwrap()
+            .then((res) => {
+                const companyFee = res.filter((fee) => fee.company.id == companyId)
+                // Sort fees based on status and dueDate
+                const sortedFees = companyFee.sort((a, b) => {
+                    return new Date(b.dueDate) - new Date(a.dueDate)
+                })
+                // Get the first fee from the sorted array
+                const lastestFee = sortedFees[0]
+                if (lastestFee) {
+                    if (lastestFee.status === 'Đã thanh toán') {
+                        const dueDate = getNextDueDay(lastestFee.dueDate)
+                        dispatch(feeAction.setServiceDueDate(dueDate))
+                    } else {
+                        dispatch(feeAction.setServiceDueDate(new Date(lastestFee.dueDate)))
+                    }
+                }
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+    }
+    const getDueFeeNotice = () => {
+        if (listFee.length > 0) {
+            const sortedFees = [...listFee].sort((a, b) => {
+                return new Date(b.dueDate) - new Date(a.dueDate)
+            })
+            const dueFee = sortedFees[0]
+            if (dueFee && dueFee.status !== 'Đã thanh toán') {
+                const dueDate = new Date(dueFee.dueDate)
+                const currentDate = new Date()
+                const diffTime = dueDate - currentDate
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
+                if (diffDays <= 5 && diffDays >= 0) {
+                    const newNotice = {
+                        id: dueFee.id,
+                        title: 'Phí dịch vụ sắp đến hạn',
+                        content: `Phí dịch vụ sắp đến hạn vào ngày ${dueFee.dueDate}!`,
+                        type: 'fee',
+                        location: '/system-manage/expense',
+                    }
+                    dispatch(noticeAction.addNotice(newNotice))
+                } else if (diffDays < 0) {
+                    const newNotice = {
+                        id: dueFee.id,
+                        title: 'Phí dịch vụ đã quá hạn',
+                        content: `Phí dịch vụ đã quá hạn vào ngày ${convertToDisplayDate(
+                            dueFee.dueDate,
+                        )}!. Hệ thống sẽ bị khóa cho đến khi bạn thanh toán phí dịch vụ!`,
+                        type: 'fee',
+                        location: '/system-manage/expense',
+                    }
+                    dispatch(noticeAction.addNotice(newNotice))
+                }
+            }
+        }
     }
     useEffect(() => {
         getCompanyRouteData()
         getCompanyData()
+        getServiceData()
     }, [])
     useEffect(() => {
         if (update) getCompanyRouteData()
     }, [update])
+    useEffect(() => {
+        if (dueDate < new Date()) {
+            setAllowAccess(false)
+        } else {
+            setAllowAccess(true)
+        }
+    }, [dueDate])
+    useEffect(() => {
+        getDueFeeNotice()
+    }, [listFee])
+
     return (
         <CContainer lg>
             <Suspense fallback={<CSpinner color="primary" />}>
                 <Routes>
-                    {routes.map((route, idx) =>
-                        route.protected
-                            ? route.element && (
-                                  <Route element={<AdminProtectedRoute />}>
+                    {routes
+                        .filter((rt) => allowAccess || (!allowAccess && rt.limit === false))
+                        .map((route, idx) =>
+                            route.protected
+                                ? route.element && (
+                                      <Route element={<AdminProtectedRoute />}>
+                                          <Route
+                                              key={idx}
+                                              path={route.path}
+                                              exact={route.exact}
+                                              name={route.name}
+                                              element={<route.element />}
+                                          />
+                                      </Route>
+                                  )
+                                : route.element && (
                                       <Route
                                           key={idx}
                                           path={route.path}
@@ -134,18 +242,8 @@ const AppContent = () => {
                                           name={route.name}
                                           element={<route.element />}
                                       />
-                                  </Route>
-                              )
-                            : route.element && (
-                                  <Route
-                                      key={idx}
-                                      path={route.path}
-                                      exact={route.exact}
-                                      name={route.name}
-                                      element={<route.element />}
-                                  />
-                              ),
-                    )}
+                                  ),
+                        )}
                     <Route path="/" element={<Navigate to="dashboard" replace />} />
                 </Routes>
             </Suspense>

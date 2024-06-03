@@ -156,20 +156,16 @@ public class TransactionService {
 
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
-		System.out.println(booking.getTickets().size());
 
 		Booking booking2 = bookingRepository.findByCode(createPaymentDTO.getBookingCodeReturn())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
 
-		System.out.println(booking2.getTickets().size());
 		bookings.add(booking);
 		bookings.add(booking2);
 
 		List<Ticket> tickets = new ArrayList<>();
 		tickets.addAll(booking.getTickets());
-		System.out.println(tickets.size());
 		tickets.addAll(booking2.getTickets());
-		System.out.println(tickets.size());
 		if (!tickets.isEmpty()) {
 			for (Ticket ticket : tickets) {
 				if (!ticket.getState().equals(TicketState.CANCELED.getLabel())) {
@@ -179,7 +175,6 @@ public class TransactionService {
 					}
 					Bill bill = Bill.builder().referCode(billReferCode).build();
 					priceBill += ticket.getTicketPrice();
-					System.out.println(ticket.getId());
 					billRepository.save(bill);
 					ticket.setBill(bill);
 
