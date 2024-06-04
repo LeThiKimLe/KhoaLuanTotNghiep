@@ -38,9 +38,27 @@ const getListReview = createAsyncThunk(
     },
 )
 
+const getCompanyReview = createAsyncThunk('manager/company/review', async (companyId, thunkAPI) => {
+    try {
+        const response = await axiosClient.get('staff/bookings/schedules/reviews-company', {
+            params: {
+                companyId: companyId,
+            },
+        })
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const reviewThunk = {
     getListReview,
     checkReview,
+    getCompanyReview,
 }
 
 export default reviewThunk

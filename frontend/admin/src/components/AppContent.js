@@ -5,7 +5,7 @@ import AdminProtectedRoute from './AdminProtectedRoute'
 // routes config
 import routes from '../routes'
 import { useDispatch, useSelector } from 'react-redux'
-import { selectCompanyId } from 'src/feature/auth/auth.slice'
+import { authActions, selectCompanyId } from 'src/feature/auth/auth.slice'
 import { routeAction, selectListRoute } from 'src/feature/route/route.slice'
 import { getListAssignLocation } from 'src/utils/routeUtils'
 import { locationAction } from 'src/feature/location/location.slice'
@@ -14,6 +14,7 @@ import companyThunk from 'src/feature/bus-company/busCompany.service'
 import locationThunk from 'src/feature/location/location.service'
 import {
     companyActions,
+    selectCurCompany,
     selectListCompany,
     selectUpdate,
 } from 'src/feature/bus-company/busCompany.slice'
@@ -57,6 +58,7 @@ const AppContent = () => {
     const [allowAccess, setAllowAccess] = React.useState(true)
     const navigate = useNavigate()
     const listFee = useSelector(selectListFee)
+    const curCompany = useSelector(selectCurCompany)
     //Get company route info
     const getCompanyRouteData = () => {
         dispatch(routeThunk.getRoute())
@@ -214,7 +216,6 @@ const AppContent = () => {
     useEffect(() => {
         getDueFeeNotice()
     }, [listFee])
-
     return (
         <CContainer lg>
             <Suspense fallback={<CSpinner color="primary" />}>
