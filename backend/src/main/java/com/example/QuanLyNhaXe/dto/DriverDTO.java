@@ -9,6 +9,7 @@ public class DriverDTO {
 	private Integer driverId;
 	private String idCard;
 	private String address;
+	private String driverLicense;
 	private String img;
 	private Date beginWorkDate;
 	private String licenseNumber;

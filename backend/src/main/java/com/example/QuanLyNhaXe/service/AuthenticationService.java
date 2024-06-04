@@ -199,7 +199,7 @@ public class AuthenticationService {
 		User user = createUser(signupDTO, 3, userName);
 
 		Driver driver = Driver.builder().address(signupDriverDTO.getAddress())
-				.beginWorkDate(signupDriverDTO.getBeginWorkDate()).idCard(signupDriverDTO.getIdCard()).img(DEFAULT_IMG)
+				.beginWorkDate(signupDriverDTO.getBeginWorkDate()).idCard(signupDriverDTO.getIdCard()).img(DEFAULT_IMG).driverLicense(signupDriverDTO.getDriverLicense())
 				.licenseNumber(signupDriverDTO.getLicenseNumber()).issueDate(signupDriverDTO.getIssueDate()).user(user).busCompany(busCompany)
 				.build();
 		user.setDriver(driver);

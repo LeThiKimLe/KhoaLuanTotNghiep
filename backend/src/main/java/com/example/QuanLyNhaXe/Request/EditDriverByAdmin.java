@@ -25,6 +25,8 @@ public class EditDriverByAdmin {
 	private String idCard;
 	@NotEmpty(message = "TĐịa chỉ không được để trống")
 	private String address;
+	
+	private String driverLicense;
 	@NotNull(message = "Ngày bắt đầu công việc không được để trống")
 	private Date beginWorkDate;
 	@NotEmpty(message = "Số giấy phép  không được để trống")
