@@ -46,6 +46,8 @@ const Expense = React.lazy(() => import('./views/expense/Expense'))
 //Transportation Management
 const ScheduleTracking = React.lazy(() => import('./views/schedule/ScheduleTracking'))
 
+const Lock = React.lazy(() => import('./views/pages/lock/Lock'))
+
 const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
@@ -56,6 +58,7 @@ const routes = [
     { path: '/search-ticket', name: 'Tìm vé', element: SearchTicket },
     { path: '/confirm-cancel', name: 'Duyệt hủy vé', element: ConfirmCancel },
     { path: '/chat', name: 'Cửa sổ khách hàng', element: Chat },
+    { path: '/lock', name: 'Limit', element: Lock },
     {
         path: '/employee-manage',
         name: 'Quản lý nhân sự',

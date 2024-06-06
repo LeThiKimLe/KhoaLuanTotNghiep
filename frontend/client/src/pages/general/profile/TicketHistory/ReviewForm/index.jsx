@@ -8,6 +8,7 @@ import { convertToDisplayDate } from '../../../../../utils/unitUtils'
 import { useDispatch, useSelector } from 'react-redux'
 import reviewThunk from '../../../../../feature/review/review.service'
 import { selectUserReview } from '../../../../../feature/review/review.slice'
+import { INVAILD_WORDS } from '../../../../../utils/constants'
 const ReviewForm = ({closeForm, trip, updateList}) => {
     const dispatch = useDispatch()
     const listReview = useSelector(selectUserReview)
@@ -21,30 +22,43 @@ const ReviewForm = ({closeForm, trip, updateList}) => {
     const preventClose = (e) => {
         e.stopPropagation()
     }
+    const scanForInvalidWord = (text) => {
+        for (let i = 0; i < INVAILD_WORDS.length; i++){
+            if (text.toLowerCase().includes(INVAILD_WORDS[i])){
+                return false
+            }
+        }
+        return true
+    }
     const handleSendReview =  () => {
         if (review === 0){
             setError('Vui lòng chọn số sao')
         }
         else {
-            setLoading(true)
-            dispatch(reviewThunk.sendReview({
-                rate: review,
-                comment: comment,
-                scheduleId: trip.tickets[0]?.schedule.id,
-            }))
-            .unwrap()
-            .then(() => {
-                setLoading(false)
-                setSuccessMessage('Gửi đánh giá thành công')
-                updateList()
-                setTimeout(() => {
-                    closeForm()
-                }, 2000)
-            })
-            .catch((error) => {
-                setLoading(false)
-                setError(error.toString())
-            })
+            if (scanForInvalidWord(comment)){
+                setLoading(true)
+                dispatch(reviewThunk.sendReview({
+                    rate: review,
+                    comment: comment,
+                    scheduleId: trip.tickets[0]?.schedule.id,
+                }))
+                .unwrap()
+                .then(() => {
+                    setLoading(false)
+                    setSuccessMessage('Gửi đánh giá thành công')
+                    updateList()
+                    setTimeout(() => {
+                        closeForm()
+                    }, 2000)
+                })
+                .catch((error) => {
+                    setLoading(false)
+                    setError(error.toString())
+                })
+            }
+            else {
+                setError('Đánh giá của bạn chứa từ ngữ không phù hợp')
+            }
         }
     }
     return (
@@ -115,8 +129,10 @@ const ReviewForm = ({closeForm, trip, updateList}) => {
                             onChange={(e) => setComment(e.target.value)}>
                         </textarea>
                     </div>
-                    <i style={{color: 'red', margin: '5px 0'}}>{error !== '' ? error: ''}</i>
-                    <i style={{color: 'green', margin: '5px 0'}}>{successMessage !== '' ? successMessage: ''}</i>
+                    <div>
+                        <i style={{color: 'red'}}>{error !== '' ? error: ''}</i>
+                        <i style={{color: 'green'}}>{successMessage !== '' ? successMessage: ''}</i>
+                    </div>
                     <br></br>
                     {
                         !!thisReview === false && (
