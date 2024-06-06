@@ -35,7 +35,7 @@ public class Driver {
     private String address;
     
     
-    @Column(name = "diriver_license")
+    @Column(name = "driver_license")
     private String driverLicense;
 
     @Column(name = "img")

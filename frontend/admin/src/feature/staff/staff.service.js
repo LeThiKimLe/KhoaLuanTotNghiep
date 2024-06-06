@@ -88,6 +88,7 @@ const addDriver = createAsyncThunk('admin/drivers/add', async (driverInfor, thun
             gender: driverInfor.gender,
             idCard: driverInfor.idCard,
             address: driverInfor.address,
+            driverLicense: driverInfor.driverLicense,
             beginWorkDate: driverInfor.beginWorkDate,
             issueDate: driverInfor.issueDate,
             licenseNumber: driverInfor.licenseNumber,
@@ -112,6 +113,7 @@ const editDriver = createAsyncThunk('admin/driver/edit', async (driverInfor, thu
         formData.append('gender', driverInfor.gender)
         formData.append('idCard', driverInfor.idCard)
         formData.append('address', driverInfor.address)
+        formData.append('driverLicense', driverInfor.driverLicense)
         formData.append('beginWorkDate', driverInfor.beginWorkDate)
         formData.append('licenseNumber', driverInfor.licenseNumber)
         formData.append('issueDate', driverInfor.issueDate)

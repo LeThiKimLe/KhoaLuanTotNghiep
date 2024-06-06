@@ -341,8 +341,15 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
     const commandData = {
         companyName: curCompany.busCompany.name,
         companyTel: curCompany.admin.tel,
-        commandId: '02',
-        exportTime: ['TP. Hồ Chí Minh', '12', '03', '2024'],
+        commandId: schedule.transportationOrder?.id,
+        exportTime: [
+            curCompany?.admin?.address
+                ? curCompany.admin.address.split(',').pop().trim()
+                : 'TP. Hồ Chí Minh',
+            new Date(schedule.departDate).getDate().toString(),
+            (new Date(schedule.departDate).getMonth() + 1).toString().padStart(2, '0'),
+            new Date(schedule.departDate).getFullYear().toString(),
+        ],
         valueSpan: [
             convertToDisplayDate(schedule.departDate),
             format(
@@ -354,13 +361,15 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
             ),
         ],
         driver1: schedule.driverUser?.name,
+        driverLicense1: schedule.driverUser?.driverLicense,
         driver2: schedule.driverUser2?.name,
-        assistant: 'Lê Văn A',
+        driverLicense2: schedule.driverUser2?.driverLicense,
+        assistant: '',
         busPlate: schedule.bus?.licensePlate,
         seatNum: schedule.bus?.type?.capacity,
         busType: schedule.bus?.type?.description,
         desdep: getTripJourney(schedule.tripInfor),
-        routeId: '34UFYCHN',
+        routeId: schedule.tripInfor.routeCode,
         route: schedule.tripInfor.schedule,
         dep: getTripJourney(schedule.tripInfor).split('-')[0],
         departTime: schedule.departTime.slice(0, -3),
@@ -1006,6 +1015,8 @@ const ScheduleTracking = () => {
         getScheduleData()
     }
     const getScheduleData = async () => {
+        console.log('getScheduleData')
+        console.log(listTrip)
         setLoading(true)
         let filterSchedule = []
         const searchDate = [startDate, currentDay, endDate]
@@ -1092,7 +1103,6 @@ const ScheduleTracking = () => {
         setShowList(schdShowList)
     }, [listScheduleData])
     useEffect(() => {
-        console.log('change trip')
         if (currentTrip) {
             const schdShowList = []
             listScheduleData
@@ -1113,6 +1123,9 @@ const ScheduleTracking = () => {
     useEffect(() => {
         setCurrentDate(new Date())
     }, [])
+    useEffect(() => {
+        setListTrip(tripProcess(listRoute, companyId))
+    }, [listRoute])
     return (
         <>
             <CRow className="justify-content-between">
@@ -1166,7 +1179,6 @@ const ScheduleTracking = () => {
                     <i>{currentTrip ? getTripJourney(currentTrip) : 'Tuyến chưa có chuyến xe'}</i>
                 </div>
             )}
-
             <div className="tabStyle">
                 {loading ? (
                     <div className="text-center w-100">
