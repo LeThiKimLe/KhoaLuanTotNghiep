@@ -67,6 +67,6 @@ public class BusType {
 	private boolean isActive;
 
     public String getImage() {
-        return "http://localhost:5000" + this.image;
+        return "https://vexe.workon.space" + this.image;
     }
 }

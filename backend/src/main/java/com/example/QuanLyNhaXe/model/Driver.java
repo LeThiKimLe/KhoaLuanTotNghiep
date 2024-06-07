@@ -60,5 +60,8 @@ public class Driver {
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private BusCompany busCompany;
-   
+
+    public String getImg() {
+        return "https://vexe.workon.space" + this.img;
+    }
 }

@@ -53,6 +53,7 @@ public class TransportationOrder {
 	@JoinColumn(name = "schedule_id", referencedColumnName = "id")
 	private Schedule schedule;
 	
-	
-
+	public String getImage() {
+        return "https://vexe.workon.space" + this.image;
+    }
 }
