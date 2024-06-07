@@ -29,7 +29,7 @@ public class Customer {
     private String img;
 
     public String getImg() {
-        return "https://vexe.workon.space" + this.img;
+        return "http://localhost:5000" + this.img;
     }
     
 }
