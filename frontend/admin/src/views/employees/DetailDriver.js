@@ -39,14 +39,16 @@ import CustomButton from '../customButton/CustomButton'
 import { CustomToast } from '../customToast/CustomToast'
 import { staffAction } from 'src/feature/staff/staff.slice'
 import staffThunk from 'src/feature/staff/staff.service'
-import { selectListRoute } from 'src/feature/route/route.slice'
-import { getTripJourney, getRouteJourney } from 'src/utils/tripUtils'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
+import { getTripJourney, getRouteJourney, tripProcess } from 'src/utils/tripUtils'
 import format from 'date-fns/format'
 import routeThunk from 'src/feature/route/route.service'
 import { convertTimeToInt, convertToDisplayDate } from 'src/utils/convertUtils'
 import { startOfWeek, endOfWeek, parse } from 'date-fns'
 import { dayInWeek } from 'src/utils/constants'
 import 'react-datepicker/dist/react-datepicker.css'
+import TripPicker from 'src/components/TripPicker'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.turn === true) return 'success'
@@ -426,10 +428,11 @@ const DetailDriver = () => {
     const [route, setRoute] = useState(0)
     const [tripBus, setTripBus] = useState(0)
     const [showDistribute, setShowDistribute] = useState(false)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [validateDistribute, setValidateDistribute] = useState(false)
     const [openDel, setOpenDel] = useState(false)
     const [loadingDel, setLoadingDel] = useState(false)
+    const companyId = useSelector(selectCompanyId)
     const handleUpImage = (e) => {
         setFile(URL.createObjectURL(e.target.files[0]))
         setImg(e.target.files[0])
@@ -995,7 +998,7 @@ const DetailDriver = () => {
                                                                             <i>Chọn tuyến</i>
                                                                         </b>
                                                                     </CFormLabel>
-                                                                    <CFormSelect
+                                                                    {/* <CFormSelect
                                                                         required
                                                                         value={route}
                                                                         onChange={(e) =>
@@ -1068,7 +1071,25 @@ const DetailDriver = () => {
                                                                                 type="submit"
                                                                             ></CustomButton>
                                                                         </>
-                                                                    )}
+                                                                    )} */}
+                                                                    <TripPicker
+                                                                        listRoute={listRoute}
+                                                                        route={route}
+                                                                        setRoute={setRoute}
+                                                                        trip={tripBus}
+                                                                        setTrip={setTripBus}
+                                                                        baseOption={{
+                                                                            value: 0,
+                                                                            label: 'Chọn tuyến',
+                                                                        }}
+                                                                    ></TripPicker>
+                                                                    <CustomButton
+                                                                        text="Lưu"
+                                                                        color="success"
+                                                                        loading={loadingDistribute}
+                                                                        className="mt-3"
+                                                                        type="submit"
+                                                                    ></CustomButton>
                                                                 </CForm>
                                                             </CCard>
                                                         </CCollapse>
