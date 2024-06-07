@@ -239,12 +239,12 @@ public class TripService {
 		Trip trip = tripRepository.findById(tripAssignment.getTripId())
 				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
 		Trip returnTrip = tripRepository
-				.findByStartStationIdAndEndStationIdAndTurn(trip.getStartStation().getId(),
-						trip.getEndStation().getId(), !trip.isTurn())
+				.findByStartStationIdAndEndStationIdAndTurn(trip.getEndStation().getId(),
+						trip.getStartStation().getId(), !trip.isTurn())
 				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
 		for (Integer driverId : tripAssignment.getDriverId()) {
 			Driver driver = driverRepository.findById(driverId)
-					.orElseThrow(() -> new NotFoundException(Message.TRIPS_NOT_FOUND));
+					.orElseThrow(() -> new NotFoundException(Message.DRIVER_NOT_FOUND));
 			if (tripDriverRepository.existsByTripIdAndDriverDriverId(trip.getId(), driverId)) {
 				throw new BadRequestException(Message.BAD_REQUEST);
 

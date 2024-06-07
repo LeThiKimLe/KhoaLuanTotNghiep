@@ -138,6 +138,44 @@ const activeCompany = createAsyncThunk(
     },
 )
 
+const getReview = createAsyncThunk('manager/company/review', async (companyId, thunkAPI) => {
+    try {
+        const response = await axiosClient.get('staff/bookings/schedules/reviews-company', {
+            params: {
+                companyId: companyId,
+            },
+        })
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+const checkReview = createAsyncThunk(
+    'bookings/reviews',
+    async ({ reviewId, checked }, thunkAPI) => {
+        try {
+            const response = await axiosClient.put('staff/bookings/schedules/reviews', null, {
+                params: {
+                    id: reviewId,
+                    active: checked,
+                },
+            })
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const companyThunk = {
     getCompany,
     addCompany,
@@ -146,6 +184,8 @@ const companyThunk = {
     getAssignedRouteForCompany,
     noticeCompany,
     activeCompany,
+    getReview,
+    checkReview,
 }
 
 export default companyThunk

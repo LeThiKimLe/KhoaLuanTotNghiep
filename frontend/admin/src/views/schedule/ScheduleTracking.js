@@ -285,7 +285,6 @@ const ScheduleStatusTracker = ({ schedule, openOrderForm, closeForm, finishAdd }
             else setNextAction(status[0])
         }
     }, [status])
-    console.log(nextAction)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -342,8 +341,15 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
     const commandData = {
         companyName: curCompany.busCompany.name,
         companyTel: curCompany.admin.tel,
-        commandId: '02',
-        exportTime: ['TP. Hồ Chí Minh', '12', '03', '2024'],
+        commandId: schedule.transportationOrder?.id,
+        exportTime: [
+            curCompany?.admin?.address
+                ? curCompany.admin.address.split(',').pop().trim()
+                : 'TP. Hồ Chí Minh',
+            new Date(schedule.departDate).getDate().toString(),
+            (new Date(schedule.departDate).getMonth() + 1).toString().padStart(2, '0'),
+            new Date(schedule.departDate).getFullYear().toString(),
+        ],
         valueSpan: [
             convertToDisplayDate(schedule.departDate),
             format(
@@ -355,13 +361,15 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
             ),
         ],
         driver1: schedule.driverUser?.name,
+        driverLicense1: schedule.driverUser?.driverLicense,
         driver2: schedule.driverUser2?.name,
-        assistant: 'Lê Văn A',
+        driverLicense2: schedule.driverUser2?.driverLicense,
+        assistant: '',
         busPlate: schedule.bus?.licensePlate,
         seatNum: schedule.bus?.type?.capacity,
         busType: schedule.bus?.type?.description,
         desdep: getTripJourney(schedule.tripInfor),
-        routeId: '34UFYCHN',
+        routeId: schedule.tripInfor.routeCode,
         route: schedule.tripInfor.schedule,
         dep: getTripJourney(schedule.tripInfor).split('-')[0],
         departTime: schedule.departTime.slice(0, -3),
@@ -397,29 +405,39 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
         window.open(`${baseUrl}/lenh-van-chuyen_form.html?${params.toString()}`, '_blank')
     }
     const createCommand = () => {
-        dispatch(orderThunk.createOrder({ scheduleId: schedule.id, file: null }))
-            .unwrap()
-            .then(() => {
-                //reload page
-                addToast(() =>
-                    CustomToast({
-                        message: 'Đã cấp lệnh thành công',
-                        type: 'success',
-                    }),
-                )
-                setTimeout(() => {
-                    finishAdd()
-                }, 1000)
-            })
-            .catch((err) => {
-                addToast(() =>
-                    CustomToast({
-                        message: err,
-                        type: 'error',
-                    }),
-                )
-            })
+        if (schedule.bus && schedule.driverUser)
+            dispatch(orderThunk.createOrder({ scheduleId: schedule.id, file: null }))
+                .unwrap()
+                .then(() => {
+                    //reload page
+                    addToast(() =>
+                        CustomToast({
+                            message: 'Đã cấp lệnh thành công',
+                            type: 'success',
+                        }),
+                    )
+                    setTimeout(() => {
+                        finishAdd()
+                    }, 1000)
+                })
+                .catch((err) => {
+                    addToast(() =>
+                        CustomToast({
+                            message: err,
+                            type: 'error',
+                        }),
+                    )
+                })
+        else {
+            addToast(() =>
+                CustomToast({
+                    message: 'Cần phân công tài xế và xe cho chuyến để cấp lệnh',
+                    type: 'error',
+                }),
+            )
+        }
     }
+
     const getImage = () => {
         if (schedule.transportationOrder && schedule.transportationOrder.image)
             return schedule.transportationOrder.image
@@ -997,6 +1015,8 @@ const ScheduleTracking = () => {
         getScheduleData()
     }
     const getScheduleData = async () => {
+        console.log('getScheduleData')
+        console.log(listTrip)
         setLoading(true)
         let filterSchedule = []
         const searchDate = [startDate, currentDay, endDate]
@@ -1052,11 +1072,20 @@ const ScheduleTracking = () => {
         setListScheduleData([...listSchedule])
     }
     useEffect(() => {
-        if (listTrip.length === 0) {
-            const listTripIn = tripProcess(listRoute, companyId)
+        if (currentRoute !== -1) {
+            const listTripIn = tripProcess(listRoute, companyId).filter(
+                (trip) =>
+                    trip.route.id == currentRoute &&
+                    trip.price !== 0 &&
+                    trip.active &&
+                    trip.busType &&
+                    trip.turnGo.stopStations.some((st) => st.stationType.includes('park')),
+            )
             setListTrip(listTripIn)
+            if (listTripIn.length > 0) {
+                setCurrentTrip(listTripIn[0])
+            } else setCurrentTrip(null)
         }
-        setCurrentTrip(null)
     }, [currentRoute])
     useEffect(() => {
         const schdShowList = []
@@ -1084,7 +1113,7 @@ const ScheduleTracking = () => {
                     }
                 })
             setShowList(schdShowList)
-        }
+        } else setShowList([])
     }, [currentTrip])
     useEffect(() => {
         if (currentDay) {
@@ -1094,6 +1123,9 @@ const ScheduleTracking = () => {
     useEffect(() => {
         setCurrentDate(new Date())
     }, [])
+    useEffect(() => {
+        setListTrip(tripProcess(listRoute, companyId))
+    }, [listRoute])
     return (
         <>
             <CRow className="justify-content-between">
@@ -1128,7 +1160,7 @@ const ScheduleTracking = () => {
             </CRow>
             {currentRoute !== 0 && (
                 <div className="mt-3">
-                    {listTrip
+                    {/* {listTrip
                         .filter((trip) => trip.route.id == currentRoute)
                         .map((trip, index) => (
                             <CFormCheck
@@ -1143,7 +1175,8 @@ const ScheduleTracking = () => {
                                 checked={currentTrip ? currentTrip.id == trip.id : false}
                                 onChange={() => setCurrentTrip(trip)}
                             />
-                        ))}
+                        ))} */}
+                    <i>{currentTrip ? getTripJourney(currentTrip) : 'Tuyến chưa có chuyến xe'}</i>
                 </div>
             )}
             <div className="tabStyle">

@@ -28,6 +28,7 @@ import CIcon from '@coreui/icons-react'
 import { cilStar } from '@coreui/icons'
 import format from 'date-fns/format'
 import CustomButton from '../customButton/CustomButton'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 
 const Review = ({ review, updateList }) => {
     const dispatch = useDispatch()
@@ -118,6 +119,7 @@ const ReviewManagement = () => {
     const [filterList, setFilterList] = useState(listAllReview)
     const [filter, setFilter] = useState('checked')
     const [filterRate, setFilterRate] = useState('all')
+    const companyId = useSelector(selectCompanyId)
     const dispatch = useDispatch()
     const getAverageRating = () => {
         let total = 0
@@ -142,8 +144,8 @@ const ReviewManagement = () => {
         }
     }, [listRoute])
     useEffect(() => {
-        if (listAllReview.length === 0) {
-            dispatch(reviewThunk.getListReview())
+        if (listAllReview.length === 0 && companyId !== 0) {
+            dispatch(reviewThunk.getCompanyReview(companyId))
         }
     }, [listAllReview])
     useEffect(() => {

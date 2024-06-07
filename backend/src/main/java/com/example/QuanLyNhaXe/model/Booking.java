@@ -25,7 +25,6 @@ public class Booking {
     @Column(name = "code", length = 7)
     private String code;
     
-    
     @ManyToOne
 	@JoinColumn(name = "pick_station", referencedColumnName = "id")
 	private StopStation pickStation;

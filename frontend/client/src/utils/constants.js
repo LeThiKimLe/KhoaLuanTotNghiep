@@ -248,3 +248,13 @@ export const TICKET_STATE_DICTIONARY = [
     message: "Chờ hủy",
   },
 ];
+
+export const INVAILD_WORDS = [
+  "địt","lồn","cặc","đéo","đm","dm","đĩ",
+  "địt","mày","con mẹ","con đĩ","con chó","đụ","đụ má",
+  "đụ mẹ","vãi", "đb", "buồi", 
+  "quảng cáo", "giá rẻ", "khuyến mãi", "mua ngay", "bán hàng", "sản phẩm",
+  "ưu đãi", "sale",
+  "fucking", "bitch", 
+  "dighead"
+]

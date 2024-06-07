@@ -23,6 +23,7 @@
         "install-qr-reader": "npm install --force react-qr-reader"
     },
     "dependencies": {
+        "@chatscope/chat-ui-kit-react": "^2.0.3",
         "@coreui/chartjs": "^3.1.2",
         "@coreui/coreui": "^4.2.6",
         "@coreui/icons": "^3.0.1",

@@ -95,6 +95,7 @@ const Payment = () => {
         useCallbackPrompt(!paid, handleCancelOut)
 
     const handlePayment = () => {
+        console.log(urlBookingCode, bookingReturnCode)
         dispatch(bookingActions.resetMessage())
         if (bookingReturnCode == '') {
             dispatch(bookingThunk.bookingPayment(

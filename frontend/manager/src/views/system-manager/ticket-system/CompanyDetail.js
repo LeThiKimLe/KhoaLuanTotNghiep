@@ -33,11 +33,15 @@ import {
     CModalHeader,
     CTooltip,
     CModalFooter,
+    CFormCheck,
+    CFormTextarea,
+    CButtonGroup,
 } from '@coreui/react'
 import {
     companyActions,
     selectCurCompany,
     selectListCompany,
+    selectListCurCompanyReview,
 } from 'src/feature/bus-company/busCompany.slice'
 import { companyInput } from 'src/utils/constants'
 import { useState, useRef } from 'react'
@@ -72,6 +76,8 @@ import mapThunk from 'src/feature/map/map.service'
 import feeThunk from 'src/feature/fee/fee.service'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
 import { format, parse } from 'date-fns'
+import { DateRange } from 'react-date-range'
+import { cilStar } from '@coreui/icons'
 const ScheduleWrap = ({ schedule, turn, isEdit = false, removeTrip }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
@@ -1479,6 +1485,357 @@ const FeeInfo = ({ listAssignRouteId }) => {
     )
 }
 
+const Review = ({ review, updateList }) => {
+    const dispatch = useDispatch()
+    const [loading, setLoading] = useState(false)
+    const [mouseHover, setMouseHover] = useState(false)
+    const handleAction = (state) => {
+        setLoading(true)
+        dispatch(companyThunk.checkReview({ reviewId: review.id, checked: state }))
+            .unwrap()
+            .then(() => {
+                setLoading(false)
+                updateList()
+            })
+            .catch((err) => console.log(err))
+    }
+    const handleMouseEnter = () => {
+        setMouseHover(true)
+    }
+    const handleMouseLeave = () => {
+        setMouseHover(false)
+    }
+    return (
+        <div
+            className={`w-100 p-3 border-bottom border-2 ${mouseHover ? 'bg-light' : ''}`}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+        >
+            <div>
+                <b>{review.reviewer.name}</b>
+                <i style={{ fontSize: '15px' }}>{` Chuyến: ${getRouteJourney(
+                    review.scheduleTrip.route,
+                )} - Khởi hành: ${review.schedule.departTime.slice(
+                    0,
+                    -3,
+                )} ngày ${convertToDisplayDate(review.schedule.departDate)}`}</i>
+                <br></br>
+                <div className="d-flex gap-1 align-items-center">
+                    <CIcon
+                        icon={cilStar}
+                        className={review.rate >= 1 ? 'text-warning' : 'text-secondary'}
+                    />
+                    <CIcon
+                        icon={cilStar}
+                        className={review.rate >= 2 ? 'text-warning' : 'text-secondary'}
+                    />
+                    <CIcon
+                        icon={cilStar}
+                        className={review.rate >= 3 ? 'text-warning' : 'text-secondary'}
+                    />
+                    <CIcon
+                        icon={cilStar}
+                        className={review.rate >= 4 ? 'text-warning' : 'text-secondary'}
+                    />
+                    <CIcon
+                        icon={cilStar}
+                        className={review.rate === 5 ? 'text-warning' : 'text-secondary'}
+                    />
+                    <i style={{ fontSize: '15px' }}>{`Gửi ngày ${format(
+                        new Date(review.sendDate),
+                        'dd/MM/yyyy',
+                    )}`}</i>
+                </div>
+                <div className="d-flex align-items-center gap-2 mt-2">
+                    <CFormTextarea
+                        readOnly
+                        style={{ backgroundColor: 'white', height: '80px' }}
+                        value={review.comment}
+                    ></CFormTextarea>
+                    <div>
+                        {review.state !== 'Đã phê duyệt' && (
+                            <CustomButton
+                                color="success"
+                                className="mb-1 w-100"
+                                text="Đăng tải"
+                                onClick={() => handleAction(true)}
+                            ></CustomButton>
+                        )}
+                        {review.state !== 'Đã hủy' && (
+                            <CustomButton
+                                variant="outline"
+                                color="secondary"
+                                className="w-100"
+                                text="Ẩn"
+                                onClick={() => handleAction(false)}
+                            ></CustomButton>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+const ReviewSection = () => {
+    const listRoute = useSelector(selectListRoute)
+    const [currentRoute, setCurrentRoute] = useState(0)
+    const listAllReviewIn = useSelector(selectListCurCompanyReview)
+    const [listAllReview, setListAllReview] = useState(listAllReviewIn)
+    const [listReview, setListReview] = useState(listAllReview)
+    const [filterList, setFilterList] = useState(listAllReview)
+    const [filter, setFilter] = useState('checked')
+    const [filterRate, setFilterRate] = useState('all')
+    const curCompany = useSelector(selectCurCompany)
+    const companyId = curCompany?.busCompany?.id
+    const dispatch = useDispatch()
+    const [dateRange, setDateRange] = useState([
+        {
+            startDate: new Date(new Date().getFullYear(), new Date().getMonth(), 1),
+            endDate: new Date(),
+            key: 'selection',
+        },
+    ])
+    const [openDate, setOpenDate] = useState(false)
+    const getAverageRating = () => {
+        let total = 0
+        listAllReview.forEach((review) => {
+            total += review.rate
+        })
+        return total / listAllReview.length
+    }
+    const rateData = () => {
+        const data = [0, 0, 0, 0, 0]
+        listAllReviewIn.forEach((review) => {
+            data[5 - review.rate]++
+        })
+        return data
+    }
+    const updateList = () => {
+        dispatch(companyThunk.getReview(companyId))
+    }
+    useEffect(() => {
+        if (listRoute.length === 0) {
+            dispatch(routeThunk.getRoute())
+        }
+    }, [listRoute])
+    useEffect(() => {
+        if (companyId !== 0) {
+            dispatch(companyThunk.getReview(companyId))
+        }
+    }, [])
+    useEffect(() => {
+        if (filter === 'all') setListReview(listAllReview)
+        else if (filter === 'checked')
+            setListReview(listAllReview.filter((review) => review.state === 'Đã phê duyệt'))
+        else if (filter === 'unchecked')
+            setListReview(listAllReview.filter((review) => review.state === 'Chờ phê duyệt'))
+        else if (filter === 'hiden')
+            setListReview(listAllReview.filter((review) => review.state === 'Đã hủy'))
+    }, [filter, listAllReview])
+    useEffect(() => {
+        if (filterRate === 'all') setFilterList(listReview)
+        else if (filterRate === 'positive')
+            setFilterList(listReview.filter((review) => review.rate >= 3))
+        else if (filterRate === 'negative')
+            setFilterList(listReview.filter((review) => review.rate < 3))
+    }, [filterRate, listReview])
+    useEffect(() => {
+        setListAllReview(
+            listAllReviewIn.filter(
+                (rv) =>
+                    new Date(rv.sendDate).getDate() >= dateRange[0].startDate.getDate() &&
+                    new Date(rv.sendDate).getDate() <= dateRange[0].endDate.getDate() &&
+                    new Date(rv.sendDate).getMonth() >= dateRange[0].startDate.getMonth() &&
+                    new Date(rv.sendDate).getMonth() <= dateRange[0].endDate.getMonth(),
+            ),
+        )
+    }, [dateRange])
+    useEffect(() => {
+        setListAllReview(listAllReviewIn)
+    }, [listAllReviewIn])
+    return (
+        <div>
+            <CRow className="align-items-center my-2">
+                <CCol md={2}>
+                    <b className="px-3">Thời gian đánh giá</b>
+                </CCol>
+                <CCol md={4} style={{ position: 'relative' }}>
+                    <CFormInput
+                        type="text"
+                        value={`${format(dateRange[0].startDate, 'dd/MM/yyyy')} - ${format(
+                            dateRange[0].endDate,
+                            'dd/MM/yyyy',
+                        )}`}
+                        onClick={() => setOpenDate(!openDate)}
+                        readOnly
+                        style={{ width: 'fit-content' }}
+                    />
+                    {openDate && (
+                        <div style={{ position: 'absolute', zIndex: 2 }}>
+                            <DateRange
+                                editableDateInputs={true}
+                                onChange={(item) => setDateRange([item.selection])}
+                                moveRangeOnFirstSelection={false}
+                                ranges={dateRange}
+                                maxDate={new Date()}
+                                minDate={
+                                    curCompany
+                                        ? new Date(curCompany.busCompany.coopDay)
+                                        : new Date()
+                                }
+                            />
+                        </div>
+                    )}
+                </CCol>
+            </CRow>
+            <CRow>
+                <CCol lg={9}>
+                    <CCard>
+                        <CCardHeader className="d-flex align-items-center justify-content-between">
+                            <b>{`Danh sách đánh giá (${filterList.length})`}</b>
+                            <div className="d-flex align-items-center gap-2">
+                                <CButtonGroup role="group" aria-label="Form option" color="info">
+                                    <CFormCheck
+                                        type="radio"
+                                        button={{ color: 'primary', variant: 'outline' }}
+                                        name="btnradio"
+                                        id="btnradio1"
+                                        autoComplete="off"
+                                        label="Tất cả"
+                                        checked={filter === 'all'}
+                                        onChange={() => setFilter('all')}
+                                    />
+                                    <CFormCheck
+                                        type="radio"
+                                        button={{ color: 'primary', variant: 'outline' }}
+                                        name="btnradio"
+                                        id="btnradio2"
+                                        autoComplete="off"
+                                        label="Đã duyệt"
+                                        checked={filter === 'checked'}
+                                        onChange={() => setFilter('checked')}
+                                    />
+                                    <CFormCheck
+                                        type="radio"
+                                        button={{ color: 'primary', variant: 'outline' }}
+                                        name="btnradio"
+                                        id="btnradio3"
+                                        autoComplete="off"
+                                        label="Chưa duyệt"
+                                        checked={filter === 'unchecked'}
+                                        onChange={() => setFilter('unchecked')}
+                                    />
+                                    <CFormCheck
+                                        type="radio"
+                                        button={{ color: 'primary', variant: 'outline' }}
+                                        name="btnradio"
+                                        id="btnradio4"
+                                        autoComplete="off"
+                                        label="Đã ẩn"
+                                        checked={filter === 'hiden'}
+                                        onChange={() => setFilter('hiden')}
+                                    />
+                                </CButtonGroup>
+                                <CDropdown>
+                                    <CDropdownToggle href="#" color="secondary">
+                                        Lọc đánh giá
+                                    </CDropdownToggle>
+                                    <CDropdownMenu>
+                                        <CDropdownItem
+                                            role="button"
+                                            active={filterRate === 'all'}
+                                            onClick={() => setFilterRate('all')}
+                                        >
+                                            Bất kỳ
+                                        </CDropdownItem>
+                                        <CDropdownItem
+                                            role="button"
+                                            active={filterRate === 'positive'}
+                                            onClick={() => setFilterRate('positive')}
+                                        >
+                                            Đánh giá tích cực (3-5 sao)
+                                        </CDropdownItem>
+                                        <CDropdownItem
+                                            role="button"
+                                            active={filterRate === 'negative'}
+                                            onClick={() => setFilterRate('negative')}
+                                        >
+                                            Đánh giá tiêu cực (1-2 sao)
+                                        </CDropdownItem>
+                                    </CDropdownMenu>
+                                </CDropdown>
+                            </div>
+                        </CCardHeader>
+                        <CCardBody style={{ height: '367px', overflow: 'auto' }}>
+                            {filterList.map((review) => (
+                                <Review
+                                    review={review}
+                                    updateList={updateList}
+                                    key={review.id}
+                                ></Review>
+                            ))}
+                        </CCardBody>
+                    </CCard>
+                </CCol>
+                <CCol lg={3}>
+                    <CRow className="flex-column">
+                        <CCol>
+                            <CCard>
+                                <CCardHeader>
+                                    <b>Tổng số đánh giá</b>
+                                </CCardHeader>
+                                <CCardBody style={{ textAlign: 'center' }}>
+                                    <b style={{ fontSize: '20px' }}>{listAllReviewIn.length}</b>
+                                </CCardBody>
+                            </CCard>
+                        </CCol>
+                        <CCol>
+                            <CCard>
+                                <CCardHeader>
+                                    <b>Mức độ hài lòng trung bình</b>
+                                </CCardHeader>
+                                <CCardBody style={{ textAlign: 'center' }}>
+                                    <b
+                                        style={{ fontSize: '20px' }}
+                                    >{`${getAverageRating()} / 5`}</b>
+                                    <CChart
+                                        type="doughnut"
+                                        data={{
+                                            labels: ['5 sao', '4 sao', '3 sao', '2 sao', '1 sao'],
+                                            datasets: [
+                                                {
+                                                    backgroundColor: [
+                                                        '#41B883',
+                                                        '#E46651',
+                                                        '#00D8FF',
+                                                        '#DD1B16',
+                                                        '#FFCE56',
+                                                    ],
+                                                    data: rateData(),
+                                                },
+                                            ],
+                                        }}
+                                        options={{
+                                            plugins: {
+                                                legend: {
+                                                    labels: {
+                                                        color: getStyle('--cui-body-color'),
+                                                    },
+                                                },
+                                            },
+                                        }}
+                                    />
+                                </CCardBody>
+                            </CCard>
+                        </CCol>
+                    </CRow>
+                </CCol>
+            </CRow>
+        </div>
+    )
+}
+
 const CompanyDetail = () => {
     const listCompany = useSelector(selectListCompany)
     const curCompany = useSelector(selectCurCompany)
@@ -1516,6 +1873,7 @@ const CompanyDetail = () => {
         setCompanyInfo({ ...companyInfo, [e.target.name]: e.target.value })
     }
     const dataForm = useRef(null)
+    const [listReview, setListReview] = useState([])
     const handleUpdateInfo = () => {
         if (isUpdate) {
             if (dataForm.current.checkValidity() === true) {
@@ -1594,6 +1952,16 @@ const CompanyDetail = () => {
                 setLoading(false)
             })
     }
+    const getListReview = () => {
+        if (curCompany) {
+            dispatch(companyThunk.getReview(curCompany.busCompany.id))
+                .unwrap()
+                .then((res) => {
+                    setListReview(res)
+                })
+                .catch((err) => console.log(err))
+        }
+    }
     useEffect(() => {
         dispatch(scheduleThunk.getFixSchedule())
         dispatch(companyThunk.getAssignedRouteForCompany())
@@ -1609,6 +1977,9 @@ const CompanyDetail = () => {
             }
         }
     }, [listCompany])
+    useEffect(() => {
+        getListReview()
+    }, [curCompany])
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -1841,7 +2212,9 @@ const CompanyDetail = () => {
             </CCard>
             <CCard className="my-3">
                 <CCardHeader style={{ backgroundColor: '#ccc' }}>Đánh giá nhà xe</CCardHeader>
-                <CCardBody></CCardBody>
+                <CCardBody>
+                    <ReviewSection></ReviewSection>
+                </CCardBody>
             </CCard>
             <CModal visible={openComfirmForm} onClose={() => setOpenComfirmForm(false)}>
                 <CModalHeader>

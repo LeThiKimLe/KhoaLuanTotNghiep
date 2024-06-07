@@ -381,12 +381,14 @@ pdf2htmlEX.defaultViewer = new pdf2htmlEX.Viewer({});
         document.getElementById('valueSpan').textContent = `ngày ${valueSpan[0]} đến ngày ${valueSpan[0]}`;
 
     var driver1 = commandData.driver1;
+    var driverLicense1 = commandData.driverLicense1;
     if (driver1 && driver1!='')
-        document.getElementById('driver1').textContent = `ấp cho Lái xe 1: ${driver1}. hạng GPLX: E`;
+        document.getElementById('driver1').textContent = `ấp cho Lái xe 1: ${driver1}. hạng GPLX: ${driverLicense1}`;
 
     var driver2 = commandData.driver2;
+    var driverLicense2 = commandData.driverLicense2;
     if (driver2 && driver2!='')
-        document.getElementById('driver2').textContent = `Lái xe 2: ${driver2} .hạng GPLX: E `;
+        document.getElementById('driver2').textContent = `Lái xe 2: ${driver2} .hạng GPLX: ${driverLicense2}`;
 
     var assistant = commandData.assistant;
     if (assistant && assistant!='')

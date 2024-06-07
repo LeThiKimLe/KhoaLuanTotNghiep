@@ -10,19 +10,23 @@ import java.nio.file.Paths;
 import java.util.Date;
 import java.util.stream.Stream;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
 public class ImagesService {
+    @Value("${base.imageDirectory}")
+    private String baseDirectory;
 	private static final Path CURRENT_FOLDER = Paths.get(System.getProperty("user.dir"));
-	private String URL="https://vexe.workon.space/api";
+	private String URL= "/api";
     public String saveImage(MultipartFile image) throws IOException {
-    
     	String imageUrl="";
     	if(image.isEmpty())
         	return imageUrl;
-        Path rootPath = Paths.get("app", "src", "main", "resources");
+        Path rootPath = Paths.get(baseDirectory, "src", "main", "resources");
         Path staticPath = Paths.get("static");
         Path imagePath = Paths.get("images");
         if (!Files.exists(CURRENT_FOLDER.resolve(staticPath).resolve(imagePath))) {
@@ -48,7 +52,7 @@ public class ImagesService {
             System.out.print(e.getMessage());
         }
 
-        imageUrl = URL+"/static/images/" + uniqueFilename;
+        imageUrl = URL + "/static/images/" + uniqueFilename;
         return imageUrl;
     }
 

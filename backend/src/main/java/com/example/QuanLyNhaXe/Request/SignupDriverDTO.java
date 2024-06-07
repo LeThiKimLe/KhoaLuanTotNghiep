@@ -26,6 +26,7 @@ public class SignupDriverDTO {
 	private String idCard;
 	@NotEmpty(message = "Địa chỉ không được để trống")
 	private String address;
+	private String driverLicense;
 	@NotNull(message = "Ngày bắt đầu công việc không được để trống")
 	private Date beginWorkDate;
 	@NotNull(message = "Ngày phát hành giấy phép không được để trống")

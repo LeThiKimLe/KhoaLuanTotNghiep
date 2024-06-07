@@ -129,6 +129,7 @@ public class UserService {
 		driver.setAddress(editDriver.getAddress());
 		driver.setBeginWorkDate(editDriver.getBeginWorkDate());
 		driver.setLicenseNumber(editDriver.getLicenseNumber());
+		driver.setDriverLicense(editDriver.getDriverLicense());
 		driver.setIssueDate(editDriver.getIssueDate());
 		driver.setIdCard(editDriver.getIdCard());
 		user.setAccount(account);
