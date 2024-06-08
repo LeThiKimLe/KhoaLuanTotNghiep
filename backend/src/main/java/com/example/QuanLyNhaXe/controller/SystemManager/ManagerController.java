@@ -35,6 +35,11 @@ public class ManagerController {
 	private final UserService userService;
 	private final FeeService feeService;
 	
+	@GetMapping()
+	public ResponseEntity<Object> getManagers() {
+		return new ResponseEntity<>(userService.getManagers(), HttpStatus.OK);
+	}
+	
 	@PostMapping()
 	public ResponseEntity<Object> registerManager(@Valid @RequestBody CreateManager createManager) {
 		return new ResponseEntity<>(authenticationService.createManager(createManager), HttpStatus.CREATED);

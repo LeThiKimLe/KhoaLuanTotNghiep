@@ -47,4 +47,7 @@ public class SystemManager {
     @Column(name = "begin_work_date")
     private Date beginWorkDate;
 
+    public String getImg() {
+        return "http://localhost:5000" + this.img;
+    }
 }

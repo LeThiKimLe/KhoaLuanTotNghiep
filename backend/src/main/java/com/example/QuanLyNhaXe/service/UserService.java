@@ -20,6 +20,7 @@ import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Customer;
 import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Staff;
+import com.example.QuanLyNhaXe.model.SystemManager;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.AccountRepository;
 import com.example.QuanLyNhaXe.repository.AdminRepository;
@@ -27,6 +28,7 @@ import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.CustomerRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.StaffRepository;
+import com.example.QuanLyNhaXe.repository.SystemManagerRepository;
 import com.example.QuanLyNhaXe.repository.UserRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
@@ -43,6 +45,7 @@ public class UserService {
 	private final DriverRepository driverRepository;
 	private final CustomerRepository customerRepository;
 	private final AccountRepository accountRepository;
+	private final SystemManagerRepository systemManagerRepository;
 
 	private final AdminRepository adminRepository;
 	private final BusCompanyRepository busCompanyRepository;
@@ -107,6 +110,16 @@ public class UserService {
 			if (!image.equals(""))
 				customer.setImg(image);
 			customerRepository.save(customer);
+			return modelMapper.map(user, UserDTO.class);
+		case 5:
+			user.setName(editAccountDTO.getName());
+			user.setEmail(editAccountDTO.getEmail());
+			user.setGender(editAccountDTO.getGender());
+			userRepository.save(user);
+			SystemManager manager = user.getSystemManager();
+			if (!image.equals(""))
+				manager.setImg(image);
+			systemManagerRepository.save(manager);
 			return modelMapper.map(user, UserDTO.class);
 		default:
 			String message = "Unauthorized role";
@@ -191,6 +204,15 @@ public class UserService {
 		}
 		return admins.stream().map(admin -> modelMapper.map(admin.getStaff().getUser(), UserDTO.class)).toList();
 	}
+
+	public Object getManagers() {
+		List<SystemManager> managers = systemManagerRepository.findAll();
+		if (managers.isEmpty()) {
+			throw new NotFoundException(Message.STAFF_NOT_FOUND);
+		}
+		return managers.stream().map(manager -> modelMapper.map(manager.getUser(), UserDTO.class)).toList();
+	}
+
 
 	@Transactional
 	public Object editStaffByAdmin(EditStaffByAdmin editStaff) throws IOException {

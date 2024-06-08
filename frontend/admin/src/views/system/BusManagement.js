@@ -51,6 +51,8 @@ import { dayInWeek } from 'src/utils/constants'
 import DatePicker from 'react-datepicker'
 import 'react-datepicker/dist/react-datepicker.css'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
+import TripPicker from 'src/components/TripPicker'
+import { tripProcess } from 'src/utils/tripUtils'
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.turn === true) return 'success'
@@ -439,7 +441,7 @@ const Bus = ({ bus, currentBus, setActiveBus, finishUpdate }) => {
     const [route, setRoute] = useState(0)
     const [tripBus, setTripBus] = useState(0)
     const [showDistribute, setShowDistribute] = useState(false)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [validateDistribute, setValidateDistribute] = useState(false)
     const [loadingDel, setLoadingDel] = useState(false)
     const [openDel, setOpenDel] = useState(false)
@@ -1134,7 +1136,7 @@ const Bus = ({ bus, currentBus, setActiveBus, finishUpdate }) => {
                                                                         <i>Chọn tuyến</i>
                                                                     </b>
                                                                 </CFormLabel>
-                                                                <CFormSelect
+                                                                {/* <CFormSelect
                                                                     required
                                                                     value={route}
                                                                     onChange={(e) =>
@@ -1152,8 +1154,8 @@ const Bus = ({ bus, currentBus, setActiveBus, finishUpdate }) => {
                                                                             {getRouteJourney(rte)}
                                                                         </option>
                                                                     ))}
-                                                                </CFormSelect>
-                                                                {route !== 0 && (
+                                                                </CFormSelect> */}
+                                                                {/* {route !== 0 && (
                                                                     <>
                                                                         <CFormLabel className="mt-3">
                                                                             <b>
@@ -1184,15 +1186,28 @@ const Bus = ({ bus, currentBus, setActiveBus, finishUpdate }) => {
                                                                                 />
                                                                             ),
                                                                         )}
-                                                                        <CustomButton
-                                                                            text="Lưu"
-                                                                            color="success"
-                                                                            loading={loading}
-                                                                            className="mt-3"
-                                                                            type="submit"
-                                                                        ></CustomButton>
+                                                                        
                                                                     </>
-                                                                )}
+                                                                )} */}
+                                                                <TripPicker
+                                                                    listRoute={listRoute}
+                                                                    route={route}
+                                                                    setRoute={setRoute}
+                                                                    trip={tripBus}
+                                                                    setTrip={setTripBus}
+                                                                    baseOption={{
+                                                                        value: 0,
+                                                                        label: 'Chọn chuyến',
+                                                                    }}
+                                                                ></TripPicker>
+                                                                <CustomButton
+                                                                    text="Lưu"
+                                                                    color="success"
+                                                                    loading={loading}
+                                                                    className="mt-3"
+                                                                    type="submit"
+                                                                    disabled={tripBus === 0}
+                                                                ></CustomButton>
                                                             </CForm>
                                                         </CCard>
                                                     </CCollapse>
@@ -1466,7 +1481,7 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                                         <b>Chọn tuyến</b>
                                     </CFormLabel>
                                     <CCol sm="8">
-                                        <CFormSelect
+                                        {/* <CFormSelect
                                             value={curRoute}
                                             onChange={(e) => setCurRoute(parseInt(e.target.value))}
                                         >
@@ -1478,10 +1493,18 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                                                     {getRouteJourney(route)}
                                                 </option>
                                             ))}
-                                        </CFormSelect>
+                                        </CFormSelect> */}
+                                        <TripPicker
+                                            listRoute={listRoute}
+                                            route={curRoute}
+                                            setRoute={setCurRoute}
+                                            trip={curTrip}
+                                            setTrip={setCurTrip}
+                                            baseOption={{ value: 0, label: 'Chọn tuyến' }}
+                                        ></TripPicker>
                                     </CCol>
                                 </CRow>
-                                {curRoute !== 0 && (
+                                {/* {curRoute !== 0 && (
                                     <CRow className="mb-3 justify-content-center align-items-center">
                                         <CFormLabel
                                             htmlFor="color"
@@ -1505,7 +1528,7 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                                             ))}
                                         </CCol>
                                     </CRow>
-                                )}
+                                )} */}
                                 <CRow className="mb-3 justify-content-center">
                                     <CustomButton
                                         text="Thêm"
@@ -1545,7 +1568,22 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
 const BusManagement = () => {
     const dispatch = useDispatch()
     const listBus = useSelector(selectListBus)
-    const [currentTripBus, setCurrentTripBus] = useState([])
+    const [listFullBus, setListFullBus] = useState(
+        listBus.map((bus) => {
+            return {
+                ...bus,
+                trip: 0,
+            }
+        }),
+    )
+    const [currentTripBus, setCurrentTripBus] = useState(
+        listBus.map((bus) => {
+            return {
+                ...bus,
+                trip: 0,
+            }
+        }),
+    )
     const listBusType = useSelector(selectListBusType)
     const [showOpenForm, setShowOpenForm] = useState(false)
     const redirect = useSelector(selectRedirect)
@@ -1599,6 +1637,33 @@ const BusManagement = () => {
         setActiveBus(0)
         if (option === 'all') reloadListBus()
     }
+    const handleGetTripBus = async () => {
+        const listTrip = tripProcess(listRoute)
+        if (listTrip.length === 0) return
+        const listTemp = listBus.map((bus) => ({ ...bus, trip: 0 }))
+        for (let i = 0; i < listTrip.length; i++) {
+            await dispatch(busThunk.getTripBus(listTrip[i].turnGo.id))
+                .unwrap()
+                .then((res) => {
+                    for (let j = 0; j < res.length; j++) {
+                        const index = listTemp.findIndex((drv) => drv.id === res[j].id)
+                        if (index !== -1) {
+                            listTemp[index].trip = listTrip[i].turnGo.id
+                        }
+                    }
+                })
+                .then(() => {
+                    if (i === listTrip.length - 1) {
+                        setListFullBus(listTemp)
+                    }
+                })
+                .catch(() => {
+                    if (i === listTrip.length - 1) {
+                        setListFullBus(listTemp)
+                    }
+                })
+        }
+    }
     useEffect(() => {
         dispatch(busThunk.getBus())
             .unwrap()
@@ -1627,23 +1692,18 @@ const BusManagement = () => {
                 })
     }
     useEffect(() => {
-        if (currentTrip !== 0) {
-            setLoadingBus(true)
-            dispatch(busThunk.getTripBus(currentTrip))
-                .unwrap()
-                .then((res) => {
-                    setCurrentTripBus(res)
-                    setLoadingBus(false)
-                })
-                .catch((error) => {
-                    setCurrentTripBus([])
-                    setLoadingBus(false)
-                })
+        if (currentRoute !== 0 && currentRoute !== -1) {
+            if (currentTrip !== 0)
+                setCurrentTripBus(listFullBus.filter((bus) => bus.trip === currentTrip))
+        } else if (currentRoute === 0) {
+            setCurrentTripBus(listFullBus)
+        } else if (currentRoute === -1) {
+            setCurrentTripBus(listFullBus.filter((bus) => bus.trip === 0))
         }
-    }, [currentTrip])
+    }, [currentTrip, currentRoute])
     useEffect(() => {
-        if (redirect.currentRoute === 0) setCurrentTrip(0)
-        else {
+        if (redirect.currentRoute === 0) {
+        } else {
             dispatch(
                 busAction.setRedirect({
                     currentRoute: 0,
@@ -1659,6 +1719,11 @@ const BusManagement = () => {
             setReload(false)
         }
     }, [reload])
+    useEffect(() => {
+        if (listBus.length > 0 && listRoute.length > 0) {
+            handleGetTripBus()
+        }
+    }, [listBus, listRoute])
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -1700,7 +1765,7 @@ const BusManagement = () => {
             )}
             {option === 'route' && (
                 <CRow className="mt-3">
-                    <CCol md="4">
+                    {/* <CCol md="4">
                         <CFormSelect
                             value={currentRoute}
                             onChange={(e) => setCurrentRoute(parseInt(e.target.value))}
@@ -1730,30 +1795,37 @@ const BusManagement = () => {
                                 />
                             ))}
                         </div>
+                    )} */}
+                    <CCol md="4">
+                        <TripPicker
+                            listRoute={listRoute}
+                            route={currentRoute}
+                            setRoute={setCurrentRoute}
+                            trip={currentTrip}
+                            setTrip={setCurrentTrip}
+                            baseOption={{ value: 0, label: 'Chọn tuyến' }}
+                            additionalOption={[{ value: -1, label: 'Chưa phân tuyến' }]}
+                        ></TripPicker>
+                    </CCol>
+                    {loadingBus && (
+                        <div className="d-flex justify-content-center">
+                            <CSpinner></CSpinner>
+                        </div>
                     )}
-                    {currentTrip !== 0 && (
-                        <>
-                            {loadingBus && (
-                                <div className="d-flex justify-content-center">
-                                    <CSpinner></CSpinner>
-                                </div>
-                            )}
-                            {!loadingBus && currentTripBus.length > 0 && (
-                                <CAccordion className="mt-3">
-                                    {currentTripBus.map((bus) => (
-                                        <Bus
-                                            bus={bus}
-                                            key={bus.id}
-                                            setActiveBus={setActiveBus}
-                                            currentBus={activeBus}
-                                            finishUpdate={finishUpdate}
-                                        ></Bus>
-                                    ))}
-                                </CAccordion>
-                            )}
-                            {!loadingBus && currentTripBus.length === 0 && <b>Tuyến chưa có xe</b>}
-                        </>
+                    {!loadingBus && currentTripBus.length > 0 && (
+                        <CAccordion className="mt-3">
+                            {currentTripBus.map((bus) => (
+                                <Bus
+                                    bus={bus}
+                                    key={bus.id}
+                                    setActiveBus={setActiveBus}
+                                    currentBus={activeBus}
+                                    finishUpdate={finishUpdate}
+                                ></Bus>
+                            ))}
+                        </CAccordion>
                     )}
+                    {!loadingBus && currentTripBus.length === 0 && <b>Tuyến chưa có xe</b>}
                 </CRow>
             )}
             <OpenForm
