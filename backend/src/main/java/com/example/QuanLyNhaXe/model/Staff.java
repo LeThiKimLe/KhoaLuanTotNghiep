@@ -61,7 +61,9 @@ public class Staff {
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private BusCompany busCompany;
     
-    
+    public String getImg() {
+        return "http://localhost:5000" + this.img;
+    }
 
     
     

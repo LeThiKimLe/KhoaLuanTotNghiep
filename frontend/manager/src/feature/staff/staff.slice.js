@@ -2,12 +2,10 @@ import staffThunk from './staff.service'
 import { createSlice } from '@reduxjs/toolkit'
 
 const initialState = {
-    listStaffs: [],
+    listManager: [],
+    listAdmin: [],
     loading: false,
-    listDrivers: [],
     currentStaff: null,
-    currentDriver: null,
-    listAdmins: [],
 }
 
 const staffSlice = createSlice({
@@ -23,69 +21,23 @@ const staffSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder
-            .addCase(staffThunk.addStaff.pending, (state) => {
+            .addCase(staffThunk.addManager.pending, (state) => {
                 state.loading = true
             })
-            .addCase(staffThunk.addStaff.fulfilled, (state, action) => {
+            .addCase(staffThunk.addManager.fulfilled, (state, action) => {
                 state.loading = false
             })
-            .addCase(staffThunk.addStaff.rejected, (state) => {
+            .addCase(staffThunk.addManager.rejected, (state) => {
                 state.loading = false
             })
-            .addCase(staffThunk.editStaff.pending, (state) => {
+            .addCase(staffThunk.getManagers.pending, (state) => {
                 state.loading = true
             })
-            .addCase(staffThunk.editStaff.fulfilled, (state, action) => {
+            .addCase(staffThunk.getManagers.fulfilled, (state, action) => {
                 state.loading = false
+                state.listManager = action.payload
             })
-            .addCase(staffThunk.editStaff.rejected, (state) => {
-                state.loading = false
-            })
-            .addCase(staffThunk.getStaffs.pending, (state) => {
-                state.loading = true
-            })
-            .addCase(staffThunk.getStaffs.fulfilled, (state, action) => {
-                state.loading = false
-                state.listStaffs = action.payload
-            })
-            .addCase(staffThunk.getStaffs.rejected, (state) => {
-                state.loading = false
-            })
-            .addCase(staffThunk.addDriver.pending, (state) => {
-                state.loading = true
-            })
-            .addCase(staffThunk.addDriver.fulfilled, (state, action) => {
-                state.loading = false
-            })
-            .addCase(staffThunk.addDriver.rejected, (state) => {
-                state.loading = false
-            })
-            .addCase(staffThunk.editDriver.pending, (state) => {
-                state.loading = true
-            })
-            .addCase(staffThunk.editDriver.fulfilled, (state, action) => {
-                state.loading = false
-            })
-            .addCase(staffThunk.editDriver.rejected, (state) => {
-                state.loading = false
-            })
-            .addCase(staffThunk.getDrivers.pending, (state) => {
-                state.loading = true
-            })
-            .addCase(staffThunk.getDrivers.fulfilled, (state, action) => {
-                state.loading = false
-                state.listDrivers = action.payload
-            })
-            .addCase(staffThunk.getDrivers.rejected, (state) => {
-                state.loading = false
-            })
-            .addCase(staffThunk.activeAccount.pending, (state) => {
-                state.loading = true
-            })
-            .addCase(staffThunk.activeAccount.fulfilled, (state, action) => {
-                state.loading = false
-            })
-            .addCase(staffThunk.activeAccount.rejected, (state) => {
+            .addCase(staffThunk.getManagers.rejected, (state) => {
                 state.loading = false
             })
             .addCase(staffThunk.getAdmins.pending, (state) => {
@@ -93,7 +45,7 @@ const staffSlice = createSlice({
             })
             .addCase(staffThunk.getAdmins.fulfilled, (state, action) => {
                 state.loading = false
-                state.listAdmins = action.payload
+                state.listAdmin = action.payload
             })
             .addCase(staffThunk.getAdmins.rejected, (state) => {
                 state.loading = false
@@ -101,12 +53,11 @@ const staffSlice = createSlice({
     },
 })
 
-export const selectListStaff = (state) => state.staff.listStaffs
 export const selectLoadingState = (state) => state.staff.loading
-export const selectListDriver = (state) => state.staff.listDrivers
+export const selectListManager = (state) => state.staff.listManager
 export const selectCurrentStaff = (state) => state.staff.currentStaff
-export const selectCurrentDriver = (state) => state.staff.currentDriver
-export const selectListAdmin = (state) => state.staff.listAdmins
+export const selectListAdmin = (state) => state.staff.listAdmin
+
 export const staffAction = staffSlice.actions
 
 export default staffSlice.reducer
