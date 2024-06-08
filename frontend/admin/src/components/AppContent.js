@@ -117,6 +117,7 @@ const AppContent = () => {
             })
             .catch((err) => {
                 console.log(err)
+                dispatch(companyActions.setUpdate(false))
             })
     }
     const getCompanyData = () => {
@@ -225,7 +226,7 @@ const AppContent = () => {
                         .map((route, idx) =>
                             route.protected
                                 ? route.element && (
-                                      <Route element={<AdminProtectedRoute />}>
+                                      <Route element={<AdminProtectedRoute />} key={idx}>
                                           <Route
                                               key={idx}
                                               path={route.path}

@@ -84,13 +84,13 @@ const refreshAccessToken = () => {
           refreshToken: response.data.refreshToken,
         };
         localStorage.setItem("current_user", JSON.stringify(updatedUser));
-        localStorage.setItem("validSession", "true");
+        localStorage.setItem("validClientSession", "true");
         window.dispatchEvent(new Event("storage"));
         resolve(response.data.accessToken);
       })
       .catch((error) => {
         // Xử lý lỗi
-        localStorage.setItem("validSession", "false");
+        localStorage.setItem("validClientSession", "false");
         window.dispatchEvent(new Event("storage"));
         console.log(error);
         if (error.response && error.response.status === 400) {

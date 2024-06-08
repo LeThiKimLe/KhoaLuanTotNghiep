@@ -14,7 +14,7 @@ const SeatMap = ({ seatMap, booked, selectedSeats, handleSeatClick, turn, time }
 
   return (
     <div className={styles.seat_area}>
-      <i>{turn === true ? `Chuyến đi - ${time}` : turn === false ? `Chuyến về - ${time}` : `Chuyến - ${time}`}</i>
+      <i>{turn === true ? `Chuyến đi - ${time}` : turn === false ? `Chuyến về - ${time}` : ``}</i>
       <div className={styles.seat_container}>
         <div className={styles.map_container}>
           {Array.from({ length: seatMap.floorNo }, (_, index) => index + 1).map((floorNumber) => (

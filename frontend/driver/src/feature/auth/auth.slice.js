@@ -43,7 +43,7 @@ const authSlice = createSlice({
                 state.loading = false
                 state.isLoggedIn = true
                 state.user = action.payload
-                localStorage.setItem('validSession', 'true')
+                localStorage.setItem('validDriverSession', 'true')
             })
             .addCase(authThunk.login.rejected, (state, action) => {
                 state.error = true

@@ -204,7 +204,7 @@ const ScheduleStatusTracker = ({ schedule, openOrderForm, closeForm, finishAdd }
                 if (nextAction.state.needOrder !== schedule.transportationOrder.status) {
                     addToast(() =>
                         CustomToast({
-                            message: nextAction.state.condition,
+                            message: 'Điều kiện "' + nextAction.state.condition + '" chưa đáp ứng',
                             type: 'warning',
                         }),
                     )
@@ -361,9 +361,9 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
             ),
         ],
         driver1: schedule.driverUser?.name,
-        driverLicense1: schedule.driverUser?.driverLicense,
+        driverLicense1: schedule.driverUser?.driver.driverLicense,
         driver2: schedule.driverUser2?.name,
-        driverLicense2: schedule.driverUser2?.driverLicense,
+        driverLicense2: schedule.driverUser2?.driver.driverLicense,
         assistant: '',
         busPlate: schedule.bus?.licensePlate,
         seatNum: schedule.bus?.type?.capacity,
@@ -417,7 +417,7 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
                         }),
                     )
                     setTimeout(() => {
-                        finishAdd()
+                        finishAdd(schedule)
                     }, 1000)
                 })
                 .catch((err) => {
@@ -977,7 +977,7 @@ const ScheduleTracking = () => {
                 const currentTime = new Date()
                 return (
                     currentTime.getTime() < departTime.getTime() &&
-                    currentTime.getTime() + 24 * 60 * 60 * 1000 > departTime.getTime()
+                    currentTime.getTime() + 2 * 24 * 60 * 60 * 1000 > departTime.getTime()
                 )
             })
         }
@@ -1011,12 +1011,33 @@ const ScheduleTracking = () => {
             })
         }
     }
-    const finishAdd = () => {
-        getScheduleData()
+    const finishAdd = (schedule) => {
+        // getScheduleData()
+        updateOneSchedule(schedule)
+    }
+    const updateOneSchedule = async (schedule) => {
+        await dispatch(
+            scheduleThunk.getSchedules({
+                routeId: schedule.tripInfor.route.id,
+                departDate: new Date(schedule.departDate),
+                turn: schedule.tripInfor.turn,
+            }),
+        )
+            .unwrap()
+            .then((res) => {
+                const targetSchedule = res.find((schd) => schd.id === schedule.id)
+                //update corresponding schedule in showList
+                const newShowList = showList.map((schd) => {
+                    if (schd.id === schedule.id) return targetSchedule
+                    return schd
+                })
+                setShowList(newShowList)
+            })
+            .catch((err) => {
+                console.log(err)
+            })
     }
     const getScheduleData = async () => {
-        console.log('getScheduleData')
-        console.log(listTrip)
         setLoading(true)
         let filterSchedule = []
         const searchDate = [startDate, currentDay, endDate]

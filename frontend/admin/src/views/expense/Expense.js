@@ -128,6 +128,7 @@ const Expense = () => {
                         dispatch(feeAction.setServiceDueDate(new Date(lastestFee.dueDate)))
                     }
                 }
+                window.location.reload()
             })
     }
 

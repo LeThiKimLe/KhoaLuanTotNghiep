@@ -40,7 +40,6 @@ const EditTicket = ({ close }) => {
                 departDate: format(departDate, 'dd/MM/yyyy'),
             }))
                 .then(() => {
-
                 })
                 .catch((error) => {
                     console.log(error)
@@ -107,6 +106,10 @@ const EditTicket = ({ close }) => {
             dispatch(ticketAction.setModifiedTrip(searchResult.filter((trip) => trip.id === currrentTickets.tickets[0].schedule.id)[0]))
         }
     }, [searchResult])
+    
+    useEffect(() => {
+        setSearchResult(listTripGo)
+    }, [listTripGo])
 
     return (
         <div style={{ height: '100%' }}>

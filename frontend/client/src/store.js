@@ -17,7 +17,7 @@ import paymentReducer from "./feature/payment/payment.slice";
 import busCompanyReducer from "./feature/bus-company/busCompany.slice";
 
 const rootPersistConfig = {
-  key: "root",
+  key: "rootClient",
   storage,
   stateReconciler: autoMergeLevel2,
   whitelist: ["route","trip", "booking"],

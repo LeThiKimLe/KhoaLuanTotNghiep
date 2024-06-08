@@ -544,9 +544,10 @@ const DriverManagement = () => {
         } else if (curRoute === 0) {
             setListCurDriver(listFullDriver)
         } else if (curRoute === -1) {
+            console.log(listFullDriver)
             setListCurDriver(listFullDriver.filter((drv) => drv.trip === 0))
         }
-    }, [curTrip])
+    }, [curTrip, curRoute])
     useEffect(() => {
         if (redirect.currentRoute === 0) {
             // setListCurDriver([])

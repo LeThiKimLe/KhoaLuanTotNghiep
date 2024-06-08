@@ -77,16 +77,6 @@ const AppHeaderDropdown = () => {
                 </CDropdownToggle>
                 <CDropdownMenu className="pt-0" placement="bottom-end">
                     <CDropdownHeader className="bg-light fw-semibold py-2">
-                        Công việc
-                    </CDropdownHeader>
-                    <CDropdownItem href="#">
-                        <CIcon icon={cilBell} className="me-2" />
-                        Thông báo
-                        <CBadge color="info" className="ms-2">
-                            42
-                        </CBadge>
-                    </CDropdownItem>
-                    <CDropdownHeader className="bg-light fw-semibold py-2">
                         Tài khoản
                     </CDropdownHeader>
                     <CDropdownItem href="#/profile/infor">
