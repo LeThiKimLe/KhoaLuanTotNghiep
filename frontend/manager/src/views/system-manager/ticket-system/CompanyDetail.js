@@ -1602,7 +1602,8 @@ const ReviewSection = () => {
         listAllReview.forEach((review) => {
             total += review.rate
         })
-        return total / listAllReview.length
+        if (total / listAllReview.length) return (total / listAllReview.length).toFixed(1)
+        else return 0
     }
     const rateData = () => {
         const data = [0, 0, 0, 0, 0]

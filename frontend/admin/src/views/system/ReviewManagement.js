@@ -86,7 +86,7 @@ const Review = ({ review, updateList }) => {
                         style={{ backgroundColor: 'white', height: '80px' }}
                         value={review.comment}
                     ></CFormTextarea>
-                    <div>
+                    <div style={{ display: 'none' }}>
                         {review.state !== 'Đã phê duyệt' && (
                             <CustomButton
                                 color="success"

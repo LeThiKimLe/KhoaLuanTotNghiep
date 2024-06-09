@@ -48,7 +48,7 @@ const TicketInfor = ({booking}) => {
     }
 
     const bookingState = STATE_DICTIONARY.filter((state) => state.value === booking.status)[0]
-    
+    console.log(booking)
     return (
         <div className={styles.container}>
             {message !== '' && <Message message={message} messagetype={error===true ? 2 : 1} />}
@@ -135,6 +135,10 @@ const TicketInfor = ({booking}) => {
                                     <div className={styles.ticketDetail}>
                                         <span>Mã đặt vé</span>
                                         <span>{booking.code}</span>
+                                    </div>
+                                    <div className={styles.ticketDetail}>
+                                        <span>Nhà xe</span>
+                                        <span>{`${booking.trip.busCompany.name}`}</span> 
                                     </div>
                                     <div className={styles.ticketDetail}>
                                         <span>Chuyến xe</span>

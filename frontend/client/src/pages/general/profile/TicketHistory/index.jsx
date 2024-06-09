@@ -280,6 +280,7 @@ const TicketHistory = () => {
                                     <thead>
                                         <tr>
                                             <th></th>
+                                            <th>Nhà xe</th>
                                             <th>Mã đặt vé</th>
                                             <th>Số vé</th>
                                             <th>Tuyến đường</th>
@@ -298,6 +299,7 @@ const TicketHistory = () => {
                                                     checked={selectedRow ? selectedRow.code === booking.code : false}
                                                     onChange={() => handleRowSelect(booking)}
                                                 /></td>
+                                                <td>{booking.trip.busCompany.name}</td>
                                                 <td>{`${booking.code}`}</td>
                                                 <td>{booking.ticketNumber}</td>
                                                 <td>{`${booking.trip.startStation.name} - ${booking.trip.endStation.name}`}</td>

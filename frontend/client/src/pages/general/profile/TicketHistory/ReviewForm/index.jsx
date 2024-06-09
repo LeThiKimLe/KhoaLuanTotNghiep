@@ -73,6 +73,9 @@ const ReviewForm = ({closeForm, trip, updateList}) => {
                 </div>
                 <div className={styles.action_content}>
                     <div className={styles.review_content}>
+                        <b><i className={styles.action_title}>Nhà xe:</i></b>
+                        <span>{trip?.trip?.busCompany?.name}</span>
+                        <br></br>
                         <b><i className={styles.action_title}>Chuyến xe:</i></b>
                         <span>{getTripJourney(trip.trip)}</span>
                         <br></br>

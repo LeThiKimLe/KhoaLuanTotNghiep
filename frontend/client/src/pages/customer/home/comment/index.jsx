@@ -50,7 +50,6 @@ const Comment = ({listComment}) => {
             }
           ]
     }
-
     return(
         <div className={styles.container}>
             <SectionTitle title={t("comment.title")}
@@ -76,8 +75,10 @@ const Comment = ({listComment}) => {
                         </div>
                         </div>
                     </div>
-                    <p style={{margin:'10px 0', height:'130px', width:'100%', overflow:'auto'}}>{comment.comment}</p>
+                    <p style={{margin:'10px 0', height:'100px', width:'100%', overflow:'auto'}}>{comment.comment}</p>
                     <div style={{ textAlign:'right' }}>
+                    <i>{comment?.scheduleTrip?.busCompany?.name}</i>
+                    <br></br>
                     <i style={{fontSize:'13px'}}>
                     {` Chuyến: ${getRouteJourney(comment.scheduleTrip.route,)} - Khởi hành:
                      ${comment.schedule.departTime.slice(0,-3)} ngày ${convertToDisplayDate(comment.schedule.departDate)}`}
