@@ -39,6 +39,7 @@ import { selectCurCompany, selectListAssign } from 'src/feature/bus-company/busC
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
 import { selectServiceDueDate } from 'src/feature/fee/fee.slice'
 import { feeAction } from 'src/feature/fee/fee.slice'
+import { noticeAction } from 'src/feature/notification/notice.slice'
 
 const Expense = () => {
     const dispatch = useDispatch()
@@ -114,7 +115,6 @@ const Expense = () => {
             .then((res) => {
                 const companyFee = res.filter((fee) => fee.company.id == companyId)
                 setListCompanyServiceFee(companyFee)
-                // Sort fees based on status and dueDate
                 const sortedFees = companyFee.sort((a, b) => {
                     return new Date(b.dueDate) - new Date(a.dueDate)
                 })
@@ -122,13 +122,12 @@ const Expense = () => {
                 const lastestFee = sortedFees[0]
                 if (lastestFee) {
                     if (lastestFee.status === 'Đã thanh toán') {
-                        const dueDate = getNextDueDay(lastestFee.dueDate)
+                        const dueDate = getLastDateOfMonth(lastestFee.dueDate)
                         dispatch(feeAction.setServiceDueDate(dueDate))
                     } else {
                         dispatch(feeAction.setServiceDueDate(new Date(lastestFee.dueDate)))
                     }
                 }
-                window.location.reload()
             })
     }
 
@@ -174,8 +173,9 @@ const Expense = () => {
                     addToast(() =>
                         CustomToast({ message: 'Thanh toán thành công', type: 'success' }),
                     )
-                    getData()
                     //Get url before ? in url
+                    getData()
+                    dispatch(noticeAction.removeNotice({ id: parseInt(feeId), type: 'fee' }))
                     window.history.pushState({}, document.title, url.split('?')[0])
                 })
                 .catch(() => {
@@ -214,6 +214,22 @@ const Expense = () => {
 
     const getRouteCount = (dueDate) => {
         return listAssign.filter((assign) => new Date(dueDate) > new Date(assign.assignDate)).length
+    }
+
+    const getStartDateOfService = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        if (currentSpan.getDate() !== 5) {
+            return addDays(currentSpan, 1)
+        } else {
+            let firstOfMonth = new Date(currentSpan.getFullYear(), currentSpan.getMonth(), 1)
+            return firstOfMonth
+        }
+    }
+
+    const getLastDateOfMonth = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        let lastDate = new Date(currentSpan.getFullYear(), currentSpan.getMonth() + 1, 0)
+        return lastDate
     }
 
     useEffect(() => {
@@ -410,7 +426,7 @@ const Expense = () => {
                     {dueDate < new Date() && (
                         <b style={{ color: 'red' }}>
                             <i>{`Dịch vụ quá hạn. Vui lòng thanh toán phí dịch vụ trước ngày ${format(
-                                addDays(dueDate, 5),
+                                dueDate,
                                 'dd/MM/yyyy',
                             )} để tiếp tục sử dụng dịch vụ. Sau thời gian trên, hệ thống sẽ ngừng cung cấp dịch vụ cho nhà xe của bạn.`}</i>
                         </b>
@@ -490,12 +506,12 @@ const Expense = () => {
                                         </CTableHeaderCell>
                                         <CTableDataCell className="text-center align-middle">
                                             {format(
-                                                addDays(new Date(fee.dueDate), 1),
+                                                getStartDateOfService(fee.dueDate),
                                                 'dd/MM/yyyy',
                                             )}
                                         </CTableDataCell>
                                         <CTableDataCell className="text-center align-middle">
-                                            {getNextDueDay(fee.dueDate)}
+                                            {format(getLastDateOfMonth(fee.dueDate), 'dd/MM/yyyy')}
                                         </CTableDataCell>
                                         <CTableDataCell className="text-center align-middle">
                                             {convertToDisplayDate(fee.dueDate)}

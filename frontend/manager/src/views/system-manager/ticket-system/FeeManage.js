@@ -523,6 +523,22 @@ const ServiceFee = () => {
         return format(nextDate, 'dd/MM/yyyy')
     }
 
+    const getStartDateOfService = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        if (currentSpan.getDate() !== 5) {
+            return addDays(currentSpan, 1)
+        } else {
+            let firstOfMonth = new Date(currentSpan.getFullYear(), currentSpan.getMonth(), 1)
+            return firstOfMonth
+        }
+    }
+
+    const getLastDateOfMonth = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        let lastDate = new Date(currentSpan.getFullYear(), currentSpan.getMonth() + 1, 0)
+        return lastDate
+    }
+
     const viewCompany = (companyId) => {
         const company = listCompany.find((cpn) => cpn.busCompany.id === companyId)
         dispatch(companyActions.setCurCompany(company))
@@ -731,10 +747,10 @@ const ServiceFee = () => {
                                 )}
                             </CTableHeaderCell>
                             <CTableDataCell className="text-center">
-                                {format(addDays(new Date(fee.dueDate), 1), 'dd/MM/yyyy')}
+                                {format(getStartDateOfService(fee.dueDate), 'dd/MM/yyyy')}
                             </CTableDataCell>
                             <CTableDataCell className="text-center">
-                                {getNextDueDay(fee.dueDate)}
+                                {format(getLastDateOfMonth(fee.dueDate), 'dd/MM/yyyy')}
                             </CTableDataCell>
                             <CTableDataCell className="text-center">
                                 {convertToDisplayDate(fee.dueDate)}

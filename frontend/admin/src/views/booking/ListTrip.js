@@ -29,10 +29,18 @@ import { CustomToast } from '../customToast/CustomToast'
 import { filterAction } from 'src/feature/filter/filter.slice'
 import { searchAction } from 'src/feature/search/search.slice'
 import { selectSortOption } from 'src/feature/filter/filter.slice'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const ListTrip = () => {
+    const companyId = useSelector(selectCompanyId)
     const dispatch = useDispatch()
-    const searchResult = useSelector(selectSearchResult)
-    const filterResult = useSelector(selectFilterResult)
+    const searchResultIn = useSelector(selectSearchResult)
+    const filterResultIn = useSelector(selectFilterResult)
+    const searchResult = searchResultIn.filter(
+        (schd) => schd?.tripInfor?.busCompany.id === companyId,
+    )
+    const filterResult = filterResultIn.filter(
+        (schd) => schd?.tripInfor?.busCompany.id === companyId,
+    )
     const currentTrip = useSelector(selectCurrentTrip)
     const loadingBook = useSelector(LoadingBook)
     const loadingSearch = useSelector(LoadingSearch)
@@ -95,7 +103,6 @@ const ListTrip = () => {
             dispatch(ticketActions.clearTarget())
         }
     }, [isChanging])
-    console.log(sort)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />

@@ -7,6 +7,9 @@ const noticeSlice = createSlice({
     name: 'notice',
     initialState,
     reducers: {
+        setNotice: (state, action) => {
+            state.listNotice = action.payload
+        },
         addNotice: (state, action) => {
             const notice = state.listNotice.filter(
                 (notice) => notice.id === action.payload.id && notice.type === action.payload.type,
