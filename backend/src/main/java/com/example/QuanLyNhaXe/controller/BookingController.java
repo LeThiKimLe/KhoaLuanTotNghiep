@@ -84,4 +84,9 @@ public class BookingController {
 		return new ResponseEntity<>(bookingService.bookingReturnTicket(createBookingDTO, authorizationHeader, request), HttpStatus.OK);
 	}
 
+	@GetMapping("/schedules/get-payment")
+	public ResponseEntity<Object> getNewPayment(@RequestParam String bookingCode, @Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization, HttpServletRequest httpServletRequest){
+		return new ResponseEntity<>(bookingService.generateNewPaymentUrl(bookingCode, authorization), HttpStatus.OK);
+	}
+
 }

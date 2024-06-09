@@ -172,7 +172,14 @@ public class BookingService {
 
 	}
 
-	public ResponseMessage bookingCancel(String bookingCode) {
+	public ResponseMessage bookingCancel(String bookingCodeIn) {
+		//split bookingCode by "and"
+		String[] bookingCodes=bookingCodeIn.split("and");
+		String bookingCode=bookingCodes[0];
+		String bookingCode2="";
+		if (bookingCodes.length>1) {
+			bookingCode2=bookingCodes[1];
+		}
 		Booking booking = bookingRepository.findByCode(bookingCode)
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
 		if (booking.getStatus().equals(BookingStatus.RESERVE.getLabel())) {
@@ -187,6 +194,22 @@ public class BookingService {
 			schedule.setAvailability(schedule.getAvailability() - booking.getTicketNumber());
 			scheduleRepository.save(schedule);
 			ticketRepository.saveAll(tickets);
+			if (bookingCode2 != "") {
+				Booking booking2 = bookingRepository.findByCode(bookingCode2)
+						.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+				if (booking2.getStatus().equals(BookingStatus.RESERVE.getLabel())) {
+					List<Ticket> tickets2 = booking2.getTickets();
+					booking2.setStatus(BookingStatus.CANCELED.getLabel());
+					bookingRepository.save(booking2);
+					for (Ticket ticket : tickets2) {
+						ticket.setState(TicketState.CANCELED.getLabel());
+					}
+					Schedule schedule2 = tickets2.get(0).getSchedule();
+					schedule2.setAvailability(schedule2.getAvailability() - booking2.getTicketNumber());
+					scheduleRepository.save(schedule2);
+					ticketRepository.saveAll(tickets2);
+				}
+			}
 			return new ResponseMessage("Đã hủy lượt đặt vé");
 		}
 		throw new BadRequestException("Yêu cầu hủy không hợp lệ");
@@ -273,12 +296,17 @@ public class BookingService {
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-
 		return bookingSimpleDTO;
 	}
 
-	public Object keepBookingSession(String bookingCode,HttpServletRequest request) {
-
+	public Object keepBookingSession(String bookingCodeIn,HttpServletRequest request) {
+		//split bookingCode by "and"
+		String[] bookingCodes=bookingCodeIn.split("and");
+		String bookingCode=bookingCodes[0];
+		String bookingCode2="";
+		if (bookingCodes.length>1) {
+			bookingCode2=bookingCodes[1];
+		}
 		Booking booking = bookingRepository.findByCode(bookingCode)
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
 		String orderId = utilityService.getRandomNumber(8);
@@ -294,17 +322,29 @@ public class BookingService {
 		booking.setOrder_id(orderId);
 		bookingRepository.save(booking);
 		BookingSimpleDTO bookingSimpleDTO = modelMapper.map(booking, BookingSimpleDTO.class);
+		Integer price=booking.getTicketNumber()*booking.getTickets().get(0).getTicketPrice();
+		if (bookingCode2 != "") {
+			Booking booking2 = bookingRepository.findByCode(bookingCode2)
+				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+			if (booking2.getStatus().equals(BookingStatus.SUCCESS.getLabel())) {
+				throw new BadRequestException("Lượt đặt vé đã thành công không thể thay đổi");
+			}
+			isExpired = booking2.getBookingDate().plusMinutes(10).plusSeconds(10).isBefore(currentDateTime);
+			if (isExpired) {
+				throw new BadRequestException("Yêu cầu tiếp tục thanh toán không hợp lệ");
+			}
+			booking2.setBookingDate(currentDateTime);
+			booking2.setOrder_id(orderId);
+			bookingRepository.save(booking2);
+			price+=booking2.getTicketNumber()*booking2.getTickets().get(0).getTicketPrice();
+		}
 		try {
-			Integer price=booking.getTicketNumber()*booking.getTickets().get(0).getTicketPrice();
-			String paymentURL = vnPayService.generatePaymentUrl(request,price , orderId, booking.getCode());
-
+			String paymentURL = vnPayService.generatePaymentUrl(request,price , orderId, bookingCodeIn);
 			bookingSimpleDTO.setPaymentURL(paymentURL);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
-
 		return bookingSimpleDTO;
-
 	}
 
 	public List<BookingDTO> searchBookingHistoryByTel(String tel) {
@@ -408,10 +448,9 @@ public class BookingService {
 	}
 	
 	public Object bookingReturnTicket(BookingReturnTicket createBookingDTO, String authorizationHeader, HttpServletRequest request) {
-		
 		User user=userService.getByAuthorizationHeader(authorizationHeader);
 		Staff staff = null;
-		if ( user!=null &&user.getAccount().getRole().getId() != 3) {
+		if ( user!=null && user.getAccount().getRole().getId() != 3 && user.getAccount().getRole().getId() != 4) {
 			staff = user.getStaff();
 			user = null;
 		}
@@ -534,16 +573,35 @@ public class BookingService {
 			Integer sumPrice=price*createBookingDTO.getTicketNumber()+price2*createBookingDTO.getTicketNumberReturn();
 			String bookingInfor=booking.getCode()+"and"+bookingReturn.getCode();
 			String paymentURL = vnPayService.generatePaymentUrl(request, sumPrice, orderId, bookingInfor);
-
 			bookingSimpleDTO.setPaymentURL(paymentURL);
 		} catch (UnsupportedEncodingException e) {
 			e.printStackTrace();
 		}
 
 		return bookingSimpleDTOs;
-		
-		
-		
+	}
+
+	public Object generateNewPaymentUrl (String bookingCode, String authorization) {
+		User user = userService.getUserByAuthorizationHeader(authorization);
+		Booking booking = bookingRepository.findByCode(bookingCode)
+				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+		if (booking.getBookingUser() == null || booking.getBookingUser().getId() != user.getId()) {
+			throw new BadRequestException("Yêu cầu không hợp lệ");
+		}
+		if (booking.getStatus().equals(BookingStatus.SUCCESS.getLabel())) {
+			throw new BadRequestException("Lượt đặt vé đã thành công không thể thay đổi");
+		}
+		String orderId = booking.getOrder_id();
+	
+		BookingSimpleDTO bookingSimpleDTO = modelMapper.map(booking, BookingSimpleDTO.class);
+		try {
+			Integer price=booking.getTicketNumber()*booking.getTickets().get(0).getTicketPrice();
+			String paymentURL = vnPayService.generatePaymentUrl(null, price, orderId, booking.getCode());
+			bookingSimpleDTO.setPaymentURL(paymentURL);
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return bookingSimpleDTO;
 	}
 
 }
