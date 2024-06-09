@@ -17,5 +17,6 @@ public class TripBookingDTO {
 	private StationDTO startStation;
 	private StationDTO endStation;	
 	private RouteDTO route;
+	private BusCompanyDTO busCompany;
 	
 }

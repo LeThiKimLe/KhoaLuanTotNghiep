@@ -220,7 +220,7 @@ const ListStopStation = ({ trip, turn }) => {
                                 }),
                             )
                             setIsAddStop(false)
-                            setTimeout(() => window.location.reload(), 1000)
+                            dispatch(companyActions.setUpdate(true))
                         })
                         .catch((error) => {
                             setLoading(false)
@@ -350,7 +350,7 @@ const ListParkStation = ({ trip, turn }) => {
                                 }),
                             )
                             setIsAddStop(false)
-                            setTimeout(() => window.location.reload(), 1000)
+                            dispatch(companyActions.setUpdate(true))
                         })
                         .catch((error) => {
                             setLoading(false)
@@ -484,7 +484,7 @@ const AddRestStation = ({ trip, turn }) => {
                                 }),
                             )
                             setIsAddStop(false)
-                            setTimeout(() => window.location.reload(), 1000)
+                            dispatch(companyActions.setUpdate(true))
                         })
                         .catch((error) => {
                             setLoading(false)
@@ -624,7 +624,7 @@ const StopStationBlock = ({ trip, station, edit, pre, fol, move }) => {
     )
 }
 
-const SortStopStation = ({ trip, turn, finishAdd }) => {
+const SortStopStation = ({ trip }) => {
     const dispatch = useDispatch()
     const [isEdit, setIsEdit] = useState(false)
     const listLocation = useSelector(selectListCompanyLocation)
@@ -748,7 +748,7 @@ const SortStopStation = ({ trip, turn, finishAdd }) => {
                         CustomToast({ message: 'Đã sắp xếp trạm thành công', type: 'success' }),
                     )
                     setIsEdit(false)
-                    finishAdd()
+                    dispatch(companyActions.setUpdate(true))
                 })
                 .catch((error) => {
                     addToast(() => CustomToast({ message: error, type: 'error' }))
@@ -765,7 +765,7 @@ const SortStopStation = ({ trip, turn, finishAdd }) => {
                 .unwrap()
                 .then(() => {
                     sortTripBack(sortList.map((st) => st.id))
-                    finishAdd()
+                    dispatch(companyActions.setUpdate(true))
                 })
                 .catch((err) => {
                     console.log(err)
@@ -782,7 +782,19 @@ const SortStopStation = ({ trip, turn, finishAdd }) => {
         )
     }, [listStation])
     useEffect(() => {
-        setListStation([...trip?.turnGo.stopStations].sort((a, b) => a.arrivalTime - b.arrivalTime))
+        const listNewStation = [...trip?.turnGo.stopStations].sort(
+            (a, b) => a.arrivalTime - b.arrivalTime,
+        )
+        setListStation([...listNewStation])
+        setListProcessStation(
+            listNewStation.map((st) => {
+                return {
+                    ...st,
+                    type: getStationType(st).name,
+                    fix: getStationType(st).fix,
+                }
+            }),
+        )
     }, [trip])
     return (
         <div className="my-2">
@@ -943,7 +955,7 @@ const TripInfo = ({ trip }) => {
     )
 }
 
-const TripDetail = ({ trip, finishAdd }) => {
+const TripDetail = ({ trip }) => {
     const listBusType = useSelector(selectListBusType)
     const listCompanyLocation = useSelector(selectListCompanyLocation)
     const [toast, addToast] = useState(0)
@@ -977,7 +989,7 @@ const TripDetail = ({ trip, finishAdd }) => {
                                     type: 'success',
                                 }),
                             )
-                            finishAdd()
+                            dispatch(companyActions.setUpdate(true))
                         })
                         .catch((error) => {
                             addToast(() => CustomToast({ message: error, type: 'error' }))
@@ -1092,7 +1104,7 @@ const TripDetail = ({ trip, finishAdd }) => {
                                 <AddRestStation trip={trip} turn={true}></AddRestStation>
                             </CAccordionBody>
                         </CAccordionItem>
-                        <CAccordionItem itemKey={2}>
+                        <CAccordionItem itemKey={3}>
                             <CAccordionHeader>
                                 <i>Bãi đỗ</i>
                             </CAccordionHeader>
@@ -1125,11 +1137,7 @@ const TripDetail = ({ trip, finishAdd }) => {
                     <b>
                         <i>Lộ trình di chuyển qua các trạm</i>
                     </b>
-                    <SortStopStation
-                        trip={trip}
-                        turn={true}
-                        finishAdd={finishAdd}
-                    ></SortStopStation>
+                    <SortStopStation trip={trip} turn={true}></SortStopStation>
                 </CCol>
             </CRow>
         </>
@@ -1149,9 +1157,6 @@ const TripManagement = () => {
         return listFixSchedule.filter(
             (schd) => schd.trip.id === trip.turnGo.id || schd.trip.id === trip.turnBack.id,
         )
-    }
-    const finishAdd = () => {
-        dispatch(companyActions.setUpdate(true))
     }
     useEffect(() => {
         dispatch(busThunk.getBusType())
@@ -1197,7 +1202,7 @@ const TripManagement = () => {
                                     <b>Thông tin chi tiết</b>
                                 </CCardHeader>
                                 <CCardBody>
-                                    <TripDetail trip={trip} finishAdd={finishAdd}></TripDetail>
+                                    <TripDetail trip={trip}></TripDetail>
                                 </CCardBody>
                             </CCard>
                             <CCard className="mt-2 mb-3 border-top-info border-top-3">

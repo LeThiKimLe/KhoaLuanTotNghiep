@@ -22,7 +22,7 @@ import driverReducer from './feature/driver/driver.slice'
 import companyReducer from './feature/bus-company/busCompany.slice'
 import socketReducer from './feature/socket/socket.slice'
 const rootPersistConfig = {
-    key: 'root',
+    key: 'rootManager',
     storage,
     stateReconciler: autoMergeLevel2,
     whitelist: ['slice', 'driver'],

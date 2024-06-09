@@ -51,7 +51,7 @@ const authSlice = createSlice({
         state.loading = false;
         state.isLoggedIn = true;
         state.user = action.payload;
-        localStorage.setItem("validSession", "true");
+        localStorage.setItem("validClientSession", "true");
         localStorage.removeItem("temp_access_token");
       })
       .addCase(authThunk.login.rejected, (state, action) => {
@@ -160,7 +160,7 @@ const authSlice = createSlice({
       })
       .addCase(authThunk.authenGoogleToken.fulfilled, (state) => {
         state.loading = false;
-        localStorage.setItem("validSession", "true");
+        localStorage.setItem("validClientSession", "true");
       });
   },
 });

@@ -764,35 +764,44 @@ const ScheduleManagement = () => {
     }, [])
     useEffect(() => {
         if (currentRoute != 0) {
+            console.log(tripProcess(listRoute, companyId))
             const listTripIn = tripProcess(listRoute, companyId).filter(
                 (trip) =>
                     trip.route.id == currentRoute &&
                     trip.price !== 0 &&
                     trip.active &&
                     trip.busType &&
-                    trip.turnGo.stopStations.some((st) => st.stationType.includes('park')),
+                    trip.turnGo.stopStations.some((st) => st.stationType.includes('park-start')) &&
+                    trip.turnGo.stopStations.some((st) => st.stationType.includes('park-end')),
             )
+            console.log(listTripIn)
             setListTrip(listTripIn)
-            if (!curTrip) {
-                if (listTripIn.length > 0) setCurrentTrip(0)
-                else setCurrentTrip(-1)
-            } else
-                setCurrentTrip(listTripIn.findIndex((trip) => trip.turnGo.id === curTrip.turnGo.id))
+            if (listTripIn.length > 0) {
+                dispatch(scheduleAction.setCurrentTrip(listTripIn[0]))
+                setCurrentTrip(0)
+            }
+            // if (!(curTrip && curTrip.route.id == currentRoute)) {
+            //     if (listTripIn.length > 0) {
+            //         dispatch(scheduleAction.setCurrentTrip(listTripIn[0]))
+            //         setCurrentTrip(0)
+            //     } else setCurrentTrip(-1)
+            // } else
+            //     setCurrentTrip(listTripIn.findIndex((trip) => trip.turnGo.id === curTrip.turnGo.id))
         }
     }, [currentRoute])
     useEffect(() => {
         if (currentTrip !== -1) {
             dispatch(scheduleAction.setCurrentTrip(listTrip[currentTrip]))
-            dispatch(scheduleThunk.getMaxSchedules(currentTrip))
-                .unwrap()
-                .then((res) => {
-                    setTripInfor({
-                        maxSchedule: res.maxSchedule,
-                        busCount: res.busCount,
-                        driverCount: res.driverCount,
-                    })
-                })
-                .catch((error) => {})
+            // dispatch(scheduleThunk.getMaxSchedules(currentTrip))
+            //     .unwrap()
+            //     .then((res) => {
+            //         setTripInfor({
+            //             maxSchedule: res.maxSchedule,
+            //             busCount: res.busCount,
+            //             driverCount: res.driverCount,
+            //         })
+            //     })
+            //     .catch((error) => {})
             dispatch(
                 scheduleThunk.getTripBusDriver({
                     tripId: listTrip[currentTrip].turnGo.id,
@@ -852,6 +861,7 @@ const ScheduleManagement = () => {
     useEffect(() => {
         setCurrentRoute(curRoute && listRoute.find((rt) => rt.id === curRoute.id) ? curRoute.id : 0)
     }, [curRoute])
+    console.log(currentTrip)
     return (
         <>
             <CRow className="justify-content-between">

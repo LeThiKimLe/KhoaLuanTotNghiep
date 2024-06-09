@@ -453,6 +453,13 @@ const TripInfor = () => {
                             Bạn có chuyến xe sắp khởi hành
                         </div>
                         <p className={styles.infor}>
+                            <i>Nhà xe: </i>
+                            {
+                                <b>{currentTicket[0].bookingInfor?.trip.busCompany?.name}</b>
+                            }
+                            <b></b>
+                        </p>
+                        <p className={styles.infor}>
                             <i>Chuyến xe: </i>
                             {
                                 <b>{currentTicket[0].bookingInfor.trip.startStation.name} -

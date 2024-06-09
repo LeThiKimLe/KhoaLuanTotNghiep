@@ -62,7 +62,7 @@ const TripDetail = ({ currentTrip }) => {
                             <CCol sm={8}>
                                 <CFormInput
                                     type="text"
-                                    value={currentTrip.tripInfor.route.busType.description}
+                                    value={currentTrip.tripInfor.busType.description}
                                     readOnly
                                     plainText
                                 />
@@ -111,7 +111,7 @@ const TripDetail = ({ currentTrip }) => {
                             </CCol>
                             <CCol sm={6}>
                                 Tổng số chỗ:
-                                <b>{` ${currentTrip.tripInfor.route.busType.capacity}`}</b>
+                                <b>{` ${currentTrip.tripInfor.busType.capacity}`}</b>
                             </CCol>
                         </CRow>
                         <CRow className="mb-1">

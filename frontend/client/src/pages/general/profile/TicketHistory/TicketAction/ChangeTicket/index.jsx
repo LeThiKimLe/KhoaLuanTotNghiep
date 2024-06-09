@@ -324,7 +324,7 @@ const ChangeTicket = ({ close }) => {
                                 (
                                     <div>
                                         <span>{`Chọn ${listChange.length} ghế`}</span>
-                                        <SeatMap seatMap={currentTrip.tripInfor.route.busType.seatMap}
+                                        <SeatMap seatMap={currentTrip.tripInfor.busType.seatMap}
                                             booked={currentTrip.tickets}
                                             selectedSeats={selectedSeats}
                                             handleSeatClick={handleSeatClick}>
@@ -362,7 +362,7 @@ const ChangeTicket = ({ close }) => {
                                         </Button>
                                     </div>
                                     <div className={styles.resultContainer}>
-                                        {searchResult.length === 0 ? (
+                                        {(searchResult.length === 0 || searchResult.filter((trip) => !currentTrip || (trip.id !== currentTrip.id && trip.availability >= listChange.length)).length == 0)? (
                                             <div className={styles.notfound}>
                                                 <p>Không tìm thấy chuyến xe</p>
                                                 <img src={notfound} alt="" />

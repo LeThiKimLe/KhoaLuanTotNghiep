@@ -37,14 +37,14 @@ const Profile = () => {
     }
 
     const [validSession, setValidSession] = useState(
-        JSON.parse(localStorage.getItem('validSession')),
+        JSON.parse(localStorage.getItem('validClientSession')),
     )
     const [confirm, setConfirm] = useState(false)
     const handleLogout = () => {
         dispatch(authActions.deleteUserInfor())
     }
     window.addEventListener('storage', () => {
-        setValidSession(JSON.parse(localStorage.getItem('validSession')))
+        setValidSession(JSON.parse(localStorage.getItem('validClientSession')))
     })
     useEffect(() => {
         return () => {

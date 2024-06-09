@@ -219,6 +219,7 @@ const Chat = () => {
         setlistMesssage(prevArray => [...prevArray, newMessage])
         const question = "Trả lời chi tiết bằng tiếng việt câu hỏi sau: " + currentInput
         setCurrentInput('')
+        setTimeout(() => setLoading(true), 500)
         dispatch(chatThunk.sendChatbotQuery(question))
             .unwrap()
             .then((ans) => {
@@ -253,6 +254,7 @@ const Chat = () => {
             sentTime: new Date().toISOString()
         }));
         setCurrentInput('')
+        setTimeout(() => setLoading(true), 1000)
     };
 
     const handleReceiveMessage = (data) => {

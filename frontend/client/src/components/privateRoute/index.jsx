@@ -14,7 +14,7 @@ const ProtectedRoute = ({
     
     const [confirm, setConfirm] = useState(false)
     const dispatch = useDispatch()
-    const validSession = JSON.parse(localStorage.getItem('validSession'))
+    const validSession = JSON.parse(localStorage.getItem('validClientSession'))
     const handleLogout = () => {
         dispatch(authActions.deleteUserInfor())
         setConfirm(true)

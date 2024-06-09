@@ -60,11 +60,9 @@ public class Staff {
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private BusCompany busCompany;
-    
-    public String getImg() {
-        return "http://localhost:5000" + this.img;
-    }
 
-    
+    public String getImg() {
+        return "https://vexe.workon.space" + this.img;
+    }
     
 }

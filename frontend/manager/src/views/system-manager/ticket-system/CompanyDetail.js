@@ -247,6 +247,7 @@ const TableSchedule = ({ listFixScheduleIn, tripGoId, tripBackId }) => {
     }, [listFixScheduleIn])
     return (
         <div>
+            <i>Bảng lịch trình</i>
             <CToaster ref={toaster} push={toast} placement="top-end" />
             {tripGoId !== 0 && tripBackId !== 0 && (
                 <>
@@ -799,7 +800,7 @@ const RouteInfo = ({ route, fixSchedule }) => {
     const [listTrip, setListTrip] = useState([])
     const officialTrip = listTrip.length > 0 ? listTrip.find((tp) => tp.active === true) : null
     const tripGo = officialTrip ? officialTrip.turnGo : null
-    const tripBack = officialTrip > 0 ? officialTrip.turnBack : null
+    const tripBack = officialTrip ? officialTrip.turnBack : null
     const [openComfirmForm, setOpenComfirmForm] = useState(false)
     const [isDelete, setIsDelete] = useState(false)
     const dispatch = useDispatch()
@@ -858,7 +859,6 @@ const RouteInfo = ({ route, fixSchedule }) => {
         const listTripExtract = tripProcess([route], curCompany?.busCompany?.id)
         setListTrip(listTripExtract)
     }, [route])
-    console.log(listTrip)
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -1602,7 +1602,8 @@ const ReviewSection = () => {
         listAllReview.forEach((review) => {
             total += review.rate
         })
-        return total / listAllReview.length
+        if (total / listAllReview.length) return (total / listAllReview.length).toFixed(1)
+        else return 0
     }
     const rateData = () => {
         const data = [0, 0, 0, 0, 0]

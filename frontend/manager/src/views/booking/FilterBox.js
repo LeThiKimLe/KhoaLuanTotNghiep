@@ -292,7 +292,7 @@ const FilterBox = (props) => {
         if (conditions.length === 0) return listTrip
         else {
             const filteredTrips = listTrip.filter((trip) =>
-                conditions.some((key) => trip.tripInfor.route.busType.name.includes(key)),
+                conditions.some((key) => trip.tripInfor.busType.name.includes(key)),
             )
             return filteredTrips
         }
@@ -310,20 +310,20 @@ const FilterBox = (props) => {
                 conditions.some(
                     (key) =>
                         (key === 'left' &&
-                            trip.tripInfor.route.busType.seatMap.seats.some(
+                            trip.tripInfor.busType.seatMap.seats.some(
                                 (seat) => seat.col === 0 && !trip.bookedSeat.includes(seat.name),
                             )) ||
                         (key === 'right' &&
-                            trip.tripInfor.route.busType.seatMap.seats.some(
+                            trip.tripInfor.busType.seatMap.seats.some(
                                 (seat) =>
-                                    seat.col === trip.tripInfor.route.busType.seatMap.colNo - 1 &&
+                                    seat.col === trip.tripInfor.busType.seatMap.colNo - 1 &&
                                     !trip.bookedSeat.includes(seat.name),
                             )) ||
                         (key === 'middle' &&
-                            trip.tripInfor.route.busType.seatMap.seats.some(
+                            trip.tripInfor.busType.seatMap.seats.some(
                                 (seat) =>
                                     seat.col !== 0 &&
-                                    seat.col !== trip.tripInfor.route.busType.seatMap.colNo - 1 &&
+                                    seat.col !== trip.tripInfor.busType.seatMap.colNo - 1 &&
                                     !trip.bookedSeat.includes(seat.name),
                             )),
                 ),
@@ -344,26 +344,24 @@ const FilterBox = (props) => {
                 conditions.some(
                     (key) =>
                         (key === 'top' &&
-                            trip.tripInfor.route.busType.seatMap.seats.some(
+                            trip.tripInfor.busType.seatMap.seats.some(
                                 (seat) =>
                                     (seat.row === 0 || seat.row === 1) &&
                                     !trip.bookedSeat.includes(seat.name),
                             )) ||
                         (key === 'bottom' &&
-                            trip.tripInfor.route.busType.seatMap.seats.some(
+                            trip.tripInfor.busType.seatMap.seats.some(
                                 (seat) =>
-                                    (seat.row === trip.tripInfor.route.busType.seatMap.rowNo - 1 ||
-                                        seat.row ===
-                                            trip.tripInfor.route.busType.seatMap.rowNo - 2) &&
+                                    (seat.row === trip.tripInfor.busType.seatMap.rowNo - 1 ||
+                                        seat.row === trip.tripInfor.busType.seatMap.rowNo - 2) &&
                                     !trip.bookedSeat.includes(seat.name),
                             )) ||
                         (key === 'middle' &&
-                            trip.tripInfor.route.busType.seatMap.seats.some(
+                            trip.tripInfor.busType.seatMap.seats.some(
                                 (seat) =>
                                     (seat.row === 0 || seat.row === 1) &&
-                                    (seat.row !== trip.tripInfor.route.busType.seatMap.rowNo - 1 ||
-                                        seat.row !==
-                                            trip.tripInfor.route.busType.seatMap.rowNo - 2) &&
+                                    (seat.row !== trip.tripInfor.busType.seatMap.rowNo - 1 ||
+                                        seat.row !== trip.tripInfor.busType.seatMap.rowNo - 2) &&
                                     !trip.bookedSeat.includes(seat.name),
                             )),
                 ),
@@ -384,11 +382,11 @@ const FilterBox = (props) => {
                 conditions.some(
                     (key) =>
                         (key === 'up' &&
-                            trip.tripInfor.route.busType.seatMap.seats.some(
+                            trip.tripInfor.busType.seatMap.seats.some(
                                 (seat) => seat.floor === 2 && !trip.bookedSeat.includes(seat.name),
                             )) ||
                         (key === 'down' &&
-                            trip.tripInfor.route.busType.seatMap.seats.some(
+                            trip.tripInfor.busType.seatMap.seats.some(
                                 (seat) => seat.floor === 1 && !trip.bookedSeat.includes(seat.name),
                             )),
                 ),

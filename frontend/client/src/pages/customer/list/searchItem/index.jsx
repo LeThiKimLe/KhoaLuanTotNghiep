@@ -155,7 +155,7 @@ const SearchItem = ({ trip, sameTrip }) => {
                                     <ListStation trip={trip}></ListStation>
                                 </TabPanel>
                                 <TabPanel>
-                                    <ListReview></ListReview>
+                                    <ListReview trip={trip?.tripInfor}></ListReview>
                                 </TabPanel>
                             </Tabs>
                         </div>

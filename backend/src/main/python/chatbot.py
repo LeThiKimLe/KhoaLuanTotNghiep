@@ -7,7 +7,6 @@ os.environ["OPENAI_API_KEY"] = os.getenv("CHATBOT_API_KEY")
 
 class Chatbot:
     def __init__(self):
-        print('Start chatbot')
         if os.path.exists("./storage") and len(os.listdir("./storage")) != 0:
             # rebuild storage context
             storage_context = StorageContext.from_defaults(persist_dir="./storage")
@@ -18,6 +17,7 @@ class Chatbot:
             self.index = VectorStoreIndex.from_documents(documents)
             self.index.storage_context.persist()
         self.query_engine = self.index.as_query_engine()
+        print('Start chatbot')
 
     def query(self, user_input):
         return self.query_engine.query(user_input).response

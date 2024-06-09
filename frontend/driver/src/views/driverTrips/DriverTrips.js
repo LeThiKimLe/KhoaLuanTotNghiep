@@ -552,6 +552,9 @@ const ScheduleItem = ({ schedule, index, time }) => {
                         driverThunk.getDriverSchedules(user.user.driver.driverId),
                     ).unwrap()
                     await dispatch(driverThunk.getDriverTrip(user.user.driver.driverId)).unwrap()
+                    setIsUpdating(false)
+                    setFile(null)
+                    setFileURL(null)
                     setTimeout(() => {
                         setShowOrder(false)
                     }, 1000)
@@ -719,7 +722,13 @@ const ScheduleItem = ({ schedule, index, time }) => {
                     </CTooltip>
                 </CTableDataCell>
             </CTableRow>
-            <CModal visible={showOrder} onClose={() => setShowOrder(false)} size="lg">
+            <CModal
+                visible={showOrder}
+                onClose={() => {
+                    setShowOrder(false)
+                }}
+                size="lg"
+            >
                 <CModalHeader>
                     <b>Lệnh vận chuyển</b>
                 </CModalHeader>
@@ -790,9 +799,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
                     <CustomButton
                         color="success"
                         onClick={handleUpdate}
-                        disabled={
-                            (isUpdating && currentOrderStatus?.value >= 4) || isUpdating === false
-                        }
+                        disabled={currentOrderStatus?.value >= 4}
                         text={isUpdating ? 'Lưu' : 'Cập nhật'}
                     ></CustomButton>
                     {isUpdating && (
