@@ -1,6 +1,6 @@
 import React from 'react'
 import CIcon from '@coreui/icons-react'
-import { cilSpeedometer, cilBook, cilGarage, cilChatBubble } from '@coreui/icons'
+import { cilSpeedometer, cilBook, cilGarage, cilChatBubble, cilUser } from '@coreui/icons'
 import { CNavGroup, CNavItem, CNavTitle } from '@coreui/react'
 const _nav = [
     {
@@ -21,11 +21,11 @@ const _nav = [
         to: '/ticket-system',
         icon: <CIcon icon={cilBook} customClassName="nav-icon" />,
         items: [
-            {
-                component: CNavItem,
-                name: 'Quản lý tuyến',
-                to: '/ticket-system/routes',
-            },
+            // {
+            //     component: CNavItem,
+            //     name: 'Quản lý tuyến',
+            //     to: '/ticket-system/routes',
+            // },
             {
                 component: CNavItem,
                 name: 'Quản lý nhà xe',
@@ -58,6 +58,12 @@ const _nav = [
         name: 'Cửa sổ khách hàng',
         to: '/chat',
         icon: <CIcon icon={cilChatBubble} customClassName="nav-icon" />,
+    },
+    {
+        component: CNavItem,
+        name: 'Quản lý tài khoản',
+        to: '/account',
+        icon: <CIcon icon={cilUser} customClassName="nav-icon" />,
     },
 ]
 

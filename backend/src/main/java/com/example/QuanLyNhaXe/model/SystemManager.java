@@ -47,4 +47,7 @@ public class SystemManager {
     @Column(name = "begin_work_date")
     private Date beginWorkDate;
 
+    public String getImg() {
+        return "https://vexe.workon.space" + this.img;
+    }
 }

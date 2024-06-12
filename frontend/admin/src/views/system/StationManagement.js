@@ -54,6 +54,7 @@ import routeThunk from 'src/feature/route/route.service'
 import { selectListRoute } from 'src/feature/route/route.slice'
 import { selectListAssign } from 'src/feature/bus-company/busCompany.slice'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
+import { companyActions } from 'src/feature/bus-company/busCompany.slice'
 
 Leaflet.Icon.Default.imagePath = '../node_modules/leaflet'
 
@@ -364,9 +365,8 @@ export const Station = ({ locationId, station, empty, finishAdd, visibleEmpty })
             )
                 .unwrap()
                 .then(() => {
-                    addToast(
-                        () => CustomToast({ message: 'Thêm trạm đi thành công', type: 'success' }),
-                        setTimeout(() => window.location.reload(), 1000),
+                    addToast(() =>
+                        CustomToast({ message: 'Thêm trạm đi thành công', type: 'success' }),
                     )
                     finishAdd()
                 })
@@ -824,7 +824,7 @@ const Location = ({ location, empty, finishAdd, visible }) => {
 
     const finishAddStation = () => {
         setShowAdd(false)
-        updateListLocation()
+        dispatch(companyActions.setUpdate(true))
     }
 
     const handleBlurAdd = () => {
@@ -924,15 +924,17 @@ const Location = ({ location, empty, finishAdd, visible }) => {
                         </CRow>
                     </CCardHeader>
                     <CCardBody style={{ minHeight: '100px' }}>
-                        {location.stations
-                            .filter((sta) => sta.active === true)
-                            .map((station) => (
-                                <Station
-                                    key={station.id}
-                                    station={station}
-                                    locationId={location.id}
-                                ></Station>
-                            ))}
+                        {location &&
+                            location.stations
+                                .filter((sta) => sta.active === true)
+                                .map((station) => (
+                                    <Station
+                                        key={station.id}
+                                        station={station}
+                                        locationId={location.id}
+                                        finishAdd={finishAddStation}
+                                    ></Station>
+                                ))}
                         <Station
                             locationId={location.id}
                             empty={true}

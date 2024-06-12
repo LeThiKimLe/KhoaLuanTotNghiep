@@ -117,6 +117,7 @@ const AppContent = () => {
             })
             .catch((err) => {
                 console.log(err)
+                dispatch(companyActions.setUpdate(false))
             })
     }
     const getCompanyData = () => {
@@ -130,13 +131,10 @@ const AppContent = () => {
                 console.log(err)
             })
     }
-    const getNextDueDay = (day) => {
-        var currentDay = parse(day, 'yyyy-MM-dd', new Date())
-        var currentMonth = currentDay.getMonth()
-        var nextDate = new Date(currentDay.getTime())
-        nextDate.setDate(5)
-        nextDate.setMonth(currentMonth + 1)
-        return nextDate
+    const getLastDateOfMonth = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        let lastDate = new Date(currentSpan.getFullYear(), currentSpan.getMonth() + 1, 0)
+        return lastDate
     }
 
     const getServiceData = () => {
@@ -152,7 +150,7 @@ const AppContent = () => {
                 const lastestFee = sortedFees[0]
                 if (lastestFee) {
                     if (lastestFee.status === 'Đã thanh toán') {
-                        const dueDate = getNextDueDay(lastestFee.dueDate)
+                        const dueDate = getLastDateOfMonth(lastestFee.dueDate)
                         dispatch(feeAction.setServiceDueDate(dueDate))
                     } else {
                         dispatch(feeAction.setServiceDueDate(new Date(lastestFee.dueDate)))
@@ -174,7 +172,7 @@ const AppContent = () => {
                 const currentDate = new Date()
                 const diffTime = dueDate - currentDate
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24))
-                if (diffDays <= 5 && diffDays >= 0) {
+                if (diffDays <= 10 && diffDays >= 0) {
                     const newNotice = {
                         id: dueFee.id,
                         title: 'Phí dịch vụ sắp đến hạn',
@@ -204,7 +202,9 @@ const AppContent = () => {
         getServiceData()
     }, [])
     useEffect(() => {
-        if (update) getCompanyRouteData()
+        if (update) {
+            getCompanyRouteData()
+        }
     }, [update])
     useEffect(() => {
         if (dueDate < new Date()) {
@@ -225,7 +225,7 @@ const AppContent = () => {
                         .map((route, idx) =>
                             route.protected
                                 ? route.element && (
-                                      <Route element={<AdminProtectedRoute />}>
+                                      <Route element={<AdminProtectedRoute />} key={idx}>
                                           <Route
                                               key={idx}
                                               path={route.path}

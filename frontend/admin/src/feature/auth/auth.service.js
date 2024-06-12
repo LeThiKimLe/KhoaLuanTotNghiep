@@ -130,12 +130,12 @@ const getNewAccessToken = createAsyncThunk('auth/refresh-token', async (_, thunk
                     refreshToken: response.data.refreshToken,
                 }
                 localStorage.setItem('admin_user', JSON.stringify(updatedUser))
-                localStorage.setItem('validSession', 'true')
+                localStorage.setItem('validAdminSession', 'true')
                 window.dispatchEvent(new Event('storage'))
                 return response.data.accessToken
             })
             .catch((err) => {
-                localStorage.setItem('validSession', 'false')
+                localStorage.setItem('validAdminSession', 'false')
             })
     } catch (error) {
         const message =

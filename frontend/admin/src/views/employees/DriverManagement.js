@@ -45,6 +45,8 @@ import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route
 import routeThunk from 'src/feature/route/route.service'
 import { getTripJourney, getRouteJourney } from 'src/utils/tripUtils'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
+import { tripProcess } from 'src/utils/tripUtils'
+import TripPicker from 'src/components/TripPicker'
 const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, currentRoute }) => {
     const [validated, setValidated] = useState(false)
     const listRoute = useSelector(selectListCompanyRoute)
@@ -54,6 +56,7 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
     const [gender, setGender] = useState(false)
     const [idCard, setIdCard] = useState('')
     const [address, setAddress] = useState('')
+    const [driverLicense, setDriverLicense] = useState('D')
     const [licenseNumber, setLicenseNumber] = useState('')
     const [issueDate, setIssueDate] = useState(new Date())
     const [beginWorkDate, setBeginWorkDate] = useState(new Date())
@@ -91,6 +94,7 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                 gender: gender,
                 idCard: idCard,
                 address: address,
+                driverLicense: driverLicense,
                 beginWorkDate: format(beginWorkDate, 'yyyy-MM-dd'),
                 licenseNumber: licenseNumber,
                 issueDate: format(issueDate, 'yyyy-MM-dd'),
@@ -100,7 +104,6 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                 .then((res) => {
                     setError('')
                     setVisible(false)
-                    console.log(res)
                     if (res.driver) addDriverToTrip(res.driver.driverId)
                     finishAddDriver()
                 })
@@ -290,7 +293,7 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                                     >
                                         <b>Ngày vào làm</b>
                                     </CFormLabel>
-                                    <CCol sm={8}>
+                                    <CCol sm={3}>
                                         <DatePicker
                                             selected={beginWorkDate}
                                             onChange={(date) => setBeginWorkDate(date)}
@@ -299,6 +302,21 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                                             maxDate={new Date()}
                                             className="form-control"
                                         />
+                                    </CCol>
+                                    <CFormLabel
+                                        htmlFor="datework"
+                                        className="col-sm-2 col-form-label"
+                                    >
+                                        <b>Hạng GPLX</b>
+                                    </CFormLabel>
+                                    <CCol sm={3}>
+                                        <CFormSelect
+                                            value={driverLicense}
+                                            onChange={(e) => setDriverLicense(e.target.value)}
+                                        >
+                                            <option value={'D'} label="D"></option>
+                                            <option value={'E'} label="E"></option>
+                                        </CFormSelect>
                                     </CCol>
                                 </CRow>
                                 <CRow className="mb-3 justify-content-center">
@@ -343,7 +361,7 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                                         <b>Chọn tuyến</b>
                                     </CFormLabel>
                                     <CCol sm="8">
-                                        <CFormSelect
+                                        {/* <CFormSelect
                                             value={curRoute}
                                             onChange={(e) => setCurRoute(parseInt(e.target.value))}
                                         >
@@ -355,10 +373,18 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                                                     {getRouteJourney(route)}
                                                 </option>
                                             ))}
-                                        </CFormSelect>
+                                        </CFormSelect> */}
+                                        <TripPicker
+                                            listRoute={listRoute}
+                                            route={curRoute}
+                                            setRoute={setCurRoute}
+                                            trip={curTrip}
+                                            setTrip={setCurTrip}
+                                            baseOption={{ label: 'Chọn tuyến xe', value: 0 }}
+                                        ></TripPicker>
                                     </CCol>
                                 </CRow>
-                                {curRoute !== 0 && (
+                                {/* {curRoute !== 0 && (
                                     <CRow className="mb-3 justify-content-center align-items-center">
                                         <CFormLabel
                                             htmlFor="color"
@@ -382,7 +408,7 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                                             ))}
                                         </CCol>
                                     </CRow>
-                                )}
+                                )} */}
                                 <CRow className="mb-3 justify-content-center">
                                     <CustomButton
                                         text="Thêm"
@@ -432,7 +458,10 @@ const DriverManagement = () => {
     const redirect = useSelector(selectRedirect)
     const [curRoute, setCurRoute] = useState(redirect.currentRoute)
     const [curTrip, setCurTrip] = useState(redirect.currentTrip)
-    const [listCurDriver, setListCurDriver] = useState([])
+    const [listFullDriver, setListFullDriver] = useState([])
+    const [listCurDriver, setListCurDriver] = useState(
+        listDriver.map((drv) => ({ ...drv, trip: 0 })),
+    )
     const dispatch = useDispatch()
     const reloadListDriver = () => {
         setLoading(true)
@@ -457,36 +486,36 @@ const DriverManagement = () => {
                 })
         }
     }
-    const getListTrip = (routeId) => {
-        const routeIn = listRoute.find((rt) => rt.id == routeId)
-        var listTrip = []
-        var tempTrip = null
-        routeIn.trips.forEach((trip) => {
-            if (trip.active === true) {
-                tempTrip = listTrip.find(
-                    (tp) =>
-                        (tp.startStation.id === trip.startStation.id &&
-                            tp.endStation.id === trip.endStation.id) ||
-                        (tp.startStation.id === trip.endStation.id &&
-                            tp.endStation.id === trip.startStation.id),
-                )
-                if (!tempTrip) listTrip.push(trip)
-            }
-        })
-        return listTrip
-    }
+
     const handleGetTripDriver = async () => {
+        const listTrip = tripProcess(listRoute)
+        if (listTrip.length === 0) return
         setLoading(true)
-        await dispatch(staffThunk.getTripDriver(curTrip))
-            .unwrap()
-            .then((res) => {
-                setListCurDriver(res)
-                setLoading(false)
-            })
-            .catch(() => {
-                setListCurDriver([])
-                setLoading(false)
-            })
+        const listTemp = listDriver.map((drv) => ({ ...drv, trip: 0 }))
+        for (let i = 0; i < listTrip.length; i++) {
+            await dispatch(staffThunk.getTripDriver(listTrip[i].turnGo.id))
+                .unwrap()
+                .then((res) => {
+                    for (let j = 0; j < res.length; j++) {
+                        const index = listTemp.findIndex((drv) => drv.id === res[j].id)
+                        if (index !== -1) {
+                            listTemp[index].trip = listTrip[i].turnGo.id
+                        }
+                    }
+                })
+                .then(() => {
+                    if (i === listTrip.length - 1) {
+                        setListFullDriver(listTemp)
+                        setLoading(false)
+                    }
+                })
+                .catch(() => {
+                    if (i === listTrip.length - 1) {
+                        setListFullDriver(listTemp)
+                        setLoading(false)
+                    }
+                })
+        }
     }
     const finishAddDriver = () => {
         addToast(() => CustomToast({ message: 'Đã thêm tài xế thành công', type: 'success' }))
@@ -509,14 +538,19 @@ const DriverManagement = () => {
         }
     }, [])
     useEffect(() => {
-        if (curTrip !== 0 && curRoute !== 0) {
-            handleGetTripDriver()
+        if (curRoute !== 0 && curRoute !== -1) {
+            if (curTrip !== 0)
+                setListCurDriver(listFullDriver.filter((drv) => drv.trip === curTrip))
+        } else if (curRoute === 0) {
+            setListCurDriver(listFullDriver)
+        } else if (curRoute === -1) {
+            console.log(listFullDriver)
+            setListCurDriver(listFullDriver.filter((drv) => drv.trip === 0))
         }
-    }, [curTrip])
+    }, [curTrip, curRoute])
     useEffect(() => {
         if (redirect.currentRoute === 0) {
-            setCurTrip(0)
-            setListCurDriver([])
+            // setListCurDriver([])
         } else {
             dispatch(
                 staffAction.setRedirect({
@@ -526,13 +560,19 @@ const DriverManagement = () => {
             )
         }
     }, [curRoute])
-    console.log(curTrip)
+    useEffect(() => {
+        if (listDriver.length > 0 && listRoute.length > 0) {
+            handleGetTripDriver()
+        }
+    }, [listDriver, listRoute])
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
             <div className="tabStyle">
                 <CRow className="justify-content-between">
-                    <CCol>Danh sách tài xế</CCol>
+                    <CCol>
+                        <b>DANH SÁCH TÀI XẾ</b>
+                    </CCol>
                     <CCol style={{ textAlign: 'right' }}>
                         <CButton
                             className="mt-2 mr-2"
@@ -549,7 +589,7 @@ const DriverManagement = () => {
                     </CCol>
                 </CRow>
                 <CRow className="mt-3 mb-3">
-                    <CCol md="4">
+                    {/* <CCol md="4">
                         <CFormSelect
                             value={curRoute}
                             onChange={(e) => setCurRoute(parseInt(e.target.value))}
@@ -581,7 +621,18 @@ const DriverManagement = () => {
                                 />
                             ))}
                         </div>
-                    )}
+                    )} */}
+                    <CCol md="5">
+                        <TripPicker
+                            listRoute={listRoute}
+                            route={curRoute}
+                            setRoute={setCurRoute}
+                            trip={curTrip}
+                            setTrip={setCurTrip}
+                            baseOption={{ value: 0, label: 'Tất cả' }}
+                            additionalOption={[{ value: -1, label: 'Chưa phân công' }]}
+                        ></TripPicker>
+                    </CCol>
                 </CRow>
                 {!loading &&
                     listDriver.filter(

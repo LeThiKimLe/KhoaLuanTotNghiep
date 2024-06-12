@@ -39,14 +39,16 @@ import CustomButton from '../customButton/CustomButton'
 import { CustomToast } from '../customToast/CustomToast'
 import { staffAction } from 'src/feature/staff/staff.slice'
 import staffThunk from 'src/feature/staff/staff.service'
-import { selectListRoute } from 'src/feature/route/route.slice'
-import { getTripJourney, getRouteJourney } from 'src/utils/tripUtils'
+import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
+import { getTripJourney, getRouteJourney, tripProcess } from 'src/utils/tripUtils'
 import format from 'date-fns/format'
 import routeThunk from 'src/feature/route/route.service'
 import { convertTimeToInt, convertToDisplayDate } from 'src/utils/convertUtils'
 import { startOfWeek, endOfWeek, parse } from 'date-fns'
 import { dayInWeek } from 'src/utils/constants'
 import 'react-datepicker/dist/react-datepicker.css'
+import TripPicker from 'src/components/TripPicker'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.turn === true) return 'success'
@@ -399,6 +401,9 @@ const DetailDriver = () => {
     const [gender, setGender] = useState(currentDriver ? currentDriver.gender : true)
     const [idCard, setIdCard] = useState(currentDriver ? currentDriver.driver.idCard : '')
     const [address, setAddress] = useState(currentDriver ? currentDriver.driver.address : '')
+    const [driverLicense, setDriverLicense] = useState(
+        currentDriver ? currentDriver.driver.driverLicense : '',
+    )
     const [img, setImg] = useState(currentDriver ? currentDriver.driver.img : '')
     const [beginWorkDate, setBeginWorkDate] = useState(
         currentDriver ? new Date(currentDriver.driver.beginWorkDate) : new Date(),
@@ -423,10 +428,11 @@ const DetailDriver = () => {
     const [route, setRoute] = useState(0)
     const [tripBus, setTripBus] = useState(0)
     const [showDistribute, setShowDistribute] = useState(false)
-    const listRoute = useSelector(selectListRoute)
+    const listRoute = useSelector(selectListCompanyRoute)
     const [validateDistribute, setValidateDistribute] = useState(false)
     const [openDel, setOpenDel] = useState(false)
     const [loadingDel, setLoadingDel] = useState(false)
+    const companyId = useSelector(selectCompanyId)
     const handleUpImage = (e) => {
         setFile(URL.createObjectURL(e.target.files[0]))
         setImg(e.target.files[0])
@@ -454,6 +460,7 @@ const DetailDriver = () => {
                     gender: gender,
                     idCard: idCard,
                     address: address,
+                    driverLicense: driverLicense,
                     beginWorkDate: format(beginWorkDate, 'yyyy-MM-dd'),
                     licenseNumber: licenseNumber,
                     issueDate: format(issueDate, 'yyyy-MM-dd'),
@@ -814,7 +821,7 @@ const DetailDriver = () => {
                                                 >
                                                     <b>Ngày vào làm</b>
                                                 </CFormLabel>
-                                                <CCol sm={8}>
+                                                <CCol sm={3}>
                                                     <DatePicker
                                                         selected={beginWorkDate}
                                                         onChange={(date) => setBeginWorkDate(date)}
@@ -824,6 +831,24 @@ const DetailDriver = () => {
                                                         className="form-control"
                                                         disabled={!isUpdating}
                                                     />
+                                                </CCol>
+                                                <CFormLabel
+                                                    htmlFor="datework"
+                                                    className="col-sm-2 col-form-label"
+                                                >
+                                                    <b>Hạng GPLX</b>
+                                                </CFormLabel>
+                                                <CCol sm={3}>
+                                                    <CFormSelect
+                                                        value={driverLicense}
+                                                        onChange={(e) =>
+                                                            setDriverLicense(e.target.value)
+                                                        }
+                                                        disabled={!isUpdating}
+                                                    >
+                                                        <option value="D" label="D"></option>
+                                                        <option value="E" label="E"></option>
+                                                    </CFormSelect>
                                                 </CCol>
                                             </CRow>
                                             <CRow className="mb-3 justify-content-center">
@@ -973,7 +998,7 @@ const DetailDriver = () => {
                                                                             <i>Chọn tuyến</i>
                                                                         </b>
                                                                     </CFormLabel>
-                                                                    <CFormSelect
+                                                                    {/* <CFormSelect
                                                                         required
                                                                         value={route}
                                                                         onChange={(e) =>
@@ -1046,7 +1071,25 @@ const DetailDriver = () => {
                                                                                 type="submit"
                                                                             ></CustomButton>
                                                                         </>
-                                                                    )}
+                                                                    )} */}
+                                                                    <TripPicker
+                                                                        listRoute={listRoute}
+                                                                        route={route}
+                                                                        setRoute={setRoute}
+                                                                        trip={tripBus}
+                                                                        setTrip={setTripBus}
+                                                                        baseOption={{
+                                                                            value: 0,
+                                                                            label: 'Chọn tuyến',
+                                                                        }}
+                                                                    ></TripPicker>
+                                                                    <CustomButton
+                                                                        text="Lưu"
+                                                                        color="success"
+                                                                        loading={loadingDistribute}
+                                                                        className="mt-3"
+                                                                        type="submit"
+                                                                    ></CustomButton>
                                                                 </CForm>
                                                             </CCard>
                                                         </CCollapse>

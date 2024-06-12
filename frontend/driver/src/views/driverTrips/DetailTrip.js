@@ -37,7 +37,7 @@ const DetailTrip = () => {
     const schedule = useSelector(selectCurrentSchedule)
     const currentTrip = useSelector(selectCurrentTrip)
     const driverRoute = useSelector(selectDriverRoute)
-    const seatMap = driverRoute ? driverRoute.busType.seatMap : null
+    const seatMap = currentTrip ? currentTrip.busType.seatMap : null
     const [activeSeat, setActiveSeat] = useState(0)
     const dispatch = useDispatch()
     const listTicket = useSelector(selectListTicket)
@@ -184,8 +184,8 @@ const DetailTrip = () => {
                                                 <CFormInput
                                                     type="text"
                                                     value={
-                                                        driverRoute
-                                                            ? driverRoute.busType.description
+                                                        currentTrip
+                                                            ? currentTrip.busType.description
                                                             : 'Đang cập nhật'
                                                     }
                                                     readOnly
@@ -218,14 +218,14 @@ const DetailTrip = () => {
                                                 <b>
                                                     {' '}
                                                     {`${
-                                                        driverRoute.busType.capacity -
+                                                        currentTrip.busType.capacity -
                                                         schedule.availability
                                                     }`}
                                                 </b>
                                             </CCol>
                                             <CCol sm={6}>
                                                 Tổng số chỗ:
-                                                <b>{` ${driverRoute.busType.capacity}`}</b>
+                                                <b>{` ${currentTrip.busType.capacity}`}</b>
                                             </CCol>
                                         </CRow>
                                         <CRow className="mb-1">

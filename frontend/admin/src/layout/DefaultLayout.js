@@ -9,14 +9,14 @@ import requestThunk from './../feature/cancel-request/request.service'
 const DefaultLayout = () => {
     const dispatch = useDispatch()
     const [validSession, setValidSession] = useState(
-        JSON.parse(localStorage.getItem('validSession')),
+        JSON.parse(localStorage.getItem('validAdminSession')),
     )
     const [confirm, setConfirm] = useState(false)
     const handleLogout = () => {
         dispatch(authActions.deleteUserInfor())
     }
     window.addEventListener('storage', () => {
-        setValidSession(JSON.parse(localStorage.getItem('validSession')))
+        setValidSession(JSON.parse(localStorage.getItem('validAdminSession')))
     })
     useEffect(() => {
         dispatch(requestThunk.getTicketCancelRequest())

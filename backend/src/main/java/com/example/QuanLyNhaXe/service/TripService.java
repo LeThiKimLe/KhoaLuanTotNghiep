@@ -441,8 +441,8 @@ public class TripService {
 				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
 
 		Trip returnTrip = tripRepository
-				.findByStartStationIdAndEndStationIdAndTurn(trip.getStartStation().getId(),
-						trip.getEndStation().getId(), !trip.isTurn())
+				.findByStartStationIdAndEndStationIdAndTurn(trip.getEndStation().getId(),
+						trip.getStartStation().getId(), !trip.isTurn())
 				.orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
 
 		for (Integer driverId : tripAssignment.getDriverId()) {
@@ -454,7 +454,6 @@ public class TripService {
 
 			deleteTripDrivers.add(trip_Driver);
 			deleteTripDrivers.add(trip_DriverReturn);
-
 		}
 		for (Integer busId : tripAssignment.getBusId()) {
 

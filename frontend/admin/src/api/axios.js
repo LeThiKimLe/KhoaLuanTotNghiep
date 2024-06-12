@@ -72,13 +72,13 @@ const refreshAccessToken = () => {
                     refreshToken: response.data.refreshToken,
                 }
                 localStorage.setItem('admin_user', JSON.stringify(updatedUser))
-                localStorage.setItem('validSession', 'true')
+                localStorage.setItem('validAdminSession', 'true')
                 window.dispatchEvent(new Event('storage'))
                 resolve(response.data.accessToken)
             })
             .catch((error) => {
                 // Xử lý lỗi
-                localStorage.setItem('validSession', 'false')
+                localStorage.setItem('validAdminSession', 'false')
                 window.dispatchEvent(new Event('storage'))
                 console.log(error)
                 reject(error)

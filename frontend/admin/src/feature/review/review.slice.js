@@ -9,9 +9,9 @@ const reviewSlice = createSlice({
     initialState,
     reducers: {},
     extraReducers: (builder) => {
-        builder.addCase(reviewThunk.getListReview.fulfilled, (state, action) => {
-            state.listReview = action.payload
-        })
+        // builder.addCase(reviewThunk.getListReview.fulfilled, (state, action) => {
+        //     state.listReview = action.payload
+        // })
         builder.addCase(reviewThunk.getCompanyReview.fulfilled, (state, action) => {
             state.listReview = action.payload
         })

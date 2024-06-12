@@ -27,6 +27,9 @@ public class Customer {
     
     @Column(name = "img")
     private String img;
+
+    public String getImg() {
+        return "https://vexe.workon.space" + this.img;
+    }
     
-   
 }

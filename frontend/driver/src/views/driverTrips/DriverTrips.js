@@ -552,6 +552,9 @@ const ScheduleItem = ({ schedule, index, time }) => {
                         driverThunk.getDriverSchedules(user.user.driver.driverId),
                     ).unwrap()
                     await dispatch(driverThunk.getDriverTrip(user.user.driver.driverId)).unwrap()
+                    setIsUpdating(false)
+                    setFile(null)
+                    setFileURL(null)
                     setTimeout(() => {
                         setShowOrder(false)
                     }, 1000)
@@ -581,7 +584,14 @@ const ScheduleItem = ({ schedule, index, time }) => {
             companyName: curCompany.busCompany.name,
             companyTel: curCompany.admin.tel,
             commandId: schedule.transportationOrder?.id,
-            exportTime: ['TP. Hồ Chí Minh', '12', '03', '2024'],
+            exportTime: [
+                curCompany?.admin?.address
+                    ? curCompany.admin.address.split(',').pop().trim()
+                    : 'TP. Hồ Chí Minh',
+                new Date(schedule.departDate).getDate().toString(),
+                (new Date(schedule.departDate).getMonth() + 1).toString().padStart(2, '0'),
+                new Date(schedule.departDate).getFullYear().toString(),
+            ],
             valueSpan: [
                 convertToDisplayDate(schedule.departDate),
                 format(
@@ -593,8 +603,10 @@ const ScheduleItem = ({ schedule, index, time }) => {
                 ),
             ],
             driver1: schedule.driverUser?.name,
+            driver1License: schedule.driverUser?.license,
             driver2: schedule.driverUser2?.name,
-            assistant: 'Lê Văn A',
+            driver2License: schedule.driverUser2?.license,
+            assistant: '',
             busPlate: schedule.bus?.licensePlate,
             seatNum: schedule.bus?.type?.capacity,
             busType: schedule.bus?.type?.description,
@@ -710,7 +722,13 @@ const ScheduleItem = ({ schedule, index, time }) => {
                     </CTooltip>
                 </CTableDataCell>
             </CTableRow>
-            <CModal visible={showOrder} onClose={() => setShowOrder(false)} size="lg">
+            <CModal
+                visible={showOrder}
+                onClose={() => {
+                    setShowOrder(false)
+                }}
+                size="lg"
+            >
                 <CModalHeader>
                     <b>Lệnh vận chuyển</b>
                 </CModalHeader>
@@ -781,9 +799,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
                     <CustomButton
                         color="success"
                         onClick={handleUpdate}
-                        disabled={
-                            (isUpdating && currentOrderStatus?.value >= 4) || isUpdating === false
-                        }
+                        disabled={currentOrderStatus?.value >= 4}
                         text={isUpdating ? 'Lưu' : 'Cập nhật'}
                     ></CustomButton>
                     {isUpdating && (

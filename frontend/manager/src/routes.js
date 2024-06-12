@@ -14,11 +14,13 @@ const CompanyDetail = React.lazy(() => import('./views/system-manager/ticket-sys
 const FeeManage = React.lazy(() => import('./views/system-manager/ticket-system/FeeManage'))
 //Chat
 const Chat = React.lazy(() => import('./views/chat/Chat'))
+//Account
+const AccountManagement = React.lazy(() => import('./views/account/AccountManagement'))
 
 const routes = [
     { path: '/', exact: true, name: 'Home' },
     { path: '/dashboard', name: 'Dashboard', element: Dashboard, protected: true },
-    { path: '/profile/infor', name: 'Thông tin tài xế', element: UserProfile },
+    { path: '/profile/infor', name: 'Thông tin tài khoản', element: UserProfile },
     { path: '/profile/change-password', name: 'Đổi mật khẩu', element: ChangePassword },
     { path: '/chat', name: 'Cửa sổ khách hàng', element: Chat },
     {
@@ -63,6 +65,12 @@ const routes = [
         path: '/grab-system/transport-partner',
         name: 'Quản lý đối tác vận chuyển',
         element: TransportManagement,
+        protected: true,
+    },
+    {
+        path: '/account',
+        name: 'Quản lý tài khoản',
+        element: AccountManagement,
         protected: true,
     },
 ]

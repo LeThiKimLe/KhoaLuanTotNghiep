@@ -35,7 +35,7 @@ public class Driver {
     private String address;
     
     
-    @Column(name = "diriver_license")
+    @Column(name = "driver_license")
     private String driverLicense;
 
     @Column(name = "img")
@@ -60,5 +60,8 @@ public class Driver {
     @ManyToOne
     @JoinColumn(name = "company_id", referencedColumnName = "id")
     private BusCompany busCompany;
-   
+
+    public String getImg() {
+        return "https://vexe.workon.space" + this.img;
+    }
 }

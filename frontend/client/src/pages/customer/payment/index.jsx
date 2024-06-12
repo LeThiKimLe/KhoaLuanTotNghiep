@@ -65,8 +65,13 @@ const Payment = () => {
     const [vnp_ResponseCode, setResponseCode] = useState(params.get('vnp_ResponseCode'))
     const [vnp_TransactionNo, setTransactionNo] = useState(params.get('vnp_TransactionNo'))
     const [vnp_TransactionDate, setTransactionDate] = useState(params.get('vnp_PayDate'))
+    const [processing, setProcessing] = useState(false)
     const handleCancelOut = async () => {
-        await dispatch(bookingThunk.cancelPayment(urlBookingCode))
+        let bookingCode = urlBookingCode
+        if (bookingReturnCode !== '') {
+            bookingCode = bookingCode + 'and' + bookingReturnCode
+        }
+        await dispatch(bookingThunk.cancelPayment(bookingCode))
             .unwrap()
             .then(() => {
                 setPaid(true)
@@ -78,7 +83,11 @@ const Payment = () => {
             })
     }
     const handleCancel = async () => {
-        await dispatch(bookingThunk.cancelPayment(urlBookingCode))
+        let bookingCode = urlBookingCode
+        if (bookingReturnCode !== '') {
+            bookingCode = bookingCode + 'and' + bookingReturnCode
+        }
+        await dispatch(bookingThunk.cancelPayment(bookingCode))
             .unwrap()
             .then(() => {
                 setPaid(true)
@@ -98,6 +107,7 @@ const Payment = () => {
         console.log(urlBookingCode, bookingReturnCode)
         dispatch(bookingActions.resetMessage())
         if (bookingReturnCode == '') {
+            setProcessing(true)
             dispatch(bookingThunk.bookingPayment(
                 { bookingCode: urlBookingCode,
                   payment: 'VNPay',
@@ -106,6 +116,7 @@ const Payment = () => {
             ))
             .unwrap()
             .then(() => {
+                setProcessing(false)
                 setPaid(true)
                 setShowCountDown(false)
                 setShowSuccessDialog(true)
@@ -116,6 +127,7 @@ const Payment = () => {
                 setShowInvalidDialog(true)
             })
         } else {
+            setProcessing(true)
             dispatch(bookingThunk.bookingReturnPayment(
                 { bookingCode: urlBookingCode,
                   bookingCodeReturn: bookingReturnCode,
@@ -125,6 +137,7 @@ const Payment = () => {
             ))
             .unwrap()
             .then(() => {
+                setProcessing(false)
                 setPaid(true)
                 setShowCountDown(false)
                 setShowSuccessDialog(true)
@@ -142,7 +155,11 @@ const Payment = () => {
     }
 
     const handleContinue = () => {
-        dispatch(bookingThunk.keepPayment(urlBookingCode))
+        let bookingCode = urlBookingCode
+        if (bookingReturnCode !== '') {
+            bookingCode = bookingCode + 'and' + bookingReturnCode
+        }
+        dispatch(bookingThunk.keepPayment(bookingCode))
             .unwrap()
             .then((res) => {
                 dispatch(setPaymentURL(res.paymentURL))
@@ -169,6 +186,8 @@ const Payment = () => {
     }
 
     const getBookingInfor = (booking) => {
+        if (bookingReturnCode != '')
+            return bookingInfor
         const { trip, ...bookingInfor } = booking
         return {
             bookingTrip: {
@@ -347,9 +366,15 @@ const Payment = () => {
                                         <Col lg={7} md={7} className={styles.qrCol}>
                                             <h4 className={styles.colTitle}>Tổng thanh toán</h4>
                                             <h2>{`${getTotalCost().toLocaleString()} đ`}</h2>
-                                            <i style={{ color: 'red', fontSize: '14px' }}>{`Thời gian giữ chỗ còn lại `}
-                                                {showCountDown ? <CountDown onTimeout={handleTimeout}></CountDown> : <i>00:00</i>}
-                                            </i>
+                                            {
+                                                !processing ? (
+                                                    <i style={{ color: 'red', fontSize: '14px' }}>{`Thời gian giữ chỗ còn lại `}
+                                                        {showCountDown ? <CountDown onTimeout={handleTimeout}></CountDown> : <i>00:00</i>}
+                                                    </i>
+                                                ) : (
+                                                    <i style={{ color: 'green' }}>Đang xử lý thông tin ...</i>
+                                                )
+                                            }
                                             <br></br>
                                             <img src={clock_img} style={{width: '50px', height: '50px', marginTop: '10px'}}></img>
                                             <div className={styles.direction}>
@@ -409,7 +434,7 @@ const Payment = () => {
                                     {
                                         bookingInfor.bookingReturn && (
                                             <div className={styles.trip_sum}>
-                                                <h3 className={styles.sum_title}>Thông tin lượt v</h3>
+                                                <h3 className={styles.sum_title}>Thông tin lượt về</h3>
                                                 <div className={styles.sum_infor}>
                                                     <span className={styles.sum_infor_title}>Chuyến xe</span>
                                                     <span className={styles.sum_infor_value}>

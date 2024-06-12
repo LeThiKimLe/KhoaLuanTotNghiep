@@ -28,7 +28,7 @@ const TripInfor = ({ trip, selected, setActive, disabled, noChoose }) => {
                         <strong>-----</strong>{' '}
                         <span>
                             <strong>{trip.availability}</strong>{' '}
-                            {` / ${trip.tripInfor.route.busType.capacity}`}
+                            {` / ${trip.tripInfor.busType.capacity}`}
                         </span>
                     </CCardText>
                 </CCardBody>

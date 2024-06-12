@@ -205,13 +205,44 @@ const activeAccount = createAsyncThunk('admin/user-active', async ({ id, active 
 
 const getAdmins = createAsyncThunk('admin/admins', async (_, thunkAPI) => {
     try {
-        const result = await axiosClient.get('admin/admins')
+        const result = await axiosClient.get('manager/admins')
         return result
     } catch (error) {
         const message =
             (error.response && error.response.data && error.response.data.message) ||
             error.message ||
             error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+const addManager = createAsyncThunk('manager/add', async (managerInfor, thunkAPI) => {
+    try {
+        const manager = await axiosClient.post('manager', {
+            tel: managerInfor.tel,
+            name: managerInfor.name,
+            email: managerInfor.email,
+            gender: managerInfor.gender,
+            idCard: managerInfor.idCard,
+            address: managerInfor.address,
+            beginWorkDate: managerInfor.beginWorkDate,
+        })
+        return manager
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+const getManagers = createAsyncThunk('manager/get', async (_, thunkAPI) => {
+    try {
+        const managers = await axiosClient.get('manager')
+        return managers
+    } catch (error) {
+        const message = error.response.data.message || error.message || error.toString()
         return thunkAPI.rejectWithValue(message)
     }
 })
@@ -228,5 +259,7 @@ const staffThunk = {
     distributeDriver,
     getDriverTrip,
     getDriverSchedules,
+    addManager,
+    getManagers,
 }
 export default staffThunk

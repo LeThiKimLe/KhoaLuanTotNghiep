@@ -21,7 +21,7 @@ import statisticsReducer from './feature/statistics/statistics.slice'
 import driverReducer from './feature/driver/driver.slice'
 import companyReducer from './feature/bus-company/busCompany.slice'
 const rootPersistConfig = {
-    key: 'root',
+    key: 'rootDriver',
     storage,
     stateReconciler: autoMergeLevel2,
     whitelist: ['slice', 'driver'],

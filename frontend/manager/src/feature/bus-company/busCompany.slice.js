@@ -49,6 +49,9 @@ const companySlice = createSlice({
             .addCase(companyThunk.getReview.fulfilled, (state, action) => {
                 state.listCurCompanyReview = action.payload
             })
+            .addCase(companyThunk.getReview.rejected, (state) => {
+                state.listCurCompanyReview = []
+            })
     },
 })
 export const selectListCompany = (state) => state.company.listBusCompany

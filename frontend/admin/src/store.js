@@ -25,7 +25,7 @@ import feeReducer from './feature/fee/fee.slice'
 import noticeReducer from './feature/notification/notice.slice'
 
 const rootPersistConfig = {
-    key: 'root',
+    key: 'rootAdmin',
     storage,
     stateReconciler: autoMergeLevel2,
     whitelist: ['slice'],

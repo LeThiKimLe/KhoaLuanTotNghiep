@@ -78,6 +78,7 @@ import { convertToDisplayDate } from 'src/utils/convertUtils'
 import { format, parse } from 'date-fns'
 import { DateRange } from 'react-date-range'
 import { cilStar } from '@coreui/icons'
+import { addDays } from 'src/utils/convertUtils'
 const ScheduleWrap = ({ schedule, turn, isEdit = false, removeTrip }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
@@ -247,6 +248,7 @@ const TableSchedule = ({ listFixScheduleIn, tripGoId, tripBackId }) => {
     }, [listFixScheduleIn])
     return (
         <div>
+            <i>Bảng lịch trình</i>
             <CToaster ref={toaster} push={toast} placement="top-end" />
             {tripGoId !== 0 && tripBackId !== 0 && (
                 <>
@@ -799,7 +801,7 @@ const RouteInfo = ({ route, fixSchedule }) => {
     const [listTrip, setListTrip] = useState([])
     const officialTrip = listTrip.length > 0 ? listTrip.find((tp) => tp.active === true) : null
     const tripGo = officialTrip ? officialTrip.turnGo : null
-    const tripBack = officialTrip > 0 ? officialTrip.turnBack : null
+    const tripBack = officialTrip ? officialTrip.turnBack : null
     const [openComfirmForm, setOpenComfirmForm] = useState(false)
     const [isDelete, setIsDelete] = useState(false)
     const dispatch = useDispatch()
@@ -858,7 +860,6 @@ const RouteInfo = ({ route, fixSchedule }) => {
         const listTripExtract = tripProcess([route], curCompany?.busCompany?.id)
         setListTrip(listTripExtract)
     }, [route])
-    console.log(listTrip)
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -1187,6 +1188,20 @@ const FeeInfo = ({ listAssignRouteId }) => {
         return format(nextDate, 'dd/MM/yyyy')
     }
 
+    const getStartDateOfService = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        if (currentSpan.getDate() !== 5) {
+            return addDays(currentSpan, 1)
+        } else {
+            let firstOfMonth = new Date(currentSpan.getFullYear(), currentSpan.getMonth(), 1)
+            return firstOfMonth
+        }
+    }
+    const getLastDateOfMonth = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        let lastDate = new Date(currentSpan.getFullYear(), currentSpan.getMonth() + 1, 0)
+        return lastDate
+    }
     useEffect(() => {
         getMonthRange(yearValue)
     }, [yearValue])
@@ -1389,6 +1404,13 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                     rowSpan={2}
                                     className="align-middle text-center"
                                 >
+                                    Ngày đến hạn
+                                </CTableHeaderCell>
+                                <CTableHeaderCell
+                                    scope="col"
+                                    rowSpan={2}
+                                    className="align-middle text-center"
+                                >
                                     Số tuyến xe
                                 </CTableHeaderCell>
                                 <CTableHeaderCell
@@ -1428,7 +1450,10 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                     {1}
                                 </CTableHeaderCell>
                                 <CTableDataCell className="text-center">
-                                    {convertToDisplayDate(curCompany.busCompany.coopDay)}
+                                    {format(
+                                        addDays(new Date(curCompany.busCompany.coopDay), 1),
+                                        'dd/MM/yyyy',
+                                    )}
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center">
                                     {format(
@@ -1438,11 +1463,12 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                                 'yyyy-MM-dd',
                                                 new Date(),
                                             ).getTime() +
-                                                14 * 86400000,
+                                                15 * 86400000,
                                         ),
                                         'dd/MM/yyyy',
                                     )}
                                 </CTableDataCell>
+                                <CTableDataCell>{'---'}</CTableDataCell>
                                 <CTableDataCell className="text-center">
                                     {listTrip.length}
                                 </CTableDataCell>
@@ -1456,10 +1482,13 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                         {index + 1}
                                     </CTableHeaderCell>
                                     <CTableDataCell className="text-center">
-                                        {convertToDisplayDate(fee.dueDate)}
+                                        {format(getStartDateOfService(fee.dueDate), 'dd/MM/yyyy')}
                                     </CTableDataCell>
                                     <CTableDataCell className="text-center">
-                                        {getNextDueDay(fee.dueDate)}
+                                        {format(getLastDateOfMonth(fee.dueDate), 'dd/MM/yyyy')}
+                                    </CTableDataCell>
+                                    <CTableDataCell className="text-center">
+                                        {convertToDisplayDate(fee.dueDate)}
                                     </CTableDataCell>
                                     <CTableDataCell className="text-center">
                                         {listTrip.length}
@@ -1602,7 +1631,8 @@ const ReviewSection = () => {
         listAllReview.forEach((review) => {
             total += review.rate
         })
-        return total / listAllReview.length
+        if (total / listAllReview.length) return (total / listAllReview.length).toFixed(1)
+        else return 0
     }
     const rateData = () => {
         const data = [0, 0, 0, 0, 0]

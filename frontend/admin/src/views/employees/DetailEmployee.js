@@ -430,7 +430,7 @@ const DetailEmployee = () => {
                                     </CForm>
                                 </CCardBody>
                                 <CCardFooter className="bg-light text-danger">
-                                    {error !== '' ? error : ''}
+                                    {error !== '' ? 'Có thông tin đã trùng với nhân viên khác' : ''}
                                 </CCardFooter>
                             </CCard>
                         </CCol>

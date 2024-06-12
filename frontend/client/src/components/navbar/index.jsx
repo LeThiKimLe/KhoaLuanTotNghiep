@@ -75,10 +75,10 @@ const Navbar = () => {
         dispatch(authActions.cancelogout())
     };
     const [validSession, setValidSession] = useState(
-        JSON.parse(localStorage.getItem('validSession')),
+        JSON.parse(localStorage.getItem('validClientSession')),
     )
     window.addEventListener('storage', () => {
-        setValidSession(JSON.parse(localStorage.getItem('validSession')))
+        setValidSession(JSON.parse(localStorage.getItem('validClientSession')))
     })
     useEffect(() => {
         if (validSession === false)
