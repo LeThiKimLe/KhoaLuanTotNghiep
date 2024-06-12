@@ -13,13 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.QuanLyNhaXe.Request.CreatePaymentDTO;
 import com.example.QuanLyNhaXe.Request.CreatePaymentReturnTicket;
+import com.example.QuanLyNhaXe.dto.BusCompanyDTO;
+import com.example.QuanLyNhaXe.dto.CompanyMoneyDTO;
 import com.example.QuanLyNhaXe.dto.TransactionDTO;
+import com.example.QuanLyNhaXe.enumration.PaymentMethod;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.enumration.TransactionType;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Bill;
 import com.example.QuanLyNhaXe.model.Booking;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Ticket;
 import com.example.QuanLyNhaXe.model.Transaction;
 import com.example.QuanLyNhaXe.repository.BillRepository;
@@ -40,11 +44,12 @@ public class TransactionService {
 
 	private final ModelMapper modelMapper;
 	private final UtilityService utilityService;
+	private final BusCompanyService busCompanyService;
 
 	@Transactional
 	public TransactionDTO createTransaction(CreatePaymentDTO createPaymentDTO) {
 		Integer priceBill = 0;
-		List<Booking> bookings=new ArrayList<>();
+		List<Booking> bookings = new ArrayList<>();
 
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
@@ -69,9 +74,11 @@ public class TransactionService {
 
 		}
 
-		Transaction transaction = Transaction.builder().paymentTime(utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate()))
-				.bookings(bookings).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo()).paymentMethod(createPaymentDTO.getPaymentMethod())
-				.transactionType(TransactionType.PAYMENT.getLabel()).build();
+		Transaction transaction = Transaction.builder()
+				.paymentTime(utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate()))
+				.bookings(bookings).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo())
+				.paymentMethod(createPaymentDTO.getPaymentMethod()).transactionType(TransactionType.PAYMENT.getLabel())
+				.build();
 		booking.setTransaction(transaction);
 
 		try {
@@ -90,8 +97,6 @@ public class TransactionService {
 
 	public Transaction createTransactionForCancelTickets(String paymanetMethod, double amount, String transactionNo) {
 
-		
-
 		return Transaction.builder().paymentTime(utilityService.convertHCMDateTime()).amount(amount)
 				.paymentMethod(paymanetMethod).transactionNo(transactionNo)
 				.transactionType(TransactionType.REFUND.getLabel()).build();
@@ -105,10 +110,10 @@ public class TransactionService {
 		LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
 		LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 		LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
-		List<Transaction> transactions = transactionRepository.findByPaymentTimeBetweenAndTransactionType(startDateTime,endDateTime,
-				TransactionType.PAYMENT.getLabel());
-		List<Transaction> transactions2 = transactionRepository.findByPaymentTimeBetweenAndTransactionType(startDateTime,endDateTime,
-				TransactionType.REFUND.getLabel());
+		List<Transaction> transactions = transactionRepository.findByPaymentTimeBetweenAndTransactionType(startDateTime,
+				endDateTime, TransactionType.PAYMENT.getLabel());
+		List<Transaction> transactions2 = transactionRepository.findByPaymentTimeBetweenAndTransactionType(
+				startDateTime, endDateTime, TransactionType.REFUND.getLabel());
 		if (!transactions.isEmpty()) {
 			for (Transaction transaction : transactions) {
 				sum += transaction.getAmount();
@@ -124,16 +129,16 @@ public class TransactionService {
 		return sum - sum2;
 
 	}
-	
+
 	public long calculateRevenueOneDay(LocalDate date) {
 		long sum = 0L;
 		long sum2 = 0L;
-		LocalDateTime startDateTime =  date.atStartOfDay();		
+		LocalDateTime startDateTime = date.atStartOfDay();
 		LocalDateTime endDateTime = date.atTime(LocalTime.MAX);
-		List<Transaction> transactions = transactionRepository.findByPaymentTimeBetweenAndTransactionType(startDateTime,endDateTime,
-				TransactionType.PAYMENT.getLabel());
-		List<Transaction> transactions2 = transactionRepository.findByPaymentTimeBetweenAndTransactionType(startDateTime,endDateTime,
-				TransactionType.REFUND.getLabel());
+		List<Transaction> transactions = transactionRepository.findByPaymentTimeBetweenAndTransactionType(startDateTime,
+				endDateTime, TransactionType.PAYMENT.getLabel());
+		List<Transaction> transactions2 = transactionRepository.findByPaymentTimeBetweenAndTransactionType(
+				startDateTime, endDateTime, TransactionType.REFUND.getLabel());
 		if (!transactions.isEmpty()) {
 			for (Transaction transaction : transactions) {
 				sum += transaction.getAmount();
@@ -145,14 +150,15 @@ public class TransactionService {
 				sum2 += transaction2.getAmount();
 			}
 		}
-		
+
 		return sum - sum2;
 
 	}
+
 	@Transactional
 	public TransactionDTO createReturnTicketTransaction(CreatePaymentReturnTicket createPaymentDTO) {
 		Integer priceBill = 0;
-		List<Booking> bookings=new ArrayList<>();
+		List<Booking> bookings = new ArrayList<>();
 
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
@@ -183,9 +189,11 @@ public class TransactionService {
 
 		}
 
-		Transaction transaction = Transaction.builder().paymentTime(utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate()))
-				.bookings(bookings).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo()).paymentMethod(createPaymentDTO.getPaymentMethod())
-				.transactionType(TransactionType.PAYMENT.getLabel()).build();
+		Transaction transaction = Transaction.builder()
+				.paymentTime(utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate()))
+				.bookings(bookings).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo())
+				.paymentMethod(createPaymentDTO.getPaymentMethod()).transactionType(TransactionType.PAYMENT.getLabel())
+				.build();
 		booking.setTransaction(transaction);
 		booking2.setTransaction(transaction);
 
@@ -203,6 +211,49 @@ public class TransactionService {
 		return modelMapper.map(transaction, TransactionDTO.class);
 
 	}
-	
+
+	public long calculateRevenueOneMonthForOneCompany(YearMonth yearMonth, BusCompany busCompany) {
+		long sum = 0L;
+		long sum2 = 0L;
+		LocalDate firstDayOfMonth = yearMonth.atDay(1);
+		LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
+		LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
+		LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
+		List<Transaction> transactions = transactionRepository
+				.findByPaymentTimeBetweenAndTransactionTypeAndPaymentMethodNotAndBookings_Trip_BusCompany(startDateTime,
+						endDateTime, TransactionType.PAYMENT.getLabel(), PaymentMethod.CASH.getLabel(), busCompany);
+		List<Transaction> transactions2 = transactionRepository
+				.findByPaymentTimeBetweenAndTransactionTypeAndPaymentMethodNotAndBookings_Trip_BusCompany(startDateTime,
+						endDateTime, TransactionType.REFUND.getLabel(), PaymentMethod.CASH.getLabel(), busCompany);
+		if (!transactions.isEmpty()) {
+			for (Transaction transaction : transactions) {
+				sum += transaction.getAmount();
+			}
+		}
+
+		if (!transactions2.isEmpty()) {
+			for (Transaction transaction2 : transactions2) {
+				sum2 += transaction2.getAmount();
+			}
+		}
+
+		return sum - sum2;
+
+	}
+
+	public Object getMoneyForCompany(int month, int year) {
+		YearMonth yearMonth = YearMonth.of(year, month);
+		List<CompanyMoneyDTO> companyMoneyDTOs = new ArrayList<>();
+		List<BusCompany> busCompanies = busCompanyService.getAllBusModelCompanys();
+		for (BusCompany busCompany : busCompanies) {
+			long money = 0L;
+			money=calculateRevenueOneMonthForOneCompany(yearMonth,busCompany);
+			CompanyMoneyDTO companyMoneyDTO=CompanyMoneyDTO.builder().busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).ticketMoney(money).build();
+			companyMoneyDTOs.add(companyMoneyDTO);
+
+		}
+
+		return companyMoneyDTOs;
+	}
 
 }
