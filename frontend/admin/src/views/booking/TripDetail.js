@@ -104,6 +104,19 @@ const TripDetail = ({ currentTrip }) => {
                                 />
                             </CCol>
                         </CRow>
+                        <CRow className="mb-1 overflow-auto">
+                            <CFormLabel className="col-sm-3 col-form-label">
+                                <strong>Giá vé:</strong>
+                            </CFormLabel>
+                            <CCol sm={8}>
+                                <CFormInput
+                                    type="text"
+                                    value={`${currentTrip.ticketPrice.toLocaleString()} VNĐ`}
+                                    readOnly
+                                    plainText
+                                />
+                            </CCol>
+                        </CRow>
                     </CCol>
                     <CCol md="4" className="text-right">
                         <CRow className="d-flex-end mb-1">

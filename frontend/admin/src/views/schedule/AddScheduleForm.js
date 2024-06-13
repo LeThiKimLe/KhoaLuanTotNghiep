@@ -651,6 +651,30 @@ const AddScheduleForm = ({
                                                 />
                                             </CCol>
                                         </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="note"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Giá vé</b>
+                                            </CFormLabel>
+                                            <CCol sm="8">
+                                                <CInputGroup>
+                                                    <CTooltip content="Giá tiền cố định tuyến">
+                                                        <CFormInput value="300"></CFormInput>
+                                                    </CTooltip>
+                                                    <CTooltip content="Phụ phí loại xe">
+                                                        <CFormInput value="300"></CFormInput>
+                                                    </CTooltip>
+                                                    <CTooltip content="Phụ phí lễ">
+                                                        <CFormInput value="300"></CFormInput>
+                                                    </CTooltip>
+                                                    <CTooltip content="Tổng cộng">
+                                                        <CFormInput value="300"></CFormInput>
+                                                    </CTooltip>
+                                                </CInputGroup>
+                                            </CCol>
+                                        </CRow>
                                         <div className="w-100 border-top mb-3"></div>
                                         <ScheduleBox
                                             listTime={listTimeGo}

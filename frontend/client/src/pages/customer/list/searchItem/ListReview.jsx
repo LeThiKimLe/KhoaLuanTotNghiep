@@ -1,5 +1,5 @@
 import { useEffect } from "react"
-import { useSelector } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { selectListReview } from "../../../../feature/review/review.slice"
 import styles from './styles.module.css'
 import { convertToDisplayDate } from "../../../../utils/unitUtils"
@@ -9,6 +9,7 @@ import male from '../../../../assets/male.svg'
 import female from '../../../../assets/female.svg'
 import { format } from 'date-fns'
 import { getRouteJourney } from '../../../../utils/tripUtils'
+import reviewThunk from "../../../../feature/review/review.service"
 
 const Comment = ({comment}) => {
     return (
@@ -42,8 +43,21 @@ const Comment = ({comment}) => {
 }
 
 export const ListReview = ({trip}) => {
+    const dispatch = useDispatch()
     const listComment = useSelector(selectListReview)
     const listShow = listComment.filter((item) => item?.scheduleTrip?.busCompany?.id === trip.busCompany.id  && item?.scheduleTrip?.id === trip.id)
+    useEffect(() => {
+        if (listComment.length === 0)
+        {
+            dispatch(reviewThunk.getListReview())
+            .unwrap()
+            .then(() => {
+            })
+            .catch((err) => {
+                console.log(err)
+            })
+        }
+    }, [])
     return ( 
         <div style={{ maxHeight: '500px', overflow: 'auto' }}>
             {

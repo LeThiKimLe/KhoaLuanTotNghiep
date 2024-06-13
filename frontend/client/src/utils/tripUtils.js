@@ -25,6 +25,10 @@ export const getTripJourney = (trip) => {
     return trip.startStation.name + "-" + trip.endStation.name;
 };
 
+const reverseString = (str, separator = ' - ') => {
+  return str.split(separator).reverse().join(separator)
+}
+
 export const tripProcess = (listRoute) => {
   const listResult = []
   let temp = -1
@@ -38,7 +42,7 @@ export const tripProcess = (listRoute) => {
               (item) =>
                   item.startStation.id === trip.endStation.id &&
                   item.endStation.id === trip.startStation.id &&
-                  item.schedule === trip.schedule,
+                  item.schedule === trip.schedule || item.schedule === reverseString(trip.schedule),
           )
           if (temp != -1) {
               listOut[temp] = {

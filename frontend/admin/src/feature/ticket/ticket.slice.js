@@ -107,6 +107,9 @@ const ticketSlice = createSlice({
         resetListChosen: (state) => {
             state.listTicket = []
         },
+        clearListBooking: (state) => {
+            state.listBooking = []
+        },
     },
     extraReducers: (builder) => {
         builder
