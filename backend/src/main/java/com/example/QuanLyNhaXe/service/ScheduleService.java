@@ -3,6 +3,7 @@ package com.example.QuanLyNhaXe.service;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,15 +130,15 @@ public class ScheduleService {
 			}
 			for (Time scheduleTime : createSchedules.getTimes()) {
 				Schedule schedule = Schedule.builder().availability(avaiability).trip(trip).departTime(scheduleTime)
-						.departDate(scheduleDate).specialDay(specialDay).ticketPrice(price)
-						.state(null).updateTime(utilityService.convertHCMDateTime()).note(note).currentStation(0)
-						.build();
+						.departDate(scheduleDate).specialDay(specialDay).ticketPrice(price).state(null)
+						.updateTime(utilityService.convertHCMDateTime()).note(note).currentStation(0).build();
 				schedules.add(schedule);
 			}
 		}
 		scheduleRepository.saveAll(schedules);
 
-		return schedules.stream().filter(schedule -> schedule.getDepartDate() == departDate).map(schedule -> modelMapper.map(schedule, ScheduleDTO.class)).toList();
+		return schedules.stream().filter(schedule -> schedule.getDepartDate() == departDate)
+				.map(schedule -> modelMapper.map(schedule, ScheduleDTO.class)).toList();
 
 	}
 
@@ -192,7 +193,7 @@ public class ScheduleService {
 	}
 
 	public Object updateState(EditStateSchedule edit) {
-		System.out.print(edit.toString());
+
 		Schedule schedule = scheduleRepository.findById(edit.getScheduleId())
 				.orElseThrow(() -> new NotFoundException(Message.SCHEDULE_NOT_FOUND));
 		String state = edit.getState();
@@ -203,27 +204,71 @@ public class ScheduleService {
 				&& !state.equals(ScheduleState.DEN_TRAM_DUNG.getLabel())
 				&& !state.equals(ScheduleState.ROI_BAI_DO.getLabel())
 				&& !state.equals(ScheduleState.VE_BAI_DO.getLabel())
-				&& !state.equals(ScheduleState.HOAN_THANH.getLabel())
-				&& !state.equals(ScheduleState.HUY.getLabel())){
+				&& !state.equals(ScheduleState.HOAN_THANH.getLabel()) && !state.equals(ScheduleState.HUY.getLabel())) {
 			throw new BadRequestException("Trạng thái không hợp lệ");
 		}
 		if (edit.getStopStationId() == 0) {
 			throw new BadRequestException(Message.INVALID_STATE);
-		}
-		if (edit.getStopStationId() != 0)
-		{
+		} else {
 			StopStation stopStation = stopStationRepository.findById(edit.getStopStationId())
-				.orElseThrow(() -> new NotFoundException(Message.STOPSTATION_NOT_FOUND));
-		}		
+					.orElseThrow(() -> new NotFoundException(Message.STOPSTATION_NOT_FOUND));
+			schedule.setCurrentStation(stopStation.getId());
+
+		}
+
 		schedule.setState(state);
-		schedule.setCurrentStation(edit.getStopStationId());
-		//Get current time
+
+		// Get current time
 		schedule.setUpdateTime(utilityService.convertHCMDateTime());
 		scheduleRepository.save(schedule);
 		if (schedule.getTransportationOrder() != null) {
 			schedule.getTransportationOrder().setSchedule(null);
 		}
 		return modelMapper.map(schedule, ScheduleTranDTO.class);
+	}
+
+	public LocalDate[] getMonthStartAndEndDates(int year, int month) {
+		YearMonth yearMonth = YearMonth.of(year, month);
+		LocalDate startDate = yearMonth.atDay(1);
+		if (year == LocalDate.now().getYear() && month == LocalDate.now().getMonthValue()) {
+			LocalDate endDate = LocalDate.now();
+			LocalDate[] dates = new LocalDate[] { startDate, endDate };
+			return dates;
+		} else {
+			LocalDate endDate = yearMonth.atEndOfMonth();
+			LocalDate[] dates = new LocalDate[] { startDate, endDate };
+			return dates;
+		}
+	}
+
+	public Object getScheduleForMonth( int month, int year) {
+		int currentYear = LocalDate.now().getYear();
+		if (year > currentYear || year < 0) {
+			throw new IllegalArgumentException("Năm không hợp lệ");
+		}
+		if (month < 1 || month > 12) {
+			throw new IllegalArgumentException("Tháng không hợp lệ");
+		}
+		LocalDate[] dates = getMonthStartAndEndDates(year, month);
+		LocalDate startDate = dates[0];
+		LocalDate endDate = dates[1];
+
+		List<Schedule> schedules = scheduleRepository.findByDepartDateBetween(startDate, endDate);
+		if (schedules.isEmpty()) {
+			throw new NotFoundException(Message.SCHEDULE_NOT_FOUND);
+		}
+		ModelMapper customModelMapper = new ModelMapper();
+		customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
+		.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
+		.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
+		return schedules.stream().peek(schedule -> {
+			if (schedule.getTransportationOrder() != null) {
+				schedule.getTransportationOrder().setSchedule(null);
+
+			}
+		}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+
+	
 	}
 
 }

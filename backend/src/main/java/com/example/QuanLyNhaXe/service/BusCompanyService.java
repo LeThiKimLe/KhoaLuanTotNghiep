@@ -172,4 +172,12 @@ public class BusCompanyService {
 		return modelMapper.map(busCompany, BusCompanyDTO.class);
 				
 	}
+	
+	public List<BusCompany> getAllBusModelCompanys() {
+	    List<BusCompany> busCompanyList = busCompanyRepository.findAll();
+	    if (busCompanyList.isEmpty()) {
+	        throw new NotFoundException(Message.COMPANY_NOT_FOUND);
+	    }
+	    return busCompanyList;
+	}
 }

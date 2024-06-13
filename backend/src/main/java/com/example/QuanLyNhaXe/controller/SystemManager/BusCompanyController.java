@@ -15,6 +15,7 @@ import com.example.QuanLyNhaXe.Request.CreateBusCompany;
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditBusCompany;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
+import com.example.QuanLyNhaXe.service.TransactionService;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -33,6 +34,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class BusCompanyController {
 
 	private final BusCompanyService busCompanyService;
+	private final TransactionService transactionService;
 
 	@GetMapping
 	public ResponseEntity<Object> getAllBusCompany() {
@@ -62,6 +64,11 @@ public class BusCompanyController {
 	@PutMapping("/state")
 	public ResponseEntity<Object> editActiveBusCompany(@RequestBody EditActiveDTO editActiveDTO) {
 		return new ResponseEntity<>(busCompanyService.eidtStateCompany(editActiveDTO), HttpStatus.OK);
+	}
+	
+	@GetMapping("/money")
+	public ResponseEntity<Object> getTicketMoneyForMonth( @RequestParam Integer month,@RequestParam Integer year) {
+		return new ResponseEntity<>(transactionService.getMoneyForCompany(month, year), HttpStatus.OK);
 	}
 	
 }

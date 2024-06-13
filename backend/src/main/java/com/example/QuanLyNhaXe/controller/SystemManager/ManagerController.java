@@ -16,6 +16,8 @@ import com.example.QuanLyNhaXe.Request.SignupDTO;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
 import com.example.QuanLyNhaXe.service.FeeService;
+import com.example.QuanLyNhaXe.service.ScheduleService;
+import com.example.QuanLyNhaXe.service.TransactionService;
 import com.example.QuanLyNhaXe.service.UserService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -34,6 +36,8 @@ public class ManagerController {
 	private final AuthenticationService authenticationService;
 	private final UserService userService;
 	private final FeeService feeService;
+	private final ScheduleService scheduleService;
+
 	
 	@GetMapping()
 	public ResponseEntity<Object> getManagers() {
@@ -59,6 +63,12 @@ public class ManagerController {
 	public ResponseEntity<Object> getServiceFee( @Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization,HttpServletRequest httpServletRequest) {
 		return new ResponseEntity<>(feeService.getServiceFee(authorization), HttpStatus.OK);
 	}
+	
+	@GetMapping("/schedules")
+	public ResponseEntity<Object> getSchedulesForMonth( @RequestParam Integer month,@RequestParam Integer year) {
+		return new ResponseEntity<>(scheduleService.getScheduleForMonth(month, year), HttpStatus.OK);
+	}
+	
 	
 	
 
