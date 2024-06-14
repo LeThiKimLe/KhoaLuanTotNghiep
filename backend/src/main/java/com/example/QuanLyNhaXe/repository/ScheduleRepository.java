@@ -19,4 +19,6 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 	List<Schedule> findByBusId(Integer busId);
 
 	List<Schedule> findByDepartDateBetweenAndTrip_BusCompany(LocalDate startDate, LocalDate endDate, BusCompany busCompany);
+	
+	 List<Schedule> findByDepartDateAndTrip_BusCompany(Date departDate, BusCompany busCompany);
 }

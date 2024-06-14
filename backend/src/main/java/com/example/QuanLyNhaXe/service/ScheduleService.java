@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import com.example.QuanLyNhaXe.Request.CreateSchedules;
 import com.example.QuanLyNhaXe.Request.DistributeSchedule;
 import com.example.QuanLyNhaXe.Request.EditStateSchedule;
+import com.example.QuanLyNhaXe.Request.ScheduleForDay;
 import com.example.QuanLyNhaXe.dto.BusCompanyDTO;
 import com.example.QuanLyNhaXe.dto.MaximumScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleCompanyForMonth;
@@ -287,6 +288,28 @@ public class ScheduleService {
 
 		return scheduleCompanyForMonths;
 
+	}
+	
+	public Object getScheduleForDay(ScheduleForDay scheduleForDay) {
+		ModelMapper customModelMapper = new ModelMapper();
+		customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
+				.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
+				.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
+		
+		BusCompany busCompany=busCompanyService.getModelBusCompany(scheduleForDay.getCompanyId());
+		List<Schedule> schedules = scheduleRepository.findByDepartDateAndTrip_BusCompany(scheduleForDay.getDepartDate(), busCompany);
+		if (schedules.isEmpty()) {
+			throw new NotFoundException(Message.SCHEDULE_NOT_FOUND);
+		}
+		
+		return schedules.stream().peek(schedule -> {
+			if (schedule.getTransportationOrder() != null) {
+				schedule.getTransportationOrder().setSchedule(null);
+
+			}
+		}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+
+		
 	}
 
 }

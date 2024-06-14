@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.CreateManager;
+import com.example.QuanLyNhaXe.Request.ScheduleForDay;
 import com.example.QuanLyNhaXe.Request.SignupDTO;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
@@ -67,6 +68,11 @@ public class ManagerController {
 	@GetMapping("/schedules")
 	public ResponseEntity<Object> getSchedulesForMonth( @RequestParam Integer month,@RequestParam Integer year) {
 		return new ResponseEntity<>(scheduleService.getScheduleForMonth(month, year), HttpStatus.OK);
+	}
+	
+	@PostMapping("/schedules-date")
+	public ResponseEntity<Object> getSchedulesForDay(@RequestBody ScheduleForDay scheduleForDay) {
+		return new ResponseEntity<>(scheduleService.getScheduleForDay(scheduleForDay), HttpStatus.OK);
 	}
 	
 	
