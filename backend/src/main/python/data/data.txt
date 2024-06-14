@@ -1,31 +1,513 @@
 Giới thiệu website đặt vé xe khách XeKimNguyen
-XeKimNguyen là trang web đặt vé xe của hãng xe Kim Nguyên. Hãng xe trân trọng phục vụ khách hàng các chuyến xe tuyến cố định từ các tỉnh miền Trung đến Nam Bộ Việt Nam. Các tuyến xe nổi bật được khách hàng thường xuyên tin tưởng và sử dụng là tuyến Nha Trang – Thành phố Hồ Chí Minh, Trà Vinh – Thành phố Hồ Chí Minh.
+XeKimNguyen là hệ thống trang web đặt vé xe cho phép bán vé của nhiều hãng xe. Hệ thống trân trọng phục vụ khách hàng các chuyến xe tuyến cố định từ khắp các tỉnh, thành Việt Nam.
 Mọi thắc mắc, ý kiến đóng góp về trang web hoặc chất lượng phục vụ, vui lòng gọi đến số tổng đài 0333.843.250 hoặc gửi mail về địa chỉ 20110248@student.hcmute.edu.vn.
 Hướng dẫn sử dụng web đặt vé
+
 1. Tìm kiếm chuyến xe
++ Nếu khách hàng hỏi về các để tìm kiếm chuyến xe, thì trả lời như sau:
 - Bước 1: Click vào mũi tên trỏ xuống, để chọn điểm đi trong danh sách điểm đi.
 - Bước 2: Click vào mũi tên trỏ xuống, để chọn điểm đến trong danh sách điểm đến. 
 - Bước 3: Click vào ô Ngày đi để chọn ngày đi hoặc nhập ngày đi.
 - Bước 4: Click vào dấu + để tăng số lượng vé muốn mua, ngược lại dấu - để giảm số lượng vé.
 - Bước 5: Click tìm kiếm để tìm kiếm các chuyến xe theo yêu cầu. Bên cạnh đó có thể tick vào các ô thời gian để lọc các chuyến xe khi tìm kiếm chuyến xe theo các khung giờ (sáng, chiều, tối), các loại xe( ghế, giường, limousine), các vé thuộc dãy ghế (trái, giữa, phải), hàng ghế (đầu, giữa, cuối, tầng(trên hay dưới).
+Thông tin thêm: Khách hàng có thể tích vào lựa chọn "Hai chiều" để đặt vé khứ hồi cùng lúc. Với lựa chọn này, khách hàng có thể chọn chuyến và thời gian cho chuyến khứ hồi cùng lúc đặt vé.
+
+
+Hệ thống hiện cung cấp các tuyến / chuyến xe sau:
++ Tuyến xe 1: TP. Hồ Chí Minh - Khánh Hòa
+  Các chuyến có trong tuyến:
+  1. Miền Đông - Phía Nam Nha Trang
+    Giá vé: 300000
+    Quãng đường di chuyển: 450 km
+    Thời gian di chuyển: 6 giờ
+    Lộ trình di chuyển: BX Phía Nam Nha Trang - QL1A - QL13 - BX Miền Đông
+    Các trạm đi qua:
+     + Miền Đông (Trạm đón)
+     + Phía Nam Nha Trang (Trạm trả)
+     + Ngã tư Thủ Đức (Trạm đón)
+     + Bến xe Cam Ranh (Trạm trả)
+     + Bãi đỗ xe Châu An, Tân Phú (Bãi đỗ xe đầu)
+     + Bãi đỗ xe Cam Ranh (Bãi đỗ xe cuối)
+     + Trạm dừng chân Hưng Thịnh (Trạm dừng chân)
+     + Ngã Tư Ga (Trạm đón)
+  2. Phía Nam Nha Trang - Miền Đông
+    Giá vé: 300000
+    Quãng đường di chuyển: 450 km
+    Thời gian di chuyển: 6 giờ
+    Lộ trình di chuyển: BX Miền Đông - QL13 - QL1A - BX Phía Nam Nha Trang
+    Các trạm đi qua:
+     + Miền Đông (Trạm trả)
+     + Phía Nam Nha Trang (Trạm đón)
+     + Ngã tư Thủ Đức (Trạm trả)
+     + Bến xe Cam Ranh (Trạm đón)
+     + Bãi đỗ xe Châu An, Tân Phú (Bãi đỗ xe cuối)
+     + Bãi đỗ xe Cam Ranh (Bãi đỗ xe đầu)
+     + Trạm dừng chân Hưng Thịnh (Trạm dừng chân)
+     + Ngã Tư Ga (Trạm trả)
+  3. Miền Tây - Phía Nam Nha Trang
+    Giá vé: 0
+    Quãng đường di chuyển: 460 km
+    Thời gian di chuyển: 6.1 giờ
+    Lộ trình di chuyển: BX Miền Tây - Đường Kinh Dương Vương - Ngã Ba cây Dầu Đôi - QL1 - Đường 23/10 - BX Phía Nam Nha Trang
+    Các trạm đi qua:
+     + Miền Tây (Trạm đón)
+     + Phía Nam Nha Trang (Trạm trả)
+  4. Phía Nam Nha Trang - Miền Tây
+    Giá vé: 0
+    Quãng đường di chuyển: 460 km
+    Thời gian di chuyển: 6.1 giờ
+    Lộ trình di chuyển: BX Phía Nam Nha Trang - Đường 23/10 - QL1 - Ngã Ba cây Dầu Đôi - Đường Kinh Dương Vương - BX Miền Tây
+    Các trạm đi qua:
+     + Miền Tây (Trạm trả)
+     + Phía Nam Nha Trang (Trạm đón)
+
++ Tuyến xe 2: TP. Hồ Chí Minh - Trà Vinh
+  Các chuyến có trong tuyến:
+  1. Miền Tây - Trà Vinh
+    Giá vé: 120000
+    Quãng đường di chuyển: 135 km
+    Thời gian di chuyển: 1.8 giờ
+    Lộ trình di chuyển: BX Miền Tây - QL1A - Cao tốc TP Hồ Chí Minh Trung Lương - QL1A - QL60 - QL53 - QL54 - BX Trà Vinh
+    Các trạm đi qua:
+     + Miền Tây (Trạm đón)
+     + Trà Vinh (Trạm trả)
+     + Trạm xe Thanh Thủy, Bình Phú (Trạm trả)
+     + An Sương (Trạm đón)
+  2. Trà Vinh - Miền Tây
+    Giá vé: 120000
+    Quãng đường di chuyển: 135 km
+    Thời gian di chuyển: 1.8 giờ
+    Lộ trình di chuyển: BX Trà Vinh - QL54 - QL53 - QL60 - QL1A - Cao tốc TP Hồ Chí Minh Trung Lương - QL1A - BX Miền Tây
+    Các trạm đi qua:
+     + Miền Tây (Trạm trả)
+     + Trà Vinh (Trạm đón)
+     + Trạm xe Thanh Thủy, Bình Phú (Trạm đón)
+     + An Sương (Trạm trả)
+  3. Miền Tây - Thị xã Duyên Hải
+    Giá vé: 0
+    Quãng đường di chuyển: 253 km
+    Thời gian di chuyển: 3.4 giờ
+    Lộ trình di chuyển: BX Miền Tây - QL1A - Cao tốc TP Hồ Chí Minh Trung Lương - QL1A - Bến Tre - QL60 - QL53 - BX Duyên Hải
+    Các trạm đi qua:
+     + Miền Tây (Trạm đón)
+     + Thị xã Duyên Hải (Trạm trả)
+  4. Thị xã Duyên Hải - Miền Tây
+    Giá vé: 0
+    Quãng đường di chuyển: 253 km
+    Thời gian di chuyển: 3.4 giờ
+    Lộ trình di chuyển: BX Duyên Hải - QL53 - QL60 - Bến Tre - QL1A - Cao tốc TP Hồ Chí Minh Trung Lương - QL1A - BX Miền Tây
+    Các trạm đi qua:
+     + Miền Tây (Trạm trả)
+     + Thị xã Duyên Hải (Trạm đón)
+  5. Miền Tây - Trà Vinh
+    Giá vé: 0
+    Quãng đường di chuyển: 151 km
+    Thời gian di chuyển: 2 giờ
+    Lộ trình di chuyển: BX Miền Tây - QL1A - Cao tốc TP Hồ Chí Minh Trung Lương - QL1A - QL53 - QL54 - BX Trà Vinh
+    Các trạm đi qua:
+     + Miền Tây (Trạm đón)
+     + Trà Vinh (Trạm trả)
+  6. Trà Vinh - Miền Tây
+    Giá vé: 0
+    Quãng đường di chuyển: 151 km
+    Thời gian di chuyển: 2 giờ
+    Lộ trình di chuyển: BX Trà Vinh - QL54 - QL53 - QL1A - Cao tốc TP Hồ Chí Minh Trung Lương - QL1A - BX Miền Tây
+    Các trạm đi qua:
+     + Miền Tây (Trạm trả)
+     + Trà Vinh (Trạm đón)
+
++ Tuyến xe 3: TP. Hồ Chí Minh - Bình Định
+  Các chuyến có trong tuyến:
+  1. An Sương - Quy Nhơn
+    Giá vé: 0
+    Quãng đường di chuyển: 649 km
+    Thời gian di chuyển: 8.7 giờ
+    Lộ trình di chuyển: BX An Sương - QL22 - QL1 - QL1D - BX Quy Nhơn
+    Các trạm đi qua:
+     + An Sương (Trạm đón)
+     + Quy Nhơn (Trạm trả)
+  2. Quy Nhơn - An Sương
+    Giá vé: 0
+    Quãng đường di chuyển: 649 km
+    Thời gian di chuyển: 8.7 giờ
+    Lộ trình di chuyển: BX Quy Nhơn - QL1D - QL1 - QL22 - BX An Sương
+    Các trạm đi qua:
+     + An Sương (Trạm trả)
+     + Quy Nhơn (Trạm đón)
+
++ Tuyến xe 4: TP. Hồ Chí Minh - Cà Mau
+  Các chuyến có trong tuyến:
+  1. Ngã Tư Ga - Cà Mau
+    Giá vé: 0
+    Quãng đường di chuyển: 366 km
+    Thời gian di chuyển: 4.9 giờ
+    Lộ trình di chuyển: BX Cà Mau - QL1A - BX Ngã Tư Ga
+    Các trạm đi qua:
+     + Ngã Tư Ga (Trạm đón)
+     + Cà Mau (Trạm trả)
+  2. Cà Mau - Ngã Tư Ga
+    Giá vé: 0
+    Quãng đường di chuyển: 366 km
+    Thời gian di chuyển: 4.9 giờ
+    Lộ trình di chuyển: BX Ngã Tư Ga - QL1A - BX Cà Mau
+    Các trạm đi qua:
+     + Ngã Tư Ga (Trạm trả)
+     + Cà Mau (Trạm đón)
+
++ Tuyến xe 5: Hà Nội - TP. Hồ Chí Minh
+  Các chuyến có trong tuyến:
+  1. Giáp Bát - Miền Đông Mới
+    Giá vé: 0
+    Quãng đường di chuyển: 1750 km
+    Thời gian di chuyển: 23.3 giờ
+    Lộ trình di chuyển: BX Miền Đông Mới - QL1A - BX Giáp Bát
+    Các trạm đi qua:
+     + Giáp Bát (Trạm đón)
+     + Miền Đông Mới (Trạm trả)
+  2. Miền Đông Mới - Giáp Bát
+    Giá vé: 0
+    Quãng đường di chuyển: 1750 km
+    Thời gian di chuyển: 23.3 giờ
+    Lộ trình di chuyển: BX Giáp Bát - QL1A - BX Miền Đông Mới
+    Các trạm đi qua:
+     + Giáp Bát (Trạm trả)
+     + Miền Đông Mới (Trạm đón)
+
++ Tuyến xe 6: Nam Định - Lào Cai
+  Các chuyến có trong tuyến:
+
++ Tuyến xe 7: Cao Bằng - Phú Thọ
+  Các chuyến có trong tuyến:
+  1. Liên tỉnh TP Cao Bằng - Việt Trì
+    Giá vé: 0
+    Quãng đường di chuyển: 314 km
+    Thời gian di chuyển: 4.2 giờ
+    Lộ trình di chuyển: BX Việt Trì - QL2 - Ngã ba Kim Anh Vĩnh Yên - QL3 - BX Liên tỉnh TP Cao Bằng
+    Các trạm đi qua:
+     + Liên tỉnh TP Cao Bằng (Trạm đón)
+     + Việt Trì (Trạm trả)
+  2. Việt Trì - Liên tỉnh TP Cao Bằng
+    Giá vé: 0
+    Quãng đường di chuyển: 314 km
+    Thời gian di chuyển: 4.2 giờ
+    Lộ trình di chuyển: BX Liên tỉnh TP Cao Bằng - QL3 - Ngã ba Kim Anh Vĩnh Yên - QL2 - BX Việt Trì
+    Các trạm đi qua:
+     + Liên tỉnh TP Cao Bằng (Trạm trả)
+     + Việt Trì (Trạm đón)
+
++ Tuyến xe 8: Điện Biên - Hòa Bình
+  Các chuyến có trong tuyến:
+
++ Tuyến xe 9: Quảng Ninh - Thái Bình
+  Các chuyến có trong tuyến:
+  1. Cẩm Hải - Huyện Tiền Hải
+    Giá vé: 0
+    Quãng đường di chuyển: 200 km
+    Thời gian di chuyển: 2.7 giờ
+    Lộ trình di chuyển: BX Cẩm Hải - QL18 - Cao tốc Hạ Long Hải Phòng - Cao tốc Hải Phòng Hà Nội - QL10 - ĐT458 - QL37B - BX Tiền Hải
+    Các trạm đi qua:
+     + Cẩm Hải (Trạm đón)
+     + Huyện Tiền Hải (Trạm trả)
+  2. Huyện Tiền Hải - Cẩm Hải
+    Giá vé: 0
+    Quãng đường di chuyển: 200 km
+    Thời gian di chuyển: 2.7 giờ
+    Lộ trình di chuyển: BX Tiền Hải - QL37B - ĐT458 - QL10 - Cao tốc Hải Phòng Hà Nội - Cao tốc Hạ Long Hải Phòng - QL18 - BX Cẩm Hải
+    Các trạm đi qua:
+     + Cẩm Hải (Trạm trả)
+     + Huyện Tiền Hải (Trạm đón)
+
++ Tuyến xe 10: Nam Định - TP. Hồ Chí Minh
+  Các chuyến có trong tuyến:
+  1. Nghĩa Hưng - An Sương
+    Giá vé: 0
+    Quãng đường di chuyển: 1700 km
+    Thời gian di chuyển: 22.7 giờ
+    Lộ trình di chuyển: BX Nghĩa Hưng - TL490C - Đường Lê Đức Thọ - QL10 - QL1A - QL22 - BX An Sương
+    Các trạm đi qua:
+     + Nghĩa Hưng (Trạm đón)
+     + An Sương (Trạm trả)
+  2. An Sương - Nghĩa Hưng
+    Giá vé: 0
+    Quãng đường di chuyển: 1700 km
+    Thời gian di chuyển: 22.7 giờ
+    Lộ trình di chuyển: BX An Sương - QL22 - QL1A - QL10 - Đường Lê Đức Thọ - TL490C - BX Nghĩa Hưng
+    Các trạm đi qua:
+     + Nghĩa Hưng (Trạm trả)
+     + An Sương (Trạm đón)
+
++ Tuyến xe 11: Cao Bằng - Lâm Đồng
+  Các chuyến có trong tuyến:
+  1. Liên tỉnh TP Cao Bằng - Đức Long Bảo Lộc
+    Giá vé: 0
+    Quãng đường di chuyển: 1805 km
+    Thời gian di chuyển: 24.1 giờ
+    Lộ trình di chuyển: BX Đức Long Bảo Lộc - QL20 - QL27 - QL1A - Pháp Vân - Vành đai 3 trên cao (Đoạn Pháp Vân - Cầu Thanh Trì) - Cầu Thanh Trì - QL1 - QL3 - BX Liên tỉnh TP Cao Bằng
+    Các trạm đi qua:
+     + Liên tỉnh TP Cao Bằng (Trạm đón)
+     + Đức Long Bảo Lộc (Trạm trả)
+  2. Đức Long Bảo Lộc - Liên tỉnh TP Cao Bằng
+    Giá vé: 0
+    Quãng đường di chuyển: 1805 km
+    Thời gian di chuyển: 24.1 giờ
+    Lộ trình di chuyển: BX Liên tỉnh TP Cao Bằng - QL3 - QL1 - Cầu Thanh Trì - Cầu Thanh Trì) - Vành đai 3 trên cao (Đoạn Pháp Vân - Pháp Vân - QL1A - QL27 - QL20 - BX Đức Long Bảo Lộc
+    Các trạm đi qua:
+     + Liên tỉnh TP Cao Bằng (Trạm trả)
+     + Đức Long Bảo Lộc (Trạm đón)
+
++ Tuyến xe 12: Tuyên Quang - Hà Giang
+  Các chuyến có trong tuyến:
+  1. TP Tuyên Quang - Đồng Văn
+    Giá vé: 200000
+    Quãng đường di chuyển: 305 km
+    Thời gian di chuyển: 4.1 giờ
+    Lộ trình di chuyển: BX Đồng Văn - QL4C - Yên Minh - Quản Bạ - Quyết Tiến - QL4C - QL2 - TP Hà Giang - QL2 - Bắc Quang - Hàm Yên - BX Tuyên Quang
+    Các trạm đi qua:
+     + TP Tuyên Quang (Trạm đón)
+     + Đồng Văn (Trạm trả)
+  2. Đồng Văn - TP Tuyên Quang
+    Giá vé: 200000
+    Quãng đường di chuyển: 305 km
+    Thời gian di chuyển: 4.1 giờ
+    Lộ trình di chuyển: BX Tuyên Quang - Hàm Yên - Bắc Quang - QL2 - TP Hà Giang - QL2 - QL4C - Quyết Tiến - Quản Bạ - Yên Minh - QL4C - BX Đồng Văn
+    Các trạm đi qua:
+     + TP Tuyên Quang (Trạm trả)
+     + Đồng Văn (Trạm đón)
+
++ Tuyến xe 13: Thái Bình - Sơn La
+  Các chuyến có trong tuyến:
+  1. Huyện Tiền Hải - TP Sơn La
+    Giá vé: 250000
+    Quãng đường di chuyển: 383 km
+    Thời gian di chuyển: 5.1 giờ
+    Lộ trình di chuyển: BX Sơn La - QL6 - Vành đai 3 - QL5 - QL39 - QL10 - ĐT458 - QL37B - BX Tiền Hải
+    Các trạm đi qua:
+     + Huyện Tiền Hải (Trạm đón)
+     + TP Sơn La (Trạm trả)
+  2. TP Sơn La - Huyện Tiền Hải
+    Giá vé: 250000
+    Quãng đường di chuyển: 383 km
+    Thời gian di chuyển: 5.1 giờ
+    Lộ trình di chuyển: BX Tiền Hải - QL37B - ĐT458 - QL10 - QL39 - QL5 - Vành đai 3 - QL6 - BX Sơn La
+    Các trạm đi qua:
+     + Huyện Tiền Hải (Trạm trả)
+     + TP Sơn La (Trạm đón)
+
++ Tuyến xe 14: Thái Bình - Phú Thọ
+  Các chuyến có trong tuyến:
+  1. Trung tâm TP Thái Bình - Việt Trì
+    Giá vé: 0
+    Quãng đường di chuyển: 200 km
+    Thời gian di chuyển: 2.7 giờ
+    Lộ trình di chuyển: BX Trung tâm TP Thái Bình - QL10 - QL21 - QL1 - Pháp Vân Cầu Giẽ - Cầu Thanh Trì - QL5 - QL2 - BX Việt Trì
+    Các trạm đi qua:
+     + Trung tâm TP Thái Bình (Trạm đón)
+     + Việt Trì (Trạm trả)
+  2. Việt Trì - Trung tâm TP Thái Bình
+    Giá vé: 0
+    Quãng đường di chuyển: 200 km
+    Thời gian di chuyển: 2.7 giờ
+    Lộ trình di chuyển: BX Việt Trì - QL2 - QL5 - Cầu Thanh Trì - Pháp Vân Cầu Giẽ - QL1 - QL21 - QL10 - BX Trung tâm TP Thái Bình
+    Các trạm đi qua:
+     + Trung tâm TP Thái Bình (Trạm trả)
+     + Việt Trì (Trạm đón)
+
++ Tuyến xe 15: Lai Châu - Sơn La
+  Các chuyến có trong tuyến:
+  1. Lai Châu - TP Sơn La
+    Giá vé: 0
+    Quãng đường di chuyển: 250 km
+    Thời gian di chuyển: 3.3 giờ
+    Lộ trình di chuyển: BX Lai Châu - QL4D - QL32 - QL279 - QL6 - BX Sơn La
+    Các trạm đi qua:
+     + Lai Châu (Trạm đón)
+     + TP Sơn La (Trạm trả)
+  2. TP Sơn La - Lai Châu
+    Giá vé: 0
+    Quãng đường di chuyển: 250 km
+    Thời gian di chuyển: 3.3 giờ
+    Lộ trình di chuyển: BX Sơn La - QL6 - QL279 - QL32 - QL4D - BX Lai Châu
+    Các trạm đi qua:
+     + Lai Châu (Trạm trả)
+     + TP Sơn La (Trạm đón)
+
++ Tuyến xe 16: TP. Hồ Chí Minh - Bà Rịa - Vũng Tàu
+  Các chuyến có trong tuyến:
+  1. Miền Tây - Vǜng Tàu
+    Giá vé: 100000
+    Quãng đường di chuyển: 123 km
+    Thời gian di chuyển: 1.6 giờ
+    Lộ trình di chuyển: BX Vǜng Tàu - Nam KǶ Khởi Nghĩa - Lê Hồng Phong - QL51 - QL1A - Kinh Dương Võ Văn Kiệt - BX Miền Tây
+    Các trạm đi qua:
+     + Miền Tây (Trạm đón)
+     + Vǜng Tàu (Trạm trả)
+  2. Vǜng Tàu - Miền Tây
+    Giá vé: 100000
+    Quãng đường di chuyển: 123 km
+    Thời gian di chuyển: 1.6 giờ
+    Lộ trình di chuyển: BX Miền Tây - Kinh Dương Võ Văn Kiệt - QL1A - QL51 - Lê Hồng Phong - Nam KǶ Khởi Nghĩa - BX Vǜng Tàu
+    Các trạm đi qua:
+     + Miền Tây (Trạm trả)
+     + Vǜng Tàu (Trạm đón)
+  3. An Sương - Xuyên Mộc
+    Giá vé: 150000
+    Quãng đường di chuyển: 120 km
+    Thời gian di chuyển: 1.6 giờ
+    Lộ trình di chuyển: BX Xuyên Mộc - QL55 - QL51 - QL1 - QL22 - BX An Sương
+    Các trạm đi qua:
+     + An Sương (Trạm đón)
+     + Xuyên Mộc (Trạm trả)
+     + Bãi đỗ xe Châu An, Tân Phú (Bãi đỗ xe đầu)
+     + Bãi đỗ xe Toàn Thắng (Bãi đỗ xe cuối)
+     + Trạm dừng chân km237 (Trạm dừng chân)
+     + Ngã Tư Ga (Trạm đón)
+     + Vǜng Tàu (Trạm trả)
+  4. Xuyên Mộc - An Sương
+    Giá vé: 150000
+    Quãng đường di chuyển: 120 km
+    Thời gian di chuyển: 1.6 giờ
+    Lộ trình di chuyển: BX An Sương - QL22 - QL1 - QL51 - QL55 - BX Xuyên Mộc
+    Các trạm đi qua:
+     + An Sương (Trạm trả)
+     + Xuyên Mộc (Trạm đón)
+     + Bãi đỗ xe Châu An, Tân Phú (Bãi đỗ xe cuối)
+     + Bãi đỗ xe Toàn Thắng (Bãi đỗ xe đầu)
+     + Trạm dừng chân km237 (Trạm dừng chân)
+     + Ngã Tư Ga (Trạm trả)
+     + Vǜng Tàu (Trạm đón)
+
++ Tuyến xe 17: Quảng Ninh - Thái Nguyên
+  Các chuyến có trong tuyến:
+  1. Móng Cái - Phú Bình
+    Giá vé: 0
+    Quãng đường di chuyển: 370 km
+    Thời gian di chuyển: 4.9 giờ
+    Lộ trình di chuyển: BX Móng Cái - QL18 - Sao Đỏ - Bắc Ninh - QL1 - QL37 - BX Phú Bình
+    Các trạm đi qua:
+     + Móng Cái (Trạm đón)
+     + Phú Bình (Trạm trả)
+  2. Phú Bình - Móng Cái
+    Giá vé: 0
+    Quãng đường di chuyển: 370 km
+    Thời gian di chuyển: 4.9 giờ
+    Lộ trình di chuyển: BX Phú Bình - QL37 - QL1 - Bắc Ninh - Sao Đỏ - QL18 - BX Móng Cái
+    Các trạm đi qua:
+     + Móng Cái (Trạm trả)
+     + Phú Bình (Trạm đón)
+
++ Tuyến xe 18: Thanh Hoá - Bắc Giang
+  Các chuyến có trong tuyến:
+  1. Huyên Hồng - Bắc Giang
+    Giá vé: 0
+    Quãng đường di chuyển: 230 km
+    Thời gian di chuyển: 3.1 giờ
+    Lộ trình di chuyển: BX Huyên Hồng - QL47 - TP Thanh Hóa (Theo phân luồng của TP) - QL1A - Cao tốc Ninh Bình - Vành đai 3 trên cao - Cầu Thanh Trì - Cao tốc Hà Nội Bắc Giang - QL17 - ĐT295B - Đường Thân Nhân Trung - Đường Xương Giang - BX Bắc Giang
+    Các trạm đi qua:
+     + Huyên Hồng (Trạm đón)
+     + Bắc Giang (Trạm trả)
+  2. Bắc Giang - Huyên Hồng
+    Giá vé: 0
+    Quãng đường di chuyển: 230 km
+    Thời gian di chuyển: 3.1 giờ
+    Lộ trình di chuyển: BX Bắc Giang - Đường Xương Giang - Đường Thân Nhân Trung - ĐT295B - QL17 - Cao tốc Hà Nội Bắc Giang - Cầu Thanh Trì - Vành đai 3 trên cao - Cao tốc Ninh Bình - QL1A - TP Thanh Hóa (Theo phân luồng của TP) - QL47 - BX Huyên Hồng
+    Các trạm đi qua:
+     + Huyên Hồng (Trạm trả)
+     + Bắc Giang (Trạm đón)
+
++ Tuyến xe 19: Hà Nội - Quảng Trị
+  Các chuyến có trong tuyến:
+  1. Nước Ngầm - Lao Bảo
+    Giá vé: 0
+    Quãng đường di chuyển: 600 km
+    Thời gian di chuyển: 8 giờ
+    Lộ trình di chuyển: BX Lao Bảo - QL9 - Đường Hồ Chí Minh - Ngã Tư Sòng - QL1 - BX Nước Ngầm
+    Các trạm đi qua:
+     + Nước Ngầm (Trạm đón)
+     + Lao Bảo (Trạm trả)
+  2. Lao Bảo - Nước Ngầm
+    Giá vé: 0
+    Quãng đường di chuyển: 600 km
+    Thời gian di chuyển: 8 giờ
+    Lộ trình di chuyển: BX Nước Ngầm - QL1 - Ngã Tư Sòng - Đường Hồ Chí Minh - QL9 - BX Lao Bảo
+    Các trạm đi qua:
+     + Nước Ngầm (Trạm trả)
+     + Lao Bảo (Trạm đón)
+
+Chú ý, các điểm đón - trả, đi - đến có thể đổi chỗ cho nhau.
+
 2. Đặt vé
++ Nếu khách hàng hỏi về cách đặt vé cho chuyến muốn đi thì trả lời như sau:
 - Bước 1: Sau khi tìm kiếm chuyến xe nhấn chọn chuyến để tiến hành các thao tác trong phần đặt vé. Sau khi nhấn chọn chuyến website sẽ hiển thị các thông tin của chuyến xe ở khung màu vàng bên phải, các sơ đồ ghế ngồi, các ô để khách hàng nhập thông tin của mình.
 - Bước 2: Chọn ghế màu xanh trên sơ đồ ghế ngồi, lưu ý các ghế có màu xám( đã bán) khách hàng sẽ không chọn được, sau khi chọn thì ghế đang chọn sẽ có màu xanh lá.
 - Bước 3:  Thay đổi điểm đón hoặc điểm trả theo ý muốn bằng cách tick vào các chấm tròn đối với các chuyến xe có thể xuất phát từ nhiều bến xe.
 - Bước 4: Thông tin khách hàng đã đăng nhập khi đặt vé sẽ được tự động điền sẵn giống với thông tin mà người dùng nhập vào khi đăng ký tài khoản, tuy nhiên có thể nhấn vào các ô thông tin đó để thay đổi theo ý muốn (khi đặt vé cho người khác).
 - Bước 5: Tick vào ô Chấp nhận điều khoản đặt vé & chính sách bảo mật thông tin của Xe Kim Nguyên rồi bấm nút thanh toán để hoàn tất quá trình đặt vé. Các vé đã đặt sẽ có trạng thái chờ thanh toán.
++ Một số thông tin bổ sung, lưu ý cho khách hàng: Mỗi lần đặt vé, khách hàng chỉ được chọn tối đa 5 vé, sau khi bấm nút thanh toán, vé sẽ được giữ cho khách hàng trong 10 phút.
+
 3. Thanh toán vé
 - Bước 1: Sau khi chọn vé, khách hàng nhấn thanh toán để chuyển đến trang thanh toán. (Thời gian giữ chỗ sẽ đếm ngược 10 phút) nếu hết 10 phút mà người dùng chưa thanh toán thì trạng thái các vé sẽ chuyển sang đã hủy.
 - Bước 2: Chọn hình thức thanh toán Momo (mặc định) hoặc thay đổi sang VNPay, rồi nhấn nút Thanh toán. Khách hàng sẽ nhận được thông báo thanh toán vé thành công.
 - Bước 3: Trở về trang chủ sẽ thấy hiển thị chuyến xe sắp khởi hành mà khách hàng đã đặt .
 - Bước 4: Check mail để đọc lại thông tin về chuyến xe.
-4. Đăng nhập
+Lưu ý: Khi thanh toán sẽ có thời gian đếm ngược cho khách hàng biết thời gian giữ vé còn lại, nếu còn lại 10 giây, hệ thống sẽ hiện một hộp thoại, hỏi khách hàng có muốn tiếp tục thanh toán vé không. Nếu chọn "Tiếp tục thanh toán", hệ thống sẽ gia hạn thêm 10 phút thời gian giữ vé cho khách hàng, nếu chọn "Hủy vé", hệ thống sẽ hủy vé.
+
+Nếu khách hàng hỏi về quy trình đặt vé trong hệ thống thì trả lời tóm lược các bước bao gồm:
+- Bước 1: Tìm kiếm chuyến
+- Bước 2: Chọn ghế, điểm đón - trả, điền thông tin người đặt vé (Nếu khách không đăng nhập, nếu đã đăng nhập thì thông tin sẽ được điền sẵn)
+- Bước 3: Thanh toán vé
+
+4. Tra cứu vé
+Sau khi khách hàng đặt và thanh toán vé thành công, một email thông báo đặt vé thành công sẽ được gửi đến khách hàng chứa một mã đặt vé, số điện thoại đặt vé và thông tin các vé đã đặt.
+Khách hàng có thể sử dụng thông tin mã đặt vé và số điện thoại đặt vé để tra cứu vé đã đặt.
+Cách tra cứu vé:
+- Bước 1: Chọn mục "Tra cứu vé" trên trang web
+- Bước 2: Nhập số điện thoại đặt vé và mã đặt vé đã được gửi về email
+- Bước 3: Tick chọn và giải mã CAPTCHA
+- Bước 4: Click nút "Tra cứu vé"
+Hệ thống sẽ hiển thị các thông tin của người đặt vé và thông tin của các vé đã đặt nếu các thông tin đã điền là chính xác.
+
+5. Tra cứu hóa đơn
+Ngoài ra, khách hàng có thể tra cứu hóa đơn cho vé đã đặt bằng cách sử dụng mã hóa đơn được hiển thị ở thông tin mỗi vé khi tra cứu vé và chọn mục "Tra cứu hóa đơn"
+Cách tra cứu hóa đơn:
+- Bước 1: Trên thanh Nav chọn mục Tra cứu hóa đơn.
+- Bước 2: Trang tra cứu hóa đơn hiển thị 2 ô input yêu cầu nhập mã hóa đơn lấy từ thông tin vé và một mã xác thực trong hình ảnh hiển thị bên dưới và bấm nút Tra cứu.
+- Bước 3: Nếu các thông tin chính xác, hệ thống sẽ hiển thị thông tin về hóa đơn phát sinh khi khách hàng đặt vé và xác nhận của nhà xe trên hóa đơn.
+- Bước 4: Khách hàng có thể click vào nút Tải hóa đơn để lưu hóa đơn về máy.
+
+6. Đăng ký tài khoản
+Khách hàng có thể đăng ký tài khoản để dễ dàng quản lý vé đã đặt, cũng như dễ dàng thực hiện các thao tác đổi, hủy, sửa vé mà không cần liên hệ với nhân viên nhà xe.
+Có 2 cách đăng ký:
+Cách 1: 
+- Bước 1: Click vào tab Đăng ký trong phần "Đăng nhập / Đăng ký"
+- Bước 2: Điền số điện thoại và click nút "Nhận mã OTP", hệ thống sẽ gửi một tin nhắn chứa mã 6 ký tự cho khách hàng
+- Bước 3: Điền mã và click "Xác thực OTP"
+- Bước 4: Nếu mã hợp lệ, hệ thống sẽ hiện một form thông tin về tên người dùng, email, và password để Điền
+- Bước 5: Điền các thông tin trong form và click nút "Hoàn tất đăng ký"
+Sau khi lưu thông tin thành công, hệ thống sẽ chuyển tới trang chủ và hiển thị tên người dùng ở góc phải màn hình.
+Để đăng nhập, khách hàng cần điền đúng số điện thoại và mật khẩu đã đăng ký
+
+Cách 2 - Đăng nhập bằng tài khoản google
+- Bước 1: Tại tab Đăng nhập, chọn nút "Đăng nhập với google"
+- Bước 2: Một trang đăng nhập google được hiển thị, khách hàng cần điền các thông tin về tài khoản google cũng như các bước xác thực của google.
+- Bước 3: Sau khi xác thực thành công, hệ thống sẽ chuyển đến form điền số điện thoại, khách hàng cần điền số điện thoại và click nút "Nhận mã OTP" để lấy mã xác thực.
+- Bước 4: Hệ thống gửi mã xác thực gồm 6 ký tự về số điện thoại, khách hàng cần điền vào mã và click nút "Xác thực OTP".
+- Bước 5: Nếu mã hợp lệ, hệ thống sẽ nhận các thông trong tài khoản google bao gồm tên, email để tạo tài khoản cho khách hàng.
+Sau khi lưu thông tin thành công, hệ thống sẽ chuyển tới trang chủ và hiển thị tên người dùng ở góc phải màn hình.
+Để đăng nhập, khách hàng chỉ cần click vào nút "Đăng nhập với google" và điền các thông tin xác thực google (nếu cần)
+
+Các chức năng sau dành cho các khách hàng đã đăng ký tài khoản trong hệ thống:
+7. Đăng nhập
+Đối với khách hàng đăng ký bằng cách 1:
 - Bước 1: Trên thanh Nav bấm vào nút Đăng nhập/ Đăng ký để mở trang Đăng nhập
 - Bước 2: Nhập đúng số điện thoại và mật khẩu đã đăng ký trước đó, sau đó Click Đăng nhập. Ví dụ
 Tài khoản: 0101010101
 Password: 123456
 - Bước 3: Đăng nhập thành công sẽ quay về trang chủ, với tên người dùng được hiển thị bên góc phải.
-5. Xem lịch sử đặt vé
+
+Đối với khách hàng đăng ký bằng cách 2:
+Khách hàng chỉ cần click vào nút "Đăng nhập với google" và điền các thông tin xác thực google (nếu cần)
+
+8. Xem lịch sử đặt vé
 - Bước 1: Rê chuột vào mũi tên trỏ xuống sau Username, Click chọn Lịch sử đặt vé.
 - Bước 2: Thông tin về lịch sử đặt vé hiện ra dưới dạng bảng.
 - Bước 3: Kéo thanh cuộn phía dưới bảng để xem thêm các thông tin.
@@ -35,12 +517,9 @@ Password: 123456
 - Bước 7: Có thể nhập mã vé vào ô Mã đặt vé để tìm kiếm vé đó.
 - Bước 8: Tại vé muốn xem chi tiết thông tin hãy click vào ô chi tiết trên vé đó, kéo thanh cuộn bên góc phải để xem thêm thông tin vé. Nếu muốn quay lại trang trước đó click vào nút Đóng.
 - Bước 9: Click Tải về để lưu mã QR, có thể dùng mã này để quét check in lúc lên xe.
-6. Tra cứu hóa đơn
-- Bước 1: Trên thanh Nav chọn mục Tra cứu hóa đơn.
-- Bước 2: Trang tra cứu hóa đơn hiển thị 2 ô input yêu cầu nhập mã hóa đơn và mã xác thực như ảnh bên dưới và bấm nút Tra cứu.
-- Bước 3: Nhập mã hóa đơn và mã xác thực vào theo yêu cầu, mã hóa đơn có thể lấy khi xem chi tiết lịch sử đặt vé, nhấn vào biểu tượng copy để sao chép mã hóa đơn.
-- Bước 4: Click vào nút Tải hóa đơn để lưu hóa đơn về máy.
-7. Hủy vé
+
+9. Hủy vé
+Khi khách hàng hỏi về cách hủy vé thì trả lời:
 - Bước 1: Vào trong phần Lịch sử đặt vé, sau đó chọn một ô tròn trước các hàng tóm tắt thông tin của lượt đặt vé trong bảng.
 - Bước 2: Click vào mũi tên trỏ xuống tại ô Hành động, và chọn Hủy vé.
 - Bước 3: Sau khi nhấn hủy vé đọc kỹ điều khoản trong chính sách  hủy vé, kéo thanh cuộn bên phải để xem đầy đủ danh sách.
@@ -48,7 +527,36 @@ Password: 123456
 - Bước 5: Click tiếp tục để chuyển đến trang chọn các vé muốn hủy, lần lượt tích và các ô vé trong trường hợp nhiều vé (Hoặc tích vào ô Chọn tất cả để hủy toàn bộ vé của lượt đặt vé đó).
 - Bước 6: Nhấn tiếp tục để chuyển đến bước tiếp theo trong quy trình hủy vé.
 - Bước 7: Nhấn xác nhận hủy vé để hoàn tất gửi yêu cầu hủy vé.
-8. Đổi vé
+* Lưu ý: Quy định về vé được hủy và mức hoàn tiền khi hủy vé được quy định như sau:
++ Đối với ngày thường:
+Khách hàng đã đặt vé với số lượng và thực hiện hủy vé trước điều kiện thời gian như sau: 
+Từ 1 - 3 vé: trước ít nhất 4 tiếng giờ khởi hành.
+Từ 4 - 9 vé: trước ít nhất 24 tiếng giờ khởi hành.
+Từ 10 vé trở lên: trước ít nhất 48 tiếng giờ khởi hành.
+sẽ được hủy vé và được hoàn 90% giá trị vé.
+	Trường hợp khách hàng đặt từ 1 - 3 vé thông báo hủy vé trong vòng 4h và ít nhất là 30 phút trước khi khởi hành sẽ được hoàn 70% giá trị vé.
+	Các trường hợp ngoài các điều kiện trên, khách hàng sẽ không được hỗ trợ hủy vé.
+  Tức là các trường hợp khách hàng muốn hủy số lượng vé nhưng không đảm bảo được thời gian thông báo trước quy định, thì chỉ hủy tối đa được số vé theo khung thời gian.
+  Ví dụ: Khách muốn hủy 4 vé, nhưng thông báo trước chỉ 4 tiếng trước giờ khởi hành thì sẽ không thể hủy 4 vé cùng lúc được, chỉ được hủy tối đa đúng với mức là 3 vé, mức hoàn tiền là 90% cho 3 vé, còn vé còn lại sẽ không được hoàn tiền.
+
++ Đối với ngày lễ (các ngày trước, trong và sau các ngày nghỉ lễ ở Việt Nam như ngày 2/9, 30/4, 1/5, Tết Dương lịch 1/1, Tết Âm Lịch, Mùng 10/3)
+	Khách hàng đã đặt vé với số lượng và thông báo hủy vé trước điều kiện thời gian như sau:
+Từ 1 - 3 vé: trước ít nhất 24 tiếng giờ khởi hành.
+Từ 4 - 9 vé: trước ít nhất 48 tiếng giờ khởi hành.
+Từ 10 vé trở lên: trước ít nhất 72 tiếng giờ khởi hành.
+sẽ được hủy vé và được hoàn 70% giá trị vé
+	Ngoài các trường hợp trên sẽ không được hỗ trợ hủy vé.
+*Không áp dụng hủy vé nếu vé đã thay đổi (giờ, ngày khởi hành) trước đó.
+
+* Cần hỏi rõ khách hàng về loại vé đặt (vé lễ hay vé thường) và thời gian khởi hành của chuyến để xác định mốc thời gian từ hiện tại đến lúc đó và xác thực chính sách sẽ được áp dụng để trả lời cho khách hàng.
+Ví dụ: 
+Câu hỏi của khách hàng: Tôi đặt 2 vé khởi hành ngày 12/06/2024, vậy vào bây giờ (giả sử thời gian hiện tại là ngày 10/06/2024) thì tôi có hủy được vé không, và mưc hoàn tiền là bao nhiêu.
+Cách trả lời: Dựa vào thông tin, có thể thấy thời gian đưa ra yêu cầu hủy vé đến lúc khởi hành là 48 giờ, và số vé cần hủy là 2, nên sẽ áp dụng chính sách Từ 1 - 3 vé: trước ít nhất 4 tiếng giờ khởi hành đối với vé thường vì ngày 12/06 không phải là vé lễ và mức hoàn tiền tương ứng là 90%.
+Câu trả lời: Trả lời chính sách tìm được và mức hoàn tiền theo như cách đã đề cập phía trên.
+
+10. Đổi vé
+Khách hàng có thể đổi chỗ ghế trong cùng chuyến xe đã đặt (nếu còn chỗ) hoặc đổi sang một chuyến khác cùng tuyến nếu thỏa mãn điều kiện đổi vé
+Cách đổi vé:
 - Bước 1: Vào trong phần Lịch sử đặt vé, sau đó chọn một ô tròn trước các hàng tóm tắt thông tin của lượt đặt vé trong bảng để xuất hiện các lựa chọn Hành động.
 - Bước 2: Click vào mũi tên trỏ xuống tại ô Hành động, và click vào lựa chọn Đổi vé.
 - Bước 3: Đọc kỹ chính sách hỗ trợ đổi vé của nhà xe, click vào ô Tôi đồng ý với chính sách đổi vé của Xe Kim Nguyên và nhấn tiếp tục để thực hiện các bước tiếp theo trong quy trình.
@@ -57,7 +565,17 @@ Password: 123456
 - Bước 6: Xem kỹ thông tin đổi vé rồi nhấn nút Xác nhận đổi vé.
 - Bước 7: Đổi vé thành công sẽ nhận được thông báo, Click Đóng để trở về trang lịch sử đặt vé.
 Lưu ý: Nếu vé muốn đổi không nằm trong thời gian cho phép đổi vé thì Hành động Đổi vé sẽ có màu xám và không thể chọn được.
-9. Sửa vé
+
+* Điều kiện đổi vé:
+- Vé đổi phải có cùng tuyến, cùng mức giá với vẽ cũ.
+- Yêu cầu đổi vé phải được thông báo ít nhất 24h trước giờ khởi hành.
+- Vé chưa từng được đổi trước đây.
+- Trường hợp khách hàng đến trễ chuyến không quá 30p sau khi xe đã khởi hành, hãng sẽ hỗ trợ đổi vé sang chuyến gần nhất hoặc ngày khác nếu khách hàng đồng ý, nếu không vé xem như bị hủy và không hoàn tiền.
+Cần dựa vào thời gian hiện tại và thời gian khởi hành của vé để xác định vé có được đổi hay không.
+
+11. Sửa vé
+Khách hàng có thể sửa các thông tin về điểm đón - trả cho chuyến đi
+Cách sửa vé:
 - Bước 1: Vào trong phần Lịch sử đặt vé, sau đó chọn một ô tròn trước các hàng tóm tắt thông tin của lượt đặt vé trong bảng để xuất hiện các lựa chọn Hành động.
 - Bước 2: Click vào mũi tên trỏ xuống tại ô Hành động, và click vào lựa chọn Sửa vé.
 - Bước 3: Đọc Điều kiện sửa vé và tick vào ô trống để xác nhận Tôi đồng ý với chính sách sửa vé của Xe Kim Nguyên sau đó nhấn nút Tiếp tục để thực hiện các bước tiếp theo.
@@ -65,18 +583,21 @@ Lưu ý: Nếu vé muốn đổi không nằm trong thời gian cho phép đổi
 - Bước 5: Xem lại thông tin sửa vé bao gồm chuyến, thời gian, điểm đón- trả cũ và điểm đón-trả mới sau khi sửa rồi nhấn nút Xác nhận sửa vé.
 - Bước 6: Sửa vé thành công sẽ nhận được thông báo, Click Đóng để quay trở lại trang Lịch sử đặt vé.
 
-10. Cập nhật thông tin cá nhân
+12. Cập nhật thông tin cá nhân
 - Bước 1: Trên thanh Nav rê chuột vào vị trí tên người dùng, sau đó chọn thông tin tài khoản.
 - Bước 2: Trang thông tin tài khoản hiển thị các thông tin như số điện thoại, họ tên, email, giới tính.
 - Bước 3: Click nút cập nhật để các ô trống Họ và Tên, Email, Giới tính cho phép sửa đổi thông tin. Nhập tên khác , gmail khác hay chọn lại giới tính. Nếu muốn đổi ảnh đại diện thì click vào chọn tệp và chọn ảnh đại diện khác.
 - Bước 4: Click Lưu thông tin để lưu lại những sửa đổi thông tin.
-11. Đổi mật khẩu
+
+13. Đổi mật khẩu
 - Bước 1: Trên thanh Nav rê chuột vào vị trí tên người dùng, sau đó chọn Đổi mật khẩu sau biểu tượng ổ khóa.
 - Bước 2: Trang đổi mật khẩu hiển thị yêu cầu nhập mật khẩu cũ, mật khẩu mới và xác nhận mật khẩu mới.
 - Bước 3: Nhập đúng mật khẩu cũ, sau đó nhập mật khẩu mới có ít nhất 6 ký tự và xác nhận lại mật khẩu mới khớp với mật khẩu mới vừa nhập.
 - Bước 4: Bấm vào nút Xác nhận để hoàn tất đổi mật khẩu, nhận được thông báo Đổi mật khẩu thành công.
 - Bước 5: Phiên đăng nhập đã bị xóa và người dùng cần đăng nhập lại để sử dụng mật khẩu mới.
-12. Đăg xuất
+
+14. Đăg xuất
 - Bước 1: Trên thanh Nav rê chuột vào vị trí tên người dùng, sau đó chọn Đăng xuất sau biểu tượng Exit.
 - Bước 2: Bấm vào nút Xác nhận để thực hiện đăng xuất, nếu muốn dừng quá trình đăng xuất bấm nút Hủy.
+
 Các câu hỏi khác không liên quan đến thông tin nhà xe hoặc các thao tác trên trang web đặt vé thì từ chối trả lời

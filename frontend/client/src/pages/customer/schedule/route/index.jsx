@@ -12,7 +12,7 @@ import { selectListRoute } from '../../../../feature/route/route.slice'
 import { getDesandDep } from '../../../../utils/routeUtils'
 import { tripProcess } from '../../../../utils/tripUtils'
 
-const Trip = ({trip, reverse}) => {
+const Trip = ({trip, reverse, showReverse}) => {
     const reverseSchedule = (schedule) => {
         if (schedule)
         {
@@ -23,11 +23,13 @@ const Trip = ({trip, reverse}) => {
 
     const cusTrip = reverse 
                     ? {...trip, 
-                        startStation: trip.startStation,
-                        endStation: trip.endStation,
+                        startStation: trip.endStation,
+                        endStation: trip.startStation,
                         schedule: reverseSchedule(trip.schedule),
                     } : trip
-
+    
+    console.log(reverse)
+    
     return (
         <div>
             <div className={styles.tripName}>
@@ -45,7 +47,7 @@ const Trip = ({trip, reverse}) => {
     )
 }
 
-const Route = ({route, reverse}) => {
+const Route = ({route, reverse, showReverse}) => {
     const listRoute = useSelector(selectListRoute)
     const navigate = useNavigate()
     const dispatch = useDispatch()
@@ -78,7 +80,6 @@ const Route = ({route, reverse}) => {
             navigate('/trips'); 
         }
     }
-    console.log(route)
     return (
         <div className={styles.container}>
             <div className={styles.sub_container}>
@@ -90,7 +91,7 @@ const Route = ({route, reverse}) => {
             <div>
                 {
                     cusRoute.listTrip && cusRoute.listTrip.map((trip, index) => (
-                        <Trip key={index} trip={trip} reverse={reverse}></Trip>
+                        <Trip key={index} trip={trip} reverse={reverse} showReverse={showReverse}></Trip>
                     ))
                 }
             </div>

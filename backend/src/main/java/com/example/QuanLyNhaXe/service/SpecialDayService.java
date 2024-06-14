@@ -36,6 +36,7 @@ public class SpecialDayService {
         		.toList();	
 	}
 	 public Object createSpecialDay(CreateSpecialDay createSpecialDay) {
+		
 		 if(specialDayRepository.existsByDate(createSpecialDay.getDate())) {
 			 throw new ConflictException(Message.SPECIALDAY_EXISTS);
 		 }

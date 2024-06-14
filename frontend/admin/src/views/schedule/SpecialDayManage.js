@@ -264,7 +264,7 @@ const SpecialDayManagement = () => {
                         {isSpecialDay ? (
                             <CCard
                                 className="mt-2"
-                                color={isSpecialRecord ? 'success' : 'light'}
+                                color={isSpecialRecord ? 'success' : 'info'}
                                 role="button"
                                 onClick={handleSelect}
                             >
@@ -283,7 +283,7 @@ const SpecialDayManagement = () => {
                             </CCard>
                         ) : (
                             <>
-                                {isCompensate && (
+                                {isCompensate ? (
                                     <CCard
                                         className="mt-2"
                                         color={isSpecialRecord ? 'success' : 'light'}
@@ -301,6 +301,26 @@ const SpecialDayManagement = () => {
                                             }}
                                         >
                                             <b>Ngày nghỉ bù</b>
+                                        </CCardBody>
+                                    </CCard>
+                                ) : (
+                                    <CCard
+                                        className="mt-2"
+                                        color={isSpecialRecord ? 'success' : 'light'}
+                                        role="button"
+                                        onClick={handleSelect}
+                                    >
+                                        <CCardHeader>
+                                            <i></i>
+                                        </CCardHeader>
+                                        <CCardBody
+                                            style={{
+                                                height: '50px',
+                                                padding: '5px',
+                                                overflow: 'auto',
+                                            }}
+                                        >
+                                            <b>Ngày thường</b>
                                         </CCardBody>
                                     </CCard>
                                 )}

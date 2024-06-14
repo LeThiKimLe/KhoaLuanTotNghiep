@@ -17,6 +17,7 @@ const Schedule = () => {
     const [departure, setDeparture] = useState('')
     const [destination, setDestination] = useState('')
     const listRoute = tripProcess(listRouteIO)
+    const [showReverse, setShowReverse] = useState(false)
     const handleExchange = () => {
         if (exchange)
             setExchange(false)
@@ -51,6 +52,14 @@ const Schedule = () => {
         setFilteredRoute(updatedRoute);
           
     }, [departure,destination])
+
+    useEffect(() => {
+        if (departure != '' || destination != '') {
+            setShowReverse(true)
+        } else {
+            setShowReverse(false)
+        }
+    }, [departure, destination])
 
     return (
         <>
@@ -87,7 +96,9 @@ const Schedule = () => {
                         {filteredRoute.map((route) => (
                             <Route  key={route.id}
                                     route={route} 
-                                    reverse={route.departure.name.toLowerCase().indexOf(departure) !==-1 ? false : true}>
+                                    reverse={route.departure.name.toLowerCase().indexOf(departure) !==-1 ? false : true}
+                                    showReverse={showReverse}
+                                    >
                             </Route>
                         ))}
                     </div>

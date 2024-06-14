@@ -86,6 +86,11 @@ const SearchTicket = () => {
             dispatch(ticketActions.resetTicket())
         }
     }, [])
+    useEffect(() => {
+        if (tel == '') {
+            dispatch(ticketActions.clearListBooking())
+        }
+    }, [tel])
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />

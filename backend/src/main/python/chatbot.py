@@ -1,7 +1,11 @@
 import os
 from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext, load_index_from_storage
 from dotenv import load_dotenv
+from llama_index.core import Settings
 load_dotenv()
+
+Settings.chunk_size = 512
+Settings.chunk_overlap = 50
 
 os.environ["OPENAI_API_KEY"] = os.getenv("CHATBOT_API_KEY")
 
@@ -16,7 +20,7 @@ class Chatbot:
             documents = SimpleDirectoryReader('data').load_data()
             self.index = VectorStoreIndex.from_documents(documents)
             self.index.storage_context.persist()
-        self.query_engine = self.index.as_query_engine()
+        self.query_engine = self.index.as_query_engine(similarity_top_k=4)
         print('Start chatbot')
 
     def query(self, user_input):
