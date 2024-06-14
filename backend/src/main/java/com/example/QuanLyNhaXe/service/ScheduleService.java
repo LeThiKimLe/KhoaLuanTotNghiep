@@ -14,7 +14,9 @@ import org.springframework.stereotype.Service;
 import com.example.QuanLyNhaXe.Request.CreateSchedules;
 import com.example.QuanLyNhaXe.Request.DistributeSchedule;
 import com.example.QuanLyNhaXe.Request.EditStateSchedule;
+import com.example.QuanLyNhaXe.dto.BusCompanyDTO;
 import com.example.QuanLyNhaXe.dto.MaximumScheduleDTO;
+import com.example.QuanLyNhaXe.dto.ScheduleCompanyForMonth;
 import com.example.QuanLyNhaXe.dto.ScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleTranDTO;
 import com.example.QuanLyNhaXe.dto.TripTranDTO;
@@ -23,6 +25,7 @@ import com.example.QuanLyNhaXe.enumration.ScheduleState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Bus;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.SpecialDay;
@@ -54,6 +57,7 @@ public class ScheduleService {
 	private final DriverRepository driverRepository;
 	private final SpecialDayRepository specialDayRepository;
 	private final UtilityService utilityService;
+	private final BusCompanyService busCompanyService;
 
 	public Object maximumSchedule(Integer tripId) {
 		Trip trip = tripRepository.findById(tripId).orElseThrow(() -> new NotFoundException(Message.TRIP_NOT_FOUND));
@@ -241,34 +245,48 @@ public class ScheduleService {
 		}
 	}
 
-	public Object getScheduleForMonth( int month, int year) {
-		int currentYear = LocalDate.now().getYear();
+	public Object getScheduleForMonth(int month, int year) {
+		List<ScheduleCompanyForMonth> scheduleCompanyForMonths=new ArrayList<>();
+		int currentYear = LocalDate.now().getYear(); 
 		if (year > currentYear || year < 0) {
 			throw new IllegalArgumentException("Năm không hợp lệ");
 		}
 		if (month < 1 || month > 12) {
 			throw new IllegalArgumentException("Tháng không hợp lệ");
 		}
+
 		LocalDate[] dates = getMonthStartAndEndDates(year, month);
 		LocalDate startDate = dates[0];
 		LocalDate endDate = dates[1];
+		List<BusCompany> busCompanies = busCompanyService.getAllBusModelCompanys();
 
-		List<Schedule> schedules = scheduleRepository.findByDepartDateBetween(startDate, endDate);
-		if (schedules.isEmpty()) {
-			throw new NotFoundException(Message.SCHEDULE_NOT_FOUND);
-		}
-		ModelMapper customModelMapper = new ModelMapper();
-		customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
-		.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
-		.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
-		return schedules.stream().peek(schedule -> {
-			if (schedule.getTransportationOrder() != null) {
-				schedule.getTransportationOrder().setSchedule(null);
-
+		for (BusCompany busCompany : busCompanies) {
+			
+			ModelMapper customModelMapper = new ModelMapper();
+			customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
+					.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
+					.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
+			List<Schedule> schedules = scheduleRepository.findByDepartDateBetweenAndTrip_BusCompany(startDate, endDate,
+					busCompany);
+			if (schedules.isEmpty()) {
+				schedules = new ArrayList<>();
 			}
-		}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+			List<ScheduleTranDTO> scheduleTranDTOs= schedules.stream().peek(schedule -> {
+				if (schedule.getTransportationOrder() != null) {
+					schedule.getTransportationOrder().setSchedule(null);
 
-	
+				}
+			}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+			
+			ScheduleCompanyForMonth scheduleCompanyForMonth = ScheduleCompanyForMonth.builder().schedules(scheduleTranDTOs)
+					.busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).build();
+			
+			scheduleCompanyForMonths.add(scheduleCompanyForMonth);
+
+		}
+
+		return scheduleCompanyForMonths;
+
 	}
 
 }
