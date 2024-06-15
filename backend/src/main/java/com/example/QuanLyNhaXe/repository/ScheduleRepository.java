@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Schedule;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
@@ -17,5 +18,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 
 	List<Schedule> findByBusId(Integer busId);
 
-	List<Schedule> findByDepartDateBetween(LocalDate startDate, LocalDate endDate);
+	List<Schedule> findByDepartDateBetweenAndTrip_BusCompany(LocalDate startDate, LocalDate endDate, BusCompany busCompany);
+	
+	 List<Schedule> findByDepartDateAndTrip_BusCompany(Date departDate, BusCompany busCompany);
 }

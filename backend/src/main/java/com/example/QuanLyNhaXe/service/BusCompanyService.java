@@ -180,4 +180,10 @@ public class BusCompanyService {
 	    }
 	    return busCompanyList;
 	}
+	 public BusCompany getModelBusCompany(Integer id) {
+		 return busCompanyRepository.findById(id)
+		            .orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+	 }
+	
+	
 }
