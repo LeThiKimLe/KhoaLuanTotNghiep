@@ -1813,6 +1813,7 @@ const Company = () => {
                         onClick={() =>
                             dispatch(companyActions.setOpenListRequest(!openListRequest))
                         }
+                        style={{ marginRight: '5px' }}
                     >
                         Danh sách yêu cầu mở bán vé
                     </CButton>

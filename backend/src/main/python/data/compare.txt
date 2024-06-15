@@ -1,0 +1,130 @@
+* Nhận diện câu hỏi so sánh tuyến đường
+Câu hỏi 1: Hãy nêu thông tin và so sánh chuyến đi từ TP. Hồ Chí Minh - Khánh Hòa, dựa vào kết quả phân tích từ hệ thống như sau để đưa ra câu trả lời:
+Hiện chỉ có một nhà xe cung cấp chuyến xe phù hợp với bạn. Thông tin như sau:
+[
+    {
+        "Tuyến": "Khánh Hòa - TP. Hồ Chí Minh",
+        "Chuyến": "Phía Nam Nha Trang-Miền Đông",
+        "Giá vé": 300000,
+        "Khoảng cách": 450,
+        "Lộ trình di chuyển": "BX Miền Đông - QL13 - QL1A - BX Phía Nam Nha Trang",
+        "Thời gian di chuyển": 6,
+        "Nhà xe": "Xe Châu An",
+        "totalEvaluation": 1.9841134271729464,
+        "Trạm đón gần nhất": {
+            "stopStation": "Bến xe Cam Ranh",
+            "point": 0.9963241814912889
+        },
+        "Trạm trả gần nhất": {
+            "stopStation": "Miền Đông",
+            "point": 0.9877892456816575
+        },
+        "Đánh giá nhà xe": 3
+    },
+]
+Trả lời cho câu hỏi 1: Hiện hệ thống chỉ có một đơn vị mở bán tuyến phù hợp với bạn. Sau đây là một số thông tin của chuyến xe này: chuyến đi tiện nhất để di chuyển là tuyến TP.Hồ Chí Minh đến Khánh Hòa, cụ thể là chuyến từ Bến xe Miền Tây đến Bến xe phía nam Nha Trang vì chuyến có trạm đón và trạm trả gần với địa điểm của bạn nhất. Trạm đón gần nhất là trạm bến xe Miền Tây, và trạm trả gần nhất là trạm Bến xe Phía Nam Nha Trang. Sau đây là một số thông tin khác về chuyến: Giá vé: 300000, Khoảng cách: 460km, Thời gian di chuyển là 8 giờ. Lộ trình: BX Miền Tây - Đường Kinh Dương Vương - Ngã Ba cây Dầu Đôi - QL1 - Đường 23/10 - BX Phía Nam Nha Trang
+---------------------------------------------------------------------------------
+Câu hỏi 2: Hãy nêu thông tin và so sánh các chuyến đi từ Bình Định - Quận Bình Thạnh và dựa vào kết quả phân tích từ hệ thống như sau để đưa ra câu trả lời:
+Hiện có 2 đơn vị cung cấp chuyến phù hợp với yêu cầu của bạn
+[
+    Chuyến thứ 1: {
+        "Tuyến": "Bình Định - TP. Hồ Chí Minh",
+        "Chuyến thứ nhất": "Bến xe Quy Nhơn - Miền Đông",
+        "Giá vé": 600000,
+        "Khoảng cách": 450,
+        "Lộ trình di chuyển": "BX Quy Nhơn - Bến xe Cam Ranh - QL1A - QL13 - BX Miền Đông",
+        "Thời gian di chuyển": 6,
+        "Nhà xe": "Xe Bảo Bình",
+        "totalEvaluation": 1.9841134271729464,
+        "Trạm đón gần nhất": {
+            "stopStation": "BX Quy Nhơn",
+            "point": 0.9963241814912889
+        },
+        "Trạm trả gần nhất": {
+            "stopStation": "Miền Đông",
+            "point": 0.9977892456816575
+        },
+        "Đánh giá nhà xe": 3
+    },
+    Chuyến thứ 2: {
+        "Tuyến thứ hai": "Đà Nẵng - TP. Hồ Chí Minh",
+        "Chuyến thứ hai": "BX Đà Nẵng - Miền Tây",
+        "Giá vé": 700000,
+        "Khoảng cách": 760,
+        "Lộ trình di chuyển": "BX Đà Nẵng - BX Bình Định - BX Phía Nam Nha Trang - Đường 23/10 - QL1 - Ngã Ba cây Dầu Đôi - Đường Kinh Dương Vương - BX Miền Tây",
+        "Thời gian di chuyển": 8.1,
+        "Nhà xe": "Xe Hòa Đa",
+        "totalEvaluation": 1.685235227199481,
+        "Trạm đón gần nhất": {
+            "stopStation": "BX Bình Định",
+            "point": 0.7440196906299159
+        },
+        "Trạm trả gần nhất": {
+            "stopStation": "Miền Tây",
+            "point": 0.9412155365695651
+        },
+        "Đánh giá nhà xe": 0
+    }
+]
+Câu trả lời cho câu hỏi 2: Hiện có 2 đơn vị cung cấp chuyến phù hợp với yêu cầu của bạn. Chuyến thứ nhất xuất phát từ bến xe Bến xe Quy Nhơn - đến bến xe Miền Đông, có mức giá là 600000đ và thời gian di chuyển là 8h, được cung cấp bởi nhà xe Bảo Bình. Chuyến thứ 2 xuất phát từ bến xe Đà Nẵng - bến xe Miền Tây, có mức giá là 700000 và được cung cấp bởi nhà xe Hòa Đa.
+Như vậy, so sánh hai chuyến trên: {
+  Về tuyến xe: Hai chuyến khác tuyến xe,
+  Về chuyến: Hai chuyến xe đều có điểm đón tại Bình Định
+  Về giá: Chuyến thứ nhất có giá rẻ hơn chuyến thứ hai vì chuyến thứ hai có lộ trình dài hơn
+  Về trạm đón gần nhất: Chuyến thứ nhất có trạm đón gần bạn hơn so với chuyến thứ hai
+  Về trạm trả: Chuyến thứ nhất có trạm trả gần nhất gần với địa điểm của bạn hơn chuyến thứ hai
+  Về nhà xe: Nhà xe chuyến thứ nhất nhận được đánh giá khá cao, trong khi đó nhà xe thứ hai là nhà xe mới nên chưa nhận được nhiều đánh giá.
+} Có thể thấy chuyến thứ nhất sẽ tiện hơn với bạn. Tuy nhiên, bạn có thể yên tâm trải nghiệm các chuyến xe khác vì chất lượng luôn được đảm bảo bởi hệ thống chúng tôi
+-------------------------------------------------------------------------------------------
+Câu hỏi 3: Hãy nêu thông tin và so sánh các chuyến đi từ Cam Ranh - Bình Dương và dựa vào kết quả phân tích từ hệ thống như sau để đưa ra câu trả lời:
+[
+    Chuyến thứ 1: {
+        "Tuyến": "Khánh Hòa - TP. Hồ Chí Minh",
+        "Chuyến": "Phía Nam Nha Trang-Miền Đông",
+        "Giá vé": 300000,
+        "Khoảng cách": 450,
+        "Lộ trình di chuyển": "BX Phía Nam Nha Trang - BX Cam Ranh - QL1A - QL13 - Ngã tư Bình Dương - Miền Đông",
+        "Thời gian di chuyển": 6,
+        "Nhà xe": "Xe Châu An",
+        "totalEvaluation": 1.9841134271729464,
+        "Trạm đón gần nhất": {
+            "stopStation": "Bến xe Cam Ranh",
+            "point": 0.9963241814912889
+        },
+        "Trạm trả gần nhất": {
+            "stopStation": "Ngã tư Bình Dương",
+            "point": 0.7777892456816575
+        },
+        "Đánh giá nhà xe": 3
+    },
+    Chuyến thứ 2: {
+        "Tuyến": "Khánh Hòa - TP. Hồ Chí Minh",
+        "Chuyến": "Phía Nam Nha Trang-Miền Tây",
+        "Giá vé": 450000,
+        "Khoảng cách": 480,
+        "Lộ trình di chuyển": "BX Phía Nam Nha Trang - Đường 23/10 - QL1 - Ngã Ba cây Dầu Đôi -Bến xe Bình Dương - Đường Kinh Dương Vương - BX Miền Tây",
+        "Thời gian di chuyển": 6.1,
+        "Nhà xe": "Xe Hòa Hảo",
+        "totalEvaluation": 1.685235227199481,
+        "Trạm đón gần nhất": {
+            "stopStation": "Phía Nam Nha Trang",
+            "point": 0.7440196906299159
+        },
+        "Trạm trả gần nhất": {
+            "stopStation": "Bến xe Bình Dương",
+            "point": 0.9412155365695651
+        },
+        "Đánh giá nhà xe": 0
+    }
+]
+Câu trả lời cho câu hỏi 3: Hiện có 2 đơn vị cung cấp chuyến phù hợp với yêu cầu của bạn. Chuyến thứ nhất xuất phát từ bến xe Phía Nam Nha Trang đến bến xe Miền Đông, có mức giá là 300000đ và thời gian di chuyển là 6h, được cung cấp bởi nhà xe Châu An. Chuyến thứ 2 xuất phát từ Phía Nam Nha Trang đi bến xe Miền Tây, có mức giá là 450000 và được cung cấp bởi nhà xe Hòa Hảo.
+Như vậy so sánh hai chuyến trên: {
+  Về tuyến xe: Hai chuyến cùng chung một tuyến là từ Khánh Hòa - TP. Hồ Chí Minh,
+  Về chuyến: Hai chuyến xe cùng xuất phát từ Bến xe phía Nam Nha Trang, một chuyến kết thúc tại Bến xe Miền Đông, chuyến còn lại kết thúc tại bến xe Miền Tây
+  Về giá: Chuyến thứ nhất có giá rẻ hơn
+  Về trạm đón gần nhất: Chuyến thứ nhất có trạm đón gần bạn hơn so với chuyến thứ hai
+  Về trạm trả: Chuyến thứ hai có trạm trả gần nhất gần với địa điểm của bạn hơn
+  Về nhà xe: Cả hai nhà xe cung cấp chuyến đều có điểm đánh giá khá cao là 3/5
+}
+Chuyến xe nào cũng có ưu điểm riêng và luôn được đảm bảo chất lượng đáng tin cậy bởi hệ thống.
+------------------------------------------------------------------------------------

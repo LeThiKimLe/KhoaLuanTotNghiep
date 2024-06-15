@@ -4,11 +4,13 @@ import java.sql.Date;
 import java.sql.Time;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Schedule;
+import com.example.QuanLyNhaXe.model.Trip;
 
 public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 	List<Schedule> findByTripIdAndDepartDateAndAvailabilityGreaterThanEqualAndDepartTimeAfter(Integer tripId,
@@ -21,4 +23,7 @@ public interface ScheduleRepository extends JpaRepository<Schedule, Integer> {
 	List<Schedule> findByDepartDateBetweenAndTrip_BusCompany(LocalDate startDate, LocalDate endDate, BusCompany busCompany);
 	
 	 List<Schedule> findByDepartDateAndTrip_BusCompany(Date departDate, BusCompany busCompany);
+
+	 Optional<Schedule> findByDepartDateAndDepartTimeAndTripId(Date departDate, Time departTime, Integer tripId);
+
 }

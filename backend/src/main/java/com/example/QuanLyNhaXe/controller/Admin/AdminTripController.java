@@ -51,20 +51,9 @@ public class AdminTripController {
 		return new ResponseEntity<>(tripService.statisTicTripTicket(year,month), HttpStatus.OK);
 	}
 	
-	
-	
 	@DeleteMapping("/distribute")
 	public ResponseEntity<Object> distributeDeleteTripDriversBuses(@RequestBody TripAssignment tripAssignment) {
 		return new ResponseEntity<>(tripService.tripAssignmentDelete(tripAssignment), HttpStatus.OK);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }

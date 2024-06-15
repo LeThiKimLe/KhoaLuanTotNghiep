@@ -89,9 +89,6 @@ const Recommend = ({ show, setShow, handleSearch }) => {
             }
         }
 
-        // Đánh giá giá thành dựa trên tương quan nghịch đảo
-        const priceEvaluation = 1 / (trip.price + 1);
-
         // Đánh giá nhà xe dựa trên đánh giá
         const ratingEvaluation = getCompanyRate(trip.busCompanyId);
 
@@ -113,9 +110,29 @@ const Recommend = ({ show, setShow, handleSearch }) => {
             'Trạm đón gần nhất': listPickStationPoint.reduce((max, point) => max.point > point.point ? max : point),
             //item with highest point in listDropStationPoint
             'Trạm trả gần nhất': listDropStationPoint.reduce((max, point) => max.point > point.point ? max : point),
-            'Đánh giá giá vé': priceEvaluation,
             'Đánh giá nhà xe': ratingEvaluation
         };
+    }
+
+    const makeComparision = (listTrip) => {
+        //add index to listTrip
+        listTrip.forEach((trip, index) => {
+            trip.index = index
+        })
+        const bestPrice = listTrip.reduce((max, trip) => max['Giá vé'] < trip['Giá vé'] ? max : trip)
+        const bestDistance = listTrip.reduce((max, trip) => max['Khoảng cách'] < trip['Khoảng cách'] ? max : trip)
+        const bestTime = listTrip.reduce((max, trip) => max['Thời gian di chuyển'] < trip['Thời gian di chuyển'] ? max : trip)
+        const bestPickStation = listTrip.reduce((max, trip) => max['Trạm đón gần nhất'].point > trip['Trạm đón gần nhất'].point ? max : trip)
+        const bestDropStation = listTrip.reduce((max, trip) => max['Trạm trả gần nhất'].point > trip['Trạm trả gần nhất'].point ? max : trip)
+        const bestCompany = listTrip.reduce((max, trip) => max['Đánh giá nhà xe'] > trip['Đánh giá nhà xe'] ? max : trip)
+        return {
+            'Giá vé': `Chuyến thứ ${listTrip.findIndex(trip => trip.index === bestPrice.index) + 1} có giá rẻ hơn`,
+            'Khoảng cách': `Chuyến thứ ${listTrip.findIndex(trip => trip.index === bestDistance.index) + 1} có quãng đường di chuyển ngắn hơn`,
+            'Thời gian di chuyển': `Chuyến thứ ${listTrip.findIndex(trip => trip.index === bestTime.index) + 1} có thời gian di chuyển ngắn hơn`,
+            'Trạm đón gần nhất': `Chuyến thứ ${listTrip.findIndex(trip => trip.index === bestPickStation.index) + 1} có trạm đón gần nhất với bạn`,
+            'Trạm trả gần nhất': `Chuyến thứ ${listTrip.findIndex(trip => trip.index === bestDropStation.index) + 1} có trạm trả gần nhất với bạn`,
+            'Đánh giá nhà xe': `Chuyến thứ ${listTrip.findIndex(trip => trip.index === bestCompany.index) + 1} có nhà xe được đánh giá tốt nhất`
+        }
     }
 
     const handleEvaluate = async () => {
@@ -169,8 +186,9 @@ const Recommend = ({ show, setShow, handleSearch }) => {
                 count = i + 1
                 query += "Chuyến thứ " + count + ": " + JSON.stringify(result[i]) + "\n"
             }
+            query += "Kết quả so sánh: " + JSON.stringify(makeComparision(result))
         }
-        const question = 'Tôi đang ở ' + startPoint.detail + ', ' + startPoint.province + ' và muốn đến ' + endPoint.detail + ', ' + endPoint.province + '. Hãy so sánh các chuyến xe tôi có thể đi. Sử dụng kết quả phân tích từ hệ thống như sau: ' + query
+        const question = 'Hãy nêu thông tin và so sánh các chuyến xe đi từ ' + startPoint.detail + ', ' + startPoint.province + ' và đến ' + endPoint.detail + ', ' + endPoint.province + '. Sử dụng kết quả phân tích từ hệ thống như sau: ' + query
         const displayQuestion = 'Hãy so sánh các chuyến xe đi từ ' + startPoint.detail + ', ' + startPoint.province + ' và đến ' + endPoint.detail + ', ' + endPoint.province
         setShow(false)
         setLoading(false)

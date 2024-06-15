@@ -59,7 +59,21 @@ import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
 import { subStractDays, addDays } from 'src/utils/convertUtils'
 const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
-    const [schedule, setSchedule] = useState(inSchedule)
+    const [schedule, setSchedule] = useState(
+        inSchedule
+            ? inSchedule
+            : {
+                  id: 0,
+                  departTime: '',
+                  departDate: '',
+                  ticketPrice: 0,
+                  availability: 0,
+                  note: '',
+                  driverUser: null,
+                  driverUser2: null,
+                  bus: null,
+              },
+    )
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const dispatch = useDispatch()
@@ -73,10 +87,10 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
     const listBus = useSelector(selectCurrentListBus)
     const [isUpdate, setIsUpdate] = useState(false)
     const [driver, setDriver] = useState(
-        schedule.driverUser ? schedule.driverUser.driver.driverId : 0,
+        schedule && schedule.driverUser ? schedule.driverUser.driver.driverId : 0,
     )
-    const [bus, setBus] = useState(schedule.bus ? schedule.bus.id : 0)
-    const [note, setNote] = useState(schedule.note)
+    const [bus, setBus] = useState(schedule && schedule.bus ? schedule.bus.id : 0)
+    const [note, setNote] = useState(schedule && schedule.note ? schedule.note : '')
     const [reload, setReload] = useState(false)
     const handleUpdate = () => {
         if (isUpdate) {
@@ -114,6 +128,31 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
         setLoading(false)
         setIsUpdate(false)
     }
+    const handleDeleteSchedule = () => {
+        setLoading(true)
+        dispatch(scheduleThunk.deleteSchedule(schedule.id))
+            .unwrap()
+            .then(() => {
+                addToast(() =>
+                    CustomToast({
+                        message: 'Đã xóa chuyến thành công',
+                        type: 'success',
+                    }),
+                )
+                setVisible(false)
+                setLoading(false)
+                setReload(true)
+            })
+            .catch((err) => {
+                addToast(() =>
+                    CustomToast({
+                        message: err,
+                        type: 'error',
+                    }),
+                )
+                setLoading(false)
+            })
+    }
     useEffect(() => {
         if (reload === true) {
             dispatch(
@@ -134,6 +173,23 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                 })
         }
     }, [reload])
+    useEffect(() => {
+        setSchedule(
+            inSchedule
+                ? inSchedule
+                : {
+                      id: 0,
+                      departTime: '',
+                      departDate: '',
+                      ticketPrice: 0,
+                      availability: 0,
+                      note: '',
+                      driverUser: null,
+                      driverUser2: null,
+                      bus: null,
+                  },
+        )
+    }, [inSchedule])
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -351,6 +407,13 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                         style={{ width: 'fit-content' }}
                     >
                         Đóng
+                    </CButton>
+                    <CButton
+                        color="danger"
+                        onClick={handleDeleteSchedule}
+                        style={{ width: 'fit-content' }}
+                    >
+                        Xóa chuyến
                     </CButton>
                 </CModalFooter>
             </CModal>
@@ -764,7 +827,6 @@ const ScheduleManagement = () => {
     }, [])
     useEffect(() => {
         if (currentRoute != 0) {
-            console.log(tripProcess(listRoute, companyId))
             const listTripIn = tripProcess(listRoute, companyId).filter(
                 (trip) =>
                     trip.route.id == currentRoute &&
@@ -774,7 +836,6 @@ const ScheduleManagement = () => {
                     trip.turnGo.stopStations.some((st) => st.stationType.includes('park-start')) &&
                     trip.turnGo.stopStations.some((st) => st.stationType.includes('park-end')),
             )
-            console.log(listTripIn)
             setListTrip(listTripIn)
             if (listTripIn.length > 0) {
                 dispatch(scheduleAction.setCurrentTrip(listTripIn[0]))
@@ -826,7 +887,7 @@ const ScheduleManagement = () => {
                 .unwrap()
                 .then((res) => {
                     const filterSchedule = res.filter(
-                        (schedule) => schedule.tripInfor.id == listTrip[currentTrip]?.tripGo?.id,
+                        (schedule) => schedule.tripInfor.id == listTrip[currentTrip]?.turnGo?.id,
                     )
                     dispatch(scheduleAction.setCurrentDateScheduleGo(filterSchedule))
                     countLoad.current = countLoad.current + 1
@@ -846,7 +907,7 @@ const ScheduleManagement = () => {
                 .unwrap()
                 .then((res) => {
                     const filterSchedule = res.filter(
-                        (schedule) => schedule.tripInfor.id == listTrip[currentTrip]?.tripBack?.id,
+                        (schedule) => schedule.tripInfor.id == listTrip[currentTrip]?.turnBack?.id,
                     )
                     dispatch(scheduleAction.setCurrentDateScheduleReturn(filterSchedule))
                     countLoad.current = countLoad.current + 1
@@ -861,7 +922,6 @@ const ScheduleManagement = () => {
     useEffect(() => {
         setCurrentRoute(curRoute && listRoute.find((rt) => rt.id === curRoute.id) ? curRoute.id : 0)
     }, [curRoute])
-    console.log(currentTrip)
     return (
         <>
             <CRow className="justify-content-between">

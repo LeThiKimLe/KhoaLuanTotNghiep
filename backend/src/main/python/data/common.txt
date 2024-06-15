@@ -600,128 +600,15 @@ Cách sửa vé:
 - Bước 1: Trên thanh Nav rê chuột vào vị trí tên người dùng, sau đó chọn Đăng xuất sau biểu tượng Exit.
 - Bước 2: Bấm vào nút Xác nhận để thực hiện đăng xuất, nếu muốn dừng quá trình đăng xuất bấm nút Hủy.
 
+------------------------------------------------------------------------------------------------
+
 Các câu hỏi khác không liên quan đến thông tin nhà xe hoặc các thao tác trên trang web đặt vé thì từ chối trả lời
+Các câu hỏi khác không liên quan đến thông tin nhà xe hoặc các thao tác trên trang web đặt vé thì từ chối trả lời
+Các câu hỏi khác không liên quan đến thông tin nhà xe hoặc các thao tác trên trang web đặt vé thì từ chối trả lời
+
+Không trả lời các câu hỏi không liên quan đến hệ thống đặt vé, dù là các câu hỏi liên quan đến kiến thức tự nhiên chung
+Không trả lời các câu hỏi không liên quan đến hệ thống đặt vé, dù là các câu hỏi liên quan đến kiến thức tự nhiên chung
 Không trả lời các câu hỏi không liên quan đến hệ thống đặt vé, dù là các câu hỏi liên quan đến kiến thức tự nhiên chung
 
 Các vấn đề liên quan đến tra cứu vé đã đặt hoặc thông tin cụ thể về chuyến xe, vui lòng liên hệ trực tiếp với nhà xe thông qua tùy chọn "Chat với nhà xe"
-
-* Nhận diện câu hỏi so sánh tuyến đường
-Câu hỏi: So sánh chuyến đi từ TP. Hồ Chí Minh - Khánh Hòa. Dựa vào kết quả phân tích từ hệ thống như sau:
-[
-    {
-        "Tuyến": "Khánh Hòa - TP. Hồ Chí Minh",
-        "Chuyến": "Phía Nam Nha Trang-Miền Đông",
-        "Giá vé": 300000,
-        "Khoảng cách": 450,
-        "Lộ trình di chuyển": "BX Miền Đông - QL13 - QL1A - BX Phía Nam Nha Trang",
-        "Thời gian di chuyển": 6,
-        "Nhà xe": "Xe Châu An",
-        "totalEvaluation": 1.9841134271729464,
-        "Trạm đón gần nhất": {
-            "stopStation": "Bến xe Cam Ranh",
-            "point": 0.9963241814912889
-        },
-        "Trạm trả gần nhất": {
-            "stopStation": "Miền Đông",
-            "point": 0.9877892456816575
-        },
-        "Đánh giá giá vé": 0.0000033333222222592593,
-        "Đánh giá nhà xe": 3
-    },
-]
-Trả lời: Hiện hệ thống chỉ có một đơn vị mở bán tuyến phù hợp với bạn. Sau đây là một số thông tin của chuyến xe này: chuyến đi tiện nhất để di chuyển là tuyến TP.Hồ Chí Minh đến Khánh Hòa, cụ thể là chuyến từ Bến xe Miền Tây đến Bến xe phía nam Nha Trang vì chuyến có trạm đón và trạm trả gần với địa điểm của bạn nhất. Trạm đón gần nhất là trạm bến xe Miền Tây, và trạm trả gần nhất là trạm Bến xe Phía Nam Nha Trang. Sau đây là một số thông tin khác về chuyến: Giá vé: 300000, Khoảng cách: 460km, Thời gian di chuyển là 8 giờ. Lộ trình: BX Miền Tây - Đường Kinh Dương Vương - Ngã Ba cây Dầu Đôi - QL1 - Đường 23/10 - BX Phía Nam Nha Trang
-
-Câu hỏi: Hãy so sánh các chuyến đi từ Khánh Hòa - Tp. Hồ Chí Minh. Dựa vào kết quả phân tích từ hệ thống như sau:
-[
-    Chuyến thứ 1: {
-        "Tuyến": "Khánh Hòa - TP. Hồ Chí Minh",
-        "Chuyến thứ nhất": "Phía Nam Nha Trang-Miền Đông",
-        "Giá vé": 300000,
-        "Khoảng cách": 450,
-        "Lộ trình di chuyển": "BX Miền Đông - QL13 - QL1A - BX Phía Nam Nha Trang",
-        "Thời gian di chuyển": 6,
-        "Nhà xe": "Xe Châu An",
-        "totalEvaluation": 1.9841134271729464,
-        "Trạm đón gần nhất": {
-            "stopStation": "Bến xe Cam Ranh",
-            "point": 0.9963241814912889
-        },
-        "Trạm trả gần nhất": {
-            "stopStation": "Miền Đông",
-            "point": 0.7777892456816575
-        },
-        "Đánh giá giá vé": 0.0000033333222222592593,
-        "Đánh giá nhà xe": 3
-    },
-    Chuyến thứ 2: {
-        "Tuyến thứ hai": "Khánh Hòa - TP. Hồ Chí Minh",
-        "Chuyến thứ hai": "Phía Nam Nha Trang-Miền Tây",
-        "Giá vé": 0,
-        "Khoảng cách": 460,
-        "Lộ trình di chuyển": "BX Phía Nam Nha Trang - Đường 23/10 - QL1 - Ngã Ba cây Dầu Đôi - Đường Kinh Dương Vương - BX Miền Tây",
-        "Thời gian di chuyển": 6.1,
-        "Nhà xe": "Xe Hòa Hảo",
-        "totalEvaluation": 1.685235227199481,
-        "Trạm đón gần nhất": {
-            "stopStation": "Phía Nam Nha Trang",
-            "point": 0.7440196906299159
-        },
-        "Trạm trả gần nhất": {
-            "stopStation": "Miền Tây",
-            "point": 0.9412155365695651
-        },
-        "Đánh giá giá vé": 1,
-        "Đánh giá nhà xe": 0
-    }
-]
-Trả lời: Dựa vào thông tin bạn cung cấp, bạn có thể chọn một trong 2 chuyến sau, mỗi chuyến được cung cấp bởi các nhà xe khác nhau và ưu điểm riêng như sau: Về di chuyển: + Chuyến từ Bến xe Cam Ranh đi Bến xe Miền Đông: Chuyến này thuận tiện cho việc di chuyển của bạn hơn vì có trạm đón có điểm tiện ích nhiều hơn so với chuyến còn lại nên gần nhất bạn là "Bến xe Cam Ranh"  + Chuyến từ Bến xe Miền Tây đi Bến xe Cam Ranh: Chuyến này sẽ tiện cho bạn di chuyển lúc về vì có trạm trả gần nhất là trạm Bến xe Miền Tây với điểm tiện ích cao hơn, nên gần với bạn nhất. Về giá: + Chuyến từ bến xe Miền Đông (giá 100.000 đ/vé) có giá rẻ hơn so với chuyến từ bến xe Miền Tây(350.000đ/vé). Về nhà xe: + Nhà xe cung cấp chuyến đi từ Bến xe Miền Đông được nhiều đánh giá tích cực hơn. Tuy nhiên, bạn cũng có thể chọn nhà xe cung cấp chuyến Bến xe Miền Tây vì hệ thống của chúng tôi luôn đảm bảo chất lượng các nhà xe trước khi mở bán vé đến khách hàng.
-
-
-* Đọc kết quả phân tích chuyến đi
-Câu hỏi: Câu hỏi: Tôi đang ở quận Tân Phú, tôi muốn về Cam Ranh thì nên chọn chuyến xe nào? Sử dụng kết quả phân tích như sau:
-    {
-        "Tuyến": "TP. Hồ Chí Minh - Khánh Hòa",
-        "Chuyến": "Miền Đông - Phía Nam Nha Trang",
-        "Giá vé": 300000,
-        "Khoảng cách": 450,
-        "Lộ trình di chuyển": "BX Miền Đông - QL13 - QL1A - BX Phía Nam Nha Trang",
-        "Thời gian di chuyển": 6,
-        "Nhà xe": "Xe Châu An",
-        "totalEvaluation": 1.9841134271729464,
-        "Trạm trả gần nhất": {
-            "stopStation": "Bến xe Cam Ranh",
-            "point": 0.9963241814912889
-        },
-        "Trạm đón gần nhất": {
-            "stopStation": "Miền Đông",
-            "point": 0.9877892456816575
-        },
-        "Đánh giá giá vé": 0.0000033333222222592593,
-        "Đánh giá nhà xe": 3
-    }
-
-Trả lời: Thông qua thông tin bạn cung cấp, theo thông tin của hệ thống, chuyến đi tiện nhất để di chuyển là tuyến TP.Hồ Chí Minh đến Khánh Hòa, cụ thể là chuyến từ Bến xe Miền Tây đến Bến xe phía nam Nha Trang vì chuyến có trạm đón và trạm trả gần với địa điểm của bạn nhất. Trạm đón gần nhất là trạm bến xe Miền Tây, và trạm trả gần nhất là trạm Bến xe Phía Nam Nha Trang. Sau đây là một số thông tin khác về chuyến: Giá vé: 300000, Khoảng cách: 460km, Thời gian di chuyển là 8 giờ. Lộ trình: BX Miền Tây - Đường Kinh Dương Vương - Ngã Ba cây Dầu Đôi - QL1 - Đường 23/10 - BX Phía Nam Nha Trang
-
-Câu hỏi: Tôi đang ở quận 9, chuyến xe nào đến Cam Ranh là tiện nhất? Dựa vào kết quả phân tích chuyến như sau:
-{
-        "Tuyến": "TP. Hồ Chí Minh - Khánh Hòa",
-        "Chuyến": "Miền Đông - Phía Nam Nha Trang",
-        "Giá vé": 300000,
-        "Khoảng cách": 450,
-        "Lộ trình di chuyển": "BX Miền Đông - QL13 - QL1A - BX Phía Nam Nha Trang",
-        "Thời gian di chuyển": 6,
-        "Nhà xe": "Xe Châu An",
-        "totalEvaluation": 1.9841134271729464,
-        "Trạm trả gần nhất": {
-            "stopStation": "Bến xe Cam Ranh",
-            "point": 0.9963241814912889
-        },
-        "Trạm đón gần nhất": {
-            "stopStation": "Miền Đông",
-            "point": 0.9877892456816575
-        },
-        "Đánh giá giá vé": 0.0000033333222222592593,
-        "Đánh giá nhà xe": 3
-  }
-
-Trả lời: Thông qua thông tin bạn cung cấp, theo thông tin của hệ thống, chuyến đi tiện nhất để di chuyển là tuyến TP.Hồ Chí Minh đến Khánh Hòa, cụ thể là chuyến từ Bến xe Miền Đông đến Bến xe phía nam Nha Trang vì chuyến có trạm đón và trạm trả gần với địa điểm của bạn nhất. Trạm đón gần nhất là trạm bến xe Miền Đông, và trạm trả gần nhất là trạm Bến xe Phía Nam Nha Trang. Sau đây là một số thông tin khác về chuyến: Giá vé: 300000, Khoảng cách: 450km, Thời gian di chuyển là 6 giờ. Lộ trình: BX Phía Nam Nha Trang - QL1A - QL13 - BX Miền Đông
+--------------------------------------------------------------------------------------------------
