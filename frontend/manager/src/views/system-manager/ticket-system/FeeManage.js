@@ -44,6 +44,7 @@ import companyThunk from 'src/feature/bus-company/busCompany.service'
 import { CustomToast } from 'src/views/customToast/CustomToast'
 import { cilExternalLink } from '@coreui/icons'
 import { getTripJourney } from 'src/utils/tripUtils'
+
 const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
     return (
         <CModal visible={visible} onClose={onClose} size="lg">
@@ -182,6 +183,8 @@ const TicketFee = () => {
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const [openTripList, setOpenTripList] = useState(false)
+    const [listTicketFee, setListTicketFee] = useState([])
+    const [listValidCompany, setListValidCompany] = useState([])
     const getYearRange = () => {
         var year = []
         const startYear = startTime.getFullYear()
@@ -190,17 +193,82 @@ const TicketFee = () => {
         }
         return year
     }
+    const getLastDateOfMonth = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        let lastDate = new Date(currentSpan.getFullYear(), currentSpan.getMonth() + 1, 0)
+        return lastDate
+    }
+    const getStartDateOfService = (dueDate) => {
+        let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
+        if (currentSpan.getDate() !== 5) {
+            return addDays(currentSpan, 1)
+        } else {
+            let firstOfMonth = new Date(currentSpan.getFullYear(), currentSpan.getMonth(), 1)
+            return firstOfMonth
+        }
+    }
+    const getValidCompanyForTime = () => {
+        dispatch(feeThunk.getFee())
+            .unwrap()
+            .then((res) => {
+                const listValid = []
+                listCompany.forEach((company) => {
+                    const companyFee = res.filter((fee) => fee.company.id == company.busCompany.id)
+                    const freeSpan = {
+                        company: company,
+                        dueDate: company.busCompany.coopDay,
+                        status: 'Đã thanh toán',
+                    }
+                    companyFee.push(freeSpan)
+                    // Sort fees based on status and dueDate
+                    const sortedFees = companyFee.sort((a, b) => {
+                        return new Date(b.dueDate) - new Date(a.dueDate)
+                    })
+                    // Get the first fee from the sorted array
+                    const monthFee = sortedFees.find((fee) => {
+                        if (
+                            new Date(fee.dueDate).getMonth() === monthValue &&
+                            new Date(fee.dueDate).getFullYear() === yearValue
+                        )
+                            return true
+                    })
+                    if (monthFee && monthFee.status === 'Đã thanh toán') {
+                        listValid.push(company.busCompany)
+                    }
+                })
+                setListValidCompany(listValid)
+            })
+            .catch((res) => {
+                console.log(res)
+            })
+    }
+
     const getData = () => {
-        // dispatch(feeThunk.getFee())
-        //     .unwrap()
-        //     .then((res) => {
-        //         //filter res by month and year in dueDate
-        //         const listFee = res.filter((fee) => {
-        //             const date = parse(fee.dueDate, 'yyyy-MM-dd', new Date())
-        //             return date.getFullYear() === yearValue && date.getMonth() === monthValue
-        //         })
-        //         setListCompanyServiceFee(listFee)
-        //     })
+        dispatch(
+            feeThunk.getCompanySchedule({
+                month: monthValue + 1,
+                year: yearValue,
+            }),
+        )
+            .unwrap()
+            .then((res) => {
+                setListCompanyServiceFee(res)
+                handleCalTicketSale()
+            })
+    }
+
+    const handleCalTicketSale = () => {
+        dispatch(
+            feeThunk.getTicketSale({
+                month: monthValue + 1,
+                year: yearValue,
+            }),
+        )
+            .unwrap()
+            .then((res) => {
+                console.log(res)
+                setListTicketFee(res)
+            })
     }
 
     const getNextDueDay = (currentDueDay) => {
@@ -277,11 +345,11 @@ const TicketFee = () => {
     // }, [listAssignRouteId])
 
     useEffect(() => {
+        getValidCompanyForTime()
         getData()
     }, [monthValue, yearValue])
 
     useEffect(() => {
-        getData()
         if (listCompany.length === 0) {
             dispatch(companyThunk.getCompany())
                 .unwrap()
@@ -405,41 +473,61 @@ const TicketFee = () => {
                     </CTableRow>
                 </CTableHead>
                 <CTableBody>
-                    <CTableRow>
-                        <CTableHeaderCell scope="row" className="text-center">
-                            {1}
-                        </CTableHeaderCell>
-                        <CTableHeaderCell scope="row" className="text-center">
-                            {'Xe Châu An'}
-                            <br></br>
-                        </CTableHeaderCell>
-                        <CTableDataCell className="text-center">{'01/06/2024'}</CTableDataCell>
-                        <CTableDataCell className="text-center">{'31/06/2024'}</CTableDataCell>
-                        <CTableDataCell className="text-center">{'06/07 - 10/07'}</CTableDataCell>
-                        <CTableDataCell className="text-center">
-                            {'3 chuyến'}
-                            <CIcon
-                                icon={cilExternalLink}
-                                role="button"
-                                style={{ marginLeft: '5px' }}
-                                onClick={() => handleOpenTripList('company')}
-                            ></CIcon>
-                        </CTableDataCell>
-                        <CTableDataCell className="text-center">
-                            {'123'}
-                            <CIcon
-                                icon={cilExternalLink}
-                                role="button"
-                                style={{ marginLeft: '5px' }}
-                            ></CIcon>
-                        </CTableDataCell>
-                        <CTableDataCell className="text-center">{'1,200,000 đ'}</CTableDataCell>
-                        <CTableDataCell className="text-center">{'120,000 đ'}</CTableDataCell>
-                        <CTableDataCell className="text-center">{'---'}</CTableDataCell>
-                        <CTableDataCell className="text-center">
-                            <CButton variant="outline">Thanh toán</CButton>
-                        </CTableDataCell>
-                    </CTableRow>
+                    {listValidCompany.map((company, index) => (
+                        <CTableRow key={index}>
+                            <CTableHeaderCell scope="row" className="text-center">
+                                {1}
+                            </CTableHeaderCell>
+                            <CTableHeaderCell scope="row" className="text-center">
+                                {company.name}
+                                <br></br>
+                            </CTableHeaderCell>
+                            <CTableDataCell className="text-center">
+                                {new Date(company.coopDay) < new Date(yearValue, monthValue, 1)
+                                    ? format(new Date(yearValue, monthValue, 1), 'dd/MM/yyyy')
+                                    : convertToDisplayDate(company.coopDay)}
+                            </CTableDataCell>
+                            <CTableDataCell className="text-center">
+                                {format(new Date(yearValue, monthValue + 1, 0), 'dd/MM/yyyy')}
+                            </CTableDataCell>
+                            <CTableDataCell className="text-center">
+                                {`${format(
+                                    new Date(yearValue, monthValue + 1, 5),
+                                    'dd/MM',
+                                )} - ${format(new Date(yearValue, monthValue + 1, 10), 'dd/MM')}`}
+                            </CTableDataCell>
+                            <CTableDataCell className="text-center">
+                                {'3 chuyến'}
+                                <CIcon
+                                    icon={cilExternalLink}
+                                    role="button"
+                                    style={{ marginLeft: '5px' }}
+                                    onClick={() => handleOpenTripList('company')}
+                                ></CIcon>
+                            </CTableDataCell>
+                            <CTableDataCell className="text-center">
+                                {'123'}
+                                <CIcon
+                                    icon={cilExternalLink}
+                                    role="button"
+                                    style={{ marginLeft: '5px' }}
+                                ></CIcon>
+                            </CTableDataCell>
+                            <CTableDataCell className="text-center">{`${listTicketFee
+                                .find((item) => item.busCompany.id == company.id)
+                                ?.ticketMoney.toLocaleString()} đ`}</CTableDataCell>
+                            <CTableDataCell className="text-center">{`${(
+                                (listTicketFee.find((item) => item.busCompany.id == company.id)
+                                    ?.ticketMoney *
+                                    20) /
+                                100
+                            ).toLocaleString()} đ`}</CTableDataCell>
+                            <CTableDataCell className="text-center">{'---'}</CTableDataCell>
+                            <CTableDataCell className="text-center">
+                                <CButton variant="outline">Thanh toán</CButton>
+                            </CTableDataCell>
+                        </CTableRow>
+                    ))}
                 </CTableBody>
             </CTable>
             <TripListModal

@@ -1024,15 +1024,23 @@ const TripDetail = ({ trip }) => {
                             onChange={(e) => setBusType(parseInt(e.target.value))}
                         >
                             <option value="0">
-                                {listBusType.length > 0 ? 'Chọn loại xe' : 'Chưa có loại xe'}
+                                {listBusType.filter((bus) => bus.active === true).length > 0
+                                    ? 'Chọn loại xe'
+                                    : 'Chưa có loại xe'}
                             </option>
-                            {listBusType.map((busType) => (
-                                <option key={busType.id} value={busType.id}>
-                                    {busType.description}
-                                </option>
-                            ))}
+                            {listBusType
+                                .filter((bus) => bus.active === true)
+                                .map((busType) => (
+                                    <option key={busType.id} value={busType.id}>
+                                        {busType.description}
+                                    </option>
+                                ))}
                         </CFormSelect>
                     </CInputGroup>
+                    <a href="#/system-manage/bus-types">
+                        <CIcon icon={cilPlus}></CIcon>
+                        <i> Thêm loại xe</i>
+                    </a>
                 </CCol>
                 <CCol md="5">
                     <CInputGroup className="mb-3 col-6">
@@ -1064,7 +1072,7 @@ const TripDetail = ({ trip }) => {
                         onClick={updateTripData}
                     ></CustomButton>
                 </CCol>
-                <CCol md="12">
+                <CCol md="12" style={{ marginTop: '12px' }}>
                     <b>
                         <i>Thông tin các trạm</i>
                     </b>
@@ -1133,7 +1141,7 @@ const TripDetail = ({ trip }) => {
                         </CAccordionItem>
                     </CAccordion>
                 </CCol>
-                <CCol md={12}>
+                <CCol md={12} style={{ marginTop: '12px' }}>
                     <b>
                         <i>Lộ trình di chuyển qua các trạm</i>
                     </b>

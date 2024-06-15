@@ -516,19 +516,23 @@ const AddForm = ({ handleComplete }) => {
         else return no_img
     }
     const handleAddBusType = () => {
+        console.log('start')
         //check every seat has name
         const check = seatMap.seats.every((seat) => seat.name !== '')
         //check no name is repeated
         const nameList = seatMap.seats.map((seat) => seat.name)
         const nameSet = new Set(nameList)
         if (nameSet.size !== nameList.length) {
-            addToast(() => ({
-                message: 'Tên ghế không được trùng nhau',
-                type: 'error',
-            }))
+            addToast(() =>
+                CustomToast({
+                    message: 'Tên ghế không được trống hoặc trùng nhau',
+                    type: 'error',
+                }),
+            )
             return
         }
         if (!file) {
+            console.log('start3')
             addToast(() =>
                 CustomToast({
                     message: 'Vui lòng chọn hình ảnh xe',
@@ -1114,6 +1118,11 @@ const BusTypeManagement = () => {
             <CCollapse visible={openAdd}>
                 <AddForm handleComplete={handleAddSuccess}></AddForm>
             </CCollapse>
+            {listBusType.length === 0 && (
+                <div className="d-flex justify-content-center">
+                    <i>Chưa có loại xe nào</i>
+                </div>
+            )}
             <CAccordion>
                 {listBusType.map((busType, index) => (
                     <CAccordionItem itemKey={index + 1} key={index}>

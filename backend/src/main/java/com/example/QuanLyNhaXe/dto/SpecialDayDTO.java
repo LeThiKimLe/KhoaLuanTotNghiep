@@ -14,5 +14,6 @@ public class SpecialDayDTO {
 	private Integer id;
 	private Date date;
 	private Integer fee;
+	BusCompanyDTO busCompany;
 
 }

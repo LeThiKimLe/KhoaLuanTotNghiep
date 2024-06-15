@@ -29,6 +29,8 @@ import format from 'date-fns/format'
 import { listVNSpecialDay } from './VNSpecialDay'
 import { CustomToast } from '../customToast/CustomToast'
 import CustomButton from '../customButton/CustomButton'
+import searchThunk from 'src/feature/search/search.service'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const InforBox = ({ visible, setVisible, date, record }) => {
     const [isUpdate, setIsUpdate] = useState(false)
     const [fee, setFee] = useState(record ? record.fee : 0)
@@ -37,7 +39,7 @@ const InforBox = ({ visible, setVisible, date, record }) => {
     const [toast, addToast] = useState(0)
     const [openAddForm, setOpenAddForm] = useState(false)
     const toaster = useRef('')
-    const handleAddFee = () => {
+    const handleAddFee = async () => {
         setLoading(true)
         if (openAddForm && !record) {
             dispatch(specialThunk.addSpecial({ date: date, fee: fee }))
@@ -215,7 +217,9 @@ const InforBox = ({ visible, setVisible, date, record }) => {
 const SpecialDayManagement = () => {
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
-    const listSpecial = useSelector(selectListSpecial)
+    const companyId = useSelector(selectCompanyId)
+    const listSpecialIn = useSelector(selectListSpecial)
+    const listSpecial = listSpecialIn.filter((item) => item.busCompany.id === companyId)
     const compensate = useRef(0)
     const [showInfor, setShowInfor] = useState(false)
     const [currentDate, setCurrentDate] = useState(new Date())
