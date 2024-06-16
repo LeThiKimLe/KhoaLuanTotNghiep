@@ -38,6 +38,23 @@ import { selectListBus, selectListBusType } from 'src/feature/bus/bus.slice'
 import { useDispatch, useSelector } from 'react-redux'
 import CustomButton from '../customButton/CustomButton'
 import no_img from '../../assets/images/no_img.png'
+import CIcon from '@coreui/icons-react'
+import {
+    cilDrink,
+    cilInputHdmi,
+    cilInputPower,
+    cilLayers,
+    cilLightbulb,
+    cilMobileLandscape,
+    cilPen,
+    cilRectangle,
+    cilSnowflake,
+    cilSquare,
+    cilTennis,
+    cilToilet,
+    cilTv,
+    cilWifiSignal1,
+} from '@coreui/icons'
 
 const Seat = ({ seat, empty, changeSeat, editable = true, size = 'sm' }) => {
     const [isHover, setIsHover] = useState(false)
@@ -451,6 +468,20 @@ const AddForm = ({ handleComplete }) => {
     const [seatMap, setSeatMap] = React.useState(null)
     const [loading, setLoading] = React.useState(false)
     const [file, setFile] = useState(undefined)
+    const [busUtils, setBusUtils] = useState({
+        wifi: false,
+        water: false,
+        coolTissue: false,
+        phoneCharge: false,
+        blanket: false,
+        pillow: false,
+        breakingHammer: false,
+        conditioner: false,
+        toilet: false,
+        readingLight: false,
+        curtain: false,
+        tiviLed: false,
+    })
     const handleChangeTypeInfo = (e) => {
         const { name, value } = e.target
         setTypeInfo({
@@ -583,6 +614,7 @@ const AddForm = ({ handleComplete }) => {
                                 fee: typeInfo.fee,
                                 description: typeInfo.name,
                                 file: typeInfo.file,
+                                ...busUtils,
                             },
                             seatMapId: result.id,
                         }),
@@ -741,6 +773,7 @@ const AddForm = ({ handleComplete }) => {
                                 </CCol>
                                 <CCol md={8}>
                                     <SeatMap seatMap={seatMap} changeSeatMap={updateSeat}></SeatMap>
+                                    <BusUtils utils={busUtils} setUtils={setBusUtils}></BusUtils>
                                 </CCol>
                             </CRow>
                             <CRow className="my-3 justify-content-center align-items-center">
@@ -763,6 +796,207 @@ const AddForm = ({ handleComplete }) => {
     )
 }
 
+const BusUtils = ({ utils, setUtils, edit = true }) => {
+    const handleChangeUtils = (e) => {
+        const { name, checked } = e.target
+        setUtils({
+            ...utils,
+            [name]: checked,
+        })
+    }
+    return (
+        <CCard className="mt-3">
+            <CCardHeader>
+                <b>Tiện ích xe</b>
+            </CCardHeader>
+            <CCardBody>
+                <CRow>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="wifi"
+                                name="wifi"
+                                checked={utils.wifi}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilWifiSignal1}></CIcon>
+                            <CFormLabel className="mb-0">Wifi</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="water"
+                                name="water"
+                                checked={utils.water}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilDrink}></CIcon>
+                            <CFormLabel className="mb-0">Nước uống</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="coolTissue"
+                                name="coolTissue"
+                                checked={utils.coolTissue}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilLayers}></CIcon>
+                            <CFormLabel className="mb-0">Khăn lạnh</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="phoneCharge"
+                                name="phoneCharge"
+                                checked={utils.phoneCharge}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilInputHdmi}></CIcon>
+                            <CFormLabel className="mb-0">Cổng sạc</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="blanket"
+                                name="blanket"
+                                checked={utils.blanket}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilSquare}></CIcon>
+                            <CFormLabel className="mb-0">Chăn đắp</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="pillow"
+                                name="pillow"
+                                checked={utils.pillow}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilRectangle}></CIcon>
+                            <CFormLabel className="mb-0">Gối nằm</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="breakingHammer"
+                                name="breakingHammer"
+                                checked={utils.breakingHammer}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilTennis}></CIcon>
+                            <CFormLabel className="mb-0">Búa phá kính</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="conditioner"
+                                name="conditioner"
+                                checked={utils.conditioner}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilSnowflake}></CIcon>
+                            <CFormLabel className="mb-0">Điều hòa</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="toilet"
+                                name="toilet"
+                                checked={utils.toilet}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilToilet}></CIcon>
+                            <CFormLabel className="mb-0">Toilet</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="readingLight"
+                                name="readingLight"
+                                checked={utils.readingLight}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilLightbulb}></CIcon>
+                            <CFormLabel className="mb-0">Đèn đọc sách</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="curtain"
+                                name="curtain"
+                                checked={utils.curtain}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilMobileLandscape}></CIcon>
+                            <CFormLabel className="mb-0">Rèm cửa</CFormLabel>
+                        </div>
+                    </CCol>
+                    <CCol md="4" className="mb-3">
+                        <div className="d-flex gap-1 align-items-center">
+                            <CFormCheck
+                                id="tiviLed"
+                                name="tiviLed"
+                                checked={utils.tiviLed}
+                                onChange={handleChangeUtils}
+                                style={{ margin: 0 }}
+                                aria-label="..."
+                                disabled={!edit}
+                            />
+                            <CIcon icon={cilTv}></CIcon>
+                            <CFormLabel className="mb-0">Tivi LED</CFormLabel>
+                        </div>
+                    </CCol>
+                </CRow>
+            </CCardBody>
+        </CCard>
+    )
+}
+
 const BusType = ({ busType }) => {
     const [busData, setBusData] = useState(busType)
     const [isEdit, setIsEdit] = useState(false)
@@ -773,6 +1007,20 @@ const BusType = ({ busType }) => {
     const [file, setFile] = useState(undefined)
     const listBus = useSelector(selectListBus)
     const [openConfirm, setOpenConfirm] = useState(false)
+    const [utils, setUtils] = useState({
+        wifi: busType.wifi,
+        water: busType.water,
+        coolTissue: busType.coolTissue,
+        phoneCharge: busType.phoneCharge,
+        blanket: busType.blanket,
+        pillow: busType.pillow,
+        breakingHammer: busType.breakingHammer,
+        conditioner: busType.conditioner,
+        toilet: busType.toilet,
+        readingLight: busType.readingLight,
+        curtain: busType.curtain,
+        tiviLed: busType.tiviLed,
+    })
     const handleChangeTypeInfo = (e) => {
         const { name, value } = e.target
         setBusData({
@@ -791,6 +1039,7 @@ const BusType = ({ busType }) => {
                     description: busData.description,
                     file: busData.file,
                     seatMapId: busData.seatMap.id,
+                    ...utils,
                 }
                 dispatch(busThunk.updateBusTypeData({ busTypeData }))
                     .unwrap()
@@ -832,6 +1081,20 @@ const BusType = ({ busType }) => {
             },
             img: busType.img,
             file: undefined,
+        })
+        setUtils({
+            wifi: busType.wifi,
+            water: busType.water,
+            coolTissue: busType.coolTissue,
+            phoneCharge: busType.phoneCharge,
+            blanket: busType.blanket,
+            pillow: busType.pillow,
+            breakingHammer: busType.breakingHammer,
+            conditioner: busType.conditioner,
+            toilet: busType.toilet,
+            readingLight: busType.readingLight,
+            curtain: busType.curtain,
+            tiviLed: busType.tiviLed,
         })
     }
     const handleUpImage = (e) => {
@@ -1040,43 +1303,42 @@ const BusType = ({ busType }) => {
                                     )}
                                 </CCol>
                             </CRow>
-                            <CRow className="justify-content-end">
-                                <CCol className="col-auto">
-                                    <CButton
-                                        onClick={triggerEdit}
-                                        color="success"
-                                        variant="outline"
-                                    >
-                                        {isEdit ? 'Lưu' : 'Sửa'}
-                                    </CButton>
-                                </CCol>
-                                {isEdit ? (
-                                    <CCol className="col-auto">
-                                        <CButton
-                                            onClick={() => {
-                                                setIsEdit(false)
-                                                updateBaseData()
-                                            }}
-                                            variant="outline"
-                                            color="danger"
-                                        >
-                                            Hủy
-                                        </CButton>
-                                    </CCol>
-                                ) : (
-                                    <CCol className="col-auto">
-                                        <CButton
-                                            color="warning"
-                                            variant="outline"
-                                            onClick={() => setOpenConfirm(true)}
-                                        >
-                                            {busType.active ? 'Dừng sử dụng' : 'Kích hoạt'}
-                                        </CButton>
-                                    </CCol>
-                                )}
-                            </CRow>
                         </CForm>
                     </CCol>
+                    <CCol md="12">
+                        <BusUtils utils={utils} setUtils={setUtils} edit={isEdit}></BusUtils>
+                    </CCol>
+                    <CRow className="justify-content-end mt-2">
+                        <CCol className="col-auto">
+                            <CButton onClick={triggerEdit} color="success" variant="outline">
+                                {isEdit ? 'Lưu' : 'Sửa'}
+                            </CButton>
+                        </CCol>
+                        {isEdit ? (
+                            <CCol className="col-auto">
+                                <CButton
+                                    onClick={() => {
+                                        setIsEdit(false)
+                                        updateBaseData()
+                                    }}
+                                    variant="outline"
+                                    color="danger"
+                                >
+                                    Hủy
+                                </CButton>
+                            </CCol>
+                        ) : (
+                            <CCol className="col-auto">
+                                <CButton
+                                    color="warning"
+                                    variant="outline"
+                                    onClick={() => setOpenConfirm(true)}
+                                >
+                                    {busType.active ? 'Dừng sử dụng' : 'Kích hoạt'}
+                                </CButton>
+                            </CCol>
+                        )}
+                    </CRow>
                 </CCol>
             </CRow>
             <CModal visible={openConfirm} onClose={() => setOpenConfirm(false)}>

@@ -23,4 +23,16 @@ public class BusTypeDTO {
 	private SeatMapDTO seatMap;
 	private Integer busCompanyId;
 	private boolean isActive;
+	private boolean isWifi;
+	private boolean isWater;
+	private boolean isCoolTissue;
+	private boolean isPhoneCharge;
+	private boolean isBlanket;
+	private boolean isPillow;
+	private boolean isBreakingHammer;
+	private boolean isConditioner;
+	private boolean isToilet;
+	private boolean isReadingLight;
+	private boolean isCurtain;
+	private boolean isTiviLed;
 }

@@ -197,7 +197,14 @@ public class BusService {
 		String image = imagesService.saveImage(createBusType.getImage());
 		BusType busType = BusType.builder().name(createBusType.getName()).seatMap(seatMap)
 				.capacity(createBusType.getCapacity()).fee(createBusType.getFee())
-				.description(createBusType.getDescription()).busCompany(busCompany).isActive(true).image(image).build();
+				.description(createBusType.getDescription()).busCompany(busCompany).isActive(true).image(image)
+				.wifi(createBusType.isWifi()).water(createBusType.isWater()).coolTissue(createBusType.isCoolTissue())
+				.phoneCharge(createBusType.isPhoneCharge()).blanket(createBusType.isBlanket())
+				.pillow(createBusType.isPillow()).breakingHammer(createBusType.isBreakingHammer())
+				.conditioner(createBusType.isConditioner()).toilet(createBusType.isToilet())
+				.readingLight(createBusType.isReadingLight()).curtain(createBusType.isCurtain())
+				.tiviLed(createBusType.isTiviLed())
+				.build();
 		try {
 			busTypeRepository.save(busType);
 		} catch (Exception e) {
@@ -219,6 +226,18 @@ public class BusService {
 		busType.setDescription(editBusType.getDescription());
 		busType.setFee(editBusType.getFee());
 		busType.setSeatMap(seatMap);
+		busType.setWifi(editBusType.isWifi());
+		busType.setWater(editBusType.isWater());
+		busType.setCoolTissue(editBusType.isCoolTissue());
+		busType.setPhoneCharge(editBusType.isPhoneCharge());
+		busType.setBlanket(editBusType.isBlanket());
+		busType.setPillow(editBusType.isPillow());
+		busType.setBreakingHammer(editBusType.isBreakingHammer());
+		busType.setConditioner(editBusType.isConditioner());
+		busType.setToilet(editBusType.isToilet());
+		busType.setReadingLight(editBusType.isReadingLight());
+		busType.setCurtain(editBusType.isCurtain());
+		busType.setTiviLed(editBusType.isTiviLed());
 		if (!image.equals(""))
 			busType.setImage(image);
 		try {
@@ -229,7 +248,6 @@ public class BusService {
 		}
 
 		return modelMapper.map(busType, BusTypeDTO.class);
-
 	}
 
 	public Object createSeatMap(CreateSeatMap createSeatMap) {

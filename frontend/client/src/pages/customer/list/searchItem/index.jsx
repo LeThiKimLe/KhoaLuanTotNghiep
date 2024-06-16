@@ -17,6 +17,7 @@ import companyImg from '../../../../assets/busCompany.jpg'
 import { Tabs, Tab, TabList, TabPanel } from 'react-tabs'
 import { ListStation } from './ListStation'
 import { ListReview } from './ListReview'
+import { ListUtils } from './ListUtils'
 
 const SearchItem = ({ trip, sameTrip }) => {
     const [choose, setChoose] = useState(false)
@@ -150,12 +151,16 @@ const SearchItem = ({ trip, sameTrip }) => {
                                 <TabList>
                                     <Tab>Điểm đón - trả</Tab>
                                     <Tab>Đánh giá</Tab>
+                                    <Tab>Tiện ích</Tab>
                                 </TabList>
                                 <TabPanel>
                                     <ListStation trip={trip}></ListStation>
                                 </TabPanel>
                                 <TabPanel>
                                     <ListReview trip={trip?.tripInfor}></ListReview>
+                                </TabPanel>
+                                <TabPanel>
+                                    <ListUtils trip={trip?.tripInfor}></ListUtils>
                                 </TabPanel>
                             </Tabs>
                         </div>
