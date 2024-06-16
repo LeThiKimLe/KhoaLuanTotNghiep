@@ -23,7 +23,8 @@ import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import { selectListCompany } from "../../../../feature/bus-company/busCompany.slice";
 import busCompanyThunk from "../../../../feature/bus-company/busCompany.service";
-
+import Recommend from "./Recommend";
+import './style.css'
 
 const OptionBox = ({ option, setOption, closeForm, setUserInfor, company, setCompany }) => {
     const [userOption, setUserOption] = useState(option ? option : 'chatbot')
@@ -209,15 +210,16 @@ const Chat = () => {
         direction: 'incoming',
         sender: 'Assistant',
     }])
+    const [showHelpBox, setShowHelpBox] = useState(false)
 
-    const handleSendChatbotMessage = async () => {
+    const handleSendChatbotMessage = async (displayQuestion = '', questionIn='') => {
         const newMessage = {
-            message: currentInput,
+            message: displayQuestion !='' ? displayQuestion : currentInput,
             direction: 'outgoing',
             sender: 'customer',
         }
         setlistMesssage(prevArray => [...prevArray, newMessage])
-        const question = "Trả lời chi tiết bằng tiếng việt câu hỏi sau: " + currentInput
+        const question = "Trả lời chi tiết bằng tiếng việt câu hỏi sau: " + questionIn != '' ? questionIn : currentInput
         setCurrentInput('')
         setTimeout(() => setLoading(true), 500)
         dispatch(chatThunk.sendChatbotQuery(question))
@@ -274,6 +276,10 @@ const Chat = () => {
         else if (option === 'company') return listCompany.find(cpn => cpn.busCompany.id === company)?.busCompany?.name
     }
 
+    const handleChatRecommend = (question, displayQuestion) => {
+        handleSendChatbotMessage(displayQuestion, question)
+    }
+ 
     useEffect(() => {
         setEnableChat(true)
         setlistMesssage([{
@@ -372,7 +378,13 @@ const Chat = () => {
                                     onSend={option === 'chatbot' ? handleSendChatbotMessage : handleSendMessageToStaff}
                                 />
                             </ChatContainer>
+                            {
+                                showHelpBox && (
+                                    <div className={mystyles['chat-cover']}></div>
+                                )
+                            }
                         </MainContainer>
+                        <Recommend show={showHelpBox} setShow={setShowHelpBox} handleSearch={handleChatRecommend}></Recommend>
                     </div>
                 )
             }

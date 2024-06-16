@@ -218,6 +218,19 @@ const updateScheduleState = createAsyncThunk(
     },
 )
 
+const deleteSchedule = createAsyncThunk('admin/schedules/delete', async (scheduleId, thunkAPI) => {
+    try {
+        const response = await axiosClient.delete(`admin/schedules?scheduleId=${scheduleId}`)
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const scheduleThunk = {
     getSchedules,
     handleSchedule,
@@ -230,6 +243,7 @@ const scheduleThunk = {
     distributeDriver,
     getFixSchedule,
     updateScheduleState,
+    deleteSchedule,
 }
 
 export default scheduleThunk

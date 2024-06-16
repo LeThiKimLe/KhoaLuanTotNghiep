@@ -53,6 +53,12 @@ public class Message {
     public static final String NOT_SAME_DRIVER = "Tài xế không được trùng nhau";
     public static final String ORDER_NOT_FOUND = "Không tìm thấy lệnh xuất bến";
     public static final String INVALID_STATE = "Trạng thái không hợp lệ";
+
     public static final String TICKETSAVE_NOT_FOUND= "Không tìm thấy doanh thu vé";
+
+    public static final String SCHEDULE_HAS_TICKET = "Chuyến đã có người đặt vé. Không thể xóa";
+    public static final String SCHEDULE_HAS_ASSIGN_BUS = "Chuyến đã được phân công xe bus. Vui lòng hủy phân công trước khi xóa";
+    public static final String SCHEDULE_HAS_ASSIGN_DRIVER = "Chuyến đã được phân công tài xế. Vui lòng hủy phân công trước khi xóa";
+    public static final String SCHEDULE_DUPLICATE = "Đã có chuyến trùng lịch, không thể thêm";
 
 }

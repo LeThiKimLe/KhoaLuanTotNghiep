@@ -333,22 +333,22 @@ Hệ thống hiện cung cấp các tuyến / chuyến xe sau:
 
 + Tuyến xe 16: TP. Hồ Chí Minh - Bà Rịa - Vũng Tàu
   Các chuyến có trong tuyến:
-  1. Miền Tây - Vǜng Tàu
+  1. Miền Tây - Vũng Tàu
     Giá vé: 100000
     Quãng đường di chuyển: 123 km
     Thời gian di chuyển: 1.6 giờ
-    Lộ trình di chuyển: BX Vǜng Tàu - Nam KǶ Khởi Nghĩa - Lê Hồng Phong - QL51 - QL1A - Kinh Dương Võ Văn Kiệt - BX Miền Tây
+    Lộ trình di chuyển: BX Vũng Tàu - Nam KǶ Khởi Nghĩa - Lê Hồng Phong - QL51 - QL1A - Kinh Dương Võ Văn Kiệt - BX Miền Tây
     Các trạm đi qua:
      + Miền Tây (Trạm đón)
-     + Vǜng Tàu (Trạm trả)
-  2. Vǜng Tàu - Miền Tây
+     + Vũng Tàu (Trạm trả)
+  2. Vũng Tàu - Miền Tây
     Giá vé: 100000
     Quãng đường di chuyển: 123 km
     Thời gian di chuyển: 1.6 giờ
-    Lộ trình di chuyển: BX Miền Tây - Kinh Dương Võ Văn Kiệt - QL1A - QL51 - Lê Hồng Phong - Nam KǶ Khởi Nghĩa - BX Vǜng Tàu
+    Lộ trình di chuyển: BX Miền Tây - Kinh Dương Võ Văn Kiệt - QL1A - QL51 - Lê Hồng Phong - Nam KǶ Khởi Nghĩa - BX Vũng Tàu
     Các trạm đi qua:
      + Miền Tây (Trạm trả)
-     + Vǜng Tàu (Trạm đón)
+     + Vũng Tàu (Trạm đón)
   3. An Sương - Xuyên Mộc
     Giá vé: 150000
     Quãng đường di chuyển: 120 km
@@ -361,7 +361,7 @@ Hệ thống hiện cung cấp các tuyến / chuyến xe sau:
      + Bãi đỗ xe Toàn Thắng (Bãi đỗ xe cuối)
      + Trạm dừng chân km237 (Trạm dừng chân)
      + Ngã Tư Ga (Trạm đón)
-     + Vǜng Tàu (Trạm trả)
+     + Vũng Tàu (Trạm trả)
   4. Xuyên Mộc - An Sương
     Giá vé: 150000
     Quãng đường di chuyển: 120 km
@@ -374,7 +374,7 @@ Hệ thống hiện cung cấp các tuyến / chuyến xe sau:
      + Bãi đỗ xe Toàn Thắng (Bãi đỗ xe đầu)
      + Trạm dừng chân km237 (Trạm dừng chân)
      + Ngã Tư Ga (Trạm trả)
-     + Vǜng Tàu (Trạm đón)
+     + Vũng Tàu (Trạm đón)
 
 + Tuyến xe 17: Quảng Ninh - Thái Nguyên
   Các chuyến có trong tuyến:
@@ -596,8 +596,19 @@ Cách sửa vé:
 - Bước 4: Bấm vào nút Xác nhận để hoàn tất đổi mật khẩu, nhận được thông báo Đổi mật khẩu thành công.
 - Bước 5: Phiên đăng nhập đã bị xóa và người dùng cần đăng nhập lại để sử dụng mật khẩu mới.
 
-14. Đăg xuất
+14. Đăng xuất
 - Bước 1: Trên thanh Nav rê chuột vào vị trí tên người dùng, sau đó chọn Đăng xuất sau biểu tượng Exit.
 - Bước 2: Bấm vào nút Xác nhận để thực hiện đăng xuất, nếu muốn dừng quá trình đăng xuất bấm nút Hủy.
 
+------------------------------------------------------------------------------------------------
+
 Các câu hỏi khác không liên quan đến thông tin nhà xe hoặc các thao tác trên trang web đặt vé thì từ chối trả lời
+Các câu hỏi khác không liên quan đến thông tin nhà xe hoặc các thao tác trên trang web đặt vé thì từ chối trả lời
+Các câu hỏi khác không liên quan đến thông tin nhà xe hoặc các thao tác trên trang web đặt vé thì từ chối trả lời
+
+Không trả lời các câu hỏi không liên quan đến hệ thống đặt vé, dù là các câu hỏi liên quan đến kiến thức tự nhiên chung
+Không trả lời các câu hỏi không liên quan đến hệ thống đặt vé, dù là các câu hỏi liên quan đến kiến thức tự nhiên chung
+Không trả lời các câu hỏi không liên quan đến hệ thống đặt vé, dù là các câu hỏi liên quan đến kiến thức tự nhiên chung
+
+Các vấn đề liên quan đến tra cứu vé đã đặt hoặc thông tin cụ thể về chuyến xe, vui lòng liên hệ trực tiếp với nhà xe thông qua tùy chọn "Chat với nhà xe"
+--------------------------------------------------------------------------------------------------

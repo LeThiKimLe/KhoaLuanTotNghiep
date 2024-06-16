@@ -16,10 +16,18 @@ import {
     CImage,
     CFormInput,
     CFormLabel,
+    CCardFooter,
+    CButton,
 } from '@coreui/react'
 import { useState } from 'react'
 import CustomButton from 'src/views/customButton/CustomButton'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
+import { ContentState, EditorState, convertToRaw, convertFromHTML } from 'draft-js'
+import { Editor } from 'react-draft-wysiwyg'
+import 'react-draft-wysiwyg/dist/react-draft-wysiwyg.css'
+import { convertToHTML } from 'draft-convert'
+import DOMPurify from 'dompurify'
+
 const CompanyInfor = () => {
     const dispatch = useDispatch()
     const listCompany = useSelector(selectListCompany)
@@ -28,11 +36,68 @@ const CompanyInfor = () => {
     const companyInfo = listCompany?.find(
         (company) => company.busCompany.id === user.user.staff.busCompanyId,
     )
+    const [editPolicy, setEditPolicy] = useState(false)
+    const [companyPolicy, setCompanyPolicy] = useState(
+        companyInfo?.busCompany.policy ? companyInfo?.busCompany.policy : '',
+    )
+    const blocksFromHTML = convertFromHTML(companyPolicy)
+    const state = ContentState.createFromBlockArray(
+        blocksFromHTML.contentBlocks,
+        blocksFromHTML.entityMap,
+    )
+    const [editorState, setEditorState] = useState(() => EditorState.createWithContent(state))
+    const createMarkup = (html) => {
+        return {
+            __html: DOMPurify.sanitize(html),
+        }
+    }
+    const handleSave = () => {
+        if (!editPolicy) {
+            setEditPolicy(true)
+        } else {
+            let html = convertToHTML(editorState.getCurrentContent())
+            dispatch(companyThunk.editCompanyPolicy(html))
+                .unwrap()
+                .then(() => {
+                    dispatch(companyThunk.getCompany())
+                    setEditPolicy(false)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        }
+    }
+    const reset = () => {
+        let blocksFromHTML = convertFromHTML(companyPolicy)
+        let state = ContentState.createFromBlockArray(
+            blocksFromHTML.contentBlocks,
+            blocksFromHTML.entityMap,
+        )
+        setEditorState(() => EditorState.createWithContent(state))
+        setEditPolicy(false)
+    }
+    useEffect(() => {
+        // let html = convertToHTML(editorState.getCurrentContent())
+        // setCompanyPolicy(createMarkup(html))
+    }, [editorState])
     useEffect(() => {
         if (listCompany.length === 0) {
             dispatch(companyThunk.getCompany())
         }
     }, [])
+    useEffect(() => {
+        setCompanyPolicy(companyInfo?.busCompany.policy ? companyInfo?.busCompany.policy : '')
+    }, [companyInfo])
+    useEffect(() => {
+        if (companyPolicy) {
+            let blocksFromHTML = convertFromHTML(companyPolicy)
+            let state = ContentState.createFromBlockArray(
+                blocksFromHTML.contentBlocks,
+                blocksFromHTML.entityMap,
+            )
+            setEditorState(() => EditorState.createWithContent(state))
+        }
+    }, [companyPolicy])
     return (
         <>
             {companyInfo && (
@@ -206,6 +271,47 @@ const CompanyInfor = () => {
                                         </CRow>
                                     </CForm>
                                 </CCardBody>
+                            </CCard>
+                        </CCol>
+                    </CRow>
+                    <CRow className="justify-content-center my-2">
+                        <CCol md={10}>
+                            <CCard>
+                                <CCardHeader>
+                                    <h4>Chính sách nhà xe</h4>
+                                </CCardHeader>
+                                <CCardBody className="bg-white">
+                                    {editPolicy ? (
+                                        <Editor
+                                            editorState={editorState}
+                                            onEditorStateChange={setEditorState}
+                                        />
+                                    ) : (
+                                        <div
+                                            className="preview"
+                                            dangerouslySetInnerHTML={
+                                                companyPolicy != '' && companyPolicy != '<p></p>'
+                                                    ? createMarkup(companyPolicy)
+                                                    : { __html: 'Không có thông tin chính sách' }
+                                            }
+                                        ></div>
+                                    )}
+                                </CCardBody>
+                                <CCardFooter>
+                                    <CButton variant="outline" onClick={handleSave} color="success">
+                                        {editPolicy ? 'Lưu' : 'Cập nhật chính sách'}
+                                    </CButton>
+                                    {editPolicy && (
+                                        <CButton
+                                            variant="outline"
+                                            onClick={reset}
+                                            className="mx-2"
+                                            color="danger"
+                                        >
+                                            Hủy
+                                        </CButton>
+                                    )}
+                                </CCardFooter>
                             </CCard>
                         </CCol>
                     </CRow>

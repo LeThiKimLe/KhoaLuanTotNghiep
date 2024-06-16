@@ -1,0 +1,44 @@
+* Đọc kết quả phân tích chuyến đi
+Câu hỏi 1: Tôi đang ở quận Tân Phú, tôi muốn về Cam Ranh thì nên chọn chuyến xe nào? Sử dụng kết quả phân tích như sau:
+    {
+        "Tuyến": "TP. Hồ Chí Minh - Khánh Hòa",
+        "Chuyến": "Miền Đông - Phía Nam Nha Trang",
+        "Giá vé": 300000,
+        "Khoảng cách": 450,
+        "Lộ trình di chuyển": "BX Miền Đông - QL13 - QL1A - BX Phía Nam Nha Trang",
+        "Thời gian di chuyển": 6,
+        "Nhà xe": "Xe Châu An",
+        "totalEvaluation": 1.9841134271729464,
+        "Trạm trả gần nhất": {
+            "stopStation": "Bến xe Cam Ranh",
+            "point": 0.9963241814912889
+        },
+        "Trạm đón gần nhất": {
+            "stopStation": "Miền Đông",
+            "point": 0.9877892456816575
+        },
+        "Đánh giá nhà xe": 3
+    }
+Trả lời: Thông qua thông tin bạn cung cấp, theo thông tin của hệ thống, chuyến đi tiện nhất để di chuyển là tuyến TP.Hồ Chí Minh đến Khánh Hòa, cụ thể là chuyến từ Bến xe Miền Tây đến Bến xe phía nam Nha Trang vì chuyến có trạm đón và trạm trả gần với địa điểm của bạn nhất. Trạm đón gần nhất là trạm bến xe Miền Tây, và trạm trả gần nhất là trạm Bến xe Phía Nam Nha Trang. Sau đây là một số thông tin khác về chuyến: Giá vé: 300000, Khoảng cách: 460km, Thời gian di chuyển là 8 giờ. Lộ trình: BX Miền Tây - Đường Kinh Dương Vương - Ngã Ba cây Dầu Đôi - QL1 - Đường 23/10 - BX Phía Nam Nha Trang
+--------------------------------------------------------------------------------------
+Câu hỏi: Tôi đang ở quận 9, chuyến xe nào đến Cam Ranh là tiện nhất? Dựa vào kết quả phân tích chuyến như sau:
+{
+        "Tuyến": "TP. Hồ Chí Minh - Khánh Hòa",
+        "Chuyến": "Miền Đông - Phía Nam Nha Trang",
+        "Giá vé": 300000,
+        "Khoảng cách": 450,
+        "Lộ trình di chuyển": "BX Miền Đông - QL13 - QL1A - BX Phía Nam Nha Trang",
+        "Thời gian di chuyển": 6,
+        "Nhà xe": "Xe Châu An",
+        "totalEvaluation": 1.9841134271729464,
+        "Trạm trả gần nhất": {
+            "stopStation": "Bến xe Cam Ranh",
+            "point": 0.9963241814912889
+        },
+        "Trạm đón gần nhất": {
+            "stopStation": "Miền Đông",
+            "point": 0.9877892456816575
+        },
+        "Đánh giá nhà xe": 3
+  }
+Trả lời: Thông qua thông tin bạn cung cấp, theo thông tin của hệ thống, chuyến đi tiện nhất để di chuyển là tuyến TP.Hồ Chí Minh đến Khánh Hòa, cụ thể là chuyến từ Bến xe Miền Đông đến Bến xe phía nam Nha Trang vì chuyến có trạm đón và trạm trả gần với địa điểm của bạn nhất. Trạm đón gần nhất là trạm bến xe Miền Đông, và trạm trả gần nhất là trạm Bến xe Phía Nam Nha Trang. Sau đây là một số thông tin khác về chuyến: Giá vé: 300000, Khoảng cách: 450km, Thời gian di chuyển là 6 giờ. Lộ trình: BX Phía Nam Nha Trang - QL1A - QL13 - BX Miền Đông

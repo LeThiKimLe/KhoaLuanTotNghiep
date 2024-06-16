@@ -19,6 +19,7 @@ import {
     CTableHead,
     CTableHeaderCell,
     CTableRow,
+    CTooltip,
     CWidgetStatsB,
 } from '@coreui/react'
 import { CChartLine, CChart } from '@coreui/react-chartjs'
@@ -49,6 +50,7 @@ import {
     cilGarage,
     cilMobileLandscape,
     cilCursor,
+    cilStar,
 } from '@coreui/icons'
 
 import StatisticsWidget from './StatisticsWidget'
@@ -61,8 +63,13 @@ import statisticsThunk from 'src/feature/statistics/statistics.service'
 import { parse, format } from 'date-fns'
 import routeThunk from 'src/feature/route/route.service'
 import { selectListRoute } from 'src/feature/route/route.slice'
-import { getTripJourney } from 'src/utils/tripUtils'
+import { getRouteJourney, getTripJourney } from 'src/utils/tripUtils'
 import { COLOR } from 'src/utils/constants'
+import companyThunk from 'src/feature/bus-company/busCompany.service'
+import { selectListAssign, selectListCompany } from 'src/feature/bus-company/busCompany.slice'
+import userMale from 'src/assets/images/avatars/male.svg'
+import userFemale from 'src/assets/images/avatars/female.svg'
+import { convertToDisplayDate } from 'src/utils/convertUtils'
 
 const Dashboard = () => {
     const dispatch = useDispatch()
@@ -75,6 +82,11 @@ const Dashboard = () => {
     const [monthRange, setMonthRange] = useState({
         start: today.getFullYear() == 2023 ? 8 : 0,
         end: today.getMonth(),
+    })
+    const [chartData, setChartData] = useState({
+        labels: [],
+        backGroundColor: [],
+        data: [],
     })
     const [chartOption, setChartOption] = useState('revenue')
 
@@ -105,7 +117,8 @@ const Dashboard = () => {
     const sortSum = useRef(0)
     const listRoute = useSelector(selectListRoute)
     const listTrip = listRoute.map((route) => route.trips)
-
+    const listCompany = useSelector(selectListCompany)
+    const listAssign = useSelector(selectListAssign)
     //Chart 1 Process
     const handleYearChoose = (e) => {
         setYearValue(e)
@@ -254,6 +267,44 @@ const Dashboard = () => {
     const getSortResultTotal = () => {
         return sortResult.reduce((sum, item) => sum + item.tickets, 0)
     }
+    const getRandomColor = () => {
+        return COLOR[Math.floor(Math.random() * (COLOR.length - 1))]
+    }
+    const randomColor = () => {
+        return `#${Math.floor(Math.random() * 16777215).toString(16)}`
+    }
+    const getLabelandColor = () => {
+        const labels = []
+        const data = []
+        const backGroundColor = []
+        listRoute.forEach((route) => {
+            labels.push(`${getRouteJourney(route)}`)
+            //get random number
+            data.push(Math.floor(Math.random() * 100) + 1)
+            backGroundColor.push(randomColor())
+        })
+        //sort list base on data desc
+        for (let i = 0; i < data.length; i++) {
+            for (let j = i + 1; j < data.length; j++) {
+                if (data[i] < data[j]) {
+                    let temp = data[i]
+                    data[i] = data[j]
+                    data[j] = temp
+                    temp = labels[i]
+                    labels[i] = labels[j]
+                    labels[j] = temp
+                    temp = backGroundColor[i]
+                    backGroundColor[i] = backGroundColor[j]
+                    backGroundColor[j] = temp
+                }
+            }
+        }
+        setChartData({
+            labels: labels.slice(0, 5),
+            data: data.slice(0, 5),
+            backGroundColor: backGroundColor.slice(0, 5),
+        })
+    }
 
     useEffect(() => {
         dispatch(statisticsThunk.getTodayStatistics())
@@ -280,7 +331,9 @@ const Dashboard = () => {
         if (listRoute.length === 0) {
             dispatch(routeThunk.getRoute())
                 .unwrap()
-                .then(() => {})
+                .then(() => {
+                    getLabelandColor()
+                })
                 .catch(() => {})
         }
     }, [])
@@ -302,54 +355,72 @@ const Dashboard = () => {
     useEffect(() => {
         handleMonthChoose3(monthRange3.end)
     }, [yearValue3])
+    useEffect(() => {
+        dispatch(companyThunk.getCompany())
+            .unwrap()
+            .then(() => {})
+            .catch(() => {})
+        dispatch(companyThunk.getAssignedRouteForCompany())
+            .unwrap()
+            .then(() => {})
+            .catch(() => {})
+        dispatch(routeThunk.getRoute())
+            .unwrap()
+            .then(() => {})
+            .catch(() => {})
+    }, [])
+    useEffect(() => {
+        getLabelandColor()
+    }, [listRoute])
     return (
         <>
             <StatisticsWidget />
             <CCard className="mb-4">
                 <CCardBody>
-                    <CRow>
-                        <CCol sm={5}>
-                            <h4 id="traffic" className="card-title mb-0">
-                                Số vé bán ra
-                            </h4>
-                            {(timeOption === 'month' || timeOption === 'day') && (
-                                <CFormSelect
-                                    value={yearValue}
-                                    className="mt-3 mb-3"
-                                    onChange={(e) => handleYearChoose(parseInt(e.target.value))}
-                                >
-                                    {getYearRange().map((year) => (
-                                        <option value={year} key={year}>
-                                            {year}
+                    <CRow className="mb-3">
+                        <h4 id="traffic" className="card-title mb-0">
+                            Số vé bán ra
+                        </h4>
+                        <CCol sm={6}>
+                            <div className="d-flex gap-1 align-items-center my-2">
+                                {(timeOption === 'month' || timeOption === 'day') && (
+                                    <CFormSelect
+                                        value={yearValue}
+                                        onChange={(e) => handleYearChoose(parseInt(e.target.value))}
+                                    >
+                                        {getYearRange().map((year) => (
+                                            <option value={year} key={year}>
+                                                {year}
+                                            </option>
+                                        ))}
+                                    </CFormSelect>
+                                )}
+                                {timeOption === 'day' && (
+                                    <CFormSelect
+                                        value={monthValue}
+                                        onChange={(e) =>
+                                            handleMonthChoose(parseInt(e.target.value))
+                                        }
+                                    >
+                                        <option value="-1" disabled>
+                                            Chọn tháng
                                         </option>
-                                    ))}
-                                </CFormSelect>
-                            )}
-                            {timeOption === 'day' && (
-                                <CFormSelect
-                                    value={monthValue}
-                                    className="mt-1 mb-3 col-sm-3"
-                                    onChange={(e) => handleMonthChoose(parseInt(e.target.value))}
-                                >
-                                    <option value="-1" disabled>
-                                        Chọn tháng
-                                    </option>
-                                    {MONTH_IN_YEAR.slice(
-                                        monthRange2.start,
-                                        monthRange2.end + 1,
-                                    ).map((month, index) => (
-                                        <option value={monthRange2.start + index} key={index}>
-                                            {month}
-                                        </option>
-                                    ))}
-                                </CFormSelect>
-                            )}
-
+                                        {MONTH_IN_YEAR.slice(
+                                            monthRange2.start,
+                                            monthRange2.end + 1,
+                                        ).map((month, index) => (
+                                            <option value={monthRange2.start + index} key={index}>
+                                                {month}
+                                            </option>
+                                        ))}
+                                    </CFormSelect>
+                                )}
+                            </div>
                             <div className="small text-medium-emphasis">{`${
                                 MONTH_IN_YEAR[monthRange.start]
                             } - ${MONTH_IN_YEAR[monthRange.end]} ${yearValue}`}</div>
                         </CCol>
-                        <CCol sm={7} className="d-none d-md-block">
+                        <CCol sm={6} className="d-none d-md-block">
                             {/* <CButton color="primary" className="float-end">
                                 <CIcon icon={cilCloudDownload} />
                             </CButton> */}
@@ -381,139 +452,186 @@ const Dashboard = () => {
                             </CButtonGroup>
                         </CCol>
                     </CRow>
-                    {timeOption === 'month' && (
-                        <CChartLine
-                            style={{ height: '300px', marginTop: '40px' }}
-                            data={{
-                                labels: MONTH_IN_YEAR.slice(monthRange.start, monthRange.end + 1),
-                                datasets: [
-                                    {
-                                        label: chartOption === 'ticket' ? 'Số vé' : 'Doanh thu',
-                                        backgroundColor: hexToRgba(getStyle('--cui-info'), 10),
-                                        borderColor:
-                                            chartOption === 'ticket'
-                                                ? getStyle('--cui-info')
-                                                : getStyle('--cui-success'),
-                                        pointHoverBackgroundColor: getStyle('--cui-info'),
-                                        pointBackgroundColor: 'red',
-                                        pointBorderColor: '#fff',
-                                        borderWidth: 2,
-                                        data: monthStatistic
-                                            .slice(monthRange.start, monthRange.end + 1)
-                                            .map((data) =>
-                                                chartOption === 'ticket'
-                                                    ? data.tickets
-                                                    : data.revenue,
-                                            ),
-                                        fill: true,
-                                    },
-                                ],
-                            }}
-                            options={{
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        display: true,
-                                    },
-                                },
-                                scales: {
-                                    x: {
-                                        grid: {
-                                            drawOnChartArea: false,
+                    <CRow className="align-items-center">
+                        <CCol md="4">
+                            <CChart
+                                type="doughnut"
+                                data={{
+                                    labels: chartData.labels,
+                                    datasets: [
+                                        {
+                                            backgroundColor: chartData.backGroundColor,
+                                            data: chartData.data,
+                                        },
+                                    ],
+                                }}
+                                options={{
+                                    plugins: {
+                                        legend: {
+                                            labels: {
+                                                color: getStyle('--cui-body-color'),
+                                                textAlign: 'left',
+                                                usePointStyle: true,
+                                            },
                                         },
                                     },
-                                    y: {
-                                        ticks: {
-                                            beginAtZero: true,
-                                            maxTicksLimit: 5,
-                                            stepSize: Math.ceil(250 / 5),
-                                            max: 250,
+                                }}
+                            />
+                        </CCol>
+                        <CCol md="8">
+                            {timeOption === 'month' && (
+                                <CChartLine
+                                    style={{ height: '300px', marginTop: '40px' }}
+                                    data={{
+                                        labels: MONTH_IN_YEAR.slice(
+                                            monthRange.start,
+                                            monthRange.end + 1,
+                                        ),
+                                        datasets: [
+                                            {
+                                                label:
+                                                    chartOption === 'ticket'
+                                                        ? 'Số vé'
+                                                        : 'Doanh thu',
+                                                backgroundColor: hexToRgba(
+                                                    getStyle('--cui-info'),
+                                                    10,
+                                                ),
+                                                borderColor:
+                                                    chartOption === 'ticket'
+                                                        ? getStyle('--cui-info')
+                                                        : getStyle('--cui-success'),
+                                                pointHoverBackgroundColor: getStyle('--cui-info'),
+                                                pointBackgroundColor: 'red',
+                                                pointBorderColor: '#fff',
+                                                borderWidth: 2,
+                                                data: monthStatistic
+                                                    .slice(monthRange.start, monthRange.end + 1)
+                                                    .map((data) =>
+                                                        chartOption === 'ticket'
+                                                            ? data.tickets
+                                                            : data.revenue,
+                                                    ),
+                                                fill: true,
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: true,
+                                            },
                                         },
-                                    },
-                                },
-                                elements: {
-                                    line: {
-                                        tension: 0.4,
-                                    },
-                                    point: {
-                                        radius: 0,
-                                        hitRadius: 10,
-                                        hoverRadius: 4,
-                                        hoverBorderWidth: 3,
-                                    },
-                                },
-                            }}
-                        />
-                    )}
-                    {timeOption === 'day' && (
-                        <CChart
-                            type="bar"
-                            style={{ height: '300px', marginTop: '40px' }}
-                            data={{
-                                labels: currentMonthStatic
-                                    .slice(dayRange.start - 1, dayRange.end)
-                                    .map((data) =>
-                                        format(parse(data.date, 'yyyy-MM-dd', new Date()), 'dd/MM'),
-                                    ),
-                                datasets: [
-                                    {
-                                        label: chartOption2 === 'ticket' ? 'Số vé' : 'Doanh thu',
-                                        backgroundColor: hexToRgba(getStyle('--cui-info'), 10),
-                                        borderColor:
-                                            chartOption2 === 'ticket'
-                                                ? getStyle('--cui-info')
-                                                : getStyle('--cui-success'),
-                                        pointHoverBackgroundColor: getStyle('--cui-info'),
-                                        pointBackgroundColor: 'red',
-                                        pointBorderColor: '#fff',
-                                        borderWidth: 2,
-                                        data: currentMonthStatic
+                                        scales: {
+                                            x: {
+                                                grid: {
+                                                    drawOnChartArea: false,
+                                                },
+                                            },
+                                            y: {
+                                                ticks: {
+                                                    beginAtZero: true,
+                                                    maxTicksLimit: 5,
+                                                    stepSize: Math.ceil(250 / 5),
+                                                    max: 250,
+                                                },
+                                            },
+                                        },
+                                        elements: {
+                                            line: {
+                                                tension: 0.4,
+                                            },
+                                            point: {
+                                                radius: 0,
+                                                hitRadius: 10,
+                                                hoverRadius: 4,
+                                                hoverBorderWidth: 3,
+                                            },
+                                        },
+                                    }}
+                                />
+                            )}
+                            {timeOption === 'day' && (
+                                <CChart
+                                    type="bar"
+                                    style={{ height: '300px', marginTop: '40px' }}
+                                    data={{
+                                        labels: currentMonthStatic
                                             .slice(dayRange.start - 1, dayRange.end)
                                             .map((data) =>
-                                                chartOption2 === 'ticket'
-                                                    ? data.tickets
-                                                    : data.revenue,
+                                                format(
+                                                    parse(data.date, 'yyyy-MM-dd', new Date()),
+                                                    'dd/MM',
+                                                ),
                                             ),
-                                        fill: true,
-                                    },
-                                ],
-                            }}
-                            options={{
-                                maintainAspectRatio: false,
-                                plugins: {
-                                    legend: {
-                                        display: true,
-                                    },
-                                },
-                                scales: {
-                                    x: {
-                                        grid: {
-                                            drawOnChartArea: false,
+                                        datasets: [
+                                            {
+                                                label:
+                                                    chartOption2 === 'ticket'
+                                                        ? 'Số vé'
+                                                        : 'Doanh thu',
+                                                backgroundColor: hexToRgba(
+                                                    getStyle('--cui-info'),
+                                                    10,
+                                                ),
+                                                borderColor:
+                                                    chartOption2 === 'ticket'
+                                                        ? getStyle('--cui-info')
+                                                        : getStyle('--cui-success'),
+                                                pointHoverBackgroundColor: getStyle('--cui-info'),
+                                                pointBackgroundColor: 'red',
+                                                pointBorderColor: '#fff',
+                                                borderWidth: 2,
+                                                data: currentMonthStatic
+                                                    .slice(dayRange.start - 1, dayRange.end)
+                                                    .map((data) =>
+                                                        chartOption2 === 'ticket'
+                                                            ? data.tickets
+                                                            : data.revenue,
+                                                    ),
+                                                fill: true,
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        maintainAspectRatio: false,
+                                        plugins: {
+                                            legend: {
+                                                display: true,
+                                            },
                                         },
-                                    },
-                                    y: {
-                                        ticks: {
-                                            beginAtZero: true,
-                                            maxTicksLimit: 5,
-                                            stepSize: Math.ceil(250 / 5),
-                                            max: 250,
+                                        scales: {
+                                            x: {
+                                                grid: {
+                                                    drawOnChartArea: false,
+                                                },
+                                            },
+                                            y: {
+                                                ticks: {
+                                                    beginAtZero: true,
+                                                    maxTicksLimit: 5,
+                                                    stepSize: Math.ceil(250 / 5),
+                                                    max: 250,
+                                                },
+                                            },
                                         },
-                                    },
-                                },
-                                elements: {
-                                    line: {
-                                        tension: 0.4,
-                                    },
-                                    point: {
-                                        radius: 0,
-                                        hitRadius: 10,
-                                        hoverRadius: 4,
-                                        hoverBorderWidth: 3,
-                                    },
-                                },
-                            }}
-                        />
-                    )}
+                                        elements: {
+                                            line: {
+                                                tension: 0.4,
+                                            },
+                                            point: {
+                                                radius: 0,
+                                                hitRadius: 10,
+                                                hoverRadius: 4,
+                                                hoverBorderWidth: 3,
+                                            },
+                                        },
+                                    }}
+                                />
+                            )}
+                        </CCol>
+                    </CRow>
                 </CCardBody>
             </CCard>
             {/* <CCard className="mb-4">
@@ -723,89 +841,163 @@ const Dashboard = () => {
                 </CCardBody>
             </CCard> */}
             <CCard>
-                <CCardHeader>Tổng thống kê</CCardHeader>
+                <CCardHeader>
+                    <b>Tổng thống kê</b>
+                </CCardHeader>
                 <CCardBody>
                     <CRow>
                         <CCol
-                            sm={4}
+                            sm={3}
                             className="d-flex justify-content-start gap-3 align-items-center border-start border-start-4 border-start-info px-3 mb-3"
                         >
                             <CIcon icon={cilMap} size="3xl"></CIcon>
                             <div>
-                                <b style={{ fontSize: '18px', fontWeight: '600' }}>
+                                <b style={{ fontSize: '16px', fontWeight: '600' }}>
                                     Tổng số tuyến xe
                                 </b>
                                 <br></br>
-                                <b style={{ fontSize: '25px' }}>328972</b>
+                                <b style={{ fontSize: '20px' }}>{listRoute.length}</b>
                             </div>
                         </CCol>
                         <CCol
-                            sm={4}
+                            sm={3}
                             className="d-flex justify-content-start gap-3 align-items-center border-start border-start-4 border-start-danger px-3 mb-3"
                         >
                             <CIcon icon={cilGarage} size="3xl"></CIcon>
                             <div>
-                                <b style={{ fontSize: '18px', fontWeight: '600' }}>
+                                <b style={{ fontSize: '16px', fontWeight: '600' }}>
                                     Số nhà xe cộng tác
                                 </b>
                                 <br></br>
-                                <b style={{ fontSize: '25px' }}>322</b>
+                                <b style={{ fontSize: '20px' }}>{listCompany.length}</b>
                             </div>
                         </CCol>
                         <CCol
-                            sm={4}
+                            sm={3}
                             className="d-flex justify-content-start gap-3 align-items-center border-start border-start-4 border-start-success px-3 mb-3"
                         >
                             <CIcon icon={cilMobileLandscape} size="3xl"></CIcon>
                             <div>
-                                <b style={{ fontSize: '18px', fontWeight: '600' }}>Số vé đã bán</b>
+                                <b style={{ fontSize: '16px', fontWeight: '600' }}>Số vé đã bán</b>
                                 <br></br>
-                                <b style={{ fontSize: '25px' }}>3289534572</b>
+                                <b style={{ fontSize: '20px' }}>3289534572</b>
+                            </div>
+                        </CCol>
+                        <CCol
+                            sm={3}
+                            className="d-flex justify-content-start gap-3 align-items-center border-start border-start-4 border-start-warning px-3 mb-3"
+                        >
+                            <CIcon icon={cilUser} size="3xl"></CIcon>
+                            <div>
+                                <b style={{ fontSize: '16px', fontWeight: '600' }}>Số khách hàng</b>
+                                <br></br>
+                                <b style={{ fontSize: '20px' }}>12345</b>
                             </div>
                         </CCol>
                     </CRow>
                 </CCardBody>
-                <CRow className="mx-0">
-                    <CCol sm={6} className="d-flex gap-2 align-items-center mb-3">
-                        <div className="col-4">
-                            <CIcon icon={cilCursor} color="dark"></CIcon>
-                            <b>Hồ Chí Minh - Vũng Tàu</b>
-                        </div>
-                        <div className="col-8">
-                            <div className="d-flex w-100 justify-content-between">
-                                <b>2 nhà xe</b>
-                                <b> 50k đã bán</b>
+                <CRow className="mx-0 justify-content-center gap-4">
+                    {listRoute.map((route, index) => (
+                        <CCol sm={5} className="d-flex gap-1 align-items-center mb-2" key={index}>
+                            <div className="col-4">
+                                <CIcon icon={cilCursor} color="dark"></CIcon>
+                                <strong>
+                                    <i>{getRouteJourney(route)}</i>
+                                </strong>
                             </div>
-                            <CProgress color="warning" value={50} thin></CProgress>
-                        </div>
-                    </CCol>
-                    <CCol sm={6} className="d-flex gap-2 align-items-center mb-3">
-                        <div className="col-4">
-                            <CIcon icon={cilCursor} color="dark"></CIcon>
-                            <b>Hồ Chí Minh - Vũng Tàu</b>
-                        </div>
-                        <div className="col-8">
-                            <div className="d-flex w-100 justify-content-between">
-                                <b>2 nhà xe</b>
-                                <b> 50k đã bán</b>
+                            <div className="col-8">
+                                <div className="d-flex w-100 justify-content-between">
+                                    <small>
+                                        {`${
+                                            listAssign.filter((item) => item.routeId === route.id)
+                                                .length
+                                        } nhà xe`}
+                                    </small>
+                                    <small> 50k đã bán</small>
+                                </div>
+                                <CProgress color={getRandomColor()} value={50} thin></CProgress>
                             </div>
-                            <CProgress color="warning" value={50} thin></CProgress>
-                        </div>
-                    </CCol>
-                    <CCol sm={6} className="d-flex gap-2 align-items-center mb-3">
-                        <div className="col-4">
-                            <CIcon icon={cilCursor} color="danger"></CIcon>
-                            <b>Hồ Chí Minh - Vũng Tàu</b>
-                        </div>
-                        <div className="col-8">
-                            <div className="d-flex w-100 justify-content-between">
-                                <b>2 nhà xe</b>
-                                <b> 50k đã bán</b>
-                            </div>
-                            <CProgress color="warning" value={50} thin></CProgress>
-                        </div>
-                    </CCol>
+                        </CCol>
+                    ))}
+                    {listRoute.length % 2 === 1 && (
+                        <CCol sm={5} className="d-flex gap-1 align-items-center mb-4"></CCol>
+                    )}
                 </CRow>
+                <CTable align="middle" className="mt-3 mb-0 border" hover responsive>
+                    <CTableHead className="text-nowrap">
+                        <CTableRow>
+                            <CTableHeaderCell className="bg-body-tertiary text-center">
+                                Admin
+                            </CTableHeaderCell>
+                            <CTableHeaderCell className="bg-body-tertiary">Nhà xe</CTableHeaderCell>
+                            <CTableHeaderCell className="bg-body-tertiary">
+                                Địa chỉ
+                            </CTableHeaderCell>
+                            <CTableHeaderCell className="bg-body-tertiary">Đã bán</CTableHeaderCell>
+                            <CTableHeaderCell className="bg-body-tertiary text-center">
+                                Đánh giá
+                            </CTableHeaderCell>
+                        </CTableRow>
+                    </CTableHead>
+                    <CTableBody>
+                        {listCompany.map((company, index) => (
+                            <CTableRow v-for="item in tableItems" key={index}>
+                                <CTableDataCell className="text-center">
+                                    <CTooltip
+                                        content={`${company.admin.name} - SĐT: ${company.admin.tel}`}
+                                    >
+                                        <CAvatar
+                                            size="md"
+                                            src={index % 2 == 0 ? userFemale : userMale}
+                                        />
+                                    </CTooltip>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <div>{company.busCompany.name}</div>
+                                    <div className="small text-body-secondary text-nowrap">
+                                        <span>
+                                            {new Date().getMonth() -
+                                                new Date(company.busCompany.coopDay).getMonth() <
+                                            2
+                                                ? 'Đối tác mới'
+                                                : 'Đối tác tin cậy'}
+                                        </span>{' '}
+                                        | Ký kết: {convertToDisplayDate(company.busCompany.coopDay)}
+                                    </div>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <small>{company.admin.staff.address}</small>
+                                </CTableDataCell>
+                                <CTableDataCell>
+                                    <div className="d-flex justify-content-between text-nowrap">
+                                        <div className="fw-semibold">{50}%</div>
+                                        <div className="ms-3">
+                                            <small className="text-body-secondary">
+                                                {`${
+                                                    listAssign.filter(
+                                                        (item) =>
+                                                            item.busCompanyId ===
+                                                            company.busCompany.id,
+                                                    ).length
+                                                } tuyến xe`}
+                                            </small>
+                                        </div>
+                                    </div>
+                                    <CProgress thin color={getRandomColor()} value={50} />
+                                </CTableDataCell>
+                                <CTableDataCell className="text-center">
+                                    <div className="small text-body-secondary text-nowrap">
+                                        123 đánh giá
+                                    </div>
+                                    <div className="fw-semibold text-nowrap">
+                                        {' 3/5 '}
+                                        <CIcon icon={cilStar} style={{ color: '#c4c41f' }}></CIcon>
+                                    </div>
+                                </CTableDataCell>
+                            </CTableRow>
+                        ))}
+                    </CTableBody>
+                </CTable>
             </CCard>
         </>
     )

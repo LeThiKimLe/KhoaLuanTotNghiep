@@ -10,8 +10,10 @@ import com.example.QuanLyNhaXe.Request.EditSpecialDay;
 import com.example.QuanLyNhaXe.dto.SpecialDayDTO;
 import com.example.QuanLyNhaXe.exception.ConflictException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.SpecialDay;
+import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.ScheduleRepository;
 import com.example.QuanLyNhaXe.repository.SpecialDayRepository;
 import com.example.QuanLyNhaXe.util.Message;
@@ -24,7 +26,7 @@ public class SpecialDayService {
 	private final SpecialDayRepository specialDayRepository;
 	private final ModelMapper modelMapper;
 	private final ScheduleRepository scheduleRepository;
-	
+	private final UserService userService;
 	
 	public Object getAllSpecialDay() {
 		List<SpecialDay> specialDays=specialDayRepository.findAll();
@@ -35,12 +37,14 @@ public class SpecialDayService {
         		.map(specialDay -> modelMapper.map(specialDay, SpecialDayDTO.class))
         		.toList();	
 	}
-	 public Object createSpecialDay(CreateSpecialDay createSpecialDay) {
+	 public Object createSpecialDay(CreateSpecialDay createSpecialDay, String token) {
+		User adminUser = userService.getUserByAuthorizationHeader(token);
+		BusCompany busCompany = adminUser.getStaff().getBusCompany();
 		
 		 if(specialDayRepository.existsByDate(createSpecialDay.getDate())) {
 			 throw new ConflictException(Message.SPECIALDAY_EXISTS);
 		 }
-		 SpecialDay specialDay=SpecialDay.builder().date(createSpecialDay.getDate()).fee(createSpecialDay.getFee()).build();
+		 SpecialDay specialDay=SpecialDay.builder().date(createSpecialDay.getDate()).fee(createSpecialDay.getFee()).busCompany(busCompany).build();
 		 specialDayRepository.save(specialDay);
 		 return modelMapper.map(specialDay, SpecialDayDTO.class);
 	 }

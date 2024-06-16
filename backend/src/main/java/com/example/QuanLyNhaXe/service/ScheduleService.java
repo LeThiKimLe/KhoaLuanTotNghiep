@@ -32,6 +32,7 @@ import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.SpecialDay;
 import com.example.QuanLyNhaXe.model.StopStation;
+import com.example.QuanLyNhaXe.model.TransportationOrder;
 import com.example.QuanLyNhaXe.model.Trip;
 import com.example.QuanLyNhaXe.repository.BusRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
@@ -135,6 +136,11 @@ public class ScheduleService {
 				price += specialDay.getFee();
 			}
 			for (Time scheduleTime : createSchedules.getTimes()) {
+				Schedule exist = scheduleRepository.findByDepartDateAndDepartTimeAndTripId(scheduleDate, scheduleTime, trip.getId())
+						.orElse(null);
+				if (exist != null) {
+					throw new BadRequestException(Message.SCHEDULE_DUPLICATE);
+				}
 				Schedule schedule = Schedule.builder().availability(avaiability).trip(trip).departTime(scheduleTime)
 						.departDate(scheduleDate).specialDay(specialDay).ticketPrice(price).state(null)
 						.updateTime(utilityService.convertHCMDateTime()).note(note).currentStation(0).build();
@@ -313,6 +319,21 @@ public class ScheduleService {
 		}).map(schedule -> customModelMapper.map(schedule, SchedulesTripDTO.class)).toList();
 
 		
+	}
+
+	public Object deleteSchedule(Integer id) {
+		Schedule schedule = scheduleRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException(Message.ORDER_NOT_FOUND));
+		if (schedule.getTickets().size() > 0)
+			throw new BadRequestException(Message.SCHEDULE_HAS_TICKET);
+		else if (schedule.getBus() != null)
+			throw new BadRequestException(Message.SCHEDULE_HAS_ASSIGN_BUS);
+		else if (schedule.getDriver() != null)
+			throw new BadRequestException(Message.SCHEDULE_HAS_ASSIGN_DRIVER);
+		else{
+			scheduleRepository.delete(schedule);
+			return new ResponseMessage(Message.SUCCESS);
+		}
 	}
 
 }

@@ -36,15 +36,10 @@ public class AdminTripController {
 		return new ResponseEntity<>(tripService.tripAssignment(tripAssignment), HttpStatus.OK);
 	}
 	
-	
 	@PutMapping()
 	public ResponseEntity<Object> editTrip(@RequestBody EditTrip editTrip) {
 		return new ResponseEntity<>(tripService.editTrip(editTrip), HttpStatus.OK);
 	}
-	
-	
-
-	
 	
 	@GetMapping("/statistic")
 	public ResponseEntity<Object> statistic(@Parameter Integer year,@Parameter Integer month) {
@@ -56,20 +51,9 @@ public class AdminTripController {
 		return new ResponseEntity<>(tripService.statisTicTripTicket(year,month), HttpStatus.OK);
 	}
 	
-	
-	
 	@DeleteMapping("/distribute")
 	public ResponseEntity<Object> distributeDeleteTripDriversBuses(@RequestBody TripAssignment tripAssignment) {
 		return new ResponseEntity<>(tripService.tripAssignmentDelete(tripAssignment), HttpStatus.OK);
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
 
 }

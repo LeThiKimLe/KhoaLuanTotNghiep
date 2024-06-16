@@ -66,6 +66,42 @@ public class BusType {
     @Column(name = "is_active")
 	private boolean isActive;
 
+    @Column(name = "wifi")
+	private boolean wifi;
+
+    @Column(name = "water")
+	private boolean water;
+
+    @Column(name = "cool_tissue")
+	private boolean coolTissue;
+
+    @Column(name = "phone_charge")
+	private boolean phoneCharge;
+
+    @Column(name = "blanket")
+	private boolean blanket;
+
+    @Column(name = "pillow")
+	private boolean pillow;
+
+    @Column(name = "breaking_hammer")
+	private boolean breakingHammer;
+
+    @Column(name = "conditioner")
+	private boolean conditioner;
+
+    @Column(name = "toilet")
+	private boolean toilet;
+
+    @Column(name = "reading_light")
+	private boolean readingLight;
+
+    @Column(name = "curtain")
+	private boolean curtain;
+
+    @Column(name = "tivi_led")
+	private boolean tiviLed;
+
     public String getImage() {
         return "https://vexe.workon.space" + this.image;
     }

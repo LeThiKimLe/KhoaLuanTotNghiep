@@ -73,6 +73,9 @@ import parse from 'date-fns/parse'
 import { shortenName } from 'src/utils/convertUtils'
 import { check } from 'prettier'
 import { selectServiceDueDate } from 'src/feature/fee/fee.slice'
+import specialThunk from 'src/feature/special-day/specialDay.service'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
+import { selectListSpecial } from 'src/feature/special-day/specialDay.slice'
 const TimeBox = ({ time, removeTime, fix }) => {
     const [showRemove, setShowRemove] = useState(false)
     const handleRemove = () => {
@@ -258,7 +261,6 @@ const AddScheduleForm = ({
     fixSchedule,
 }) => {
     const curTrip = useSelector(selectCurrentTrip)
-    console.log(curTrip)
     const curRoute = useSelector(selectCurrentRoute)
     const [openDateRange, setOpenDateRange] = useState(false)
     const [listTimeGo, setListTimeGo] = useState(
@@ -290,6 +292,13 @@ const AddScheduleForm = ({
             key: 'selection',
         },
     ])
+    const companyId = useSelector(selectCompanyId)
+    const listSpecial = useSelector(selectListSpecial)
+    const currentDayFee = listSpecial.find(
+        (item) =>
+            item.busCompany.id === companyId &&
+            convertToDisplayDate(item.date) === format(currentDay, 'dd/MM/yyyy'),
+    )
     const addTimeGo = (newTime) => {
         if (!listTimeGo.find((timer) => timer.time === newTime)) {
             setListTimeGo([
@@ -499,6 +508,7 @@ const AddScheduleForm = ({
         ])
         setNote('')
     }
+    const getSpecialDayFee = () => {}
     useEffect(() => {
         if (error !== '') addToast(() => CustomToast({ message: error, type: 'error' }))
     }, [error])
@@ -534,6 +544,14 @@ const AddScheduleForm = ({
                       .map((schd) => ({ time: schd.time.slice(0, -3), fix: false })),
         )
     }, [curTrip, fixSchedule, listPreTimeReturn, listPreTimeGo])
+    useEffect(() => {
+        dispatch(specialThunk.getSpecials())
+            .unwrap()
+            .then(() => {})
+            .catch((err) => {
+                console.log(err)
+            })
+    }, [])
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -661,16 +679,38 @@ const AddScheduleForm = ({
                                             <CCol sm="8">
                                                 <CInputGroup>
                                                     <CTooltip content="Giá tiền cố định tuyến">
-                                                        <CFormInput value="300"></CFormInput>
+                                                        <CFormInput
+                                                            value={curTrip.price.toLocaleString()}
+                                                            readOnly
+                                                        ></CFormInput>
                                                     </CTooltip>
                                                     <CTooltip content="Phụ phí loại xe">
-                                                        <CFormInput value="300"></CFormInput>
+                                                        <CFormInput
+                                                            value={curTrip.busType.fee.toLocaleString()}
+                                                            readOnly
+                                                        ></CFormInput>
                                                     </CTooltip>
                                                     <CTooltip content="Phụ phí lễ">
-                                                        <CFormInput value="300"></CFormInput>
+                                                        <CFormInput
+                                                            value={
+                                                                currentDayFee
+                                                                    ? currentDayFee.fee.toLocaleString()
+                                                                    : 0
+                                                            }
+                                                            readOnly
+                                                        ></CFormInput>
                                                     </CTooltip>
                                                     <CTooltip content="Tổng cộng">
-                                                        <CFormInput value="300"></CFormInput>
+                                                        <CFormInput
+                                                            value={(
+                                                                curTrip.price +
+                                                                curTrip.busType.fee +
+                                                                (currentDayFee
+                                                                    ? currentDayFee.fee
+                                                                    : 0)
+                                                            ).toLocaleString()}
+                                                            readOnly
+                                                        ></CFormInput>
                                                     </CTooltip>
                                                 </CInputGroup>
                                             </CCol>

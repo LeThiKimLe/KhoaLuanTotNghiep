@@ -39,20 +39,20 @@ const _nav = [
         ],
         protected: true,
     },
-    {
-        component: CNavGroup,
-        name: 'Hệ thống vận chuyển',
-        to: '/grab-system',
-        icon: <CIcon icon={cilGarage} customClassName="nav-icon" />,
-        items: [
-            {
-                component: CNavItem,
-                name: 'Đối tác vận chuyển',
-                to: '/grab-system/transport-partner',
-            },
-        ],
-        protected: true,
-    },
+    // {
+    //     component: CNavGroup,
+    //     name: 'Hệ thống vận chuyển',
+    //     to: '/grab-system',
+    //     icon: <CIcon icon={cilGarage} customClassName="nav-icon" />,
+    //     items: [
+    //         {
+    //             component: CNavItem,
+    //             name: 'Đối tác vận chuyển',
+    //             to: '/grab-system/transport-partner',
+    //         },
+    //     ],
+    //     protected: true,
+    // },
     {
         component: CNavItem,
         name: 'Cửa sổ khách hàng',
