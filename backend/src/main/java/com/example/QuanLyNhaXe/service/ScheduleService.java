@@ -20,6 +20,7 @@ import com.example.QuanLyNhaXe.dto.MaximumScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleCompanyForMonth;
 import com.example.QuanLyNhaXe.dto.ScheduleDTO;
 import com.example.QuanLyNhaXe.dto.ScheduleTranDTO;
+import com.example.QuanLyNhaXe.dto.SchedulesTripDTO;
 import com.example.QuanLyNhaXe.dto.TripTranDTO;
 import com.example.QuanLyNhaXe.enumration.BusAvailability;
 import com.example.QuanLyNhaXe.enumration.ScheduleState;
@@ -264,20 +265,22 @@ public class ScheduleService {
 		for (BusCompany busCompany : busCompanies) {
 			
 			ModelMapper customModelMapper = new ModelMapper();
-			customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
-					.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
-					.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
+			customModelMapper.typeMap(Schedule.class, SchedulesTripDTO.class)
+					.addMapping(src -> src.getDriver().getUser(), SchedulesTripDTO::setDriverUser)
+					.addMapping(src -> src.getDriver2().getUser(), SchedulesTripDTO::setDriverUser2);
 			List<Schedule> schedules = scheduleRepository.findByDepartDateBetweenAndTrip_BusCompany(startDate, endDate,
 					busCompany);
 			if (schedules.isEmpty()) {
 				schedules = new ArrayList<>();
 			}
-			List<ScheduleTranDTO> scheduleTranDTOs= schedules.stream().peek(schedule -> {
+			List<SchedulesTripDTO> scheduleTranDTOs= schedules.stream().peek(schedule -> {
 				if (schedule.getTransportationOrder() != null) {
 					schedule.getTransportationOrder().setSchedule(null);
 
 				}
-			}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+				schedule.getTrip().setSchedules(null);
+				schedule.getTrip().setBusCompany(null);
+			}).map(schedule -> customModelMapper.map(schedule, SchedulesTripDTO.class)).toList();
 			
 			ScheduleCompanyForMonth scheduleCompanyForMonth = ScheduleCompanyForMonth.builder().schedules(scheduleTranDTOs)
 					.busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).build();
@@ -292,9 +295,9 @@ public class ScheduleService {
 	
 	public Object getScheduleForDay(ScheduleForDay scheduleForDay) {
 		ModelMapper customModelMapper = new ModelMapper();
-		customModelMapper.typeMap(Schedule.class, ScheduleTranDTO.class)
-				.addMapping(src -> src.getDriver().getUser(), ScheduleTranDTO::setDriverUser)
-				.addMapping(src -> src.getDriver2().getUser(), ScheduleTranDTO::setDriverUser2);
+		customModelMapper.typeMap(Schedule.class, SchedulesTripDTO.class)
+				.addMapping(src -> src.getDriver().getUser(), SchedulesTripDTO::setDriverUser)
+				.addMapping(src -> src.getDriver2().getUser(), SchedulesTripDTO::setDriverUser2);
 		
 		BusCompany busCompany=busCompanyService.getModelBusCompany(scheduleForDay.getCompanyId());
 		List<Schedule> schedules = scheduleRepository.findByDepartDateAndTrip_BusCompany(scheduleForDay.getDepartDate(), busCompany);
@@ -307,7 +310,7 @@ public class ScheduleService {
 				schedule.getTransportationOrder().setSchedule(null);
 
 			}
-		}).map(schedule -> customModelMapper.map(schedule, ScheduleTranDTO.class)).toList();
+		}).map(schedule -> customModelMapper.map(schedule, SchedulesTripDTO.class)).toList();
 
 		
 	}

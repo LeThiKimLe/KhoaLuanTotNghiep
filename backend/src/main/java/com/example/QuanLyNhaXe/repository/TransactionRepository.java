@@ -1,5 +1,6 @@
 package com.example.QuanLyNhaXe.repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +16,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 	List<Transaction> findByPaymentTimeBetweenAndTransactionType(LocalDateTime startDateTime, LocalDateTime endDateTime, String transactionType);
 	Optional<Transaction> findByBookingsCode(String bookingCode);
 	
-	List<Transaction> findByPaymentTimeBetweenAndTransactionTypeAndPaymentMethodNotAndBookings_Trip_BusCompany(
-            LocalDateTime startDate, LocalDateTime endDate, String transactionType,String paymentMethod, BusCompany busCompany);
+	List<Transaction> findByTransactionTypeAndPaymentMethodNotAndBookings_Trip_SchedulesDepartDateBetweenAndBookings_Trip_BusCompany(
+             String transactionType,String paymentMethod, LocalDate startDate, LocalDate endDate,BusCompany busCompany);
 
 }

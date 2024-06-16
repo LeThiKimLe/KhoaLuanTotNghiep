@@ -18,6 +18,7 @@ import com.example.QuanLyNhaXe.service.AuthenticationService;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
 import com.example.QuanLyNhaXe.service.FeeService;
 import com.example.QuanLyNhaXe.service.ScheduleService;
+import com.example.QuanLyNhaXe.service.SystemTransactionService;
 import com.example.QuanLyNhaXe.service.TransactionService;
 import com.example.QuanLyNhaXe.service.UserService;
 
@@ -38,6 +39,7 @@ public class ManagerController {
 	private final UserService userService;
 	private final FeeService feeService;
 	private final ScheduleService scheduleService;
+	private final SystemTransactionService systemTransactionService;
 
 	
 	@GetMapping()
@@ -73,6 +75,11 @@ public class ManagerController {
 	@PostMapping("/schedules-date")
 	public ResponseEntity<Object> getSchedulesForDay(@RequestBody ScheduleForDay scheduleForDay) {
 		return new ResponseEntity<>(scheduleService.getScheduleForDay(scheduleForDay), HttpStatus.OK);
+	}
+	
+	@PostMapping("/payments-company")
+	public ResponseEntity<Object> getSchedulesForDay(@RequestParam Integer ticketSaleId) {
+		return new ResponseEntity<>(systemTransactionService.peymentTicketsForCompany(ticketSaleId), HttpStatus.OK);
 	}
 	
 	

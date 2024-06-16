@@ -53,5 +53,6 @@ public class Message {
     public static final String NOT_SAME_DRIVER = "Tài xế không được trùng nhau";
     public static final String ORDER_NOT_FOUND = "Không tìm thấy lệnh xuất bến";
     public static final String INVALID_STATE = "Trạng thái không hợp lệ";
+    public static final String TICKETSAVE_NOT_FOUND= "Không tìm thấy doanh thu vé";
 
 }

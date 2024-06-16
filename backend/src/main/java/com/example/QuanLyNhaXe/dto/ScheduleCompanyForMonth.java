@@ -9,7 +9,7 @@ import lombok.Data;
 @Builder
 public class ScheduleCompanyForMonth {
 	private BusCompanyDTO busCompany;
-	private List<ScheduleTranDTO> schedules;
+	private List<SchedulesTripDTO> schedules;
 	
 
 }

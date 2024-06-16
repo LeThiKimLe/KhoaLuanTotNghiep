@@ -7,6 +7,6 @@ import lombok.Data;
 @Builder
 public class CompanyMoneyDTO {
 	private BusCompanyDTO busCompany;
-	private long ticketMoney;
+	private TicketSaleDTO ticketSave;
 
 }
