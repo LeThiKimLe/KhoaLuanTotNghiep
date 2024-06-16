@@ -17,6 +17,7 @@ import com.example.QuanLyNhaXe.Request.AssignRoute;
 import com.example.QuanLyNhaXe.Request.CreateBusCompany;
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditBusCompany;
+import com.example.QuanLyNhaXe.Request.EditCompanyPolicy;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.dto.AdminDTO;
 import com.example.QuanLyNhaXe.dto.BusCompanyDTO;
@@ -78,8 +79,10 @@ public class BusCompanyService {
 				.tel(createBusCompany.getTel()).email(createBusCompany.getEmail()).idCard(createBusCompany.getIdCard())
 				.address(createBusCompany.getAddress()).gender(createBusCompany.getGender()).beginWorkDate(date)
 				.build();
+		String defaultPolicy = "<p><strong>Yêu cầu khi lên xe</strong></p><p><em>--- Đang cập nhật ---</em></p><p><strong>Hành lý xách tay</strong></p><p><em>--- Đang cập nhật ---</em> </p><p><strong>Trẻ em và phụ nữ có thai</strong></p><p><em>--- Đang cập nhật ---</em> </p><p><strong>Động vật cảnh/Thú cưng</strong></p><p><em>--- Đang cập nhật ---</em> </p><p><strong>Xuất hóa đơn GTGT</strong></p><p><em>--- Đang cập nhật ---</em> </p>";
 		BusCompany busCompany = BusCompany.builder().name(createBusCompany.getBusinessName()).coopDay(coopDate)
-				.businessLicense(createBusCompany.getBusinessLicense()).isActive(true).build();
+				.businessLicense(createBusCompany.getBusinessLicense()).isActive(true)
+				.policy(defaultPolicy).build();
 		Admin admin = authenticationService.createNewAdmin(signupStaffDTO, busCompany);
 		busCompany.setAdminId(admin.getAdminId());
 		try {
@@ -185,5 +188,18 @@ public class BusCompanyService {
 		            .orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 	 }
 	
+	 @Transactional
+	public Object updateCompanyPolicy(EditCompanyPolicy editCompanyPolicy, String authorization) {
+		User user= userService.getUserByAuthorizationHeader(authorization);
+		BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		busCompany.setPolicy(editCompanyPolicy.getPolicy());
+		try {
+			busCompanyRepository.save(busCompany);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return modelMapper.map(busCompany, BusCompanyDTO.class);
+	}
 	
 }

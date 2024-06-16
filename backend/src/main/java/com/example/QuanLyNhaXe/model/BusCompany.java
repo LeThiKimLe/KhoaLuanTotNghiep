@@ -38,7 +38,6 @@ public class BusCompany {
 	@Column(name = "business_license")
 	private String businessLicense;
 
-
 	@Column(name = "admin_id")
 	private Integer adminId;
 
@@ -47,6 +46,9 @@ public class BusCompany {
 
 	@Column(name = "is_active")
 	private boolean isActive;
+
+	@Column(name = "policy")
+	private String policy;
 
 	@OneToMany(mappedBy = "busCompany")
 	private List<Staff> staffs;

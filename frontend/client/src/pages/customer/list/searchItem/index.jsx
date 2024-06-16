@@ -18,6 +18,7 @@ import { Tabs, Tab, TabList, TabPanel } from 'react-tabs'
 import { ListStation } from './ListStation'
 import { ListReview } from './ListReview'
 import { ListUtils } from './ListUtils'
+import { CompanyPolicy } from './CompanyPolicy'
 
 const SearchItem = ({ trip, sameTrip }) => {
     const [choose, setChoose] = useState(false)
@@ -152,6 +153,7 @@ const SearchItem = ({ trip, sameTrip }) => {
                                     <Tab>Điểm đón - trả</Tab>
                                     <Tab>Đánh giá</Tab>
                                     <Tab>Tiện ích</Tab>
+                                    <Tab>Chính sách</Tab>
                                 </TabList>
                                 <TabPanel>
                                     <ListStation trip={trip}></ListStation>
@@ -161,6 +163,9 @@ const SearchItem = ({ trip, sameTrip }) => {
                                 </TabPanel>
                                 <TabPanel>
                                     <ListUtils trip={trip?.tripInfor}></ListUtils>
+                                </TabPanel>
+                                <TabPanel>
+                                    <CompanyPolicy policy={trip?.tripInfor?.busCompany?.policy}></CompanyPolicy>
                                 </TabPanel>
                             </Tabs>
                         </div>

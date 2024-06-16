@@ -64,6 +64,21 @@ const editCompanyInfor = createAsyncThunk(
     },
 )
 
+const editCompanyPolicy = createAsyncThunk('manager/company/edit', async (policy, thunkAPI) => {
+    try {
+        const response = await axiosClient.put('admin/policy', {
+            policy: policy,
+        })
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const assignRouteForCompany = createAsyncThunk(
     'manager/company/assign-route',
     async ({ listRoute, companyId }, thunkAPI) => {
@@ -105,6 +120,7 @@ const companyThunk = {
     editCompanyInfor,
     assignRouteForCompany,
     getAssignedRouteForCompany,
+    editCompanyPolicy,
 }
 
 export default companyThunk

@@ -13,5 +13,5 @@ public class BusCompanyDTO {
 	private LocalDate coopDay;
 	private boolean isActive;
 	private Integer adminId;
-
+	private String policy;
 }

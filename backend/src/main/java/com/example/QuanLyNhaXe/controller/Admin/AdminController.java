@@ -16,12 +16,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
+import com.example.QuanLyNhaXe.Request.EditBusCompany;
+import com.example.QuanLyNhaXe.Request.EditCompanyPolicy;
 import com.example.QuanLyNhaXe.Request.EditDriverByAdmin;
 import com.example.QuanLyNhaXe.Request.EditStaffByAdmin;
 import com.example.QuanLyNhaXe.Request.PaymentServiceFee;
 import com.example.QuanLyNhaXe.Request.SignupDriverDTO;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
+import com.example.QuanLyNhaXe.service.BusCompanyService;
 import com.example.QuanLyNhaXe.service.FeeService;
 import com.example.QuanLyNhaXe.service.UserService;
 
@@ -42,8 +45,7 @@ public class AdminController {
 	private final AuthenticationService authenticationService;
 	private final UserService userService;
 	private final FeeService feeService;
-	
-	
+	private final BusCompanyService busCompanyService;
 
 	@PostMapping("/staffs")
 	public ResponseEntity<Object> createStaff(@Valid @RequestBody SignupStaffDTO signupStaffDTO,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
@@ -88,7 +90,6 @@ public class AdminController {
 		return new ResponseEntity<>(userService.getDriversNotDistribute(), HttpStatus.OK);
 	}
 	
-	
 	@GetMapping("/fee-payment")
 	public ResponseEntity<Object> getServiceFeePaymentURL(@RequestParam Integer feeId ,HttpServletRequest httpServletRequest) {
 		return new ResponseEntity<>(feeService.paymentServiceFee(feeId, httpServletRequest), HttpStatus.OK);
@@ -99,7 +100,9 @@ public class AdminController {
 		return new ResponseEntity<>(feeService.updateServiceFee(paymentServiceFee), HttpStatus.OK);
 	}
 	
+	@PutMapping("/policy")
+	public ResponseEntity<Object> editBusCompany(@Valid @RequestBody EditCompanyPolicy policy, @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+		return new ResponseEntity<>(busCompanyService.updateCompanyPolicy(policy, authorization), HttpStatus.OK);
+	}
 	
-	
-
 }
