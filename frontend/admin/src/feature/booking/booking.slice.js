@@ -10,6 +10,11 @@ const initialState = {
     listBooker: [],
     isAdjusting: false,
     isChanging: null,
+    ticketFilter: {
+        station: 0,
+        payStatus: 0,
+        guestStatus: 0,
+    },
 }
 
 const bookingSlice = createSlice({
@@ -58,6 +63,9 @@ const bookingSlice = createSlice({
             const booking = action.payload
             state.isChanging = booking
         },
+        setTicketFilter: (state, action) => {
+            state.ticketFilter = action.payload
+        },
     },
     extraReducers: (builder) => {
         builder
@@ -103,4 +111,5 @@ export const selectBookingState = (state) => state.booking.isBooking
 export const selectListBooker = (state) => state.booking.listBooker
 export const selectAdjustState = (state) => state.booking.isAdjusting
 export const selectChangeState = (state) => state.booking.isChanging
+export const selectTicketFilter = (state) => state.booking.ticketFilter
 export default bookingSlice.reducer

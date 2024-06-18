@@ -25,6 +25,7 @@ import {
     CSpinner,
     CButtonGroup,
     CFormCheck,
+    CImage,
 } from '@coreui/react'
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -40,6 +41,7 @@ import CIcon from '@coreui/icons-react'
 import {
     companyActions,
     selectCurCompany,
+    selectListAssign,
     selectListCompany,
 } from 'src/feature/bus-company/busCompany.slice'
 import { getStyle } from '@coreui/utils'
@@ -47,7 +49,7 @@ import companyThunk from 'src/feature/bus-company/busCompany.service'
 import { CustomToast } from 'src/views/customToast/CustomToast'
 import { cilExternalLink } from '@coreui/icons'
 import { getTripJourney } from 'src/utils/tripUtils'
-
+import noImage from 'src/assets/images/no_img.png'
 const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
     const [showComplete, setShowComplete] = useState(true)
     const [listShow, setListShow] = useState(
@@ -56,6 +58,21 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
                 schd.state === 'Hoàn thành' && schd.transportationOrder.status === 'Đã hoàn thành',
         ),
     )
+    const [showTransportationOrder, setShowTransportationOrder] = useState(false)
+    const [curSchd, setCurSchd] = useState(null)
+    const randomColorBaseonTrip = (trip) => {
+        const listColor = ['red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink']
+        const tripName = getTripJourney(trip)
+        const minBrightness = 128 // Giá trị độ sáng tối thiểu (0-255)
+        const maxBrightness = 255 // Giá trị độ sáng tối đa (0-255)
+        const color =
+            tripName
+                .split('')
+                .map((char) => char.charCodeAt(0))
+                .reduce((acc, cur) => acc + cur, 0) % listColor.length
+        return listColor[color]
+    }
+
     useEffect(() => {
         if (showComplete) {
             setListShow(
@@ -148,7 +165,7 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
                                 rowSpan={2}
                                 className="align-middle text-center"
                             >
-                                Xem lệnh vận chuyển
+                                Lệnh vận chuyển
                             </CTableHeaderCell>
                         </CTableRow>
                         <CTableRow>
@@ -166,8 +183,12 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
                                 <CTableHeaderCell scope="row" className="text-center">
                                     {index + 1}
                                 </CTableHeaderCell>
-                                <CTableHeaderCell scope="row" className="text-center">
-                                    {/* {getTripJourney(schd.tripInfo)} */}
+                                <CTableHeaderCell
+                                    scope="row"
+                                    className="text-center"
+                                    style={{ color: randomColorBaseonTrip(schd.trip) }}
+                                >
+                                    {getTripJourney(schd.trip)}
                                     {'---'}
                                 </CTableHeaderCell>
                                 <CTableDataCell className="text-center">{`${schd.departTime.slice(
@@ -188,12 +209,38 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center">
                                     {schd.transportationOrder?.status}
+                                    <CIcon
+                                        icon={cilExternalLink}
+                                        role="button"
+                                        onClick={() => {
+                                            setShowTransportationOrder(true)
+                                            setCurSchd(schd)
+                                        }}
+                                    ></CIcon>
                                 </CTableDataCell>
                             </CTableRow>
                         ))}
                     </CTableBody>
                 </CTable>
             </CModalBody>
+            <CModal
+                visible={showTransportationOrder}
+                onClose={() => setShowTransportationOrder(false)}
+            >
+                <CModalBody>
+                    <div>
+                        <CImage
+                            rounded
+                            thumbnail
+                            src={curSchd?.transportationOrder?.image}
+                            onError={(e) => {
+                                e.target.onerror = null
+                                e.target.src = noImage
+                            }}
+                        />
+                    </div>
+                </CModalBody>
+            </CModal>
         </CModal>
     )
 }
@@ -311,6 +358,9 @@ const TicketFee = () => {
                 console.log(res)
                 setListTicketFee(res)
             })
+            .catch((err) => {
+                setListTicketFee([])
+            })
     }
 
     const getNextDueDay = (currentDueDay) => {
@@ -377,7 +427,6 @@ const TicketFee = () => {
         setCurCompany(company)
         setOpenTripList(true)
     }
-
     // useEffect(() => {
     //     const listAssign = listRoute.filter((route) =>
     //         listAssignRouteId.find((id) => id.routeId === route.id),
@@ -401,7 +450,7 @@ const TicketFee = () => {
     }, [])
 
     useEffect(() => {
-        if (!openTripList) setCurCompany(null)
+        // if (!openTripList) setCurCompany(null)
     }, [openTripList])
     return (
         <>
@@ -527,7 +576,7 @@ const TicketFee = () => {
                         {listValidCompany.map((company, index) => (
                             <CTableRow key={index}>
                                 <CTableHeaderCell scope="row" className="text-center">
-                                    {1}
+                                    {index + 1}
                                 </CTableHeaderCell>
                                 <CTableHeaderCell scope="row" className="text-center">
                                     {company.name}
@@ -583,17 +632,27 @@ const TicketFee = () => {
                                         icon={cilExternalLink}
                                         role="button"
                                         style={{ marginLeft: '5px' }}
+                                        onClick={() => viewCompany(company.id)}
                                     ></CIcon>
                                 </CTableDataCell>
-                                <CTableDataCell className="text-center">{`${listTicketFee
-                                    .find((item) => item.busCompany.id == company.id)
-                                    ?.ticketMoney.toLocaleString()} đ`}</CTableDataCell>
-                                <CTableDataCell className="text-center">{`${(
-                                    (listTicketFee.find((item) => item.busCompany.id == company.id)
-                                        ?.ticketMoney *
-                                        20) /
-                                    100
-                                ).toLocaleString()} đ`}</CTableDataCell>
+                                <CTableDataCell className="text-center">{`${
+                                    listTicketFee.length > 0
+                                        ? listTicketFee
+                                              .find((item) => item.busCompany.id == company.id)
+                                              ?.ticketSave.ticketSales.toLocaleString()
+                                        : '---'
+                                }`}</CTableDataCell>
+                                <CTableDataCell className="text-center">{`${
+                                    listTicketFee.length > 0
+                                        ? (
+                                              (listTicketFee.find(
+                                                  (item) => item.busCompany.id == company.id,
+                                              )?.ticketSave.ticketSales *
+                                                  20) /
+                                              100
+                                          ).toLocaleString()
+                                        : '---'
+                                }`}</CTableDataCell>
                                 <CTableDataCell className="text-center">{'---'}</CTableDataCell>
                                 <CTableDataCell className="text-center">
                                     <CButton variant="outline">Thanh toán</CButton>
@@ -640,6 +699,7 @@ const ServiceFee = () => {
     const [openComfirmForm, setOpenComfirmForm] = useState(false)
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
+    const listAssign = useSelector(selectListAssign)
     const getYearRange = () => {
         var year = []
         const startYear = startTime.getFullYear()
@@ -756,6 +816,15 @@ const ServiceFee = () => {
             })
     }
 
+    const getCompanyTripNumber = (companyId) => {
+        const assignedTrip = listAssign.filter(
+            (assign) =>
+                assign.busCompanyId == companyId &&
+                new Date(assign.assignDate).getMonth() <= monthValue,
+        )
+        return assignedTrip.length
+    }
+
     // useEffect(() => {
     //     const listAssign = listRoute.filter((route) =>
     //         listAssignRouteId.find((id) => id.routeId === route.id),
@@ -774,13 +843,16 @@ const ServiceFee = () => {
 
     useEffect(() => {
         getData()
-        if (listCompany.length === 0) {
-            dispatch(companyThunk.getCompany())
-                .unwrap()
-                .then()
-                .catch((err) => console.log(err))
-        }
+        dispatch(companyThunk.getCompany())
+            .unwrap()
+            .then()
+            .catch((err) => console.log(err))
+        dispatch(companyThunk.getAssignedRouteForCompany())
+            .unwrap()
+            .then()
+            .catch((err) => console.log(err))
     }, [])
+    console.log(listAssign)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -936,7 +1008,7 @@ const ServiceFee = () => {
                                 )}
                             </CTableDataCell>
                             <CTableDataCell className="text-center">
-                                {listTrip.length}
+                                {getCompanyTripNumber(fee.company.id)}
                             </CTableDataCell>
                             <CTableDataCell className="text-center">34k/ngày</CTableDataCell>
                             <CTableDataCell className="text-center">
