@@ -217,74 +217,8 @@ public class TransactionService {
 
 	}
 
-	public long calculateRevenueOneMonthForOneCompany(YearMonth yearMonth, BusCompany busCompany) {
-		long sum = 0L;
-		long sum2 = 0L;
 	
-		LocalDate startDate = yearMonth.atDay(1);
-		LocalDate endDate = yearMonth.atEndOfMonth();
-		
-		List<Transaction> transactions = transactionRepository
-				.findByTransactionTypeAndPaymentMethodNotAndBookings_Trip_SchedulesDepartDateBetweenAndBookings_Trip_BusCompany(
-						TransactionType.PAYMENT.getLabel(), PaymentMethod.CASH.getLabel(), startDate, endDate,
-						busCompany);
-		List<Transaction> transactions2 = transactionRepository
-				.findByTransactionTypeAndPaymentMethodNotAndBookings_Trip_SchedulesDepartDateBetweenAndBookings_Trip_BusCompany(
-						TransactionType.REFUND.getLabel(), PaymentMethod.CASH.getLabel(), startDate, endDate,
-						busCompany);
-		if (!transactions.isEmpty()) {
-			for (Transaction transaction : transactions) {
-				sum += transaction.getAmount();
-			}
-		}
 
-		if (!transactions2.isEmpty()) {
-			for (Transaction transaction2 : transactions2) {
-				sum2 += transaction2.getAmount();
-			}
-		}
-
-		return sum - sum2;
-
-	}
-
-	public Object getMoneyForCompany(int month, int year) {
-		
-		YearMonth yearMonth = YearMonth.of(year, month);
-		LocalDate startDate = yearMonth.atDay(1);
-		LocalDate endDate = yearMonth.atEndOfMonth();
-		if (yearMonth.getYear() == LocalDate.now().getYear() && yearMonth.getMonth().getValue() >= LocalDate.now().getMonthValue()) {
-			throw new BadRequestException(Message.BAD_REQUEST);
-			
-		} 
-		List<CompanyMoneyDTO> companyMoneyDTOs = new ArrayList<>();
-		List<BusCompany> busCompanies = busCompanyService.getAllBusModelCompanys();
-		for (BusCompany busCompany : busCompanies) {
-			long money = 0L;
-			TicketSale ticketSale = ticketSaveRepository.findByFromDateAndToDateAndBusCompany(startDate, endDate, busCompany)
-			        .orElse(null);
-
-			if (ticketSale == null) {
-			     money = calculateRevenueOneMonthForOneCompany(yearMonth, busCompany);
-			    ticketSale = TicketSale.builder()
-			            .fromDate(startDate)
-			            .toDate(endDate)
-			            .ticketSales(money)
-			            .profit(80 * money / 100)
-			            .busCompany(busCompany)
-			            .build();
-			    ticketSale = ticketSaveRepository.save(ticketSale);
-			}
-			
-			
-			CompanyMoneyDTO companyMoneyDTO = CompanyMoneyDTO.builder()
-					.busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).ticketSave(modelMapper.map(ticketSale, TicketSaleDTO.class)).build();
-			companyMoneyDTOs.add(companyMoneyDTO);
-
-		}
-
-		return companyMoneyDTOs;
-	}
 	
 	
 

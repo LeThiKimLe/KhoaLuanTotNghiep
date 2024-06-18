@@ -3,6 +3,7 @@ package com.example.QuanLyNhaXe.service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,26 +20,32 @@ import com.example.QuanLyNhaXe.Request.CreatePaymentReturnTicket;
 import com.example.QuanLyNhaXe.Request.EditBookingDTO;
 import com.example.QuanLyNhaXe.Request.EditTicketDTO;
 import com.example.QuanLyNhaXe.Request.TicketForChangeDTO;
+import com.example.QuanLyNhaXe.dto.BusCompanyDTO;
 import com.example.QuanLyNhaXe.dto.CancelRequestDTO;
+import com.example.QuanLyNhaXe.dto.CompanyMoneyDTO;
 import com.example.QuanLyNhaXe.dto.PolicyDTO;
 import com.example.QuanLyNhaXe.dto.ReponseCancelTicket;
 import com.example.QuanLyNhaXe.dto.TicKetFullDTO;
+import com.example.QuanLyNhaXe.dto.TicketSaleDTO;
 import com.example.QuanLyNhaXe.dto.TransactionDTO;
 import com.example.QuanLyNhaXe.enumration.BookingStatus;
 import com.example.QuanLyNhaXe.enumration.HistoryAction;
 import com.example.QuanLyNhaXe.enumration.PaymentMethod;
 import com.example.QuanLyNhaXe.enumration.PolicyAction;
 import com.example.QuanLyNhaXe.enumration.RequestState;
+import com.example.QuanLyNhaXe.enumration.ScheduleState;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Booking;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.CancelRequest;
 import com.example.QuanLyNhaXe.model.History;
 import com.example.QuanLyNhaXe.model.Policy;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.StopStation;
 import com.example.QuanLyNhaXe.model.Ticket;
+import com.example.QuanLyNhaXe.model.TicketSale;
 import com.example.QuanLyNhaXe.model.Transaction;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.BookingRepository;
@@ -48,6 +55,7 @@ import com.example.QuanLyNhaXe.repository.PolicyRepository;
 import com.example.QuanLyNhaXe.repository.ScheduleRepository;
 import com.example.QuanLyNhaXe.repository.StopStationRepository;
 import com.example.QuanLyNhaXe.repository.TicketRepository;
+import com.example.QuanLyNhaXe.repository.TicketSaveRepository;
 import com.example.QuanLyNhaXe.repository.TransactionRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
@@ -72,6 +80,8 @@ public class TicketService {
 	private final StopStationRepository stopStationRepository;
 	private final CancelRequestRepository cancelRequestRepository;
 	private final VNPayService vnPayService;
+	private final BusCompanyService busCompanyService;
+	private final TicketSaveRepository ticketSaveRepository;
 
 	public Object paymentTicket(CreatePaymentDTO createPaymentDTO) {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
@@ -81,8 +91,7 @@ public class TicketService {
 
 		}
 		String pay = createPaymentDTO.getPaymentMethod();
-		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) )
-				 {
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel())) {
 			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
 		}
 
@@ -93,9 +102,9 @@ public class TicketService {
 			List<Ticket> tickets = booking.getTickets();
 			for (Ticket ticket : tickets) {
 				if (!ticket.getState().equals(TicketState.CANCELED.getLabel())) {
-			        ticket.setState(TicketState.PAID.getLabel());
-			        ticketRepository.save(ticket);
-			    }
+					ticket.setState(TicketState.PAID.getLabel());
+					ticketRepository.save(ticket);
+				}
 			}
 			booking.setStatus(BookingStatus.SUCCESS.getLabel());
 			bookingRepository.save(booking);
@@ -136,7 +145,7 @@ public class TicketService {
 			if (historyRepository.existsByTicketIdAndAction(ticket.getId(), HistoryAction.CHANGE.getLabel())) {
 				throw new BadRequestException("Một hoặc nhiều vé đã chọn đã đổi vé không được phép hủy");
 			}
-			
+
 			tickets.add(ticket);
 		}
 		String state = tickets.get(0).getState();
@@ -178,7 +187,8 @@ public class TicketService {
 	}
 
 	@Transactional
-	public Object cancelTicketForStaff(CancelTicketApproval cancelTicketApproval, String authorization,HttpServletRequest httpServletRequest) {
+	public Object cancelTicketForStaff(CancelTicketApproval cancelTicketApproval, String authorization,
+			HttpServletRequest httpServletRequest) {
 
 		List<History> histories = new ArrayList<>();
 		Integer ticketPrice = 0;
@@ -205,12 +215,13 @@ public class TicketService {
 			for (Ticket ticket : tickets) {
 				ticketPrice += ticket.getTicketPrice();
 			}
-			ticketPrice=Math.round(ticketPrice*cancelRequest.getPolicy().getRefundRate());
+			ticketPrice = Math.round(ticketPrice * cancelRequest.getPolicy().getRefundRate());
 
 			Schedule schedule = tickets.get(0).getSchedule();
 			schedule.setAvailability(schedule.getAvailability() + tickets.size());
 			String paymentMethod = tickets.get(0).getBooking().getTransaction().getPaymentMethod();
-			Transaction transaction = transactionService.createTransactionForCancelTickets(paymentMethod, ticketPrice,null);
+			Transaction transaction = transactionService.createTransactionForCancelTickets(paymentMethod, ticketPrice,
+					null);
 			try {
 				transactionRepository.save(transaction);
 				for (Ticket ticket : tickets) {
@@ -218,12 +229,13 @@ public class TicketService {
 					History history = createHistory(user, transaction, ticket, cancelRequest.getPolicy(),
 							HistoryAction.CANCEL.getLabel());
 					histories.add(history);
-					
+
 				}
-				Transaction transactionPayment=booking.getTransaction();
-				String orderId=booking.getOrder_id();
-				String transactionDate=utilityService.convertDateTimeToString(transactionPayment.getPaymentTime());
-				vnPayService.refund("03",orderId , ticketPrice,transactionDate, "xeKimNguyen", transactionPayment.getTransactionNo(), httpServletRequest);
+				Transaction transactionPayment = booking.getTransaction();
+				String orderId = booking.getOrder_id();
+				String transactionDate = utilityService.convertDateTimeToString(transactionPayment.getPaymentTime());
+				vnPayService.refund("03", orderId, ticketPrice, transactionDate, "xeKimNguyen",
+						transactionPayment.getTransactionNo(), httpServletRequest);
 				cancelRequest.setState(RequestState.APPROVED.getLabel());
 				cancelRequestRepository.save(cancelRequest);
 				historyRepository.saveAll(histories);
@@ -299,7 +311,7 @@ public class TicketService {
 		ticketPrice = Math.round(ticketPrice * policyForCancel.getRefundRate());
 
 		transaction = transactionService.createTransactionForCancelTickets(booking.getTransaction().getPaymentMethod(),
-				ticketPrice,null);
+				ticketPrice, null);
 
 		return ReponseCancelTicket.builder().policy(modelMapper.map(policyForCancel, PolicyDTO.class))
 				.transaction(modelMapper.map(transaction, TransactionDTO.class)).build();
@@ -332,7 +344,8 @@ public class TicketService {
 			if (ticket.getState().equals(TicketState.CANCELED.getLabel())) {
 				throw new BadRequestException("Yêu cầu không hợp lệ do vé đã hủy");
 			}
-			if (ticketRepository.existsByScheduleIdAndSeatAndStateNot(newSchedule.getId(), ticketForChange.getNewSeatName(),TicketState.CANCELED.getLabel())) {
+			if (ticketRepository.existsByScheduleIdAndSeatAndStateNot(newSchedule.getId(),
+					ticketForChange.getNewSeatName(), TicketState.CANCELED.getLabel())) {
 				throw new BadRequestException("Một hoặc nhiều vé đã chọn đã có người đặt rồi!!! Vui lòng chọn vé khác");
 			}
 
@@ -446,17 +459,17 @@ public class TicketService {
 	}
 
 	@Transactional
-	public Object cancelTicket(CancelTicketsDTO cancelTicketsDTO, String authorization, HttpServletRequest httpServletRequest) {
+	public Object cancelTicket(CancelTicketsDTO cancelTicketsDTO, String authorization,
+			HttpServletRequest httpServletRequest) {
 
 		Transaction transaction = null;
-		
+
 		Policy policy = null;
 		User user = userService.getUserByAuthorizationHeader(authorization);
 		List<Ticket> tickets = new ArrayList<>();
 		List<History> histories = new ArrayList<>();
-		String pay=cancelTicketsDTO.getPaymentMethod();
-		if (!pay.equals(PaymentMethod.VNPAY.getLabel())
-				 && !pay.equals(PaymentMethod.CASH.getLabel())) {
+		String pay = cancelTicketsDTO.getPaymentMethod();
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) && !pay.equals(PaymentMethod.CASH.getLabel())) {
 			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
 		}
 		if (cancelTicketsDTO.getNumberTicket() != cancelTicketsDTO.getTicketIdList().size()) {
@@ -479,18 +492,21 @@ public class TicketService {
 		try {
 			String state = tickets.get(0).getState();
 			if (state.equals(TicketState.PAID.getLabel())) {
-				
+
 				Object reponseCancelTicket = getPolicyForCancelTicket(cancelTicketsDTO, authorization);
 				if (reponseCancelTicket instanceof ReponseCancelTicket response) {
-					transaction=transactionService.createTransactionForCancelTickets(pay,
-							response.getTransaction().getAmount(),null);
+					transaction = transactionService.createTransactionForCancelTickets(pay,
+							response.getTransaction().getAmount(), null);
 					transactionRepository.save(transaction);
 					policy = modelMapper.map(response.getPolicy(), Policy.class);
-					Transaction transactionPayment=transactionRepository.findByBookingsCode(cancelTicketsDTO.getBookingCode())
+					Transaction transactionPayment = transactionRepository
+							.findByBookingsCode(cancelTicketsDTO.getBookingCode())
 							.orElseThrow(() -> new NotFoundException("Không tìm thấy giao dịch đã thanh toán"));
-					String orderId=transactionPayment.getBookings().get(0).getOrder_id();
-					String transactionDate=utilityService.convertDateTimeToString(transactionPayment.getPaymentTime());
-					vnPayService.refund("03",orderId , (int)response.getTransaction().getAmount(), transactionDate,  "xeKimNguyen",transactionPayment.getTransactionNo(), httpServletRequest);
+					String orderId = transactionPayment.getBookings().get(0).getOrder_id();
+					String transactionDate = utilityService
+							.convertDateTimeToString(transactionPayment.getPaymentTime());
+					vnPayService.refund("03", orderId, (int) response.getTransaction().getAmount(), transactionDate,
+							"xeKimNguyen", transactionPayment.getTransactionNo(), httpServletRequest);
 				}
 			}
 			for (Ticket ticket : tickets) {
@@ -508,23 +524,22 @@ public class TicketService {
 			e.printStackTrace();
 			throw new BadRequestException("Lỗi xảy ra trong quá trình xử lý");
 		}
-		
+
 		return new ResponseMessage("Hủy vé thành công");
 
 	}
-	
+
 	public Object getListTicketByScheduleId(Integer scheduleId) {
-		List<Ticket> tickets=ticketRepository.findByScheduleId(scheduleId);
-		if (tickets.isEmpty()){
-            throw new NotFoundException(Message.TICKET_NOT_FOUND);
-        }
-		return tickets.stream()
-		.map(ticket -> {
-	        ticket.getBooking().setTickets(null);
-	        return modelMapper.map(ticket, TicKetFullDTO.class);
-	    }).toList();
-    }
-	
+		List<Ticket> tickets = ticketRepository.findByScheduleId(scheduleId);
+		if (tickets.isEmpty()) {
+			throw new NotFoundException(Message.TICKET_NOT_FOUND);
+		}
+		return tickets.stream().map(ticket -> {
+			ticket.getBooking().setTickets(null);
+			return modelMapper.map(ticket, TicKetFullDTO.class);
+		}).toList();
+	}
+
 	public Object paymentTicketForStaff(CreatePaymentDTO createPaymentDTO) {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
@@ -551,55 +566,58 @@ public class TicketService {
 			emailService.sendBookingInformation(booking);
 		}
 		return transactionService.createTransaction(createPaymentDTO);
-		
+
 	}
-	
+
 	public Object editBookingForStaff(EditBookingDTO editBookingDTO, String authorization) {
 		Booking booking = bookingRepository.findByCode(editBookingDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
-		EditTicketDTO editTicketDTO=EditTicketDTO.builder().bookingCode(editBookingDTO.getBookingCode()).dropStationId(editBookingDTO.getDropStationId()).pickStationId(editBookingDTO.getPickStationId()).build();
-		Object object=editTicket(editTicketDTO, authorization);
-		if (object instanceof ResponseMessage responseMessage && responseMessage.getMessage().equals(Message.UPDATE_SUCCESS)) {
-		    booking.setName(editBookingDTO.getName());
-		    booking.setTel(editBookingDTO.getTel());
-		    bookingRepository.save(booking);
+		EditTicketDTO editTicketDTO = EditTicketDTO.builder().bookingCode(editBookingDTO.getBookingCode())
+				.dropStationId(editBookingDTO.getDropStationId()).pickStationId(editBookingDTO.getPickStationId())
+				.build();
+		Object object = editTicket(editTicketDTO, authorization);
+		if (object instanceof ResponseMessage responseMessage
+				&& responseMessage.getMessage().equals(Message.UPDATE_SUCCESS)) {
+			booking.setName(editBookingDTO.getName());
+			booking.setTel(editBookingDTO.getTel());
+			bookingRepository.save(booking);
 		}
 		return new ResponseMessage(Message.UPDATE_SUCCESS);
-		
+
 	}
-	
+
 	public void supportMapTicket(List<Ticket> tickets) {
-		for(Ticket ticket: tickets) {
+		for (Ticket ticket : tickets) {
 			ticket.getBooking().setTickets(null);
 		}
-		
+
 	}
-	
+
 	public Object checkIn(Integer ticketId) {
 		Ticket ticket = ticketRepository.findById(ticketId)
 				.orElseThrow(() -> new NotFoundException(Message.TICKET_NOT_FOUND));
-		if(!ticket.getState().equals(TicketState.PAID.getLabel()))
+		if (!ticket.getState().equals(TicketState.PAID.getLabel()))
 			throw new BadRequestException("Vé này chưa thanh toán");
-		if(ticket.isCheckedIn()) {
+		if (ticket.isCheckedIn()) {
 			throw new BadRequestException("Vé này đã Check In rồi");
 		}
 		ticket.setCheckedIn(true);
 		ticketRepository.save(ticket);
 		return new ResponseMessage(Message.SUCCESS);
-		
-		
+
 	}
+
 	public Object searchTicketBill(String referCode) {
-		if(referCode.isEmpty()) {
+		if (referCode.isEmpty()) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 		}
-		Ticket ticket=ticketRepository.findByBillReferCode(referCode)
+		Ticket ticket = ticketRepository.findByBillReferCode(referCode)
 				.orElseThrow(() -> new NotFoundException(Message.BILL_NOT_FOUND));
 		ticket.getBooking().setTickets(null);
 		return modelMapper.map(ticket, TicKetFullDTO.class);
-		
-	}	
-	
+
+	}
+
 	@Transactional
 	public Object paymentReturnTicket(CreatePaymentReturnTicket createPaymentDTO) {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
@@ -610,8 +628,7 @@ public class TicketService {
 			throw new BadRequestException("Thanh toán không hợp lệ do đã hủy booking");
 		}
 		String pay = createPaymentDTO.getPaymentMethod();
-		if (!pay.equals(PaymentMethod.VNPAY.getLabel()))
-				 {
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel())) {
 			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
 		}
 
@@ -641,6 +658,84 @@ public class TicketService {
 		throw new BadRequestException("Thanh toán không hợp lệ do hết thời gian chờ");
 	}
 
-		
-	
+	public long getMoneyForOneCompany(YearMonth yearMonth, BusCompany busCompany) {
+		long sum = 0L;
+
+		LocalDate startDate = yearMonth.atDay(1);
+		LocalDate endDate = yearMonth.atEndOfMonth();
+
+		List<Ticket> tickets = ticketRepository
+				.findByStateAndBookingConductStaffIsNullAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompany(
+						TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), startDate, endDate,
+						busCompany);
+		if (!tickets.isEmpty()) {
+			for (Ticket ticket : tickets) {
+				sum += ticket.getTicketPrice();
+			}
+		}
+		return sum;
+
+	}
+
+	public long getMoneyRefundForOneCompany(YearMonth yearMonth, BusCompany busCompany) {
+		long sum = 0L;
+
+		LocalDate startDate = yearMonth.atDay(1);
+		LocalDate endDate = yearMonth.atEndOfMonth();
+
+		List<Ticket> tickets = ticketRepository
+				.findByStateAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompanyAndHistories_TransactionPaymentMethodNot(
+						TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), startDate, endDate,
+						busCompany,PaymentMethod.CASH.getLabel());
+		if (!tickets.isEmpty()) {
+			for (Ticket ticket : tickets) {
+				sum += ticket.getTicketPrice();
+			}
+		}
+		return sum;
+
+	}
+
+	public Object getMoneyForAllCompany(int month, int year) {
+
+		YearMonth yearMonth = YearMonth.of(year, month);
+		LocalDate startDate = yearMonth.atDay(1);
+		LocalDate endDate = yearMonth.atEndOfMonth();
+		if (yearMonth.getYear() == LocalDate.now().getYear()
+				&& yearMonth.getMonth().getValue() >= LocalDate.now().getMonthValue()) {
+			throw new BadRequestException(Message.BAD_REQUEST);
+
+		}
+		List<Long> numberList = new ArrayList<Long>();
+		List<CompanyMoneyDTO> companyMoneyDTOs = new ArrayList<>();
+		List<BusCompany> busCompanies = busCompanyService.getAllBusModelCompanys();
+		for (BusCompany busCompany : busCompanies) {
+			long money = 0L;
+			money = getMoneyForOneCompany(yearMonth, busCompany);
+			long refundMoney=0L;
+			refundMoney=getMoneyRefundForOneCompany(yearMonth, busCompany);
+			TicketSale ticketSale = ticketSaveRepository.findByFromDateAndToDateAndBusCompany(startDate, endDate, busCompany)
+			        .orElse(null);
+
+			if (ticketSale == null) {
+			     long total = money-refundMoney;
+			    ticketSale = TicketSale.builder()
+			            .fromDate(startDate)
+			            .toDate(endDate)
+			            .ticketSales(total)
+			            .profit(80 * total / 100)
+			            .busCompany(busCompany)
+			            .build();
+			    ticketSale = ticketSaveRepository.save(ticketSale);
+			}
+			
+			
+			CompanyMoneyDTO companyMoneyDTO = CompanyMoneyDTO.builder()
+					.busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).ticketSave(modelMapper.map(ticketSale, TicketSaleDTO.class)).build();
+			companyMoneyDTOs.add(companyMoneyDTO);
+
+		}
+		return companyMoneyDTOs;
+	}
+
 }
