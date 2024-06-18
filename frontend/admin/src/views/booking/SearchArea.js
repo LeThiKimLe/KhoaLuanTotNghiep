@@ -32,6 +32,7 @@ import { selectChangeState } from 'src/feature/booking/booking.slice'
 import { selectCurrentTrip } from 'src/feature/booking/booking.slice'
 import FilterBox from './FilterBox'
 import { filterAction } from 'src/feature/filter/filter.slice'
+import { selectServiceDueDate } from 'src/feature/fee/fee.slice'
 
 const SearchArea = () => {
     const listRoute = useSelector(selectListCompanyRoute)
@@ -41,6 +42,7 @@ const SearchArea = () => {
     const { listDeparture, listDestination } = useMemo(() => createListRoutes(listRoute), [])
     const originPlaceInput = useRef(null)
     const [currentInfor, setCurrentInfor] = useState(searchInfor)
+    const systemDueDate = useSelector(selectServiceDueDate)
     const [toast, addToast] = useState(0)
     const today = new Date()
     const twoMonthsLater = new Date()
@@ -151,6 +153,9 @@ const SearchArea = () => {
             })
         }
     }, [currentInfor.desLocation])
+    useEffect(() => {
+        setCurrentInfor(searchInfor)
+    }, [searchInfor])
     return (
         <>
             <CToaster push={toast} placement="top-end" />
@@ -185,13 +190,12 @@ const SearchArea = () => {
                             onChange={chooseOriginDate}
                             dateFormat="dd/MM/yyyy"
                             placeholderText="Chọn ngày đi"
-                            minDate={today}
-                            maxDate={twoMonthsLater}
+                            maxDate={systemDueDate}
                             className="form-control"
                         />
                     </CCol>
                     <CCol md="2">
-                        <CFormLabel>Bộ lọc</CFormLabel>
+                        <CFormLabel>Bộ lọc chuyến</CFormLabel>
                         <div style={{ position: 'relative' }}>
                             <CFormInput
                                 readOnly

@@ -6,7 +6,16 @@ import {
 } from 'src/feature/search/search.slice'
 import { useSelector } from 'react-redux'
 import TripInfor from './TripInfor'
-import { CRow, CContainer, CCard, CCollapse, CToaster, CCol, CButton } from '@coreui/react'
+import {
+    CRow,
+    CContainer,
+    CCard,
+    CCollapse,
+    CToaster,
+    CCol,
+    CButton,
+    CCardBody,
+} from '@coreui/react'
 import { useState, useEffect, useRef } from 'react'
 import { convertTimeToInt, convertToDisplayDate } from 'src/utils/convertUtils'
 import SeatMap from './SeatMap'
@@ -96,6 +105,7 @@ const ListTrip = () => {
                     searchResult.filter((trip) => trip.id === currentTrip.id)[0],
                 ),
             )
+        console.log(searchResult.filter((trip) => trip.id === currentTrip?.id)[0])
     }, searchResult)
     useEffect(() => {
         if (isChanging === null) {
@@ -103,6 +113,7 @@ const ListTrip = () => {
             dispatch(ticketActions.clearTarget())
         }
     }, [isChanging])
+    console.log(currentTrip)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -157,10 +168,12 @@ const ListTrip = () => {
                                 (currentTrip && isBooking) ||
                                 (currentTrip && isAdjusting)) && (
                                 <CCard>
-                                    <SeatMap
-                                        seatMap={currentTrip.tripInfor.busType.seatMap}
-                                        activeTicket={getActiveTicket()}
-                                    ></SeatMap>
+                                    <CCardBody>
+                                        <SeatMap
+                                            seatMap={currentTrip.tripInfor.busType.seatMap}
+                                            activeTicket={getActiveTicket()}
+                                        ></SeatMap>
+                                    </CCardBody>
                                 </CCard>
                             )}
                             {!isAdjusting && !isBooking && loadingBook === true && (

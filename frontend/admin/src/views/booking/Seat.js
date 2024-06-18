@@ -22,7 +22,7 @@ import {
 } from '@coreui/icons'
 import { CButton } from '@coreui/react'
 import { useDispatch } from 'react-redux'
-import { bookingActions } from 'src/feature/booking/booking.slice'
+import { bookingActions, selectTicketFilter } from 'src/feature/booking/booking.slice'
 import { useSelector } from 'react-redux'
 import { selectListChosen, selectCurrentTrip } from 'src/feature/booking/booking.slice'
 import { useEffect, memo } from 'react'
@@ -36,6 +36,7 @@ import {
 } from 'src/feature/ticket/ticket.slice'
 import TicketDetail from './TicketDetail'
 import { CustomToast } from '../customToast/CustomToast'
+
 const Seat = ({ seat, ticket, empty, isActive, chooseSeat }) => {
     const dispatch = useDispatch()
     const listChosen = useSelector(selectListChosen)
@@ -46,7 +47,9 @@ const Seat = ({ seat, ticket, empty, isActive, chooseSeat }) => {
     const schedule = useSelector(selectCurrentTrip)
     const listSource = useSelector(selectListSource)
     const listTarget = useSelector(selectListTarget)
+    const ticketFilter = useSelector(selectTicketFilter)
     const [toast, addToast] = useState(0)
+    const [show, setShow] = useState(true)
     const toaster = useRef('')
     const getItemColor = () => {
         if (ticket)
@@ -90,7 +93,33 @@ const Seat = ({ seat, ticket, empty, isActive, chooseSeat }) => {
             addToast(() => CustomToast({ message: 'Chỉ chọn đủ số vé cần đổi', type: 'error' }))
         }
     }
-
+    useEffect(() => {
+        let value1 = true,
+            value2 = true,
+            value3 = true
+        if (ticketFilter.station == 0) value1 = true
+        else if (ticket) {
+            if (
+                ticket.booking.pickStation.id == ticketFilter.station ||
+                ticket.booking.dropStation.id == ticketFilter.station
+            )
+                value1 = true
+            else value1 = false
+        }
+        if (ticketFilter.payStatus == 0) value2 = true
+        else if (ticket) {
+            if (ticketFilter.payStatus == 1 && ticket.state == 'Đã thanh toán') value2 = true
+            else if (ticketFilter.payStatus == 2 && ticket.state == 'Chờ thanh toán') value2 = true
+            else value2 = false
+        }
+        if (ticketFilter.guestStatus == 0) value3 = true
+        else if (ticket) {
+            if (ticketFilter.guestStatus == 1 && ticket.checkedIn) value3 = true
+            else if (ticketFilter.guestStatus == 2 && !ticket.checkedIn) value3 = true
+            else value3 = false
+        }
+        setShow(value1 && value2 && value3)
+    }, [ticketFilter])
     if (empty) {
         return <CCard style={{ width: '250px', height: '320px', visibility: 'hidden' }}></CCard>
     } else {
@@ -107,65 +136,74 @@ const Seat = ({ seat, ticket, empty, isActive, chooseSeat }) => {
                         }
                         onClick={handleChooseSeat}
                     >
-                        <CCardHeader className={`bg-${getItemColor()}`}>
-                            <CRow>
-                                <CCol>
-                                    <strong>{seat.name}</strong>
-                                </CCol>
-                                <CCol className="d-flex justify-content-end">
-                                    <CCard>
-                                        <b>{ticket.booking.tel}</b>
-                                    </CCard>
-                                </CCol>
-                            </CRow>
-                        </CCardHeader>
-                        <CCardBody style={{ maxHeight: '218px' }} className="overflow-auto">
-                            <CCardText className="mb-1">{`Khách hàng: ${ticket.booking.name}`}</CCardText>
-                            <CCardText className="mb-1">{`Mã vé: ${ticket.booking.code}`}</CCardText>
-                            <CRow className="justify-content-end">
-                                <CCol style={{ textAlign: 'right' }} xs="10">
-                                    <span>{ticket.booking.pickStation.station.name}</span>
-                                </CCol>
-                                <CCol xs="2">
-                                    <CIcon icon={cilChevronDoubleUp}></CIcon>
-                                </CCol>
-                            </CRow>
-                            <CRow className="justify-content-end">
-                                <CCol style={{ textAlign: 'right' }} xs="10">
-                                    <span>{ticket.booking.dropStation.station.name}</span>
-                                </CCol>
-                                <CCol xs="2">
-                                    <CIcon icon={cilChevronDoubleDown}></CIcon>
-                                </CCol>
-                            </CRow>
-                            <CCardText>
-                                {ticket.booking.conductStaff ? (
-                                    <small className="text-medium-emphasis">{`NV đặt vé: ${ticket.booking.conductStaff.nickname.slice(
-                                        3,
-                                    )}`}</small>
-                                ) : (
-                                    <small className="text-medium-emphasis">{`Đặt vé online`}</small>
-                                )}
-                            </CCardText>
-                        </CCardBody>
-                        <CCardFooter>
-                            <CRow className="justify-content-center">
-                                <CCol xs="4" className="p-0 d-flex justify-content-center">
-                                    <CButton
-                                        variant="outline"
-                                        color="success"
-                                        onClick={() => setShowDetail(true)}
-                                    >
-                                        <CIcon icon={cilPencil}></CIcon>
-                                    </CButton>
-                                </CCol>
-                                {/* <CCol xs="4" className="p-0 d-flex justify-content-center">
+                        {show && (
+                            <>
+                                <CCardHeader className={`bg-${getItemColor()}`}>
+                                    <CRow>
+                                        <CCol>
+                                            <strong>{seat.name}</strong>
+                                        </CCol>
+                                        <CCol className="d-flex justify-content-end">
+                                            <CCard>
+                                                <b>{ticket.booking.tel}</b>
+                                            </CCard>
+                                        </CCol>
+                                    </CRow>
+                                </CCardHeader>
+                                <CCardBody style={{ maxHeight: '218px' }} className="overflow-auto">
+                                    <CCardText className="mb-1">{`Khách hàng: ${ticket.booking.name}`}</CCardText>
+                                    <CCardText className="mb-1">{`Mã vé: ${ticket.booking.code}`}</CCardText>
+                                    <CRow className="justify-content-end">
+                                        <CCol style={{ textAlign: 'right' }} xs="10">
+                                            <span>{ticket.booking.pickStation.station.name}</span>
+                                        </CCol>
+                                        <CCol xs="2">
+                                            <CIcon icon={cilChevronDoubleUp}></CIcon>
+                                        </CCol>
+                                    </CRow>
+                                    <CRow className="justify-content-end">
+                                        <CCol style={{ textAlign: 'right' }} xs="10">
+                                            <span>{ticket.booking.dropStation.station.name}</span>
+                                        </CCol>
+                                        <CCol xs="2">
+                                            <CIcon icon={cilChevronDoubleDown}></CIcon>
+                                        </CCol>
+                                    </CRow>
+                                    <CCardText className="mb-1">
+                                        {ticket.booking.conductStaff ? (
+                                            <small className="text-medium-emphasis">{`NV đặt vé: ${ticket.booking.conductStaff.nickname.slice(
+                                                3,
+                                            )}`}</small>
+                                        ) : (
+                                            <small className="text-medium-emphasis">{`Đặt vé online`}</small>
+                                        )}
+                                    </CCardText>
+                                    {ticket.checkedIn && (
+                                        <small style={{ color: 'green' }}>
+                                            <i>Đã lên xe</i>
+                                        </small>
+                                    )}
+                                </CCardBody>
+                                <CCardFooter>
+                                    <CRow className="justify-content-center">
+                                        <CCol xs="4" className="p-0 d-flex justify-content-center">
+                                            <CButton
+                                                variant="outline"
+                                                color="success"
+                                                onClick={() => setShowDetail(true)}
+                                            >
+                                                <CIcon icon={cilPencil}></CIcon>
+                                            </CButton>
+                                        </CCol>
+                                        {/* <CCol xs="4" className="p-0 d-flex justify-content-center">
                                     <CButton variant="outline" color="danger">
                                         <CIcon icon={cilTrash}></CIcon>
                                     </CButton>
                                 </CCol> */}
-                            </CRow>
-                        </CCardFooter>
+                                    </CRow>
+                                </CCardFooter>
+                            </>
+                        )}
                     </CCard>
                     <TicketDetail
                         ticket={ticket}

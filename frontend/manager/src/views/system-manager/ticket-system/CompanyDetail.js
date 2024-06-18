@@ -36,6 +36,7 @@ import {
     CFormCheck,
     CFormTextarea,
     CButtonGroup,
+    CSpinner,
 } from '@coreui/react'
 import {
     companyActions,
@@ -79,6 +80,7 @@ import { format, parse } from 'date-fns'
 import { DateRange } from 'react-date-range'
 import { cilStar } from '@coreui/icons'
 import { addDays } from 'src/utils/convertUtils'
+import { getTripJourney } from 'src/utils/tripUtils'
 const ScheduleWrap = ({ schedule, turn, isEdit = false, removeTrip }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
@@ -1128,6 +1130,9 @@ const FeeInfo = ({ listAssignRouteId }) => {
         start: today.getFullYear() == 2023 ? 8 : 0,
         end: today.getMonth(),
     })
+    const [listCompanySchedule, setListCompanySchedule] = useState([])
+    const [loading, setLoading] = useState(false)
+    const [totalMoney, setTotalMoney] = useState(0)
     const getYearRange = () => {
         var year = []
         const startYear = startTime.getFullYear()
@@ -1160,10 +1165,24 @@ const FeeInfo = ({ listAssignRouteId }) => {
         const labels = []
         const data = []
         const backGroundColor = []
-        listTrip.forEach((trip) => {
-            labels.push(`${trip.startStation.name} - ${trip.endStation.name}`)
+        const listData = []
+        for (let i = 0; i < listCompanySchedule.length; i++) {
+            const item = listData.findIndex(
+                (item) => item.trip.id === listCompanySchedule[i].trip.id,
+            )
+            if (item != -1) {
+                listData[item].listSchedule.push(listCompanySchedule[i])
+            } else {
+                listData.push({
+                    trip: listCompanySchedule[i].trip,
+                    listSchedule: [listCompanySchedule[i]],
+                })
+            }
+        }
+        listData.forEach((item) => {
+            labels.push(getTripJourney(item.trip))
             //get random number
-            data.push(Math.floor(Math.random() * 100) + 1)
+            data.push(item.listSchedule.length)
             backGroundColor.push(randomColor())
         })
         setChartData({ labels: labels, data: data, backGroundColor: backGroundColor })
@@ -1176,6 +1195,48 @@ const FeeInfo = ({ listAssignRouteId }) => {
                 setListCompanyServiceFee(
                     res.filter((fee) => fee.company.id === curCompany.busCompany.id),
                 )
+            })
+    }
+    const getScheduleData = () => {
+        setLoading(true)
+        dispatch(
+            feeThunk.getCompanySchedule({
+                month: monthValue + 1,
+                year: yearValue,
+            }),
+        )
+            .unwrap()
+            .then((res) => {
+                console.log(res)
+                setListCompanySchedule(
+                    res.find((item) => item.busCompany.id === curCompany.busCompany.id)?.schedules,
+                )
+                setLoading(false)
+                // handleCalTicketSale()
+            })
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+            })
+    }
+
+    const handleCalTicketSale = () => {
+        dispatch(
+            feeThunk.getTicketSale({
+                month: monthValue + 1,
+                year: yearValue,
+            }),
+        )
+            .unwrap()
+            .then((res) => {
+                console.log(res)
+                setTotalMoney(
+                    res.find((item) => item.busCompany.id === curCompany.busCompany.id)?.ticketSave
+                        .ticketSales,
+                )
+            })
+            .catch((err) => {
+                setTotalMoney(0)
             })
     }
 
@@ -1215,10 +1276,13 @@ const FeeInfo = ({ listAssignRouteId }) => {
     }, [listAssignRouteId])
 
     useEffect(() => {
-        getLabelandColor()
-    }, [listTrip])
+        getScheduleData()
+        handleCalTicketSale()
+    }, [monthValue, yearValue])
 
-    useEffect(() => {}, [monthValue, yearValue])
+    useEffect(() => {
+        getLabelandColor()
+    }, [listCompanySchedule])
 
     useEffect(() => {
         getData()
@@ -1232,158 +1296,201 @@ const FeeInfo = ({ listAssignRouteId }) => {
                     <Tab>Phí dịch vụ</Tab>
                 </TabList>
                 <TabPanel className="px-3">
-                    <CRow className="justify-content-center align-items-center">
-                        <CCol>
-                            <b>Số vé bán ra</b>
-                            <div className="small text-medium-emphasis">{`${MONTH_IN_YEAR[monthValue]}
+                    {loading ? (
+                        <div className="d-flex justify-content-center">
+                            <CSpinner />
+                        </div>
+                    ) : (
+                        <>
+                            <CRow className="justify-content-center align-items-center">
+                                <CCol>
+                                    <b>Số vé bán ra</b>
+                                    <div className="small text-medium-emphasis">{`${MONTH_IN_YEAR[monthValue]}
                                  ${yearValue}`}</div>
-                        </CCol>
-                        <CCol sm={3}>
-                            <CFormSelect
-                                value={yearValue}
-                                onChange={(e) => setYearValue(parseInt(e.target.value))}
-                            >
-                                <option value="-1" disabled>
-                                    Chọn năm
-                                </option>
-                                {getYearRange().map((year) => (
-                                    <option value={year} key={year}>
-                                        {year}
-                                    </option>
-                                ))}
-                            </CFormSelect>
-                        </CCol>
-                        <CCol sm={3}>
-                            <CFormSelect
-                                value={monthValue}
-                                onChange={(e) => setMonthValue(parseInt(e.target.value))}
-                            >
-                                <option value="-1" disabled>
-                                    Chọn tháng
-                                </option>
-                                {MONTH_IN_YEAR.slice(monthRange.start, monthRange.end + 1).map(
-                                    (month, index) => (
-                                        <option value={monthRange.start + index} key={index}>
-                                            {month}
+                                </CCol>
+                                <CCol sm={3}>
+                                    <CFormSelect
+                                        value={yearValue}
+                                        onChange={(e) => setYearValue(parseInt(e.target.value))}
+                                    >
+                                        <option value="-1" disabled>
+                                            Chọn năm
                                         </option>
-                                    ),
-                                )}
-                            </CFormSelect>
-                        </CCol>
-                    </CRow>
-                    <CRow className="justify-content-center align-items-center gap-3 mt-3">
-                        <CCol md={3}>
-                            <div>
-                                <div className="text-center">
-                                    <b style={{ fontSize: '20px' }}>{`${100} vé`}</b>
-                                </div>
-                                <CChart
-                                    type="doughnut"
-                                    data={{
-                                        labels: chartData.labels,
-                                        datasets: [
-                                            {
-                                                backgroundColor: chartData.backGroundColor,
-                                                data: chartData.data,
-                                            },
-                                        ],
-                                    }}
-                                    options={{
-                                        plugins: {
-                                            legend: {
-                                                labels: {
-                                                    color: getStyle('--cui-body-color'),
-                                                    textAlign: 'left',
-                                                    usePointStyle: true,
+                                        {getYearRange().map((year) => (
+                                            <option value={year} key={year}>
+                                                {year}
+                                            </option>
+                                        ))}
+                                    </CFormSelect>
+                                </CCol>
+                                <CCol sm={3}>
+                                    <CFormSelect
+                                        value={monthValue}
+                                        onChange={(e) => setMonthValue(parseInt(e.target.value))}
+                                    >
+                                        <option value="-1" disabled>
+                                            Chọn tháng
+                                        </option>
+                                        {MONTH_IN_YEAR.slice(
+                                            monthRange.start,
+                                            monthRange.end + 1,
+                                        ).map((month, index) => (
+                                            <option value={monthRange.start + index} key={index}>
+                                                {month}
+                                            </option>
+                                        ))}
+                                    </CFormSelect>
+                                </CCol>
+                            </CRow>
+                            <CRow className="justify-content-center align-items-center gap-3 mt-3">
+                                <CCol md={3}>
+                                    <div>
+                                        <div className="text-center">
+                                            <b
+                                                style={{ fontSize: '20px' }}
+                                            >{`${listCompanySchedule.length} chuyến`}</b>
+                                        </div>
+                                        <CChart
+                                            type="doughnut"
+                                            data={{
+                                                labels: chartData.labels,
+                                                datasets: [
+                                                    {
+                                                        backgroundColor: chartData.backGroundColor,
+                                                        data: chartData.data,
+                                                    },
+                                                ],
+                                            }}
+                                            options={{
+                                                plugins: {
+                                                    legend: {
+                                                        labels: {
+                                                            color: getStyle('--cui-body-color'),
+                                                            textAlign: 'left',
+                                                            usePointStyle: true,
+                                                        },
+                                                    },
                                                 },
-                                            },
-                                        },
-                                    }}
-                                />
-                            </div>
-                        </CCol>
-                        <CCol md={6}>
-                            <CTable bordered>
-                                <CTableHead>
-                                    <CTableRow>
-                                        <CTableHeaderCell scope="col">STT</CTableHeaderCell>
-                                        <CTableHeaderCell scope="col">Tuyến</CTableHeaderCell>
-                                        <CTableHeaderCell
-                                            scope="col"
-                                            align="center"
-                                            className="text-center"
-                                        >
-                                            Số vé
-                                        </CTableHeaderCell>
-                                        <CTableHeaderCell
-                                            scope="col"
-                                            align="center"
-                                            className="text-center"
-                                        >
-                                            Tổng tiền
-                                        </CTableHeaderCell>
-                                    </CTableRow>
-                                </CTableHead>
-                                <CTableBody>
-                                    {chartData.labels.map((label, index) => (
-                                        <CTableRow key={index}>
-                                            <CTableHeaderCell scope="row">
-                                                {index + 1}
-                                            </CTableHeaderCell>
-                                            <CTableDataCell>{label}</CTableDataCell>
-                                            <CTableDataCell align="center" className="text-center">
-                                                {chartData.data[index]}
-                                            </CTableDataCell>
-                                            <CTableDataCell align="center" className="text-center">
-                                                {chartData.data[index] * 36}
-                                            </CTableDataCell>
-                                        </CTableRow>
-                                    ))}
-                                    <CTableRow>
-                                        <CTableHeaderCell scope="row">#1</CTableHeaderCell>
-                                        <CTableDataCell colSpan={2}>
-                                            <b>
-                                                <i>Tổng tiền vé</i>
-                                            </b>
-                                        </CTableDataCell>
-                                        <CTableDataCell align="center" className="text-center">
-                                            <b>1000</b>
-                                        </CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableHeaderCell scope="row">#2</CTableHeaderCell>
-                                        <CTableDataCell colSpan={2}>
-                                            <b>
-                                                <i>Phí dịch vụ - 10%</i>
-                                            </b>
-                                        </CTableDataCell>
-                                        <CTableDataCell align="center" className="text-center">
-                                            <b>10</b>
-                                        </CTableDataCell>
-                                    </CTableRow>
-                                    <CTableRow>
-                                        <CTableHeaderCell scope="row">$</CTableHeaderCell>
-                                        <CTableDataCell colSpan={2}>
-                                            <div className="d-flex justify-content-between">
-                                                <b style={{ color: 'red' }}>
-                                                    <i>Tổng chi</i>
-                                                </b>
-                                                <i style={{ color: 'grey' }}>Chưa thanh toán</i>
-                                                <i style={{ color: 'green' }}>Đã thanh toán</i>
-                                            </div>
-                                        </CTableDataCell>
-                                        <CTableDataCell
-                                            align="center"
-                                            className="text-center"
-                                            active
-                                        >
-                                            <b>990</b>
-                                        </CTableDataCell>
-                                    </CTableRow>
-                                </CTableBody>
-                            </CTable>
-                        </CCol>
-                    </CRow>
+                                            }}
+                                        />
+                                    </div>
+                                </CCol>
+                                <CCol md={6}>
+                                    <CTable bordered>
+                                        <CTableHead>
+                                            <CTableRow>
+                                                <CTableHeaderCell scope="col">STT</CTableHeaderCell>
+                                                <CTableHeaderCell scope="col">
+                                                    Tuyến
+                                                </CTableHeaderCell>
+                                                <CTableHeaderCell
+                                                    scope="col"
+                                                    align="center"
+                                                    className="text-center"
+                                                >
+                                                    Số chuyến
+                                                </CTableHeaderCell>
+                                                <CTableHeaderCell
+                                                    scope="col"
+                                                    align="center"
+                                                    className="text-center"
+                                                >
+                                                    Số vé
+                                                </CTableHeaderCell>
+                                            </CTableRow>
+                                        </CTableHead>
+                                        <CTableBody>
+                                            {chartData.labels.map((label, index) => (
+                                                <CTableRow key={index}>
+                                                    <CTableHeaderCell scope="row">
+                                                        {index + 1}
+                                                    </CTableHeaderCell>
+                                                    <CTableDataCell>{label}</CTableDataCell>
+                                                    <CTableDataCell
+                                                        align="center"
+                                                        className="text-center"
+                                                    >
+                                                        {chartData.data[index]}
+                                                    </CTableDataCell>
+                                                    <CTableDataCell
+                                                        align="center"
+                                                        className="text-center"
+                                                    >
+                                                        {listCompanySchedule
+                                                            .filter(
+                                                                (item) =>
+                                                                    getTripJourney(item.trip) ===
+                                                                    label,
+                                                            )
+                                                            .reduce(
+                                                                (acc, item) =>
+                                                                    acc + item.tickets.length,
+                                                                0,
+                                                            )}
+                                                    </CTableDataCell>
+                                                </CTableRow>
+                                            ))}
+                                            <CTableRow>
+                                                <CTableHeaderCell scope="row">#1</CTableHeaderCell>
+                                                <CTableDataCell colSpan={2}>
+                                                    <b>
+                                                        <i>Tổng tiền vé</i>
+                                                    </b>
+                                                </CTableDataCell>
+                                                <CTableDataCell
+                                                    align="center"
+                                                    className="text-center"
+                                                >
+                                                    <b>{totalMoney.toLocaleString()}</b>
+                                                </CTableDataCell>
+                                            </CTableRow>
+                                            <CTableRow>
+                                                <CTableHeaderCell scope="row">#2</CTableHeaderCell>
+                                                <CTableDataCell colSpan={2}>
+                                                    <b>
+                                                        <i>Phí dịch vụ - 20%</i>
+                                                    </b>
+                                                </CTableDataCell>
+                                                <CTableDataCell
+                                                    align="center"
+                                                    className="text-center"
+                                                >
+                                                    <b>
+                                                        {((totalMoney * 20) / 200).toLocaleString()}
+                                                    </b>
+                                                </CTableDataCell>
+                                            </CTableRow>
+                                            <CTableRow>
+                                                <CTableHeaderCell scope="row">$</CTableHeaderCell>
+                                                <CTableDataCell colSpan={2}>
+                                                    <div className="d-flex justify-content-between">
+                                                        <b style={{ color: 'red' }}>
+                                                            <i>Tổng chi</i>
+                                                        </b>
+                                                        <i style={{ color: 'grey' }}>
+                                                            Chưa thanh toán
+                                                        </i>
+                                                        <i style={{ color: 'green' }}>
+                                                            Đã thanh toán
+                                                        </i>
+                                                    </div>
+                                                </CTableDataCell>
+                                                <CTableDataCell
+                                                    align="center"
+                                                    className="text-center"
+                                                    active
+                                                >
+                                                    <b>
+                                                        {((totalMoney * 80) / 200).toLocaleString()}
+                                                    </b>
+                                                </CTableDataCell>
+                                            </CTableRow>
+                                        </CTableBody>
+                                    </CTable>
+                                </CCol>
+                            </CRow>
+                        </>
+                    )}
                 </TabPanel>
                 <TabPanel className="px-3">
                     <CTable striped bordered>

@@ -12,9 +12,12 @@ import {
     CFormLabel,
     CFormText,
     CFormInput,
+    CCardFooter,
 } from '@coreui/react'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
 import { getRouteName, getStartStation, getEndStation } from 'src/utils/tripUtils'
+import ScheduleState from './ScheduleStateTracker'
+import TicketFilter from './TicketFilter'
 const TripDetail = ({ currentTrip }) => {
     return (
         <CCard className="mt-3 p-3">
@@ -149,7 +152,11 @@ const TripDetail = ({ currentTrip }) => {
                         </CRow>
                     </CCol>
                 </CRow>
+                <ScheduleState schedule={currentTrip}></ScheduleState>
             </CCardBody>
+            <CCardFooter>
+                <TicketFilter schedule={currentTrip}></TicketFilter>
+            </CCardFooter>
         </CCard>
     )
 }
