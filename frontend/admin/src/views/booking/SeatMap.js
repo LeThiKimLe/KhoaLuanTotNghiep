@@ -65,6 +65,7 @@ const SeatMap = ({ seatMap, activeTicket }) => {
             activePosition.current.scrollIntoView()
         }
     }, [])
+    console.log(listChosen)
     return (
         <>
             <CCard>
@@ -147,7 +148,7 @@ const SeatMap = ({ seatMap, activeTicket }) => {
                 </CRow>
             </CCard>
             {listChosen.length > 0 && (
-                <CCard className="position-fixed bottom-3 end-0 p-3 border-3">
+                <CCard className="position-fixed bottom-0 end-0 p-3 border-3">
                     <CCardSubtitle className="mb-3">{`Đã chọn ${listChosen.length} vé`}</CCardSubtitle>
                     <CRow>
                         <CButton

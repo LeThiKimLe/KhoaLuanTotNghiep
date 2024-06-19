@@ -167,14 +167,10 @@ const ListTrip = () => {
                             {((currentTrip && loadingBook === false) ||
                                 (currentTrip && isBooking) ||
                                 (currentTrip && isAdjusting)) && (
-                                <CCard>
-                                    <CCardBody>
-                                        <SeatMap
-                                            seatMap={currentTrip.tripInfor.busType.seatMap}
-                                            activeTicket={getActiveTicket()}
-                                        ></SeatMap>
-                                    </CCardBody>
-                                </CCard>
+                                <SeatMap
+                                    seatMap={currentTrip.tripInfor.busType.seatMap}
+                                    activeTicket={getActiveTicket()}
+                                ></SeatMap>
                             )}
                             {!isAdjusting && !isBooking && loadingBook === true && (
                                 <CCard className="p-3 text-center">
