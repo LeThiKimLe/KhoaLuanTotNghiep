@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.QuanLyNhaXe.model.Booking;
+import com.example.QuanLyNhaXe.model.BusCompany;
 
 
 public interface BookingRepository extends JpaRepository<Booking, Integer> {
@@ -20,7 +21,7 @@ public interface BookingRepository extends JpaRepository<Booking, Integer> {
 
 	List<Booking> findByTel(String tel);
 	
-	List<Booking> findByTransactionIsNotNullAndBookingDateBetween(LocalDateTime startDateTime, LocalDateTime endDateTime);
+	List<Booking> findByTransactionIsNotNullAndBookingDateBetweenAndTripBusCompany(LocalDateTime startDateTime, LocalDateTime endDateTime,BusCompany busCompany);
 	
 	
 }

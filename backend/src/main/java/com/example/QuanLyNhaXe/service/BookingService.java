@@ -26,6 +26,7 @@ import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Booking;
+import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.Staff;
 import com.example.QuanLyNhaXe.model.StopStation;
@@ -373,15 +374,15 @@ public class BookingService {
 
 	}
 
-	public Integer getTicketsForMonth(YearMonth yearMonth) {
+	public Integer getTicketsForMonth(YearMonth yearMonth, BusCompany busCompany) {
 		Integer sum = 0;
 		LocalDate firstDayOfMonth = yearMonth.atDay(1);
 		LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
 		LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 		LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
 
-		List<Booking> bookings = bookingRepository.findByTransactionIsNotNullAndBookingDateBetween(startDateTime,
-				endDateTime);
+		List<Booking> bookings = bookingRepository.findByTransactionIsNotNullAndBookingDateBetweenAndTripBusCompany(startDateTime,
+				endDateTime,busCompany);
 		for (Booking booking : bookings) {
 			for (Ticket ticket : booking.getTickets()) {
 				if (ticket.getState().equals(TicketState.PAID.getLabel())) {
@@ -393,14 +394,14 @@ public class BookingService {
 		return sum;
 	}
 
-	public Integer getTicketsForDay(LocalDate date) {
+	public Integer getTicketsForDay(LocalDate date,BusCompany busCompany) {
 		Integer sum = 0;
 
 		LocalDateTime startDateTime = date.atStartOfDay();
 		LocalDateTime endDateTime = date.atTime(LocalTime.MAX);
 
-		List<Booking> bookings = bookingRepository.findByTransactionIsNotNullAndBookingDateBetween(startDateTime,
-				endDateTime);
+		List<Booking> bookings = bookingRepository.findByTransactionIsNotNullAndBookingDateBetweenAndTripBusCompany(startDateTime,
+				endDateTime,busCompany);
 		for (Booking booking : bookings) {
 			for (Ticket ticket : booking.getTickets()) {
 				if (ticket.getState().equals(TicketState.PAID.getLabel())) {
@@ -412,11 +413,11 @@ public class BookingService {
 		return sum;
 	}
 
-	public List<SumTicKet> getTicketForTrip(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+	public List<SumTicKet> getTicketForTrip(LocalDateTime startDateTime, LocalDateTime endDateTime, BusCompany busCompany) {
 		List<SumTicKet> sumTicKets = new ArrayList<>();
 
-		List<Booking> bookings = bookingRepository.findByTransactionIsNotNullAndBookingDateBetween(startDateTime,
-				endDateTime);
+		List<Booking> bookings = bookingRepository.findByTransactionIsNotNullAndBookingDateBetweenAndTripBusCompany(startDateTime,
+				endDateTime,busCompany);
 		Set<Trip> uniqueTrips = new HashSet<>();
 		List<Trip> distinctTrips = new ArrayList<>();
 

@@ -108,17 +108,17 @@ public class TransactionService {
 
 	}
 
-	public long calculateRevenueOneMonth(YearMonth yearMonth) {
+	public long calculateRevenueOneMonth(YearMonth yearMonth, BusCompany busCompany) {
 		long sum = 0L;
 		long sum2 = 0L;
 		LocalDate firstDayOfMonth = yearMonth.atDay(1);
 		LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
 		LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 		LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
-		List<Transaction> transactions = transactionRepository.findByPaymentTimeBetweenAndTransactionType(startDateTime,
-				endDateTime, TransactionType.PAYMENT.getLabel());
-		List<Transaction> transactions2 = transactionRepository.findByPaymentTimeBetweenAndTransactionType(
-				startDateTime, endDateTime, TransactionType.REFUND.getLabel());
+		List<Transaction> transactions = transactionRepository.findByPaymentTimeBetweenAndTransactionTypeAndBookings_Trip_BusCompany(startDateTime,
+				endDateTime, TransactionType.PAYMENT.getLabel(),busCompany);
+		List<Transaction> transactions2 = transactionRepository.findByPaymentTimeBetweenAndTransactionTypeAndBookings_Trip_BusCompany(
+				startDateTime, endDateTime, TransactionType.REFUND.getLabel(),busCompany);
 		if (!transactions.isEmpty()) {
 			for (Transaction transaction : transactions) {
 				sum += transaction.getAmount();
@@ -135,15 +135,15 @@ public class TransactionService {
 
 	}
 
-	public long calculateRevenueOneDay(LocalDate date) {
+	public long calculateRevenueOneDay(LocalDate date, BusCompany busCompany) {
 		long sum = 0L;
 		long sum2 = 0L;
 		LocalDateTime startDateTime = date.atStartOfDay();
 		LocalDateTime endDateTime = date.atTime(LocalTime.MAX);
-		List<Transaction> transactions = transactionRepository.findByPaymentTimeBetweenAndTransactionType(startDateTime,
-				endDateTime, TransactionType.PAYMENT.getLabel());
-		List<Transaction> transactions2 = transactionRepository.findByPaymentTimeBetweenAndTransactionType(
-				startDateTime, endDateTime, TransactionType.REFUND.getLabel());
+		List<Transaction> transactions = transactionRepository.findByPaymentTimeBetweenAndTransactionTypeAndBookings_Trip_BusCompany(startDateTime,
+				endDateTime, TransactionType.PAYMENT.getLabel(),busCompany);
+		List<Transaction> transactions2 = transactionRepository.findByPaymentTimeBetweenAndTransactionTypeAndBookings_Trip_BusCompany(
+				startDateTime, endDateTime, TransactionType.REFUND.getLabel(),busCompany);
 		if (!transactions.isEmpty()) {
 			for (Transaction transaction : transactions) {
 				sum += transaction.getAmount();

@@ -373,7 +373,11 @@ public class TripService {
 		return TripBusDriver.builder().drivers(driverDTOs).buses(busDTOs).build();
 	}
 
-	public Object getStatisticTickets(Integer year, Integer month) {
+	public Object getStatisticTickets(Integer year, Integer month, String authentication) {
+		User user=userService.getByAuthorizationHeader(authentication);
+		BusCompany busCompany=busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+				
 		if (year <= 0 || month < 0 || month > 12) {
 			throw new BadRequestException(Message.BAD_REQUEST);
 
@@ -386,8 +390,8 @@ public class TripService {
 		if (month == 0) {
 			List<YearMonth> yearMonths = getAllYearMonths(year);
 			for (YearMonth yearMonth : yearMonths) {
-				calculateRevenue = transactionService.calculateRevenueOneMonth(yearMonth);
-				sumTickets = bookingService.getTicketsForMonth(yearMonth);
+				calculateRevenue = transactionService.calculateRevenueOneMonth(yearMonth,busCompany);
+				sumTickets = bookingService.getTicketsForMonth(yearMonth,busCompany);
 				StatisticOneMonth statisticOneDay = StatisticOneMonth.builder().tickets(sumTickets)
 						.revenue(calculateRevenue).month(yearMonth).build();
 				statisticOneMonths.add(statisticOneDay);
@@ -396,8 +400,8 @@ public class TripService {
 		} else {
 			List<LocalDate> localDates = getAllDaysInMonth(year, month);
 			for (LocalDate localDate : localDates) {
-				calculateRevenue = transactionService.calculateRevenueOneDay(localDate);
-				sumTickets = bookingService.getTicketsForDay(localDate);
+				calculateRevenue = transactionService.calculateRevenueOneDay(localDate,busCompany);
+				sumTickets = bookingService.getTicketsForDay(localDate,busCompany);
 				StatisticOneDay statisticOneDay = StatisticOneDay.builder().date(localDate).revenue(calculateRevenue)
 						.tickets(sumTickets).build();
 				statisticOneDays.add(statisticOneDay);
@@ -475,7 +479,10 @@ public class TripService {
 
 	}
 
-	public Object statisTicTripTicket(Integer year, Integer month) {
+	public Object statisTicTripTicket(Integer year, Integer month, String authentication) {
+		User user=userService.getByAuthorizationHeader(authentication);
+		BusCompany busCompany=busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 		List<StatisticTripTicketsForMonth> statisticTripTicketsForMonths = new ArrayList<>();
 		List<StatisticTripTicketsForYear> statisticTripTicketsForYears = new ArrayList<>();
 		List<SumTicKet> sumTicKets;
@@ -490,7 +497,7 @@ public class TripService {
 				LocalDateTime startDateTime = firstDayOfMonth.atStartOfDay();
 				LocalDate lastDayOfMonth = yearMonth.atEndOfMonth();
 				LocalDateTime endDateTime = lastDayOfMonth.atTime(LocalTime.MAX);
-				sumTicKets = bookingService.getTicketForTrip(startDateTime, endDateTime);
+				sumTicKets = bookingService.getTicketForTrip(startDateTime, endDateTime,busCompany);
 				StatisticTripTicketsForYear statisticTripTicketsForYear = StatisticTripTicketsForYear.builder()
 						.month(yearMonth).statisticTickets(sumTicKets).build();
 				statisticTripTicketsForYears.add(statisticTripTicketsForYear);
@@ -501,7 +508,7 @@ public class TripService {
 			for (LocalDate date : localDates) {
 				LocalDateTime startDateTime = date.atStartOfDay();
 				LocalDateTime endDateTime = date.atTime(LocalTime.MAX);
-				sumTicKets = bookingService.getTicketForTrip(startDateTime, endDateTime);
+				sumTicKets = bookingService.getTicketForTrip(startDateTime, endDateTime,busCompany);
 				StatisticTripTicketsForMonth statisticTripTicketsForMonth = StatisticTripTicketsForMonth.builder()
 						.statisticTickets(sumTicKets).date(date).build();
 				statisticTripTicketsForMonths.add(statisticTripTicketsForMonth);

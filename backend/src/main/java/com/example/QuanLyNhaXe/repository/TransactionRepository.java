@@ -13,7 +13,7 @@ import com.example.QuanLyNhaXe.model.Transaction;
 public interface TransactionRepository extends JpaRepository<Transaction, Integer>{
 	
 
-	List<Transaction> findByPaymentTimeBetweenAndTransactionType(LocalDateTime startDateTime, LocalDateTime endDateTime, String transactionType);
+	List<Transaction> findByPaymentTimeBetweenAndTransactionTypeAndBookings_Trip_BusCompany(LocalDateTime startDateTime, LocalDateTime endDateTime, String transactionType, BusCompany busCompany);
 	Optional<Transaction> findByBookingsCode(String bookingCode);
 	
 	List<Transaction> findByTransactionTypeAndPaymentMethodNotAndBookings_Trip_SchedulesDepartDateBetweenAndBookings_Trip_BusCompany(
