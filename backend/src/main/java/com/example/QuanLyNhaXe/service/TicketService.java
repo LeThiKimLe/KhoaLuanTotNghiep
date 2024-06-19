@@ -26,6 +26,7 @@ import com.example.QuanLyNhaXe.dto.CompanyMoneyDTO;
 import com.example.QuanLyNhaXe.dto.PolicyDTO;
 import com.example.QuanLyNhaXe.dto.ReponseCancelTicket;
 import com.example.QuanLyNhaXe.dto.TicKetFullDTO;
+import com.example.QuanLyNhaXe.dto.TicketForMonthDTO;
 import com.example.QuanLyNhaXe.dto.TicketSaleDTO;
 import com.example.QuanLyNhaXe.dto.TransactionDTO;
 import com.example.QuanLyNhaXe.enumration.BookingStatus;
@@ -49,6 +50,7 @@ import com.example.QuanLyNhaXe.model.TicketSale;
 import com.example.QuanLyNhaXe.model.Transaction;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.BookingRepository;
+import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.CancelRequestRepository;
 import com.example.QuanLyNhaXe.repository.HistoryRepository;
 import com.example.QuanLyNhaXe.repository.PolicyRepository;
@@ -82,6 +84,7 @@ public class TicketService {
 	private final VNPayService vnPayService;
 	private final BusCompanyService busCompanyService;
 	private final TicketSaveRepository ticketSaveRepository;
+	private final BusCompanyRepository busCompanyRepository;
 
 	public Object paymentTicket(CreatePaymentDTO createPaymentDTO) {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
@@ -686,7 +689,7 @@ public class TicketService {
 		List<Ticket> tickets = ticketRepository
 				.findByStateAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompanyAndHistories_TransactionPaymentMethodNot(
 						TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), startDate, endDate,
-						busCompany,PaymentMethod.CASH.getLabel());
+						busCompany, PaymentMethod.CASH.getLabel());
 		if (!tickets.isEmpty()) {
 			for (Ticket ticket : tickets) {
 				sum += ticket.getTicketPrice();
@@ -706,36 +709,86 @@ public class TicketService {
 			throw new BadRequestException(Message.BAD_REQUEST);
 
 		}
-		List<Long> numberList = new ArrayList<Long>();
+
 		List<CompanyMoneyDTO> companyMoneyDTOs = new ArrayList<>();
 		List<BusCompany> busCompanies = busCompanyService.getAllBusModelCompanys();
 		for (BusCompany busCompany : busCompanies) {
 			long money = 0L;
 			money = getMoneyForOneCompany(yearMonth, busCompany);
-			long refundMoney=0L;
-			refundMoney=getMoneyRefundForOneCompany(yearMonth, busCompany);
-			TicketSale ticketSale = ticketSaveRepository.findByFromDateAndToDateAndBusCompany(startDate, endDate, busCompany)
-			        .orElse(null);
+			long refundMoney = 0L;
+			refundMoney = getMoneyRefundForOneCompany(yearMonth, busCompany);
+			TicketSale ticketSale = ticketSaveRepository
+					.findByFromDateAndToDateAndBusCompany(startDate, endDate, busCompany).orElse(null);
 
 			if (ticketSale == null) {
-			     long total = money-refundMoney;
-			    ticketSale = TicketSale.builder()
-			            .fromDate(startDate)
-			            .toDate(endDate)
-			            .ticketSales(total)
-			            .profit(80 * total / 100)
-			            .busCompany(busCompany)
-			            .build();
-			    ticketSale = ticketSaveRepository.save(ticketSale);
+				long total = money - refundMoney;
+				ticketSale = TicketSale.builder().fromDate(startDate).toDate(endDate).ticketSales(total)
+						.profit(80 * total / 100).busCompany(busCompany).build();
+				ticketSale = ticketSaveRepository.save(ticketSale);
 			}
-			
-			
+
 			CompanyMoneyDTO companyMoneyDTO = CompanyMoneyDTO.builder()
-					.busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).ticketSave(modelMapper.map(ticketSale, TicketSaleDTO.class)).build();
+					.busCompany(modelMapper.map(busCompany, BusCompanyDTO.class))
+					.ticketSave(modelMapper.map(ticketSale, TicketSaleDTO.class)).build();
 			companyMoneyDTOs.add(companyMoneyDTO);
 
 		}
 		return companyMoneyDTOs;
+	}
+
+	public List<TicKetFullDTO> getTicketforMonthAndCompany(YearMonth yearMonth, BusCompany busCompany) {
+
+		
+		List<TicKetFullDTO> ticKetFullDTOs = new ArrayList<>();
+
+		
+		LocalDate startDate = yearMonth.atDay(1);
+		LocalDate endDate = yearMonth.atEndOfMonth();
+		if (yearMonth.getYear() == LocalDate.now().getYear()
+				&& yearMonth.getMonth().getValue() == LocalDate.now().getMonthValue()) {
+
+			 endDate = utilityService.convertHCMDateTime().toLocalDate();
+		}
+
+		List<Ticket> tickets = ticketRepository
+				.findByStateAndBookingConductStaffIsNullAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompany(
+						TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), startDate, endDate,
+						busCompany);
+		if (tickets.isEmpty()) {
+
+			return ticKetFullDTOs;
+
+		}
+		return tickets.stream().map(ticket -> {
+			ticket.getBooking().setTickets(null);
+			return modelMapper.map(ticket, TicKetFullDTO.class);
+		}).toList();
+	}
+
+	public Object getTicketForMonth(int month, int year, String authentication) {
+		YearMonth yearMonth = YearMonth.of(year, month);
+		
+
+		User user = userService.getUserByAuthorizationHeader(authentication);
+		if (user.getAccount().getRole().getRoleName().equals("ADMIN")) {
+			BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+					.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+			List<TicKetFullDTO> tickets = getTicketforMonthAndCompany(yearMonth, busCompany);
+			return TicketForMonthDTO.builder()
+					.busCompany(modelMapper.map(busCompany, BusCompanyDTO.class)).ticKets(tickets).build();
+			
+		}
+		List<TicketForMonthDTO> ticketForMonthDTOs = new ArrayList<>();
+		List<BusCompany> busCompanies = busCompanyService.getAllBusModelCompanys();
+		for (BusCompany item : busCompanies) {
+			List<TicKetFullDTO> ticketsForOne = getTicketforMonthAndCompany(yearMonth, item);
+			TicketForMonthDTO ticketForMonthDTO = TicketForMonthDTO.builder()
+					.busCompany(modelMapper.map(item, BusCompanyDTO.class)).ticKets(ticketsForOne).build();
+			ticketForMonthDTOs.add(ticketForMonthDTO);
+
+		}
+		return ticketForMonthDTOs;
+
 	}
 
 }

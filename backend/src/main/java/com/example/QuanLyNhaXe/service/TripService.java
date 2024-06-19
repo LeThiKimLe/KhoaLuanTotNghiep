@@ -36,6 +36,7 @@ import com.example.QuanLyNhaXe.dto.StatisticTripTicketsForMonth;
 import com.example.QuanLyNhaXe.dto.StatisticTripTicketsForMonth.SumTicKet;
 import com.example.QuanLyNhaXe.dto.StatisticTripTicketsForYear;
 import com.example.QuanLyNhaXe.dto.StopStationDTO;
+import com.example.QuanLyNhaXe.dto.TicKetFullDTO;
 import com.example.QuanLyNhaXe.dto.TripBusDriver;
 import com.example.QuanLyNhaXe.dto.TripDTO;
 import com.example.QuanLyNhaXe.dto.TripReponseDTO;
@@ -535,5 +536,7 @@ public class TripService {
 		return modelMapper.map(trip, TripDTO.class);
 
 	}
+	
+	
 
 }
