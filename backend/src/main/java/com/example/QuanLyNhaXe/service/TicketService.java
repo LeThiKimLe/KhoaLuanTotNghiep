@@ -542,7 +542,7 @@ public class TicketService {
 			return modelMapper.map(ticket, TicKetFullDTO.class);
 		}).toList();
 	}
-
+	@Transactional
 	public Object paymentTicketForStaff(CreatePaymentDTO createPaymentDTO) {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));

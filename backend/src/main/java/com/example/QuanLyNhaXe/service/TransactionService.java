@@ -55,6 +55,19 @@ public class TransactionService {
 	public TransactionDTO createTransaction(CreatePaymentDTO createPaymentDTO) {
 		Integer priceBill = 0;
 		List<Booking> bookings = new ArrayList<>();
+		String transactionNoString=createPaymentDTO.getTransactionNo();
+		if(transactionNoString.isEmpty()) {
+			transactionNoString=utilityService.getRandomNumber(8);
+			while (transactionRepository.existsByTransactionNo(transactionNoString)) {
+				transactionNoString=utilityService.getRandomNumber(8);
+			}
+		}
+		String payString=createPaymentDTO.getTransactionDate();
+		LocalDateTime paymentTime=utilityService.convertHCMDateTime();
+		if(!payString.isEmpty()) {
+			paymentTime=utilityService.convertStringToDateTime(payString);		
+		}
+		
 
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
 				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
@@ -80,8 +93,8 @@ public class TransactionService {
 		}
 
 		Transaction transaction = Transaction.builder()
-				.paymentTime(utilityService.convertStringToDateTime(createPaymentDTO.getTransactionDate()))
-				.bookings(bookings).amount(priceBill).transactionNo(createPaymentDTO.getTransactionNo())
+				.paymentTime(paymentTime)
+				.bookings(bookings).amount(priceBill).transactionNo(transactionNoString)
 				.paymentMethod(createPaymentDTO.getPaymentMethod()).transactionType(TransactionType.PAYMENT.getLabel())
 				.build();
 		booking.setTransaction(transaction);
