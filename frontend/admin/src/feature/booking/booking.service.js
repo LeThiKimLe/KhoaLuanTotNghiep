@@ -90,6 +90,8 @@ const payBooking = createAsyncThunk(
             const response = await axiosClient.post('staff/tickets/payment', {
                 bookingCode: bookingCode,
                 paymentMethod: paymentMethod,
+                transactionNo: '',
+                transactionDate: '',
             })
             return response
         } catch (error) {
