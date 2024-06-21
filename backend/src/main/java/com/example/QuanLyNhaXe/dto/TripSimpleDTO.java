@@ -25,4 +25,5 @@ public class TripSimpleDTO {
 	private String schedule;
 	private List<StopStationDTO> stopStations;
 	private boolean isActive;
+	private String routeCode;
 }

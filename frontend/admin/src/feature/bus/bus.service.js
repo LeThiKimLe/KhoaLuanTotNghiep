@@ -349,6 +349,26 @@ const activeBusType = createAsyncThunk(
     },
 )
 
+const uploadBusFile = createAsyncThunk('admin/bus/upload', async (file, thunkAPI) => {
+    try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }
+        const response = await axiosClient.put('admin/bus/upload', formData, config)
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const busThunk = {
     getBus,
     addBus,
@@ -366,5 +386,6 @@ const busThunk = {
     updateBusTypeData,
     addBusTypeWithImage,
     activeBusType,
+    uploadBusFile,
 }
 export default busThunk

@@ -18,5 +18,6 @@ public class TripBookingDTO {
 	private StationDTO endStation;	
 	private RouteDTO route;
 	private BusCompanyDTO busCompany;
+	private String routeCode;
 	
 }

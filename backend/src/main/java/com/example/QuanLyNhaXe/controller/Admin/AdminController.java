@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -14,17 +15,20 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditBusCompany;
 import com.example.QuanLyNhaXe.Request.EditCompanyPolicy;
 import com.example.QuanLyNhaXe.Request.EditDriverByAdmin;
 import com.example.QuanLyNhaXe.Request.EditStaffByAdmin;
+import com.example.QuanLyNhaXe.Request.Excel;
 import com.example.QuanLyNhaXe.Request.PaymentServiceFee;
 import com.example.QuanLyNhaXe.Request.SignupDriverDTO;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
+import com.example.QuanLyNhaXe.service.ExcelService;
 import com.example.QuanLyNhaXe.service.FeeService;
 import com.example.QuanLyNhaXe.service.UserService;
 
@@ -46,6 +50,7 @@ public class AdminController {
 	private final UserService userService;
 	private final FeeService feeService;
 	private final BusCompanyService busCompanyService;
+	private final ExcelService excelService;
 
 	@PostMapping("/staffs")
 	public ResponseEntity<Object> createStaff(@Valid @RequestBody SignupStaffDTO signupStaffDTO,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
@@ -72,17 +77,26 @@ public class AdminController {
 		return new ResponseEntity<>(userService.editStaffByAdmin(editStaffByAdmin), HttpStatus.OK);
 	}
 	
+	@PutMapping("/staffs/upload")
+    public ResponseEntity<Object> uploadStaffExcelFile(@ModelAttribute Excel file, @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) throws IOException {
+        return new ResponseEntity<>(excelService.readStaffFromFile(file, authorization), HttpStatus.OK);
+    }
+
 	@PutMapping("/drivers")
 	public ResponseEntity<Object> editDriver( @Valid @ModelAttribute EditDriverByAdmin editDriverByAdmin) throws IOException {
 		return new ResponseEntity<>(userService.editDriverByAdmin(editDriverByAdmin), HttpStatus.OK);
 	}
 	
+	@PutMapping("/drivers/upload")
+    public ResponseEntity<Object> uploadDriverExcelFile(@ModelAttribute Excel file, @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) throws IOException {
+        return new ResponseEntity<>(excelService.readDriverFromFile(file, authorization), HttpStatus.OK);
+    }
+
 	@PutMapping("/user-active")
 	public ResponseEntity<Object> editActiveUser( @RequestBody EditActiveDTO editActiveDTO) {
 		return new ResponseEntity<>(userService.editStateAccount(editActiveDTO), HttpStatus.OK);
 	}
-	
-	
+
 	
 	
 	@GetMapping("/drivers/not-distribute")

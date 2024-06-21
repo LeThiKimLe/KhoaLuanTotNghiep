@@ -335,3 +335,9 @@ export const SCHEDULE_STATE = [
         condition: '',
     },
 ]
+
+export const SAMPLE_FILE_TYPE = {
+    staff: 'staff',
+    driver: 'driver',
+    bus: 'bus',
+}

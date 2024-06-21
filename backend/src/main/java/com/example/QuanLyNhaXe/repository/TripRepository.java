@@ -12,6 +12,6 @@ public interface TripRepository extends JpaRepository<Trip, Integer> {
 	List<Trip> findByRouteIdAndTurn(Integer routeId, Boolean turn);
 	boolean existsByStartStationIdAndEndStationIdAndBusCompanyId(Integer startStation,Integer endStation, Integer companyId);
 	Optional<Trip> findByStartStationIdAndEndStationIdAndTurn(Integer startStation,Integer endStation,Boolean turn);
-	
+	Optional<Trip> findFirstByBusCompanyIdAndRouteCode(Integer busCompanyId, String routeCode);
 
 }
