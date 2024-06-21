@@ -1,10 +1,28 @@
 package com.example.QuanLyNhaXe.service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
 import org.modelmapper.ModelMapper;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -13,14 +31,17 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.example.QuanLyNhaXe.Request.ChangePasswordDTO;
 import com.example.QuanLyNhaXe.Request.CreateManager;
+import com.example.QuanLyNhaXe.Request.Excel;
 import com.example.QuanLyNhaXe.Request.LoginDTO;
 import com.example.QuanLyNhaXe.Request.ResetPassword;
 import com.example.QuanLyNhaXe.Request.SignupDTO;
 import com.example.QuanLyNhaXe.Request.SignupDriverDTO;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
+import com.example.QuanLyNhaXe.Request.TripAssignment;
 import com.example.QuanLyNhaXe.dto.TokenDTO;
 import com.example.QuanLyNhaXe.dto.UserDTO;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
@@ -34,6 +55,7 @@ import com.example.QuanLyNhaXe.model.Driver;
 import com.example.QuanLyNhaXe.model.Role;
 import com.example.QuanLyNhaXe.model.Staff;
 import com.example.QuanLyNhaXe.model.SystemManager;
+import com.example.QuanLyNhaXe.model.Trip;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.AccountRepository;
 import com.example.QuanLyNhaXe.repository.AdminRepository;
@@ -42,6 +64,7 @@ import com.example.QuanLyNhaXe.repository.CustomerRepository;
 import com.example.QuanLyNhaXe.repository.DriverRepository;
 import com.example.QuanLyNhaXe.repository.StaffRepository;
 import com.example.QuanLyNhaXe.repository.SystemManagerRepository;
+import com.example.QuanLyNhaXe.repository.TripRepository;
 import com.example.QuanLyNhaXe.repository.UserRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
@@ -70,6 +93,8 @@ public class AuthenticationService {
 	private final TwilioService twilioService;
 	private final SystemManagerRepository managerRepository;
 	private final BusCompanyRepository busCompanyRepository;
+	// private final TripRepository tripRepository;
+	// private final TripService tripService;
 
 	public TokenDTO login(LoginDTO loginDTO) {
 
@@ -79,11 +104,12 @@ public class AuthenticationService {
 				.orElseThrow(() -> new NotFoundException(Message.ACCOUNT_NOT_FOUND));
 		if (!account.isActive())
 			throw new BadRequestException(Message.ACCOUNT_DISABLED);
-		if((account.getRole().getId()==1||account.getRole().getId()==2)&&!account.getUser().getStaff().getBusCompany().isActive())
+		if ((account.getRole().getId() == 1 || account.getRole().getId() == 2)
+				&& !account.getUser().getStaff().getBusCompany().isActive())
 			throw new BadRequestException(Message.COMPANY_NOT_FOUND);
-		if((account.getRole().getId()==3)&&!account.getUser().getDriver().getBusCompany().isActive()) {
+		if ((account.getRole().getId() == 3) && !account.getUser().getDriver().getBusCompany().isActive()) {
 			throw new BadRequestException(Message.COMPANY_NOT_FOUND);
-			
+
 		}
 
 		UserDTO userDTO = userService.getUserInfor(account.getId());
@@ -103,15 +129,15 @@ public class AuthenticationService {
 		}
 		Role role = new Role();
 		role.setId(roleId);
-		if(signupDTO.getOauthId()!=null && !signupDTO.getOauthId().equals("")) {
-			oauthId=signupDTO.getOauthId();
-		}else {
-			oauthId="";
+		if (signupDTO.getOauthId() != null && !signupDTO.getOauthId().equals("")) {
+			oauthId = signupDTO.getOauthId();
+		} else {
+			oauthId = "";
 		}
-		
+
 		Account account = Account.builder().username(userName).password(passwordEncoder.encode(signupDTO.getPassword()))
 				.isActive(true).role(role).oauthId(oauthId).build();
-		
+
 		return User.builder().name(signupDTO.getName()).email(signupDTO.getEmail()).tel(signupDTO.getTel())
 				.gender(signupDTO.getGender()).account(account).build();
 
@@ -150,9 +176,8 @@ public class AuthenticationService {
 	}
 
 	@Transactional
-	public Staff createStaff(SignupStaffDTO signupStaffDTO, Integer roleId,BusCompany busCompany) {
+	public Staff createStaff(SignupStaffDTO signupStaffDTO, Integer roleId, BusCompany busCompany) {
 		User user = null;
-		
 
 		boolean checkExist1 = userRepository.existsByTel(signupStaffDTO.getTel());
 		boolean checkExist2 = staffRepository.existsByIdCard(signupStaffDTO.getIdCard());
@@ -160,7 +185,8 @@ public class AuthenticationService {
 			throw new ConflictException("Nhân viên đã tồn tại trong hệ thống");
 		}
 		SignupDTO signupDTO = SignupDTO.builder().email(signupStaffDTO.getEmail()).tel(signupStaffDTO.getTel())
-				.name(signupStaffDTO.getName()).gender(signupStaffDTO.getGender()).oauthId("").password("@12345678@").build();
+				.name(signupStaffDTO.getName()).gender(signupStaffDTO.getGender()).oauthId("").password("@12345678@")
+				.build();
 		String userName = signupStaffDTO.getEmail();
 
 		user = createUser(signupDTO, roleId, userName);
@@ -194,13 +220,16 @@ public class AuthenticationService {
 		BusCompany busCompany = adminUser.getStaff().getBusCompany();
 
 		SignupDTO signupDTO = SignupDTO.builder().email(signupDriverDTO.getEmail()).tel(signupDriverDTO.getTel())
-				.name(signupDriverDTO.getName()).gender(signupDriverDTO.getGender()).oauthId("").password("@123456@").build();
+				.name(signupDriverDTO.getName()).gender(signupDriverDTO.getGender()).oauthId("").password("@123456@")
+				.build();
 		String userName = signupDriverDTO.getEmail();
 		User user = createUser(signupDTO, 3, userName);
 
 		Driver driver = Driver.builder().address(signupDriverDTO.getAddress())
-				.beginWorkDate(signupDriverDTO.getBeginWorkDate()).idCard(signupDriverDTO.getIdCard()).img(DEFAULT_IMG).driverLicense(signupDriverDTO.getDriverLicense())
-				.licenseNumber(signupDriverDTO.getLicenseNumber()).issueDate(signupDriverDTO.getIssueDate()).user(user).busCompany(busCompany)
+				.beginWorkDate(signupDriverDTO.getBeginWorkDate()).idCard(signupDriverDTO.getIdCard()).img(DEFAULT_IMG)
+				.driverLicense(signupDriverDTO.getDriverLicense())
+				.licenseNumber(signupDriverDTO.getLicenseNumber()).issueDate(signupDriverDTO.getIssueDate()).user(user)
+				.busCompany(busCompany)
 				.build();
 		user.setDriver(driver);
 		try {
@@ -352,8 +381,8 @@ public class AuthenticationService {
 	public ResponseMessage createNewStaff(SignupStaffDTO signupStaffDTO, String authentication) {
 		User adminUser = userService.getUserByAuthorizationHeader(authentication);
 		BusCompany busCompany = adminUser.getStaff().getBusCompany();
-		createStaff(signupStaffDTO, 2,busCompany);
-		
+		createStaff(signupStaffDTO, 2, busCompany);
+
 		return new ResponseMessage(Message.SUCCESS_ADD_STAFF);
 
 	}
@@ -361,8 +390,8 @@ public class AuthenticationService {
 	@Transactional
 	public Admin createNewAdmin(SignupStaffDTO signupStaffDTO, BusCompany busCompany) {
 		try {
-			Staff staff = createStaff(signupStaffDTO, 1,busCompany);
-			
+			Staff staff = createStaff(signupStaffDTO, 1, busCompany);
+
 			Admin admin = Admin.builder().staff(staff).build();
 			adminRepository.save(admin);
 			return admin;
@@ -370,7 +399,6 @@ public class AuthenticationService {
 		} catch (DataAccessException e) {
 			return new Admin();
 		}
-		
 
 	}
 

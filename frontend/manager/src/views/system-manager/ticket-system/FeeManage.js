@@ -55,7 +55,9 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
     const [listShow, setListShow] = useState(
         listSchedule.filter(
             (schd) =>
-                schd.state === 'Hoàn thành' && schd.transportationOrder.status === 'Đã hoàn thành',
+                schd &&
+                schd.state === 'Hoàn thành' &&
+                schd.transportationOrder?.status === 'Đã hoàn thành',
         ),
     )
     const [showTransportationOrder, setShowTransportationOrder] = useState(false)
@@ -79,7 +81,7 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
                 listSchedule.filter(
                     (schd) =>
                         schd.state === 'Hoàn thành' &&
-                        schd.transportationOrder.status === 'Đã hoàn thành',
+                        schd?.transportationOrder?.status === 'Đã hoàn thành',
                 ),
             )
         } else {
@@ -87,7 +89,7 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
                 listSchedule.filter(
                     (schd) =>
                         schd.state !== 'Hoàn thành' ||
-                        schd.transportationOrder.status !== 'Đã hoàn thành',
+                        schd?.transportationOrder?.status !== 'Đã hoàn thành',
                 ),
             )
         }
@@ -96,8 +98,8 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
         setListShow(
             listSchedule.filter(
                 (schd) =>
-                    schd.state == 'Hoàn thành' &&
-                    schd.transportationOrder.status == 'Đã hoàn thành',
+                    schd?.state == 'Hoàn thành' &&
+                    schd?.transportationOrder?.status == 'Đã hoàn thành',
             ),
         )
     }, [listSchedule])

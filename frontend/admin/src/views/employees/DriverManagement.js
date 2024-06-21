@@ -39,7 +39,7 @@ import { CustomToast } from '../customToast/CustomToast'
 import { staffAction } from 'src/feature/staff/staff.slice'
 import { convertToDisplayDate, convertDataTimeToDisplayDate } from 'src/utils/convertUtils'
 import CIcon from '@coreui/icons-react'
-import { cilReload } from '@coreui/icons'
+import { cilReload, cilSend, cilVerticalAlignBottom } from '@coreui/icons'
 import format from 'date-fns/format'
 import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import routeThunk from 'src/feature/route/route.service'
@@ -47,6 +47,8 @@ import { getTripJourney, getRouteJourney } from 'src/utils/tripUtils'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
 import { tripProcess } from 'src/utils/tripUtils'
 import TripPicker from 'src/components/TripPicker'
+import axios from 'axios'
+import { SAMPLE_FILE_TYPE } from 'src/utils/constants'
 const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, currentRoute }) => {
     const [validated, setValidated] = useState(false)
     const listRoute = useSelector(selectListCompanyRoute)
@@ -66,6 +68,9 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
     const loading = useSelector(selectLoadingState)
     const [curRoute, setCurRoute] = useState(currentRoute ? currentRoute : 0)
     const [curTrip, setCurTrip] = useState(currentTrip ? currentTrip : 0)
+    const [file, setFile] = useState(undefined)
+    const [errorFile, setErrorFile] = useState('')
+    const [loadingUpload, setLoadingUpload] = useState(false)
     const addDriverToTrip = (driverId) => {
         if (curTrip !== 0)
             dispatch(
@@ -131,6 +136,51 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
         })
         return listTrip
     }
+    const handleUpFile = (e) => {
+        setFile(e.target.files[0])
+    }
+    const handleImportExcelFile = () => {
+        if (file) {
+            setLoadingUpload(true)
+            dispatch(staffThunk.uploadDriverFile(file))
+                .unwrap()
+                .then(() => {
+                    setError('')
+                    setLoadingUpload(false)
+                    setVisible(false)
+                    finishAddDriver()
+                })
+                .catch((err) => {
+                    setLoadingUpload(false)
+                    setErrorFile(err)
+                })
+        }
+    }
+    const handleDownloadSampleFile = () => {
+        const fileType = SAMPLE_FILE_TYPE.driver
+        const baseURL = process.env.REACT_APP_API_URL
+        axios({
+            url: baseURL + 'infomation/download-sample',
+            method: 'GET',
+            responseType: 'blob',
+            params: {
+                fileType: fileType,
+            },
+        })
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', `${fileType}.xlsx`)
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                setErrorFile('')
+            })
+            .catch((error) => {
+                setErrorFile('Có lỗi xảy ra khi tải file')
+            })
+    }
     const reset = () => {
         setValidated(false)
         setName('')
@@ -169,199 +219,224 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                 <CModalTitle>Thêm tài xế</CModalTitle>
             </CModalHeader>
             <CModalBody>
-                <CRow>
-                    <CCard className="mt-3 p-0">
-                        <CCardHeader className="bg-info">
-                            <b>Thông tin tài xế</b>
-                        </CCardHeader>
-                        <CCardBody>
-                            <CForm
-                                className="w-100"
-                                noValidate
-                                validated={validated}
-                                onSubmit={handleAddDriver}
-                            >
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">
-                                        <b>Họ tên</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="name"
-                                            required
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Tên không được bỏ trống
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">
-                                        <b>Email</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="email"
-                                            id="email"
-                                            required
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Điền đúng định dạng email
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="tel" className="col-sm-2 col-form-label">
-                                        <b>SĐT</b>
-                                    </CFormLabel>
-                                    <CCol sm={3}>
-                                        <CFormInput
-                                            type="text"
-                                            id="tel"
-                                            patterns="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
-                                            value={tel}
-                                            onChange={(e) => setTel(e.target.value)}
-                                            required
-                                        />
-                                        <CFormFeedback invalid>
-                                            Điền đúng định dạng số điện thoại
-                                        </CFormFeedback>
-                                    </CCol>
-                                    <CFormLabel
-                                        htmlFor="gender"
-                                        className="col-sm-2 col-form-label"
+                <Tabs className="tabStyle">
+                    <TabList>
+                        <Tab>Dữ liệu thủ công</Tab>
+                        <Tab>Dữ liệu Excel</Tab>
+                    </TabList>
+                    <TabPanel>
+                        <CRow>
+                            <CCard className="mt-3 p-0">
+                                <CCardHeader className="bg-info">
+                                    <b>Thông tin tài xế</b>
+                                </CCardHeader>
+                                <CCardBody>
+                                    <CForm
+                                        className="w-100"
+                                        noValidate
+                                        validated={validated}
+                                        onSubmit={handleAddDriver}
                                     >
-                                        <b>Giới tính</b>
-                                    </CFormLabel>
-                                    <CCol sm={3}>
-                                        <CFormSelect
-                                            value={gender}
-                                            onChange={(e) => setGender(e.target.value)}
-                                        >
-                                            <option value={true}>Nữ</option>
-                                            <option value={false}>Nam</option>
-                                        </CFormSelect>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">
-                                        <b>Số CCCD</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="cccd"
-                                            pattern="\d{9}|\d{12}"
-                                            required
-                                            value={idCard}
-                                            onChange={(e) => setIdCard(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Hãy điền đúng định dạng căn cước
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel
-                                        htmlFor="address"
-                                        className="col-sm-2 col-form-label"
-                                    >
-                                        <b>Địa chỉ</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="address"
-                                            required
-                                            value={address}
-                                            onChange={(e) => setAddress(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Địa chỉ không được bỏ trống
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center align-items-center">
-                                    <CFormLabel
-                                        htmlFor="datework"
-                                        className="col-sm-2 col-form-label"
-                                    >
-                                        <b>Ngày vào làm</b>
-                                    </CFormLabel>
-                                    <CCol sm={3}>
-                                        <DatePicker
-                                            selected={beginWorkDate}
-                                            onChange={(date) => setBeginWorkDate(date)}
-                                            dateFormat="dd/MM/yyyy"
-                                            placeholderText="Chọn ngày"
-                                            maxDate={new Date()}
-                                            className="form-control"
-                                        />
-                                    </CCol>
-                                    <CFormLabel
-                                        htmlFor="datework"
-                                        className="col-sm-2 col-form-label"
-                                    >
-                                        <b>Hạng GPLX</b>
-                                    </CFormLabel>
-                                    <CCol sm={3}>
-                                        <CFormSelect
-                                            value={driverLicense}
-                                            onChange={(e) => setDriverLicense(e.target.value)}
-                                        >
-                                            <option value={'D'} label="D"></option>
-                                            <option value={'E'} label="E"></option>
-                                        </CFormSelect>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel
-                                        htmlFor="license"
-                                        className="col-sm-2 col-form-label"
-                                    >
-                                        <b>Số bằng lái</b>
-                                    </CFormLabel>
-                                    <CCol sm={3}>
-                                        <CFormInput
-                                            type="text"
-                                            id="license"
-                                            patterns="\d{12}"
-                                            value={licenseNumber}
-                                            onChange={(e) => setLicenseNumber(e.target.value)}
-                                            required
-                                        />
-                                        <CFormFeedback invalid>
-                                            Điền đúng định dạng số bằng lái
-                                        </CFormFeedback>
-                                    </CCol>
-                                    <CFormLabel
-                                        htmlFor="gender"
-                                        className="col-sm-2 col-form-label"
-                                    >
-                                        <b>Ngày cấp</b>
-                                    </CFormLabel>
-                                    <CCol sm={3}>
-                                        <DatePicker
-                                            selected={issueDate}
-                                            onChange={(date) => setIssueDate(date)}
-                                            dateFormat="dd/MM/yyyy"
-                                            placeholderText="Chọn ngày"
-                                            maxDate={new Date()}
-                                            className="form-control"
-                                        />
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
-                                        <b>Chọn tuyến</b>
-                                    </CFormLabel>
-                                    <CCol sm="8">
-                                        {/* <CFormSelect
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="name"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Họ tên</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="name"
+                                                    required
+                                                    value={name}
+                                                    onChange={(e) => setName(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Tên không được bỏ trống
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="email"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Email</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="email"
+                                                    id="email"
+                                                    required
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Điền đúng định dạng email
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="tel"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>SĐT</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="tel"
+                                                    patterns="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
+                                                    value={tel}
+                                                    onChange={(e) => setTel(e.target.value)}
+                                                    required
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Điền đúng định dạng số điện thoại
+                                                </CFormFeedback>
+                                            </CCol>
+                                            <CFormLabel
+                                                htmlFor="gender"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Giới tính</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <CFormSelect
+                                                    value={gender}
+                                                    onChange={(e) => setGender(e.target.value)}
+                                                >
+                                                    <option value={true}>Nữ</option>
+                                                    <option value={false}>Nam</option>
+                                                </CFormSelect>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="email"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Số CCCD</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="cccd"
+                                                    pattern="\d{9}|\d{12}"
+                                                    required
+                                                    value={idCard}
+                                                    onChange={(e) => setIdCard(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Hãy điền đúng định dạng căn cước
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="address"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Địa chỉ</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="address"
+                                                    required
+                                                    value={address}
+                                                    onChange={(e) => setAddress(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Địa chỉ không được bỏ trống
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center align-items-center">
+                                            <CFormLabel
+                                                htmlFor="datework"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Ngày vào làm</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <DatePicker
+                                                    selected={beginWorkDate}
+                                                    onChange={(date) => setBeginWorkDate(date)}
+                                                    dateFormat="dd/MM/yyyy"
+                                                    placeholderText="Chọn ngày"
+                                                    maxDate={new Date()}
+                                                    className="form-control"
+                                                />
+                                            </CCol>
+                                            <CFormLabel
+                                                htmlFor="datework"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Hạng GPLX</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <CFormSelect
+                                                    value={driverLicense}
+                                                    onChange={(e) =>
+                                                        setDriverLicense(e.target.value)
+                                                    }
+                                                >
+                                                    <option value={'D'} label="D"></option>
+                                                    <option value={'E'} label="E"></option>
+                                                </CFormSelect>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="license"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Số bằng lái</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="license"
+                                                    patterns="\d{12}"
+                                                    value={licenseNumber}
+                                                    onChange={(e) =>
+                                                        setLicenseNumber(e.target.value)
+                                                    }
+                                                    required
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Điền đúng định dạng số bằng lái
+                                                </CFormFeedback>
+                                            </CCol>
+                                            <CFormLabel
+                                                htmlFor="gender"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Ngày cấp</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <DatePicker
+                                                    selected={issueDate}
+                                                    onChange={(date) => setIssueDate(date)}
+                                                    dateFormat="dd/MM/yyyy"
+                                                    placeholderText="Chọn ngày"
+                                                    maxDate={new Date()}
+                                                    className="form-control"
+                                                />
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="color"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Chọn tuyến</b>
+                                            </CFormLabel>
+                                            <CCol sm="8">
+                                                {/* <CFormSelect
                                             value={curRoute}
                                             onChange={(e) => setCurRoute(parseInt(e.target.value))}
                                         >
@@ -374,17 +449,20 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                                                 </option>
                                             ))}
                                         </CFormSelect> */}
-                                        <TripPicker
-                                            listRoute={listRoute}
-                                            route={curRoute}
-                                            setRoute={setCurRoute}
-                                            trip={curTrip}
-                                            setTrip={setCurTrip}
-                                            baseOption={{ label: 'Chọn tuyến xe', value: 0 }}
-                                        ></TripPicker>
-                                    </CCol>
-                                </CRow>
-                                {/* {curRoute !== 0 && (
+                                                <TripPicker
+                                                    listRoute={listRoute}
+                                                    route={curRoute}
+                                                    setRoute={setCurRoute}
+                                                    trip={curTrip}
+                                                    setTrip={setCurTrip}
+                                                    baseOption={{
+                                                        label: 'Chọn tuyến xe',
+                                                        value: 0,
+                                                    }}
+                                                ></TripPicker>
+                                            </CCol>
+                                        </CRow>
+                                        {/* {curRoute !== 0 && (
                                     <CRow className="mb-3 justify-content-center align-items-center">
                                         <CFormLabel
                                             htmlFor="color"
@@ -409,30 +487,87 @@ const AddDriverForm = ({ visible, setVisible, finishAddDriver, currentTrip, curr
                                         </CCol>
                                     </CRow>
                                 )} */}
-                                <CRow className="mb-3 justify-content-center">
-                                    <CustomButton
-                                        text="Thêm"
-                                        type="submit"
-                                        loading={loading}
-                                        color="success"
-                                        style={{ width: '100px', marginRight: '10px' }}
-                                    ></CustomButton>
-                                    <CButton
-                                        variant="outline"
-                                        style={{ width: '100px' }}
-                                        color="danger"
-                                        onClick={reset}
-                                    >
-                                        Hủy
-                                    </CButton>
-                                </CRow>
-                            </CForm>
-                        </CCardBody>
-                        <CCardFooter className="bg-light text-danger" ref={errorShow}>
-                            {error !== '' ? error : ''}
-                        </CCardFooter>
-                    </CCard>
-                </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CustomButton
+                                                text="Thêm"
+                                                type="submit"
+                                                loading={loading}
+                                                color="success"
+                                                style={{ width: '100px', marginRight: '10px' }}
+                                            ></CustomButton>
+                                            <CButton
+                                                variant="outline"
+                                                style={{ width: '100px' }}
+                                                color="danger"
+                                                onClick={reset}
+                                            >
+                                                Hủy
+                                            </CButton>
+                                        </CRow>
+                                    </CForm>
+                                </CCardBody>
+                                <CCardFooter className="bg-light text-danger" ref={errorShow}>
+                                    {error !== '' ? error : ''}
+                                </CCardFooter>
+                            </CCard>
+                        </CRow>
+                    </TabPanel>
+                    <TabPanel>
+                        <CRow className="justify-content-center">
+                            <CCol md="5">
+                                <CFormInput
+                                    type="file"
+                                    accept=".xls,.xlsx"
+                                    onChange={handleUpFile}
+                                ></CFormInput>
+                            </CCol>
+                            <CCol md="3">
+                                <CButton variant="outline" onClick={handleDownloadSampleFile}>
+                                    <CIcon icon={cilVerticalAlignBottom}></CIcon>
+                                    Tải file mẫu
+                                </CButton>
+                            </CCol>
+                            <CCol md="4" className="d-flex justify-content-end">
+                                <CustomButton
+                                    color="success"
+                                    onClick={handleImportExcelFile}
+                                    loading={loadingUpload}
+                                >
+                                    <CIcon icon={cilSend}></CIcon>
+                                    Lưu dữ liệu
+                                </CustomButton>
+                            </CCol>
+                        </CRow>
+                        <div className="mt-3">
+                            <b>Thông tin về mã tuyến dùng trong file</b>
+                            <CTable striped className="p-2">
+                                <CTableHead>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="col">STT</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Tuyến</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Mã tuyến</CTableHeaderCell>
+                                    </CTableRow>
+                                </CTableHead>
+                                <CTableBody>
+                                    {tripProcess(listRoute).map((trip, index) => (
+                                        <CTableRow key={index}>
+                                            <CTableHeaderCell scope="row">
+                                                {index + 1}
+                                            </CTableHeaderCell>
+                                            <CTableDataCell>
+                                                {getRouteJourney(trip.route)}
+                                            </CTableDataCell>
+                                            <CTableDataCell>{trip.routeCode}</CTableDataCell>
+                                        </CTableRow>
+                                    ))}
+                                </CTableBody>
+                            </CTable>
+                        </div>
+                        <CRow className="mt-2">
+                            <i style={{ color: 'red' }}>{errorFile != '' ? errorFile : ''}</i>
+                        </CRow>
+                    </TabPanel>
+                </Tabs>
             </CModalBody>
             <CModalFooter>
                 <CButton

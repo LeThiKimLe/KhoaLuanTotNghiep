@@ -66,6 +66,71 @@ const editStaff = createAsyncThunk('admin/staffs/edit', async (staffInfor, thunk
     }
 })
 
+const uploadStaffFile = createAsyncThunk('admin/staffs/upload', async (file, thunkAPI) => {
+    try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }
+        const response = await axiosClient.put('admin/staffs/upload', formData, config)
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+const uploadDriverFile = createAsyncThunk('admin/drivers/upload', async (file, thunkAPI) => {
+    try {
+        const formData = new FormData()
+        formData.append('file', file)
+        const config = {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        }
+        const response = await axiosClient.put('admin/drivers/upload', formData, config)
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
+const downloadSampleFile = createAsyncThunk('admin/staffs/download', async (fileType, thunkAPI) => {
+    try {
+        // const response = await axiosClient.get('admin/download-sample', {
+        //     params: {
+        //         fileType: fileType,
+        //     },
+        // })
+        // return response
+        // await axios({
+        //     url: '/api/download-template',
+        //     method: 'GET',
+        //     responseType: 'blob',
+        //     headers: {
+        //       Authorization: 'Bearer your_token_here'
+        //     }
+        //   })
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+
 const getDrivers = createAsyncThunk('admin/drivers', async (_, thunkAPI) => {
     try {
         const drivers = await axiosClient.get('admin/drivers')
@@ -271,5 +336,8 @@ const staffThunk = {
     getDriverSchedules,
     getTripDriver,
     deleteDistributeDriver,
+    uploadStaffFile,
+    // downloadSampleFile,
+    uploadDriverFile,
 }
 export default staffThunk

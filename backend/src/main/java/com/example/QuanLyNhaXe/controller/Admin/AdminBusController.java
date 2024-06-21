@@ -23,7 +23,9 @@ import com.example.QuanLyNhaXe.Request.EditBusDTO;
 import com.example.QuanLyNhaXe.Request.EditBusType;
 import com.example.QuanLyNhaXe.Request.EditSeat;
 import com.example.QuanLyNhaXe.Request.EditSeatMap;
+import com.example.QuanLyNhaXe.Request.Excel;
 import com.example.QuanLyNhaXe.service.BusService;
+import com.example.QuanLyNhaXe.service.ExcelService;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -37,6 +39,7 @@ import lombok.RequiredArgsConstructor;
 @Tag(name = "Admin", description = "Admin Controller")
 public class AdminBusController {
 	private final  BusService busService;
+	private final ExcelService excelService;
 	
 	
 	@GetMapping()
@@ -104,6 +107,11 @@ public class AdminBusController {
 	public ResponseEntity<Object> editSeatState(@RequestBody  EditSeat editSeat) {
 		return new ResponseEntity<>(busService.editSeat(editSeat), HttpStatus.OK);
 	}
+
+	@PutMapping("/upload")
+    public ResponseEntity<Object> uploadBusExcelFile(@ModelAttribute Excel file, @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) throws IOException {
+        return new ResponseEntity<>(excelService.readBusFromFile(file, authorization), HttpStatus.OK);
+    }
 	
 	
 	

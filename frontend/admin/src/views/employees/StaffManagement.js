@@ -38,9 +38,10 @@ import { CustomToast } from '../customToast/CustomToast'
 import { staffAction } from 'src/feature/staff/staff.slice'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
 import CIcon from '@coreui/icons-react'
-import { cilReload } from '@coreui/icons'
+import { cilReload, cilSend, cilVerticalAlignBottom } from '@coreui/icons'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
-
+import { SAMPLE_FILE_TYPE } from 'src/utils/constants'
+import axios from 'axios'
 const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
     const [validated, setValidated] = useState(false)
     const [name, setName] = useState('')
@@ -52,8 +53,11 @@ const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
     const [beginWorkDate, setBeginWorkDate] = useState(new Date())
     const [admin, setAdmin] = useState(false)
     const [error, setError] = useState('')
+    const [errorFile, setErrorFile] = useState('')
     const dispatch = useDispatch()
     const loading = useSelector(selectLoadingState)
+    const [file, setFile] = useState(undefined)
+    const [loadingUpload, setLoadingUpload] = useState(false)
     const handleAddStaff = (event) => {
         const form = event.currentTarget
         if (form.checkValidity() === false) {
@@ -85,6 +89,52 @@ const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
         }
         setValidated(true)
     }
+
+    const handleUpFile = (e) => {
+        setFile(e.target.files[0])
+    }
+    const handleImportExcelFile = () => {
+        if (file) {
+            setLoadingUpload(true)
+            dispatch(staffThunk.uploadStaffFile(file))
+                .unwrap()
+                .then(() => {
+                    setError('')
+                    setVisible(false)
+                    finishAddStaff()
+                    setLoadingUpload(false)
+                })
+                .catch((err) => {
+                    setErrorFile(err)
+                    setLoadingUpload(false)
+                })
+        }
+    }
+    const handleDownloadSampleFile = () => {
+        const fileType = SAMPLE_FILE_TYPE.staff
+        const baseURL = process.env.REACT_APP_API_URL
+        axios({
+            url: baseURL + 'infomation/download-sample',
+            method: 'GET',
+            responseType: 'blob',
+            params: {
+                fileType: fileType,
+            },
+        })
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', `${fileType}.xlsx`)
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                setErrorFile('')
+            })
+            .catch((error) => {
+                setErrorFile('Có lỗi xảy ra khi tải file')
+            })
+    }
     const reset = () => {
         setValidated(false)
         setName('')
@@ -114,180 +164,232 @@ const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
                 <CModalTitle>Thêm nhân viên</CModalTitle>
             </CModalHeader>
             <CModalBody>
-                <CRow>
-                    <CCard className="mt-3 p-0">
-                        <CCardHeader className="bg-info">
-                            <b>Thông tin nhân viên</b>
-                        </CCardHeader>
-                        <CCardBody>
-                            <CForm
-                                className="w-100"
-                                noValidate
-                                validated={validated}
-                                onSubmit={handleAddStaff}
-                            >
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">
-                                        <b>Họ tên</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="name"
-                                            required
-                                            value={name}
-                                            onChange={(e) => setName(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Tên không được bỏ trống
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">
-                                        <b>Email</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="email"
-                                            id="email"
-                                            required
-                                            value={email}
-                                            onChange={(e) => setEmail(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Điền đúng định dạng email
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="tel" className="col-sm-2 col-form-label">
-                                        <b>SĐT</b>
-                                    </CFormLabel>
-                                    <CCol sm={3}>
-                                        <CFormInput
-                                            type="text"
-                                            id="tel"
-                                            patterns="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
-                                            value={tel}
-                                            onChange={(e) => setTel(e.target.value)}
-                                            required
-                                        />
-                                        <CFormFeedback invalid>
-                                            Điền đúng định dạng số điện thoại
-                                        </CFormFeedback>
-                                    </CCol>
-                                    <CFormLabel
-                                        htmlFor="gender"
-                                        className="col-sm-2 col-form-label"
+                <Tabs className="tabStyle">
+                    <TabList>
+                        <Tab>Dữ liệu thủ công</Tab>
+                        <Tab>Dữ liệu excel</Tab>
+                    </TabList>
+                    <TabPanel>
+                        <CRow>
+                            <CCard className="mt-3 p-0">
+                                <CCardHeader className="bg-info">
+                                    <b>Thông tin nhân viên</b>
+                                </CCardHeader>
+                                <CCardBody>
+                                    <CForm
+                                        className="w-100"
+                                        noValidate
+                                        validated={validated}
+                                        onSubmit={handleAddStaff}
                                     >
-                                        <b>Giới tính</b>
-                                    </CFormLabel>
-                                    <CCol sm={3}>
-                                        <CFormSelect
-                                            value={gender}
-                                            onChange={(e) => setGender(e.target.value)}
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="name"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Họ tên</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="name"
+                                                    required
+                                                    value={name}
+                                                    onChange={(e) => setName(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Tên không được bỏ trống
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="email"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Email</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="email"
+                                                    id="email"
+                                                    required
+                                                    value={email}
+                                                    onChange={(e) => setEmail(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Điền đúng định dạng email
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="tel"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>SĐT</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="tel"
+                                                    patterns="^(0\d{9,10}|\+\d{1,3}\s?\d{1,14})$"
+                                                    value={tel}
+                                                    onChange={(e) => setTel(e.target.value)}
+                                                    required
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Điền đúng định dạng số điện thoại
+                                                </CFormFeedback>
+                                            </CCol>
+                                            <CFormLabel
+                                                htmlFor="gender"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Giới tính</b>
+                                            </CFormLabel>
+                                            <CCol sm={3}>
+                                                <CFormSelect
+                                                    value={gender}
+                                                    onChange={(e) => setGender(e.target.value)}
+                                                >
+                                                    <option value={true}>Nữ</option>
+                                                    <option value={false}>Nam</option>
+                                                </CFormSelect>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="email"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Số CCCD</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="cccd"
+                                                    pattern="\d{9}|\d{12}"
+                                                    required
+                                                    value={idCard}
+                                                    onChange={(e) => setIdCard(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Hãy điền đúng định dạng căn cước
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="address"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Địa chỉ</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="address"
+                                                    required
+                                                    value={address}
+                                                    onChange={(e) => setAddress(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Địa chỉ không được bỏ trống
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center align-items-center">
+                                            <CFormLabel
+                                                htmlFor="datework"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Ngày vào làm</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <DatePicker
+                                                    selected={beginWorkDate}
+                                                    onChange={(date) => setBeginWorkDate(date)}
+                                                    dateFormat="dd/MM/yyyy"
+                                                    placeholderText="Chọn ngày"
+                                                    maxDate={new Date()}
+                                                    className="form-control"
+                                                />
+                                            </CCol>
+                                        </CRow>
+                                        {/* <CRow className="mb-3 justify-content-center">
+                                        <CFormLabel
+                                            htmlFor="address"
+                                            className="col-sm-2 col-form-label"
                                         >
-                                            <option value={true}>Nữ</option>
-                                            <option value={false}>Nam</option>
-                                        </CFormSelect>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="email" className="col-sm-2 col-form-label">
-                                        <b>Số CCCD</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="cccd"
-                                            pattern="\d{9}|\d{12}"
-                                            required
-                                            value={idCard}
-                                            onChange={(e) => setIdCard(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Hãy điền đúng định dạng căn cước
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel
-                                        htmlFor="address"
-                                        className="col-sm-2 col-form-label"
-                                    >
-                                        <b>Địa chỉ</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="address"
-                                            required
-                                            value={address}
-                                            onChange={(e) => setAddress(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Địa chỉ không được bỏ trống
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center align-items-center">
-                                    <CFormLabel
-                                        htmlFor="datework"
-                                        className="col-sm-2 col-form-label"
-                                    >
-                                        <b>Ngày vào làm</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <DatePicker
-                                            selected={beginWorkDate}
-                                            onChange={(date) => setBeginWorkDate(date)}
-                                            dateFormat="dd/MM/yyyy"
-                                            placeholderText="Chọn ngày"
-                                            maxDate={new Date()}
-                                            className="form-control"
-                                        />
-                                    </CCol>
-                                </CRow>
-                                {/* <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel
-                                        htmlFor="address"
-                                        className="col-sm-2 col-form-label"
-                                    >
-                                        <b>Chức vụ</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormSelect
-                                            value={admin}
-                                            onChange={(e) => setAdmin(e.target.value)}
-                                        >
-                                            <option value={true}>Quản trị viên</option>
-                                            <option value={false}>Nhân viên</option>
-                                        </CFormSelect>
-                                    </CCol>
-                                </CRow> */}
-                                <CRow className="mb-3 justify-content-center">
-                                    <CustomButton
-                                        text="Thêm"
-                                        type="submit"
-                                        loading={loading}
-                                        color="success"
-                                        style={{ width: '100px', marginRight: '10px' }}
-                                    ></CustomButton>
-                                    <CButton
-                                        variant="outline"
-                                        style={{ width: '100px' }}
-                                        color="danger"
-                                        onClick={reset}
-                                    >
-                                        Hủy
-                                    </CButton>
-                                </CRow>
-                            </CForm>
-                        </CCardBody>
-                        <CCardFooter className="bg-light">{error !== '' ? error : ''}</CCardFooter>
-                    </CCard>
-                </CRow>
+                                            <b>Chức vụ</b>
+                                        </CFormLabel>
+                                        <CCol sm={8}>
+                                            <CFormSelect
+                                                value={admin}
+                                                onChange={(e) => setAdmin(e.target.value)}
+                                            >
+                                                <option value={true}>Quản trị viên</option>
+                                                <option value={false}>Nhân viên</option>
+                                            </CFormSelect>
+                                        </CCol>
+                                    </CRow> */}
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CustomButton
+                                                text="Thêm"
+                                                type="submit"
+                                                loading={loading}
+                                                color="success"
+                                                style={{ width: '100px', marginRight: '10px' }}
+                                            ></CustomButton>
+                                            <CButton
+                                                variant="outline"
+                                                style={{ width: '100px' }}
+                                                color="danger"
+                                                onClick={reset}
+                                            >
+                                                Hủy
+                                            </CButton>
+                                        </CRow>
+                                    </CForm>
+                                </CCardBody>
+                                <CCardFooter className="bg-light">
+                                    {error !== '' ? error : ''}
+                                </CCardFooter>
+                            </CCard>
+                        </CRow>
+                    </TabPanel>
+                    <TabPanel>
+                        <CRow className="justify-content-center">
+                            <CCol md="5">
+                                <CFormInput
+                                    type="file"
+                                    accept=".xls,.xlsx"
+                                    onChange={handleUpFile}
+                                ></CFormInput>
+                            </CCol>
+                            <CCol md="3">
+                                <CustomButton
+                                    variant="outline"
+                                    onClick={handleDownloadSampleFile}
+                                    loading={loadingUpload}
+                                >
+                                    <CIcon icon={cilVerticalAlignBottom}></CIcon>
+                                    Tải file mẫu
+                                </CustomButton>
+                            </CCol>
+                            <CCol md="4" className="d-flex justify-content-end">
+                                <CButton color="success" onClick={handleImportExcelFile}>
+                                    <CIcon icon={cilSend}></CIcon>
+                                    Lưu dữ liệu
+                                </CButton>
+                            </CCol>
+                        </CRow>
+                        <CRow className="mt-2">
+                            <i style={{ color: 'red' }}>{errorFile != '' ? errorFile : ''}</i>
+                        </CRow>
+                    </TabPanel>
+                </Tabs>
             </CModalBody>
             <CModalFooter>
                 <CButton
@@ -359,7 +461,7 @@ const StaffManagement = () => {
             <CToaster ref={toaster} push={toast} placement="top-end" />
             <div className="tabStyle">
                 <CRow className="justify-content-between">
-                    <CCol>Danh sách nhân sự</CCol>
+                    <CCol>DANH SÁCH NHÂN SỰ</CCol>
                     <CCol style={{ textAlign: 'right' }}>
                         <CButton
                             className="mt-2 mr-2"

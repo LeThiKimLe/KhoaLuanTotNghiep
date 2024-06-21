@@ -60,5 +60,13 @@ public class Message {
     public static final String SCHEDULE_HAS_ASSIGN_BUS = "Chuyến đã được phân công xe bus. Vui lòng hủy phân công trước khi xóa";
     public static final String SCHEDULE_HAS_ASSIGN_DRIVER = "Chuyến đã được phân công tài xế. Vui lòng hủy phân công trước khi xóa";
     public static final String SCHEDULE_DUPLICATE = "Đã có chuyến trùng lịch, không thể thêm";
+    public static final String WRONG_FILE_FORMAT = "File không đúng định dạng";
+    public static final String WRONG_DATA_FORMAT = "Tồn tại cột dữ liệu không đúng định dạng";
+    public static final String DUPLICATE_DATA_ROW = "Dữ liệu trùng lặp";
+    public static final String EMPTY_DATA = "Các ô dữ liệu không được để trống";
+    public static final String EMPTY_FILE = "File không có dữ liệu";
+    public static final String FILE_WITH_NO_HEADER = "File không có header";
+    public static final String DATA_EXISTS = "Dữ liệu đã tồn tại trong hệ thống";
+    public static final String INVALID_FILE_REQUEST = "Yêu cầu không hợp lệ";
 
 }

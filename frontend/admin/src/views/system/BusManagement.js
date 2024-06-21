@@ -40,7 +40,7 @@ import CustomButton from '../customButton/CustomButton'
 import { CustomToast } from '../customToast/CustomToast'
 import { convertToDisplayDate, convertToDisplayTimeStamp } from 'src/utils/convertUtils'
 import format from 'date-fns/format'
-import { cilPlus } from '@coreui/icons'
+import { cilPlus, cilSend, cilVerticalAlignBottom } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import { selectListCompanyRoute, selectListRoute } from 'src/feature/route/route.slice'
 import { getRouteJourney, getTripJourney } from 'src/utils/tripUtils'
@@ -53,6 +53,9 @@ import 'react-datepicker/dist/react-datepicker.css'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
 import TripPicker from 'src/components/TripPicker'
 import { tripProcess } from 'src/utils/tripUtils'
+import { SAMPLE_FILE_TYPE } from 'src/utils/constants'
+import axios from 'axios'
+
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.turn === true) return 'success'
@@ -1300,6 +1303,9 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
     const toaster = useRef('')
     const dispatch = useDispatch()
     const listRoute = useSelector(selectListCompanyRoute)
+    const [loadingUpload, setLoadingUpload] = useState(false)
+    const [errorFile, setErrorFile] = useState('')
+    const [file, setFile] = useState(undefined)
     const handleDistribute = (busId) => {
         dispatch(busThunk.distributeBus({ tripId: curTrip, busId: busId }))
             .unwrap()
@@ -1352,6 +1358,51 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
         })
         return listTrip
     }
+    const handleUpFile = (e) => {
+        setFile(e.target.files[0])
+    }
+    const handleImportExcelFile = () => {
+        if (file) {
+            setLoadingUpload(true)
+            dispatch(busThunk.uploadBusFile(file))
+                .unwrap()
+                .then(() => {
+                    setError('')
+                    setLoadingUpload(false)
+                    setVisible(false)
+                    finishAdd()
+                })
+                .catch((err) => {
+                    setLoadingUpload(false)
+                    setErrorFile(err)
+                })
+        }
+    }
+    const handleDownloadSampleFile = () => {
+        const fileType = SAMPLE_FILE_TYPE.bus
+        const baseURL = process.env.REACT_APP_API_URL
+        axios({
+            url: baseURL + 'infomation/download-sample',
+            method: 'GET',
+            responseType: 'blob',
+            params: {
+                fileType: fileType,
+            },
+        })
+            .then((response) => {
+                const url = window.URL.createObjectURL(new Blob([response.data]))
+                const link = document.createElement('a')
+                link.href = url
+                link.setAttribute('download', `${fileType}.xlsx`)
+                document.body.appendChild(link)
+                link.click()
+                document.body.removeChild(link)
+                setErrorFile('')
+            })
+            .catch((error) => {
+                setErrorFile('Có lỗi xảy ra khi tải file')
+            })
+    }
     const reset = () => {
         setManufactureYear('')
         setColor('')
@@ -1387,101 +1438,126 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                 <CModalTitle>Thêm bus</CModalTitle>
             </CModalHeader>
             <CModalBody className="p-4">
-                <CRow>
-                    <CCard className="w-100 p-0">
-                        <CCardHeader className="bg-info">
-                            <b>Thông tin bus</b>
-                        </CCardHeader>
-                        <CCardBody>
-                            <CForm
-                                className="w-100"
-                                noValidate
-                                validated={validated}
-                                onSubmit={handleAddBus}
-                            >
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">
-                                        <b>Biển số xe</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="license"
-                                            required
-                                            value={licensePlate}
-                                            onChange={(e) => setLicensePlate(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Biển số xe không được để trống
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="name" className="col-sm-2 col-form-label">
-                                        <b>Năm sản xuất</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="year"
-                                            required
-                                            value={manufactureYear}
-                                            onChange={(e) =>
-                                                setManufactureYear(parseInt(e.target.value))
-                                            }
-                                        />
-                                        <CFormFeedback invalid>
-                                            Năm sản xuất không được bỏ trống
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
-                                        <b>Màu sắc</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormInput
-                                            type="text"
-                                            id="color"
-                                            required
-                                            value={color}
-                                            onChange={(e) => setColor(e.target.value)}
-                                        />
-                                        <CFormFeedback invalid>
-                                            Màu xe không được bỏ trống
-                                        </CFormFeedback>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
-                                        <b>Loại xe</b>
-                                    </CFormLabel>
-                                    <CCol sm={8}>
-                                        <CFormSelect
-                                            id="busType2"
-                                            required
-                                            value={typeId}
-                                            onChange={(e) => setTypeId(parseInt(e.target.value))}
-                                        >
-                                            <option value="0">
-                                                {listBusType.length > 0
-                                                    ? 'Chọn loại xe'
-                                                    : 'Chưa có loại xe'}
-                                            </option>
-                                            {listBusType.map((busType) => (
-                                                <option key={busType.id} value={busType.id}>
-                                                    {busType.description}
-                                                </option>
-                                            ))}
-                                        </CFormSelect>
-                                    </CCol>
-                                </CRow>
-                                <CRow className="mb-3 justify-content-center">
-                                    <CFormLabel htmlFor="color" className="col-sm-2 col-form-label">
-                                        <b>Chọn tuyến</b>
-                                    </CFormLabel>
-                                    <CCol sm="8">
-                                        {/* <CFormSelect
+                <Tabs className="tabStyle">
+                    <TabList>
+                        <Tab>Dữ liệu thủ công</Tab>
+                        <Tab>Dữ liệu excel</Tab>
+                    </TabList>
+                    <TabPanel>
+                        <CRow>
+                            <CCard className="w-100 p-0">
+                                <CCardHeader className="bg-info">
+                                    <b>Thông tin bus</b>
+                                </CCardHeader>
+                                <CCardBody>
+                                    <CForm
+                                        className="w-100"
+                                        noValidate
+                                        validated={validated}
+                                        onSubmit={handleAddBus}
+                                    >
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="name"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Biển số xe</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="license"
+                                                    required
+                                                    value={licensePlate}
+                                                    onChange={(e) =>
+                                                        setLicensePlate(e.target.value)
+                                                    }
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Biển số xe không được để trống
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="name"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Năm sản xuất</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="year"
+                                                    required
+                                                    value={manufactureYear}
+                                                    onChange={(e) =>
+                                                        setManufactureYear(parseInt(e.target.value))
+                                                    }
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Năm sản xuất không được bỏ trống
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="color"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Màu sắc</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormInput
+                                                    type="text"
+                                                    id="color"
+                                                    required
+                                                    value={color}
+                                                    onChange={(e) => setColor(e.target.value)}
+                                                />
+                                                <CFormFeedback invalid>
+                                                    Màu xe không được bỏ trống
+                                                </CFormFeedback>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="color"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Loại xe</b>
+                                            </CFormLabel>
+                                            <CCol sm={8}>
+                                                <CFormSelect
+                                                    id="busType2"
+                                                    required
+                                                    value={typeId}
+                                                    onChange={(e) =>
+                                                        setTypeId(parseInt(e.target.value))
+                                                    }
+                                                >
+                                                    <option value="0">
+                                                        {listBusType.length > 0
+                                                            ? 'Chọn loại xe'
+                                                            : 'Chưa có loại xe'}
+                                                    </option>
+                                                    {listBusType.map((busType) => (
+                                                        <option key={busType.id} value={busType.id}>
+                                                            {busType.description}
+                                                        </option>
+                                                    ))}
+                                                </CFormSelect>
+                                            </CCol>
+                                        </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CFormLabel
+                                                htmlFor="color"
+                                                className="col-sm-2 col-form-label"
+                                            >
+                                                <b>Chọn tuyến</b>
+                                            </CFormLabel>
+                                            <CCol sm="8">
+                                                {/* <CFormSelect
                                             value={curRoute}
                                             onChange={(e) => setCurRoute(parseInt(e.target.value))}
                                         >
@@ -1494,17 +1570,17 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                                                 </option>
                                             ))}
                                         </CFormSelect> */}
-                                        <TripPicker
-                                            listRoute={listRoute}
-                                            route={curRoute}
-                                            setRoute={setCurRoute}
-                                            trip={curTrip}
-                                            setTrip={setCurTrip}
-                                            baseOption={{ value: 0, label: 'Chọn tuyến' }}
-                                        ></TripPicker>
-                                    </CCol>
-                                </CRow>
-                                {/* {curRoute !== 0 && (
+                                                <TripPicker
+                                                    listRoute={listRoute}
+                                                    route={curRoute}
+                                                    setRoute={setCurRoute}
+                                                    trip={curTrip}
+                                                    setTrip={setCurTrip}
+                                                    baseOption={{ value: 0, label: 'Chọn tuyến' }}
+                                                ></TripPicker>
+                                            </CCol>
+                                        </CRow>
+                                        {/* {curRoute !== 0 && (
                                     <CRow className="mb-3 justify-content-center align-items-center">
                                         <CFormLabel
                                             htmlFor="color"
@@ -1529,28 +1605,116 @@ const OpenForm = ({ visible, setVisible, finishAdd, currentRoute, currentTrip })
                                         </CCol>
                                     </CRow>
                                 )} */}
-                                <CRow className="mb-3 justify-content-center">
-                                    <CustomButton
-                                        text="Thêm"
-                                        type="submit"
-                                        loading={loading}
-                                        color="success"
-                                        style={{ width: '100px', marginRight: '10px' }}
-                                    ></CustomButton>
-                                    <CButton
-                                        variant="outline"
-                                        style={{ width: '100px' }}
-                                        color="danger"
-                                        onClick={reset}
-                                    >
-                                        Hủy
-                                    </CButton>
-                                </CRow>
-                            </CForm>
-                        </CCardBody>
-                        <CCardFooter className="bg-light">{error !== '' ? error : ''}</CCardFooter>
-                    </CCard>
-                </CRow>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CustomButton
+                                                text="Thêm"
+                                                type="submit"
+                                                loading={loading}
+                                                color="success"
+                                                style={{ width: '100px', marginRight: '10px' }}
+                                            ></CustomButton>
+                                            <CButton
+                                                variant="outline"
+                                                style={{ width: '100px' }}
+                                                color="danger"
+                                                onClick={reset}
+                                            >
+                                                Hủy
+                                            </CButton>
+                                        </CRow>
+                                    </CForm>
+                                </CCardBody>
+                                <CCardFooter className="bg-light">
+                                    {error !== '' ? error : ''}
+                                </CCardFooter>
+                            </CCard>
+                        </CRow>
+                    </TabPanel>
+                    <TabPanel>
+                        <CRow className="justify-content-center">
+                            <CCol md="5">
+                                <CFormInput
+                                    type="file"
+                                    accept=".xls,.xlsx"
+                                    onChange={handleUpFile}
+                                ></CFormInput>
+                            </CCol>
+                            <CCol md="3">
+                                <CButton variant="outline" onClick={handleDownloadSampleFile}>
+                                    <CIcon icon={cilVerticalAlignBottom}></CIcon>
+                                    Tải file mẫu
+                                </CButton>
+                            </CCol>
+                            <CCol md="4" className="d-flex justify-content-end">
+                                <CustomButton
+                                    color="success"
+                                    onClick={handleImportExcelFile}
+                                    loading={loadingUpload}
+                                >
+                                    <CIcon icon={cilSend}></CIcon>
+                                    Lưu dữ liệu
+                                </CustomButton>
+                            </CCol>
+                        </CRow>
+                        <div className="mt-3">
+                            <b>Thông tin về mã tuyến dùng trong file</b>
+                            <CTable striped className="p-2">
+                                <CTableHead>
+                                    <CTableRow>
+                                        <CTableHeaderCell scope="col">STT</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Tuyến</CTableHeaderCell>
+                                        <CTableHeaderCell scope="col">Mã tuyến</CTableHeaderCell>
+                                    </CTableRow>
+                                </CTableHead>
+                                <CTableBody>
+                                    {tripProcess(listRoute).map((trip, index) => (
+                                        <CTableRow key={index}>
+                                            <CTableHeaderCell scope="row">
+                                                {index + 1}
+                                            </CTableHeaderCell>
+                                            <CTableDataCell>
+                                                {getRouteJourney(trip.route)}
+                                            </CTableDataCell>
+                                            <CTableDataCell>{trip.routeCode}</CTableDataCell>
+                                        </CTableRow>
+                                    ))}
+                                </CTableBody>
+                            </CTable>
+                        </div>
+                        <div className="mt-3">
+                            <b>Thông tin về mã loại xe</b>
+                            {listBusType.length === 0 ? (
+                                <b>Chưa có loại xe trong hệ thống</b>
+                            ) : (
+                                <CTable striped className="p-2">
+                                    <CTableHead>
+                                        <CTableRow>
+                                            <CTableHeaderCell scope="col">STT</CTableHeaderCell>
+                                            <CTableHeaderCell scope="col">Loại xe</CTableHeaderCell>
+                                            <CTableHeaderCell scope="col">
+                                                Mã loại xe
+                                            </CTableHeaderCell>
+                                        </CTableRow>
+                                    </CTableHead>
+                                    <CTableBody>
+                                        {listBusType.map((type, index) => (
+                                            <CTableRow key={index}>
+                                                <CTableHeaderCell scope="row">
+                                                    {index + 1}
+                                                </CTableHeaderCell>
+                                                <CTableDataCell>{type.description}</CTableDataCell>
+                                                <CTableDataCell>{type.name}</CTableDataCell>
+                                            </CTableRow>
+                                        ))}
+                                    </CTableBody>
+                                </CTable>
+                            )}
+                        </div>
+                        <CRow className="mt-2">
+                            <i style={{ color: 'red' }}>{errorFile != '' ? errorFile : ''}</i>
+                        </CRow>
+                    </TabPanel>
+                </Tabs>
             </CModalBody>
             <CModalFooter>
                 <CButton

@@ -91,8 +91,8 @@ axiosClient.interceptors.response.use(
     (response) => {
         if (response && response.data) {
             return response.data
-        }
-        return response
+        } else if (response.blob()) return response.blob()
+        else return response
     },
     // Xử lý lỗi
     async (error) => {
