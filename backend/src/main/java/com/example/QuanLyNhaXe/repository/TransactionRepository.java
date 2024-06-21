@@ -18,5 +18,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Intege
 	
 	List<Transaction> findByTransactionTypeAndPaymentMethodNotAndBookings_Trip_SchedulesDepartDateBetweenAndBookings_Trip_BusCompany(
              String transactionType,String paymentMethod, LocalDate startDate, LocalDate endDate,BusCompany busCompany);
+	
+	boolean existsByTransactionNo(String transactionStringNo);
 
 }

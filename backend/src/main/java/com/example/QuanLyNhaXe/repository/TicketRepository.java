@@ -12,10 +12,20 @@ import com.example.QuanLyNhaXe.model.Ticket;
 
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 	Optional<List<Ticket>> findByBookingCode(String bookingCode);
-	boolean existsByScheduleIdAndSeatAndStateNot(Integer scheduleId, String name,String action);
+
+	boolean existsByScheduleIdAndSeatAndStateNot(Integer scheduleId, String name, String action);
+
 	List<Ticket> findByScheduleId(Integer scheduleId);
+
 	Optional<Ticket> findByBillReferCode(String referCode);
-	List<Ticket> findByStateAndBookingConductStaffIsNullAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompany(String state, String scheduleState,LocalDate startDate,LocalDate endDate, BusCompany company);
-	List<Ticket> findByStateAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompanyAndHistories_TransactionPaymentMethodNot(String state, String scheduleState,LocalDate startDate,LocalDate endDate, BusCompany company,String method);
+
+	List<Ticket> findByStateAndBookingConductStaffIsNullAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompany(
+			String state, String scheduleState, LocalDate startDate, LocalDate endDate, BusCompany company);
+
+	List<Ticket> findByStateAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompanyAndHistories_TransactionPaymentMethodNot(
+			String state, String scheduleState, LocalDate startDate, LocalDate endDate, BusCompany company,
+			String method);
+	
+	
 
 }
