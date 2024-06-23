@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.QuanLyNhaXe.Request.CompanyPayment;
 import com.example.QuanLyNhaXe.Request.CreateManager;
 import com.example.QuanLyNhaXe.Request.ScheduleForDay;
 import com.example.QuanLyNhaXe.Request.SignupDTO;
@@ -80,7 +81,7 @@ public class ManagerController {
 	}
 	
 	@PostMapping("/payments-company")
-	public ResponseEntity<Object> getSchedulesForDay(@RequestParam Integer ticketSaleId) {
+	public ResponseEntity<Object> getSchedulesForDay(@RequestBody CompanyPayment ticketSaleId) {
 		return new ResponseEntity<>(systemTransactionService.peymentTicketsForCompany(ticketSaleId), HttpStatus.OK);
 	}
 	

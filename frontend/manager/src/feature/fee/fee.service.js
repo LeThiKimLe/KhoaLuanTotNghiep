@@ -56,10 +56,29 @@ const getCompanySchedule = createAsyncThunk(
     },
 )
 
+const companyPayment = createAsyncThunk(
+    'manager/company/payment',
+    async (ticketSaleId, thunkAPI) => {
+        try {
+            const response = await axiosClient.post('manager/payments-company', {
+                ticketSaleId: ticketSaleId,
+            })
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const feeThunk = {
     getFee,
     getTicketSale,
     getCompanySchedule,
+    companyPayment,
 }
 
 export default feeThunk

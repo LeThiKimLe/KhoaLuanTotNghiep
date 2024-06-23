@@ -51,10 +51,32 @@ const feePay = createAsyncThunk(
     },
 )
 
+const getTicketOnlineSale = createAsyncThunk(
+    'admin/ticket-online-sale',
+    async ({ month, year }, thunkAPI) => {
+        try {
+            const response = await axiosClient.get('admin/money', {
+                params: {
+                    month: month,
+                    year: year,
+                },
+            })
+            return response
+        } catch (error) {
+            const message =
+                (error.response && error.response.data && error.response.data.message) ||
+                error.message ||
+                error.toString()
+            return thunkAPI.rejectWithValue(message)
+        }
+    },
+)
+
 const feeThunk = {
     getFee,
     getFeePaymentUrl,
     feePay,
+    getTicketOnlineSale,
 }
 
 export default feeThunk

@@ -5,6 +5,7 @@ import statisticsThunk from './statistics.service'
 const initialState = {
     todayStatistics: [],
     monthStatistics: [],
+    listOnlineTicket: [],
 }
 
 const statisticsSlice = createSlice({
@@ -24,10 +25,14 @@ const statisticsSlice = createSlice({
             .addCase(statisticsThunk.getCurrentMonthStatistics.fulfilled, (state, action) => {
                 state.monthStatistics = action.payload
             })
+            .addCase(statisticsThunk.getOnlineTicket.fulfilled, (state, action) => {
+                state.listOnlineTicket = action.payload
+            })
     },
 })
 
 export const selectCurrentStatistics = (state) => state.statistics.todayStatistics
 export const selectCurrentMonthStatistics = (state) => state.statistics.monthStatistics
+export const selectListOnlineTicket = (state) => state.statistics.listOnlineTicket
 
 export default statisticsSlice.reducer

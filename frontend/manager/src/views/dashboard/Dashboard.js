@@ -55,7 +55,10 @@ import {
 
 import StatisticsWidget from './StatisticsWidget'
 import stationThunk from 'src/feature/station/station.service'
-import { selectCurrentMonthStatistics } from 'src/feature/statistics/statistics.slice'
+import {
+    selectCurrentMonthStatistics,
+    selectListReview,
+} from 'src/feature/statistics/statistics.slice'
 import { MONTH_IN_YEAR } from 'src/utils/constants'
 import { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -70,56 +73,44 @@ import { selectListAssign, selectListCompany } from 'src/feature/bus-company/bus
 import userMale from 'src/assets/images/avatars/male.svg'
 import userFemale from 'src/assets/images/avatars/female.svg'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
+import { selectListOnlineTicket } from 'src/feature/statistics/statistics.slice'
 
 const Dashboard = () => {
     const dispatch = useDispatch()
-    const monthStatistic = useSelector(selectCurrentMonthStatistics)
     const today = new Date()
-    const [timeOption, setTimeOption] = useState('month')
-
-    //Chart 1
+    const [timeOption, setTimeOption] = useState('day')
     const [yearValue, setYearValue] = useState(today.getFullYear())
+    const [monthValue, setMonthValue] = useState(today.getMonth())
+
     const [monthRange, setMonthRange] = useState({
         start: today.getFullYear() == 2023 ? 8 : 0,
         end: today.getMonth(),
     })
+    const [dayRange, setDayRange] = useState({
+        start: 1,
+        end: today.getDate(),
+    })
+    const [yearRange, setYearRange] = useState({
+        start: 2023,
+        end: today.getFullYear(),
+    })
+
     const [chartData, setChartData] = useState({
         labels: [],
         backGroundColor: [],
         data: [],
     })
-    const [chartOption, setChartOption] = useState('revenue')
-
-    //Chart 2
-    const [yearValue2, setYearValue2] = useState(today.getFullYear())
-    const [monthValue, setMonthValue] = useState(today.getMonth())
-    const [dayRange, setDayRange] = useState({
-        start: 1,
-        end: today.getDate(),
+    const [currentStatic, setCurrentStatic] = useState({
+        label: [],
+        data: [],
     })
-    const [monthRange2, setMonthRange2] = useState({
-        start: today.getFullYear() == 2023 ? 8 : 0,
-        end: today.getMonth(),
-    })
-    const [chartOption2, setChartOption2] = useState('revenue')
-    const [currentMonthStatic, setCurrentMonthStatic] = useState([])
-
-    //Chart 3
-    const [yearValue3, setYearValue3] = useState(today.getFullYear())
-    const [monthValue3, setMonthValue3] = useState(today.getMonth())
-    const [monthRange3, setMonthRange3] = useState({
-        start: today.getFullYear() == 2023 ? 8 : 0,
-        end: today.getMonth(),
-    })
-    const [currentMonthStatic3, setCurrentMonthStatic3] = useState([])
-    const [reloadCount, setReloadCount] = useState(false)
-    const [sortResult, setSortResult] = useState([])
-    const sortSum = useRef(0)
     const listRoute = useSelector(selectListRoute)
     const listTrip = listRoute.map((route) => route.trips)
     const listCompany = useSelector(selectListCompany)
     const listAssign = useSelector(selectListAssign)
-    //Chart 1 Process
+    const listOnlineTicket = useSelector(selectListOnlineTicket)
+
+    const listReview = useSelector(selectListReview)
     const handleYearChoose = (e) => {
         setYearValue(e)
         getMonthRange(e)
@@ -146,25 +137,11 @@ const Dashboard = () => {
         }
     }
 
-    //Chart 2 process
-    const getMonthRange2 = (year) => {
-        if (2023 == year) {
-            setMonthRange2({
-                start: 8,
-                end: today.getFullYear() === year ? today.getMonth() : 11,
-            })
-        } else {
-            setMonthRange2({
-                start: 0,
-                end: today.getFullYear() === year ? today.getMonth() : 11,
-            })
-        }
+    const handleMonthChoose = (value) => {
+        setMonthValue(value)
+        getDayRange(yearValue, value)
     }
-    const getLastDate = (year, month) => {
-        const nextMonth = new Date(year, month + 1, 1)
-        const lastDayOfMonth = new Date(nextMonth - 1)
-        return lastDayOfMonth.getDate()
-    }
+
     const getDayRange = (year, month) => {
         if (year == today.getFullYear()) {
             if (month == today.getMonth())
@@ -184,49 +161,13 @@ const Dashboard = () => {
                 end: getLastDate(year, month),
             })
     }
-    const handleYearChoose2 = (value) => {
-        setYearValue2(value)
-        getMonthRange2(value)
-    }
-    const handleMonthChoose = (value) => {
-        setMonthValue(value)
-        dispatch(statisticsThunk.getStatistics({ year: yearValue2, month: value }))
-            .unwrap()
-            .then((res) => {
-                setCurrentMonthStatic(res)
-            })
-            .catch(() => {})
-        getDayRange(yearValue2, value)
+
+    const getLastDate = (year, month) => {
+        const nextMonth = new Date(year, month + 1, 1)
+        const lastDayOfMonth = new Date(nextMonth - 1)
+        return lastDayOfMonth.getDate()
     }
 
-    //Chart 3 Process
-    const getMonthRange3 = (year) => {
-        if (2023 == year) {
-            setMonthRange3({
-                start: 8,
-                end: today.getFullYear() === year ? today.getMonth() : 11,
-            })
-        } else {
-            setMonthRange3({
-                start: 0,
-                end: today.getFullYear() === year ? today.getMonth() : 11,
-            })
-        }
-    }
-    const handleYearChoose3 = (value) => {
-        setYearValue3(value)
-        getMonthRange3(value)
-    }
-    const handleMonthChoose3 = (value) => {
-        setMonthValue3(value)
-        dispatch(statisticsThunk.getStatisticsTrip({ year: yearValue3, month: value }))
-            .unwrap()
-            .then((res) => {
-                setCurrentMonthStatic3(res)
-                setReloadCount(true)
-            })
-            .catch(() => {})
-    }
     const getTripInfor = (tripId) => {
         var tempItem = null
         for (let i = 0; i < listTrip.length; i++) {
@@ -235,43 +176,17 @@ const Dashboard = () => {
         }
         if (!tempItem) return 'Đang xác định'
     }
-    const getTripStaticCount = () => {
-        var result = []
-        var curItem = null
-        var index = 0
-        currentMonthStatic3.forEach((data) => {
-            if (data.statisticTickets.length > 0) {
-                data.statisticTickets.forEach((data2) => {
-                    curItem = result.find((dt) => dt.tripId == data2.tripId)
-                    if (curItem) {
-                        index = result.findIndex((item) => item.tripId == curItem.tripId)
-                        result[index] = {
-                            tripId: curItem.tripId,
-                            tickets: curItem.tickets + data2.tickets,
-                        }
-                    } else {
-                        result.push({
-                            tripId: data2.tripId,
-                            tickets: data2.tickets,
-                        })
-                    }
-                })
-            }
-        })
-        result.sort((a, b) => b.tickets - a.tickets)
-        if (result.length === 0) sortSum.current = 1
-        else sortSum.current = result.reduce((sum, item) => sum + item.tickets, 0)
-        setSortResult(result)
-    }
 
-    const getSortResultTotal = () => {
-        return sortResult.reduce((sum, item) => sum + item.tickets, 0)
-    }
     const getRandomColor = () => {
         return COLOR[Math.floor(Math.random() * (COLOR.length - 1))]
     }
     const randomColor = () => {
         return `#${Math.floor(Math.random() * 16777215).toString(16)}`
+    }
+    const getMonthlyTicketForRoute = (routeId) => {
+        return listOnlineTicket.reduce((sum, item) => {
+            return item.ticKets.filter((tk) => tk.booking.trip.route.id === routeId).length + sum
+        }, 0)
     }
     const getLabelandColor = () => {
         const labels = []
@@ -279,8 +194,7 @@ const Dashboard = () => {
         const backGroundColor = []
         listRoute.forEach((route) => {
             labels.push(`${getRouteJourney(route)}`)
-            //get random number
-            data.push(Math.floor(Math.random() * 100) + 1)
+            data.push(getMonthlyTicketForRoute(route.id))
             backGroundColor.push(randomColor())
         })
         //sort list base on data desc
@@ -299,35 +213,71 @@ const Dashboard = () => {
                 }
             }
         }
+        let sliceIndex = data.findIndex((dt) => dt == 0)
+        if (sliceIndex > 4) sliceIndex = 4
         setChartData({
-            labels: labels.slice(0, 5),
-            data: data.slice(0, 5),
-            backGroundColor: backGroundColor.slice(0, 5),
+            labels: labels.slice(0, sliceIndex),
+            data: data.slice(0, sliceIndex),
+            backGroundColor: backGroundColor.slice(0, sliceIndex),
         })
     }
 
+    const updateBarChartData = () => {
+        const statisticData = {
+            label: [],
+            data: [],
+        }
+        if (timeOption === 'day') {
+            for (let i = dayRange.start; i <= dayRange.end; i++) {
+                statisticData.label.push(`${i}/${monthValue + 1}`)
+                statisticData.data.push(
+                    listOnlineTicket.reduce((sum, item) => {
+                        return (
+                            sum +
+                            item.ticKets.filter((tk) => {
+                                const date = new Date(tk.schedule.departDate)
+                                return (
+                                    date.getDate() === i &&
+                                    date.getMonth() === monthValue &&
+                                    date.getFullYear() === yearValue
+                                )
+                            }).length
+                        )
+                    }, 0),
+                )
+            }
+        } else {
+            for (let i = monthRange.start; i <= monthRange.end; i++) {
+                statisticData.label.push(`${MONTH_IN_YEAR[i]}`)
+                statisticData.data.push(
+                    listOnlineTicket.reduce((sum, item) => {
+                        return (
+                            sum +
+                            item.ticKets.filter((tk) => {
+                                const date = new Date(tk.schedule.departDate)
+                                return date.getMonth() === i && date.getFullYear() === yearValue
+                            }).length
+                        )
+                    }, 0),
+                )
+            }
+        }
+        setCurrentStatic(statisticData)
+    }
+    const getCompanyAverageRate = (company) => {
+        const listRv = listReview.filter(
+            (rv) => rv.scheduleTrip.busCompany.id === company.busCompany.id,
+        )
+        if (listRv.length > 0)
+            return (
+                listRv.reduce((sum, item) => {
+                    return sum + item.rate
+                }, 0) / listRv.length
+            )
+        else return 0
+    }
+
     useEffect(() => {
-        dispatch(statisticsThunk.getTodayStatistics())
-            .unwrap()
-            .then(() => {})
-            .catch(() => {})
-        dispatch(statisticsThunk.getCurrentMonthStatistics())
-            .unwrap()
-            .then(() => {})
-            .catch(() => {})
-        dispatch(statisticsThunk.getStatistics({ year: yearValue2, month: monthValue }))
-            .unwrap()
-            .then((res) => {
-                setCurrentMonthStatic(res)
-            })
-            .catch(() => {})
-        dispatch(statisticsThunk.getStatisticsTrip({ year: yearValue3, month: monthValue3 }))
-            .unwrap()
-            .then((res) => {
-                setCurrentMonthStatic3(res)
-                setReloadCount(true)
-            })
-            .catch(() => {})
         if (listRoute.length === 0) {
             dispatch(routeThunk.getRoute())
                 .unwrap()
@@ -338,23 +288,8 @@ const Dashboard = () => {
         }
     }, [])
     useEffect(() => {
-        if (reloadCount === true) {
-            getTripStaticCount()
-            setReloadCount(false)
-        }
-    }, [reloadCount])
-    useEffect(() => {
-        dispatch(statisticsThunk.getCurrentMonthStatistics(yearValue))
-            .unwrap()
-            .then(() => {})
-            .catch(() => {})
+        setMonthValue(monthRange.end)
     }, [yearValue])
-    useEffect(() => {
-        handleMonthChoose(monthRange2.end)
-    }, [yearValue2])
-    useEffect(() => {
-        handleMonthChoose3(monthRange3.end)
-    }, [yearValue3])
     useEffect(() => {
         dispatch(companyThunk.getCompany())
             .unwrap()
@@ -368,10 +303,24 @@ const Dashboard = () => {
             .unwrap()
             .then(() => {})
             .catch(() => {})
+        dispatch(statisticsThunk.getAllReview()).unwrap().then().catch()
     }, [])
     useEffect(() => {
+        dispatch(
+            statisticsThunk.getOnlineTicket({
+                month: monthValue + 1,
+                year: yearValue,
+            }),
+        )
+            .unwrap()
+            .then()
+            .catch()
+    }, [listRoute, monthValue, yearValue])
+
+    useEffect(() => {
         getLabelandColor()
-    }, [listRoute])
+        updateBarChartData()
+    }, [timeOption, listOnlineTicket])
     return (
         <>
             <StatisticsWidget />
@@ -406,10 +355,10 @@ const Dashboard = () => {
                                             Chọn tháng
                                         </option>
                                         {MONTH_IN_YEAR.slice(
-                                            monthRange2.start,
-                                            monthRange2.end + 1,
+                                            monthRange.start,
+                                            monthRange.end + 1,
                                         ).map((month, index) => (
-                                            <option value={monthRange2.start + index} key={index}>
+                                            <option value={monthRange.start + index} key={index}>
                                                 {month}
                                             </option>
                                         ))}
@@ -441,405 +390,96 @@ const Dashboard = () => {
                                 >
                                     {'Tháng'}
                                 </CButton>
-                                <CButton
-                                    color="outline-secondary"
-                                    className="mx-0"
-                                    active={timeOption === 'year'}
-                                    onClick={() => setTimeOption('year')}
-                                >
-                                    {'Năm'}
-                                </CButton>
                             </CButtonGroup>
                         </CCol>
                     </CRow>
                     <CRow className="align-items-center">
                         <CCol md="4">
+                            {chartData && (
+                                <CChart
+                                    type="doughnut"
+                                    data={{
+                                        labels: chartData.labels,
+                                        datasets: [
+                                            {
+                                                backgroundColor: chartData.backGroundColor,
+                                                data: chartData.data,
+                                            },
+                                        ],
+                                    }}
+                                    options={{
+                                        plugins: {
+                                            legend: {
+                                                labels: {
+                                                    color: getStyle('--cui-body-color'),
+                                                    textAlign: 'left',
+                                                    usePointStyle: true,
+                                                },
+                                            },
+                                        },
+                                    }}
+                                />
+                            )}
+                        </CCol>
+                        <CCol md="8">
                             <CChart
-                                type="doughnut"
+                                type="bar"
+                                style={{ height: '300px', marginTop: '40px' }}
                                 data={{
-                                    labels: chartData.labels,
+                                    labels: currentStatic.label,
                                     datasets: [
                                         {
-                                            backgroundColor: chartData.backGroundColor,
-                                            data: chartData.data,
+                                            label: 'Số vé',
+                                            backgroundColor: hexToRgba(getStyle('--cui-info'), 10),
+                                            borderColor: getStyle('--cui-success'),
+                                            pointHoverBackgroundColor: getStyle('--cui-info'),
+                                            pointBackgroundColor: 'red',
+                                            pointBorderColor: '#fff',
+                                            borderWidth: 2,
+                                            data: currentStatic.data,
+                                            fill: true,
                                         },
                                     ],
                                 }}
                                 options={{
+                                    maintainAspectRatio: false,
                                     plugins: {
                                         legend: {
-                                            labels: {
-                                                color: getStyle('--cui-body-color'),
-                                                textAlign: 'left',
-                                                usePointStyle: true,
+                                            display: true,
+                                        },
+                                    },
+                                    scales: {
+                                        x: {
+                                            grid: {
+                                                drawOnChartArea: false,
                                             },
+                                        },
+                                        y: {
+                                            ticks: {
+                                                beginAtZero: true,
+                                                maxTicksLimit: 5,
+                                                stepSize: Math.ceil(250 / 5),
+                                                max: 250,
+                                            },
+                                        },
+                                    },
+                                    elements: {
+                                        line: {
+                                            tension: 0.4,
+                                        },
+                                        point: {
+                                            radius: 0,
+                                            hitRadius: 10,
+                                            hoverRadius: 4,
+                                            hoverBorderWidth: 3,
                                         },
                                     },
                                 }}
                             />
                         </CCol>
-                        <CCol md="8">
-                            {timeOption === 'month' && (
-                                <CChartLine
-                                    style={{ height: '300px', marginTop: '40px' }}
-                                    data={{
-                                        labels: MONTH_IN_YEAR.slice(
-                                            monthRange.start,
-                                            monthRange.end + 1,
-                                        ),
-                                        datasets: [
-                                            {
-                                                label:
-                                                    chartOption === 'ticket'
-                                                        ? 'Số vé'
-                                                        : 'Doanh thu',
-                                                backgroundColor: hexToRgba(
-                                                    getStyle('--cui-info'),
-                                                    10,
-                                                ),
-                                                borderColor:
-                                                    chartOption === 'ticket'
-                                                        ? getStyle('--cui-info')
-                                                        : getStyle('--cui-success'),
-                                                pointHoverBackgroundColor: getStyle('--cui-info'),
-                                                pointBackgroundColor: 'red',
-                                                pointBorderColor: '#fff',
-                                                borderWidth: 2,
-                                                data: monthStatistic
-                                                    .slice(monthRange.start, monthRange.end + 1)
-                                                    .map((data) =>
-                                                        chartOption === 'ticket'
-                                                            ? data.tickets
-                                                            : data.revenue,
-                                                    ),
-                                                fill: true,
-                                            },
-                                        ],
-                                    }}
-                                    options={{
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: true,
-                                            },
-                                        },
-                                        scales: {
-                                            x: {
-                                                grid: {
-                                                    drawOnChartArea: false,
-                                                },
-                                            },
-                                            y: {
-                                                ticks: {
-                                                    beginAtZero: true,
-                                                    maxTicksLimit: 5,
-                                                    stepSize: Math.ceil(250 / 5),
-                                                    max: 250,
-                                                },
-                                            },
-                                        },
-                                        elements: {
-                                            line: {
-                                                tension: 0.4,
-                                            },
-                                            point: {
-                                                radius: 0,
-                                                hitRadius: 10,
-                                                hoverRadius: 4,
-                                                hoverBorderWidth: 3,
-                                            },
-                                        },
-                                    }}
-                                />
-                            )}
-                            {timeOption === 'day' && (
-                                <CChart
-                                    type="bar"
-                                    style={{ height: '300px', marginTop: '40px' }}
-                                    data={{
-                                        labels: currentMonthStatic
-                                            .slice(dayRange.start - 1, dayRange.end)
-                                            .map((data) =>
-                                                format(
-                                                    parse(data.date, 'yyyy-MM-dd', new Date()),
-                                                    'dd/MM',
-                                                ),
-                                            ),
-                                        datasets: [
-                                            {
-                                                label:
-                                                    chartOption2 === 'ticket'
-                                                        ? 'Số vé'
-                                                        : 'Doanh thu',
-                                                backgroundColor: hexToRgba(
-                                                    getStyle('--cui-info'),
-                                                    10,
-                                                ),
-                                                borderColor:
-                                                    chartOption2 === 'ticket'
-                                                        ? getStyle('--cui-info')
-                                                        : getStyle('--cui-success'),
-                                                pointHoverBackgroundColor: getStyle('--cui-info'),
-                                                pointBackgroundColor: 'red',
-                                                pointBorderColor: '#fff',
-                                                borderWidth: 2,
-                                                data: currentMonthStatic
-                                                    .slice(dayRange.start - 1, dayRange.end)
-                                                    .map((data) =>
-                                                        chartOption2 === 'ticket'
-                                                            ? data.tickets
-                                                            : data.revenue,
-                                                    ),
-                                                fill: true,
-                                            },
-                                        ],
-                                    }}
-                                    options={{
-                                        maintainAspectRatio: false,
-                                        plugins: {
-                                            legend: {
-                                                display: true,
-                                            },
-                                        },
-                                        scales: {
-                                            x: {
-                                                grid: {
-                                                    drawOnChartArea: false,
-                                                },
-                                            },
-                                            y: {
-                                                ticks: {
-                                                    beginAtZero: true,
-                                                    maxTicksLimit: 5,
-                                                    stepSize: Math.ceil(250 / 5),
-                                                    max: 250,
-                                                },
-                                            },
-                                        },
-                                        elements: {
-                                            line: {
-                                                tension: 0.4,
-                                            },
-                                            point: {
-                                                radius: 0,
-                                                hitRadius: 10,
-                                                hoverRadius: 4,
-                                                hoverBorderWidth: 3,
-                                            },
-                                        },
-                                    }}
-                                />
-                            )}
-                        </CCol>
                     </CRow>
                 </CCardBody>
             </CCard>
-            {/* <CCard className="mb-4">
-                <CCardBody>
-                    <CRow>
-                        <CCol sm={5}>
-                            <h4 id="traffic" className="card-title mb-0">
-                                Doanh số theo ngày
-                            </h4>
-                            <CRow>
-                                <CFormSelect
-                                    value={yearValue2}
-                                    className="mt-3 mb-3 col-sm-2"
-                                    onChange={(e) => handleYearChoose2(parseInt(e.target.value))}
-                                >
-                                    <option value="-1" disabled>
-                                        Chọn năm
-                                    </option>
-                                    {getYearRange().map((year) => (
-                                        <option value={year} key={year}>
-                                            {year}
-                                        </option>
-                                    ))}
-                                </CFormSelect>
-                                <CFormSelect
-                                    value={monthValue}
-                                    className="mt-1 mb-3 col-sm-3"
-                                    onChange={(e) => handleMonthChoose(parseInt(e.target.value))}
-                                >
-                                    <option value="-1" disabled>
-                                        Chọn tháng
-                                    </option>
-                                    {MONTH_IN_YEAR.slice(
-                                        monthRange2.start,
-                                        monthRange2.end + 1,
-                                    ).map((month, index) => (
-                                        <option value={monthRange2.start + index} key={index}>
-                                            {month}
-                                        </option>
-                                    ))}
-                                </CFormSelect>
-                            </CRow>
-                            <div className="text-medium-emphasis">{`${dayRange.start} - ${
-                                dayRange.end
-                            }/${monthValue + 1}/${yearValue2}`}</div>
-                        </CCol>
-                        <CCol sm={7} className="d-none d-md-block">
-                            <CButton color="primary" className="float-end">
-                                <CIcon icon={cilCloudDownload} />
-                            </CButton>
-                            <CButtonGroup className="float-end me-3">
-                                <CButton
-                                    color="outline-secondary"
-                                    className="mx-0"
-                                    active={chartOption2 === 'ticket'}
-                                    onClick={() => setChartOption2('ticket')}
-                                >
-                                    {'Số vé'}
-                                </CButton>
-                                <CButton
-                                    color="outline-secondary"
-                                    className="mx-0"
-                                    active={chartOption2 === 'revenue'}
-                                    onClick={() => setChartOption2('revenue')}
-                                >
-                                    {'Doanh thu'}
-                                </CButton>
-                            </CButtonGroup>
-                        </CCol>
-                    </CRow>
-                    <CChart
-                        type="bar"
-                        style={{ height: '300px', marginTop: '40px' }}
-                        data={{
-                            labels: currentMonthStatic
-                                .slice(dayRange.start - 1, dayRange.end)
-                                .map((data) =>
-                                    format(parse(data.date, 'yyyy-MM-dd', new Date()), 'dd/MM'),
-                                ),
-                            datasets: [
-                                {
-                                    label: chartOption2 === 'ticket' ? 'Số vé' : 'Doanh thu',
-                                    backgroundColor: hexToRgba(getStyle('--cui-info'), 10),
-                                    borderColor:
-                                        chartOption2 === 'ticket'
-                                            ? getStyle('--cui-info')
-                                            : getStyle('--cui-success'),
-                                    pointHoverBackgroundColor: getStyle('--cui-info'),
-                                    pointBackgroundColor: 'red',
-                                    pointBorderColor: '#fff',
-                                    borderWidth: 2,
-                                    data: currentMonthStatic
-                                        .slice(dayRange.start - 1, dayRange.end)
-                                        .map((data) =>
-                                            chartOption2 === 'ticket' ? data.tickets : data.revenue,
-                                        ),
-                                    fill: true,
-                                },
-                            ],
-                        }}
-                        options={{
-                            maintainAspectRatio: false,
-                            plugins: {
-                                legend: {
-                                    display: true,
-                                },
-                            },
-                            scales: {
-                                x: {
-                                    grid: {
-                                        drawOnChartArea: false,
-                                    },
-                                },
-                                y: {
-                                    ticks: {
-                                        beginAtZero: true,
-                                        maxTicksLimit: 5,
-                                        stepSize: Math.ceil(250 / 5),
-                                        max: 250,
-                                    },
-                                },
-                            },
-                            elements: {
-                                line: {
-                                    tension: 0.4,
-                                },
-                                point: {
-                                    radius: 0,
-                                    hitRadius: 10,
-                                    hoverRadius: 4,
-                                    hoverBorderWidth: 3,
-                                },
-                            },
-                        }}
-                    />
-                </CCardBody>
-            </CCard> */}
-            {/* <CCard className="mb-4">
-                <CCardBody>
-                    <CRow>
-                        <CCol sm={5}>
-                            <h4 id="traffic" className="card-title mb-0">
-                                Đặt nhiều nhất
-                            </h4>
-                            <CRow>
-                                <CFormSelect
-                                    value={yearValue3}
-                                    className="mt-3 mb-3 col-sm-2"
-                                    onChange={(e) => handleYearChoose3(parseInt(e.target.value))}
-                                >
-                                    <option value="-1" disabled>
-                                        Chọn năm
-                                    </option>
-                                    {getYearRange().map((year) => (
-                                        <option value={year} key={year}>
-                                            {year}
-                                        </option>
-                                    ))}
-                                </CFormSelect>
-                                <CFormSelect
-                                    value={monthValue3}
-                                    className="mt-1 mb-3 col-sm-3"
-                                    onChange={(e) => handleMonthChoose3(parseInt(e.target.value))}
-                                >
-                                    <option value="-1" disabled>
-                                        Chọn tháng
-                                    </option>
-                                    {MONTH_IN_YEAR.slice(
-                                        monthRange3.start,
-                                        monthRange3.end + 1,
-                                    ).map((month, index) => (
-                                        <option value={monthRange3.start + index} key={index}>
-                                            {month}
-                                        </option>
-                                    ))}
-                                </CFormSelect>
-                            </CRow>
-                            <div className="small text-medium-emphasis">{`${MONTH_IN_YEAR[monthValue3]} - ${yearValue3}`}</div>
-                        </CCol>
-                        <CCol sm={7} className="d-none d-md-block">
-                            <CButton color="primary" className="float-end">
-                                <CIcon icon={cilCloudDownload} />
-                            </CButton>
-                        </CCol>
-                    </CRow>
-                    <CRow className="justify-content-center">
-                        {sortResult.length > 0 &&
-                            sortResult.slice(0, 5).map((result, index) => (
-                                <CCol md="4" key={result.tripId}>
-                                    <CWidgetStatsB
-                                        className="mb-4"
-                                        progress={{
-                                            color: COLOR[index],
-                                            value: (result.tickets / sortSum.current) * 100,
-                                        }}
-                                        text={`${result.tickets} vé`}
-                                        title={getTripInfor(result.tripId)}
-                                        value={`${(
-                                            (result.tickets / sortSum.current) *
-                                            100
-                                        ).toFixed(2)}%`}
-                                    />
-                                </CCol>
-                            ))}
-                        {sortResult.length === 0 && <span>Chưa có lượt đặt vé</span>}
-                    </CRow>
-                </CCardBody>
-            </CCard> */}
             <CCard>
                 <CCardHeader>
                     <b>Tổng thống kê</b>
@@ -913,7 +553,16 @@ const Dashboard = () => {
                                                 .length
                                         } nhà xe`}
                                     </small>
-                                    <small> 50k đã bán</small>
+                                    <small>
+                                        {`${listOnlineTicket.reduce((sum, item) => {
+                                            return (
+                                                sum +
+                                                item.ticKets.filter(
+                                                    (tk) => tk.booking.trip.route.id === route.id,
+                                                ).length
+                                            )
+                                        }, 0)} đã bán`}
+                                    </small>
                                 </div>
                                 <CProgress color={getRandomColor()} value={50} thin></CProgress>
                             </div>
@@ -987,11 +636,17 @@ const Dashboard = () => {
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center">
                                     <div className="small text-body-secondary text-nowrap">
-                                        123 đánh giá
+                                        {`${
+                                            listReview.filter(
+                                                (rv) =>
+                                                    rv.scheduleTrip.busCompany.id ===
+                                                    company.busCompany.id,
+                                            ).length
+                                        } đánh giá`}
                                     </div>
                                     <div className="fw-semibold text-nowrap">
-                                        {' 3/5 '}
                                         <CIcon icon={cilStar} style={{ color: '#c4c41f' }}></CIcon>
+                                        {` ${getCompanyAverageRate(company)} /5`}
                                     </div>
                                 </CTableDataCell>
                             </CTableRow>

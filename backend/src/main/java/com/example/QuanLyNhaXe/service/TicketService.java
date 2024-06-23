@@ -736,6 +736,26 @@ public class TicketService {
 		return companyMoneyDTOs;
 	}
 
+	public Object getMoneyForOneCompany(int month, int year, String authentication) {
+		User user = userService.getUserByAuthorizationHeader(authentication);
+		BusCompany busCompany = busCompanyRepository.findByAdminId(user.getStaff().getAdmin().getAdminId())
+				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
+		YearMonth yearMonth = YearMonth.of(year, month);
+		LocalDate startDate = yearMonth.atDay(1);
+		LocalDate endDate = yearMonth.atEndOfMonth();
+		if (yearMonth.getYear() == LocalDate.now().getYear()
+				&& yearMonth.getMonth().getValue() >= LocalDate.now().getMonthValue()) {
+			throw new BadRequestException(Message.BAD_REQUEST);
+
+		}
+		TicketSale ticketSale = ticketSaveRepository
+				.findByFromDateAndToDateAndBusCompany(startDate, endDate, busCompany).orElse(null);
+		if (ticketSale == null) {
+			throw new NotFoundException("Không có dữ liệu");
+		}
+		return modelMapper.map(ticketSale, TicketSaleDTO.class);
+	}
+
 	public List<TicKetFullDTO> getTicketforMonthAndCompany(YearMonth yearMonth, BusCompany busCompany) {
 
 		

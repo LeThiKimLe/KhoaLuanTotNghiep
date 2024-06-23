@@ -195,7 +195,7 @@ const CompanyInfor = () => {
                                                             htmlFor="staticEmail"
                                                             className="col-sm-4 col-form-label"
                                                         >
-                                                            Số hợp tác
+                                                            Ngày hợp tác
                                                         </CFormLabel>
                                                         <CCol sm={8}>
                                                             <CFormInput

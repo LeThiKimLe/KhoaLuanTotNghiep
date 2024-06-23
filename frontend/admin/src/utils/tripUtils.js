@@ -52,7 +52,7 @@ export const getRouteJourney = (route) => {
 }
 
 export const getTripJourney = (trip) => {
-    return trip.startStation.name + '-' + trip.endStation.name
+    return trip.startStation.name + ' - ' + trip.endStation.name
 }
 
 export const tripProcess = (listRoute, companyId = -1) => {
