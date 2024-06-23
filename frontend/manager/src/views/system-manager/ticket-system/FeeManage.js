@@ -26,6 +26,8 @@ import {
     CButtonGroup,
     CFormCheck,
     CImage,
+    CFormLabel,
+    CFormInput,
 } from '@coreui/react'
 import { useState, useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
@@ -50,15 +52,21 @@ import { CustomToast } from 'src/views/customToast/CustomToast'
 import { cilExternalLink } from '@coreui/icons'
 import { getTripJourney } from 'src/utils/tripUtils'
 import noImage from 'src/assets/images/no_img.png'
-const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
+import { selectListOnlineTicket } from 'src/feature/statistics/statistics.slice'
+import stationThunk from 'src/feature/station/station.service'
+import statisticsThunk from 'src/feature/statistics/statistics.service'
+import CustomButton from 'src/views/customButton/CustomButton'
+const TripListModal = ({ visible, onClose, curCompany, listSchedule }) => {
     const [showComplete, setShowComplete] = useState(true)
     const [listShow, setListShow] = useState(
-        listSchedule.filter(
-            (schd) =>
-                schd &&
-                schd.state === 'Hoàn thành' &&
-                schd.transportationOrder?.status === 'Đã hoàn thành',
-        ),
+        listSchedule
+            ? listSchedule.filter(
+                  (schd) =>
+                      schd &&
+                      schd.state === 'Hoàn thành' &&
+                      schd.transportationOrder?.status === 'Đã hoàn thành',
+              )
+            : [],
     )
     const [showTransportationOrder, setShowTransportationOrder] = useState(false)
     const [curSchd, setCurSchd] = useState(null)
@@ -76,32 +84,35 @@ const TripListModal = ({ visible, onClose, curCompany, listSchedule = [] }) => {
     }
 
     useEffect(() => {
-        if (showComplete) {
-            setListShow(
-                listSchedule.filter(
-                    (schd) =>
-                        schd.state === 'Hoàn thành' &&
-                        schd?.transportationOrder?.status === 'Đã hoàn thành',
-                ),
-            )
-        } else {
-            setListShow(
-                listSchedule.filter(
-                    (schd) =>
-                        schd.state !== 'Hoàn thành' ||
-                        schd?.transportationOrder?.status !== 'Đã hoàn thành',
-                ),
-            )
+        if (listSchedule) {
+            if (showComplete) {
+                setListShow(
+                    listSchedule.filter(
+                        (schd) =>
+                            schd.state === 'Hoàn thành' &&
+                            schd?.transportationOrder?.status === 'Đã hoàn thành',
+                    ),
+                )
+            } else {
+                setListShow(
+                    listSchedule.filter(
+                        (schd) =>
+                            schd.state !== 'Hoàn thành' ||
+                            schd?.transportationOrder?.status !== 'Đã hoàn thành',
+                    ),
+                )
+            }
         }
     }, [showComplete])
     useEffect(() => {
-        setListShow(
-            listSchedule.filter(
-                (schd) =>
-                    schd?.state == 'Hoàn thành' &&
-                    schd?.transportationOrder?.status == 'Đã hoàn thành',
-            ),
-        )
+        if (listSchedule)
+            setListShow(
+                listSchedule.filter(
+                    (schd) =>
+                        schd?.state == 'Hoàn thành' &&
+                        schd?.transportationOrder?.status == 'Đã hoàn thành',
+                ),
+            )
     }, [listSchedule])
     return (
         <CModal visible={visible} onClose={onClose} size="lg">
@@ -269,6 +280,9 @@ const TicketFee = () => {
     const [openTripList, setOpenTripList] = useState(false)
     const [listTicketFee, setListTicketFee] = useState([])
     const [listValidCompany, setListValidCompany] = useState([])
+    const listOnlineTicket = useSelector(selectListOnlineTicket)
+    const [currentFee, setCurrentFee] = useState(null)
+    const [showTransactionDetail, setShowTransactionDetail] = useState(false)
     const getYearRange = () => {
         var year = []
         const startYear = startTime.getFullYear()
@@ -346,6 +360,13 @@ const TicketFee = () => {
                 console.log(err)
                 setLoading(false)
             })
+
+        dispatch(statisticsThunk.getOnlineTicket({ month: monthValue + 1, year: yearValue }))
+            .unwrap()
+            .then((res) => {
+                console.log(res)
+            })
+            .catch((err) => {})
     }
 
     const handleCalTicketSale = () => {
@@ -429,6 +450,32 @@ const TicketFee = () => {
         setCurCompany(company)
         setOpenTripList(true)
     }
+
+    const handlePaymentAction = (fee) => {
+        if (fee) {
+            if (fee?.ticketSave?.systemTransaction) {
+                setCurrentFee(fee)
+                setShowTransactionDetail(true)
+            } else {
+                setLoading(true)
+                dispatch(feeThunk.companyPayment(fee.ticketSave.id))
+                    .unwrap()
+                    .then((res) => {
+                        handleCalTicketSale()
+                        addToast(() =>
+                            CustomToast({ message: 'Thanh toán thành công', type: 'success' }),
+                        )
+                        setLoading(false)
+                    })
+                    .catch((err) => {
+                        setLoading(false)
+                        addToast(() =>
+                            CustomToast({ message: 'Thanh toán thất bại', type: 'error' }),
+                        )
+                    })
+            }
+        }
+    }
     // useEffect(() => {
     //     const listAssign = listRoute.filter((route) =>
     //         listAssignRouteId.find((id) => id.routeId === route.id),
@@ -438,6 +485,7 @@ const TicketFee = () => {
     // }, [listAssignRouteId])
 
     useEffect(() => {
+        console.log('recall')
         getValidCompanyForTime()
         getData()
     }, [monthValue, yearValue])
@@ -456,6 +504,7 @@ const TicketFee = () => {
     }, [openTripList])
     return (
         <>
+            <CToaster ref={toaster} push={toast} placement="top-end" />
             <CRow className="my-3">
                 <CCol sm={3}>
                     <CFormSelect
@@ -534,7 +583,7 @@ const TicketFee = () => {
                                 rowSpan={2}
                                 className="align-middle text-center"
                             >
-                                Số vé bán được
+                                Số vé online
                             </CTableHeaderCell>
                             <CTableHeaderCell
                                 scope="col"
@@ -575,52 +624,67 @@ const TicketFee = () => {
                         </CTableRow>
                     </CTableHead>
                     <CTableBody>
-                        {listValidCompany.map((company, index) => (
-                            <CTableRow key={index}>
-                                <CTableHeaderCell scope="row" className="text-center">
-                                    {index + 1}
-                                </CTableHeaderCell>
-                                <CTableHeaderCell scope="row" className="text-center">
-                                    {company.name}
-                                    <br></br>
-                                </CTableHeaderCell>
-                                <CTableDataCell className="text-center">
-                                    {new Date(company.coopDay) < new Date(yearValue, monthValue, 1)
-                                        ? format(new Date(yearValue, monthValue, 1), 'dd/MM/yyyy')
-                                        : convertToDisplayDate(company.coopDay)}
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    {format(new Date(yearValue, monthValue + 1, 0), 'dd/MM/yyyy')}
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    {`${format(
-                                        new Date(yearValue, monthValue + 1, 5),
-                                        'dd/MM',
-                                    )} - ${format(
-                                        new Date(yearValue, monthValue + 1, 10),
-                                        'dd/MM',
-                                    )}`}
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    {`${
-                                        listCompanySchedule
-                                            .find((item) => item.busCompany.id === company.id)
-                                            ?.schedules.filter(
-                                                (schd) =>
-                                                    schd.state === 'Hoàn thành' &&
-                                                    schd.transportationOrder?.status ===
-                                                        'Đã hoàn thành',
-                                            ).length
-                                    } chuyến`}
-                                    <CIcon
-                                        icon={cilExternalLink}
-                                        role="button"
-                                        style={{ marginLeft: '5px' }}
-                                        onClick={() => handleOpenTripList(company)}
-                                    ></CIcon>
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    {`${listCompanySchedule
+                        {listTicketFee &&
+                            listValidCompany.map((company, index) => {
+                                const ticketSale = listTicketFee?.find(
+                                    (item) => item.busCompany.id === company.id,
+                                )
+                                console.log(ticketSale)
+                                return (
+                                    <CTableRow key={index}>
+                                        <CTableHeaderCell scope="row" className="text-center">
+                                            {index + 1}
+                                        </CTableHeaderCell>
+                                        <CTableHeaderCell scope="row" className="text-center">
+                                            {company.name}
+                                            <br></br>
+                                        </CTableHeaderCell>
+                                        <CTableDataCell className="text-center">
+                                            {new Date(company.coopDay) <
+                                            new Date(yearValue, monthValue, 1)
+                                                ? format(
+                                                      new Date(yearValue, monthValue, 1),
+                                                      'dd/MM/yyyy',
+                                                  )
+                                                : convertToDisplayDate(company.coopDay)}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center">
+                                            {format(
+                                                new Date(yearValue, monthValue + 1, 0),
+                                                'dd/MM/yyyy',
+                                            )}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center">
+                                            {`${format(
+                                                new Date(yearValue, monthValue + 1, 5),
+                                                'dd/MM',
+                                            )} - ${format(
+                                                new Date(yearValue, monthValue + 1, 10),
+                                                'dd/MM',
+                                            )}`}
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center">
+                                            {`${
+                                                listCompanySchedule
+                                                    .find(
+                                                        (item) => item.busCompany.id === company.id,
+                                                    )
+                                                    ?.schedules.filter(
+                                                        (schd) =>
+                                                            schd.state === 'Hoàn thành' &&
+                                                            schd.transportationOrder?.status ===
+                                                                'Đã hoàn thành',
+                                                    ).length
+                                            } chuyến`}
+                                            <CIcon
+                                                icon={cilExternalLink}
+                                                role="button"
+                                                style={{ marginLeft: '5px' }}
+                                                onClick={() => handleOpenTripList(company)}
+                                            ></CIcon>
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center">
+                                            {/* {`${listCompanySchedule
                                         .find((item) => item.busCompany.id === company.id)
                                         ?.schedules?.reduce(
                                             (acc, cur) =>
@@ -629,38 +693,61 @@ const TicketFee = () => {
                                                     (tk) => tk.state === 'Đã thanh toán',
                                                 ).length,
                                             0,
-                                        )}`}
-                                    <CIcon
-                                        icon={cilExternalLink}
-                                        role="button"
-                                        style={{ marginLeft: '5px' }}
-                                        onClick={() => viewCompany(company.id)}
-                                    ></CIcon>
-                                </CTableDataCell>
-                                <CTableDataCell className="text-center">{`${
-                                    listTicketFee.length > 0
-                                        ? listTicketFee
-                                              .find((item) => item.busCompany.id == company.id)
-                                              ?.ticketSave.ticketSales.toLocaleString()
-                                        : '---'
-                                }`}</CTableDataCell>
-                                <CTableDataCell className="text-center">{`${
-                                    listTicketFee.length > 0
-                                        ? (
-                                              (listTicketFee.find(
-                                                  (item) => item.busCompany.id == company.id,
-                                              )?.ticketSave.ticketSales *
-                                                  20) /
-                                              100
-                                          ).toLocaleString()
-                                        : '---'
-                                }`}</CTableDataCell>
-                                <CTableDataCell className="text-center">{'---'}</CTableDataCell>
-                                <CTableDataCell className="text-center">
-                                    <CButton variant="outline">Thanh toán</CButton>
-                                </CTableDataCell>
-                            </CTableRow>
-                        ))}
+                                        )}`} */}
+                                            {
+                                                listOnlineTicket
+                                                    .find(
+                                                        (item) => item.busCompany.id === company.id,
+                                                    )
+                                                    .ticKets.filter(
+                                                        (tk) => tk.state == 'Đã thanh toán',
+                                                    ).length
+                                            }
+                                            <CIcon
+                                                icon={cilExternalLink}
+                                                role="button"
+                                                style={{ marginLeft: '5px' }}
+                                                onClick={() => viewCompany(company.id)}
+                                            ></CIcon>
+                                        </CTableDataCell>
+                                        <CTableDataCell className="text-center">{`${
+                                            ticketSale
+                                                ? ticketSale.ticketSave?.ticketSales.toLocaleString()
+                                                : '---'
+                                        }`}</CTableDataCell>
+                                        <CTableDataCell className="text-center">{`${
+                                            ticketSale
+                                                ? (
+                                                      (ticketSale.ticketSave?.ticketSales * 20) /
+                                                      100
+                                                  ).toLocaleString()
+                                                : '---'
+                                        }`}</CTableDataCell>
+                                        <CTableDataCell className="text-center">{`${
+                                            listTicketFee.length > 0
+                                                ? ticketSale?.ticketSave?.systemTransaction
+                                                    ? 'Đã thanh toán'
+                                                    : 'Chưa thanh toán'
+                                                : '---'
+                                        }`}</CTableDataCell>
+                                        <CTableDataCell className="text-center">
+                                            <CustomButton
+                                                loading={loading}
+                                                variant="outline"
+                                                onClick={() => handlePaymentAction(ticketSale)}
+                                            >
+                                                {`${
+                                                    listTicketFee.length > 0
+                                                        ? ticketSale?.ticketSave?.systemTransaction
+                                                            ? 'Xem giao dịch'
+                                                            : `Thanh toán ${ticketSale?.ticketSave?.profit.toLocaleString()}đ`
+                                                        : '---'
+                                                }`}
+                                            </CustomButton>
+                                        </CTableDataCell>
+                                    </CTableRow>
+                                )
+                            })}
                     </CTableBody>
                 </CTable>
             )}
@@ -673,6 +760,70 @@ const TicketFee = () => {
                 }
                 curCompany={curCompany}
             ></TripListModal>
+            <CModal visible={showTransactionDetail} onClose={() => setShowTransactionDetail(false)}>
+                <CModalHeader>
+                    <b>{`Chi tiết giao dịch vé nhà xe "${currentFee?.busCompany.name}" T${
+                        monthValue + 1
+                    }/${yearValue}`}</b>
+                </CModalHeader>
+                <CModalBody>
+                    {currentFee && currentFee.ticketSave.systemTransaction && (
+                        <>
+                            <CRow className="mb-3 justify-content-center">
+                                <CFormLabel htmlFor="time" className="col-sm-5 col-form-label">
+                                    <b>Thời gian giao dịch</b>
+                                </CFormLabel>
+                                <CCol sm={5}>
+                                    <CFormInput
+                                        type="text"
+                                        id="time"
+                                        defaultValue={convertToDisplayTimeStamp(
+                                            currentFee.ticketSave.systemTransaction.paymentTime,
+                                        )}
+                                        readOnly
+                                        plainText
+                                        style={{ textAlign: 'right' }}
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3 justify-content-center">
+                                <CFormLabel htmlFor="money" className="col-sm-5 col-form-label">
+                                    <b>Số tiền giao dịch</b>
+                                </CFormLabel>
+                                <CCol sm={5}>
+                                    <CFormInput
+                                        type="text"
+                                        id="money"
+                                        defaultValue={`${Math.floor(
+                                            currentFee.ticketSave.systemTransaction.amount,
+                                        ).toLocaleString()} VND`}
+                                        readOnly
+                                        plainText
+                                        style={{ textAlign: 'right' }}
+                                    />
+                                </CCol>
+                            </CRow>
+                            <CRow className="mb-3 justify-content-center">
+                                <CFormLabel htmlFor="method" className="col-sm-5 col-form-label">
+                                    <b>Phương thức thanh toán</b>
+                                </CFormLabel>
+                                <CCol sm={5}>
+                                    <CFormInput
+                                        type="text"
+                                        id="method"
+                                        defaultValue={
+                                            currentFee.ticketSave.systemTransaction.paymentMethod
+                                        }
+                                        readOnly
+                                        plainText
+                                        style={{ textAlign: 'right' }}
+                                    />
+                                </CCol>
+                            </CRow>
+                        </>
+                    )}
+                </CModalBody>
+            </CModal>
         </>
     )
 }

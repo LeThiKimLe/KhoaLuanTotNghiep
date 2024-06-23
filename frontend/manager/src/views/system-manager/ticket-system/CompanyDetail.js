@@ -81,6 +81,8 @@ import { DateRange } from 'react-date-range'
 import { cilStar } from '@coreui/icons'
 import { addDays } from 'src/utils/convertUtils'
 import { getTripJourney } from 'src/utils/tripUtils'
+import { selectListOnlineTicket } from 'src/feature/statistics/statistics.slice'
+import statisticsThunk from 'src/feature/statistics/statistics.service'
 const ScheduleWrap = ({ schedule, turn, isEdit = false, removeTrip }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
@@ -1133,6 +1135,7 @@ const FeeInfo = ({ listAssignRouteId }) => {
     const [listCompanySchedule, setListCompanySchedule] = useState([])
     const [loading, setLoading] = useState(false)
     const [totalMoney, setTotalMoney] = useState(0)
+    const listTicketOnline = useSelector(selectListOnlineTicket)
     const getYearRange = () => {
         var year = []
         const startYear = startTime.getFullYear()
@@ -1231,13 +1234,17 @@ const FeeInfo = ({ listAssignRouteId }) => {
             .then((res) => {
                 console.log(res)
                 setTotalMoney(
-                    res.find((item) => item.busCompany.id === curCompany.busCompany.id)?.ticketSave
-                        .ticketSales,
+                    res.find((item) => item.busCompany.id === curCompany.busCompany.id)?.ticketSave,
                 )
             })
             .catch((err) => {
-                setTotalMoney(0)
+                setTotalMoney('Đang cập nhật')
             })
+
+        dispatch(statisticsThunk.getOnlineTicket({ month: monthValue + 1, year: yearValue }))
+            .unwrap()
+            .then()
+            .catch()
     }
 
     const getNextDueDay = (day) => {
@@ -1287,7 +1294,6 @@ const FeeInfo = ({ listAssignRouteId }) => {
     useEffect(() => {
         getData()
     }, [])
-
     return (
         <div>
             <Tabs className="tabStyle">
@@ -1416,17 +1422,22 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                                         align="center"
                                                         className="text-center"
                                                     >
-                                                        {listCompanySchedule
-                                                            .filter(
-                                                                (item) =>
-                                                                    getTripJourney(item.trip) ===
-                                                                    label,
-                                                            )
-                                                            .reduce(
-                                                                (acc, item) =>
-                                                                    acc + item.tickets.length,
-                                                                0,
-                                                            )}
+                                                        {
+                                                            listTicketOnline
+                                                                .find(
+                                                                    (item) =>
+                                                                        item?.busCompany?.id ==
+                                                                        curCompany?.busCompany?.id,
+                                                                )
+                                                                ?.ticKets.filter(
+                                                                    (item) =>
+                                                                        getTripJourney(
+                                                                            item.booking.trip,
+                                                                        ) === label &&
+                                                                        item.state ==
+                                                                            'Đã thanh toán',
+                                                                ).length
+                                                        }
                                                     </CTableDataCell>
                                                 </CTableRow>
                                             ))}
@@ -1441,7 +1452,13 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                                     align="center"
                                                     className="text-center"
                                                 >
-                                                    <b>{totalMoney.toLocaleString()}</b>
+                                                    <b>
+                                                        {totalMoney != 'Đang cập nhật' &&
+                                                            totalMoney?.ticketSales?.toLocaleString()}
+                                                        {totalMoney == 'Đang cập nhật' && (
+                                                            <i>Đang cập nhật</i>
+                                                        )}
+                                                    </b>
                                                 </CTableDataCell>
                                             </CTableRow>
                                             <CTableRow>
@@ -1456,7 +1473,13 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                                     className="text-center"
                                                 >
                                                     <b>
-                                                        {((totalMoney * 20) / 200).toLocaleString()}
+                                                        {/* check type of totalMoney */}
+                                                        {totalMoney != 'Đang cập nhật'
+                                                            ? (
+                                                                  (totalMoney.ticketSales * 20) /
+                                                                  100
+                                                              ).toLocaleString()
+                                                            : 'Đang cập nhật'}
                                                     </b>
                                                 </CTableDataCell>
                                             </CTableRow>
@@ -1467,12 +1490,21 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                                         <b style={{ color: 'red' }}>
                                                             <i>Tổng chi</i>
                                                         </b>
-                                                        <i style={{ color: 'grey' }}>
-                                                            Chưa thanh toán
-                                                        </i>
-                                                        <i style={{ color: 'green' }}>
-                                                            Đã thanh toán
-                                                        </i>
+                                                        {totalMoney != 'Đang cập nhật' ? (
+                                                            totalMoney?.systemTransaction ? (
+                                                                <i style={{ color: 'green' }}>
+                                                                    Đã thanh toán
+                                                                </i>
+                                                            ) : (
+                                                                <i style={{ color: 'grey' }}>
+                                                                    Chưa thanh toán
+                                                                </i>
+                                                            )
+                                                        ) : (
+                                                            <i style={{ color: 'grey' }}>
+                                                                Đang cập nhật
+                                                            </i>
+                                                        )}
                                                     </div>
                                                 </CTableDataCell>
                                                 <CTableDataCell
@@ -1481,7 +1513,12 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                                     active
                                                 >
                                                     <b>
-                                                        {((totalMoney * 80) / 200).toLocaleString()}
+                                                        {totalMoney != 'Đang cập nhật'
+                                                            ? (
+                                                                  (totalMoney.ticketSales * 80) /
+                                                                  100
+                                                              ).toLocaleString()
+                                                            : 'Đang cập nhật'}
                                                     </b>
                                                 </CTableDataCell>
                                             </CTableRow>

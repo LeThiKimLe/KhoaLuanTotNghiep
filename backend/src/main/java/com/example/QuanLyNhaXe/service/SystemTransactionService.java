@@ -3,6 +3,7 @@ package com.example.QuanLyNhaXe.service;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
 
+import com.example.QuanLyNhaXe.Request.CompanyPayment;
 import com.example.QuanLyNhaXe.Request.CreatePaymentDTO;
 import com.example.QuanLyNhaXe.Request.PaymentServiceFee;
 import com.example.QuanLyNhaXe.dto.SystemTransactionDTO;
@@ -52,7 +53,8 @@ public class SystemTransactionService {
 		
 	}
 	
-	public Object peymentTicketsForCompany(Integer ticketSaleId) {
+	public Object peymentTicketsForCompany(CompanyPayment ticketSaleData) {
+		Integer ticketSaleId=ticketSaleData.getTicketSaleId();
 		TicketSale ticketSale=ticketSaveRepository.findById(ticketSaleId)
 				.orElseThrow(() -> new NotFoundException(Message.COMPANY_NOT_FOUND));
 		if(ticketSale.getSystemTransaction()!=null) {

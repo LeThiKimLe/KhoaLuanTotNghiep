@@ -369,20 +369,20 @@ const AddStaffForm = ({ visible, setVisible, finishAddStaff }) => {
                                 ></CFormInput>
                             </CCol>
                             <CCol md="3">
-                                <CustomButton
-                                    variant="outline"
-                                    onClick={handleDownloadSampleFile}
-                                    loading={loadingUpload}
-                                >
+                                <CButton variant="outline" onClick={handleDownloadSampleFile}>
                                     <CIcon icon={cilVerticalAlignBottom}></CIcon>
                                     Tải file mẫu
-                                </CustomButton>
+                                </CButton>
                             </CCol>
                             <CCol md="4" className="d-flex justify-content-end">
-                                <CButton color="success" onClick={handleImportExcelFile}>
+                                <CustomButton
+                                    color="success"
+                                    onClick={handleImportExcelFile}
+                                    loading={loadingUpload}
+                                >
                                     <CIcon icon={cilSend}></CIcon>
                                     Lưu dữ liệu
-                                </CButton>
+                                </CustomButton>
                             </CCol>
                         </CRow>
                         <CRow className="mt-2">

@@ -19,6 +19,8 @@ import { ListStation } from './ListStation'
 import { ListReview } from './ListReview'
 import { ListUtils } from './ListUtils'
 import { CompanyPolicy } from './CompanyPolicy'
+import { selectListReview } from '../../../../feature/review/review.slice'
+import reviewThunk from '../../../../feature/review/review.service'
 
 const SearchItem = ({ trip, sameTrip }) => {
     const [choose, setChoose] = useState(false)
@@ -31,6 +33,7 @@ const SearchItem = ({ trip, sameTrip }) => {
     const navigate = useNavigate()
     const [openDetail, setOpenDetail] = useState(false)
     const [activeTab, setActiveTab] = useState(0)
+    const listComment = useSelector(selectListReview)
     const handleChooseTrip = () => {
         if (round === true)
             dispatch(tripActions.getCurTrip(trip))
@@ -66,6 +69,14 @@ const SearchItem = ({ trip, sameTrip }) => {
         setOpenDetail(!openDetail)
         setActiveTab(1)
     }
+    const getReview = () => {
+        const list = listComment.filter((item) => item?.scheduleTrip?.busCompany?.id === trip?.tripInfor?.busCompany?.id  && item?.scheduleTrip?.id === trip?.tripInfor?.id)
+        const rating = list.reduce((sum, item) => sum + item.rate, 0)
+        if (list.length !== 0)
+            return `${(rating / list.length).toFixed(1)}/5 (${list.length})`
+            
+        else return `--/5 (${list.length})`
+    }
     useEffect(() => {
         if (choose === true) { 
             setChoose(false)
@@ -75,7 +86,15 @@ const SearchItem = ({ trip, sameTrip }) => {
                 navigate(`/trip/${trip.id}`)
         }
     }, [choose, currentTrip, returnTrip])
-    console.log(trip)
+    useEffect(() => {
+        dispatch(reviewThunk.getListReview())
+        .unwrap()
+        .then(() => {
+        })
+        .catch((err) => {
+            console.log(err)
+        })
+    }, [])
     return (
         <div className={`container ${styles.cover}`}>
             <div className={`row ${styles.searchResult}`}>
@@ -87,8 +106,11 @@ const SearchItem = ({ trip, sameTrip }) => {
                         <b>{trip.tripInfor.busCompany.name}</b>
                         <div className={styles.starCover} role="button" onClick={openReview}>
                             <FontAwesomeIcon icon={faStar} />
-                            <i>{` 5 `}</i>
-                            <i>{` (0) `}</i>
+                            {
+                                trip && listComment && (
+                                    <small>{getReview()}</small>
+                                )
+                            }
                         </div>
                     </div>
                     <div className={styles.routeTime}>
@@ -150,7 +172,7 @@ const SearchItem = ({ trip, sameTrip }) => {
                                 onSelect={(index) => setActiveTab(index)}
                             >
                                 <TabList>
-                                    <Tab>Điểm đón - trả</Tab>
+                                    <Tab>Đón - trả</Tab>
                                     <Tab>Đánh giá</Tab>
                                     <Tab>Tiện ích</Tab>
                                     <Tab>Chính sách</Tab>

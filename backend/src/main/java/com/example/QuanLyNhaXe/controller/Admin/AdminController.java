@@ -30,6 +30,7 @@ import com.example.QuanLyNhaXe.service.AuthenticationService;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
 import com.example.QuanLyNhaXe.service.ExcelService;
 import com.example.QuanLyNhaXe.service.FeeService;
+import com.example.QuanLyNhaXe.service.TicketService;
 import com.example.QuanLyNhaXe.service.UserService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -51,6 +52,7 @@ public class AdminController {
 	private final FeeService feeService;
 	private final BusCompanyService busCompanyService;
 	private final ExcelService excelService;
+	private final TicketService ticketService;
 
 	@PostMapping("/staffs")
 	public ResponseEntity<Object> createStaff(@Valid @RequestBody SignupStaffDTO signupStaffDTO,@Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
@@ -117,6 +119,11 @@ public class AdminController {
 	@PutMapping("/policy")
 	public ResponseEntity<Object> editBusCompany(@Valid @RequestBody EditCompanyPolicy policy, @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
 		return new ResponseEntity<>(busCompanyService.updateCompanyPolicy(policy, authorization), HttpStatus.OK);
+	}
+
+	@GetMapping("/money")
+	public ResponseEntity<Object> getTicketMoneyForMonth( @RequestParam Integer month,@RequestParam Integer year, @Parameter(hidden = true) @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) {
+		return new ResponseEntity<>(ticketService.getMoneyForOneCompany(month, year, authorization), HttpStatus.OK);
 	}
 	
 }
