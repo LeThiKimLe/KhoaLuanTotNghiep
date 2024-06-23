@@ -38,7 +38,7 @@ public class UtilityService {
 		return sb.toString();
 	}
 
-	public static String getRandomNumber(int len) {
+	public  String getRandomNumber(int len) {
 		Random rnd = new Random();
 		String chars = "0123456789";
 		StringBuilder sb = new StringBuilder(len);
