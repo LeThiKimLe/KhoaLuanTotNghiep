@@ -25,6 +25,7 @@ const Home = () => {
     const dispatch = useDispatch()
     const listRoute = useSelector(selectListRoute)
     const listComment = useSelector(selectListReview)
+    
     useEffect(() => {
         const loadData = () => {
             dispatch(routeThunk.getRoute())
