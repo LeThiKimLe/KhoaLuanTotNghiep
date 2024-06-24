@@ -6,6 +6,7 @@ import java.time.LocalTime;
 import java.time.YearMonth;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.modelmapper.ModelMapper;
@@ -43,6 +44,7 @@ import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.CancelRequest;
 import com.example.QuanLyNhaXe.model.History;
 import com.example.QuanLyNhaXe.model.Policy;
+import com.example.QuanLyNhaXe.model.Route;
 import com.example.QuanLyNhaXe.model.Schedule;
 import com.example.QuanLyNhaXe.model.StopStation;
 import com.example.QuanLyNhaXe.model.Ticket;
@@ -54,6 +56,7 @@ import com.example.QuanLyNhaXe.repository.BusCompanyRepository;
 import com.example.QuanLyNhaXe.repository.CancelRequestRepository;
 import com.example.QuanLyNhaXe.repository.HistoryRepository;
 import com.example.QuanLyNhaXe.repository.PolicyRepository;
+import com.example.QuanLyNhaXe.repository.RouteRepository;
 import com.example.QuanLyNhaXe.repository.ScheduleRepository;
 import com.example.QuanLyNhaXe.repository.StopStationRepository;
 import com.example.QuanLyNhaXe.repository.TicketRepository;
@@ -85,6 +88,7 @@ public class TicketService {
 	private final BusCompanyService busCompanyService;
 	private final TicketSaveRepository ticketSaveRepository;
 	private final BusCompanyRepository busCompanyRepository;
+	private final RouteRepository routeRepository;
 
 	public Object paymentTicket(CreatePaymentDTO createPaymentDTO) {
 		Booking booking = bookingRepository.findByCode(createPaymentDTO.getBookingCode())
@@ -692,7 +696,13 @@ public class TicketService {
 						busCompany, PaymentMethod.CASH.getLabel());
 		if (!tickets.isEmpty()) {
 			for (Ticket ticket : tickets) {
-				sum += ticket.getTicketPrice();
+				List<History> histories=ticket.getHistories();
+				for(History history: histories) {
+					if(history.getAction().equals(HistoryAction.CANCEL.getLabel())) {
+						sum+=history.getTransaction().getAmount();
+					}
+				}
+				
 			}
 		}
 		return sum;
@@ -810,5 +820,23 @@ public class TicketService {
 		return ticketForMonthDTOs;
 
 	}
+	
+	public Object countTicketOnlineByCompany(Integer companyId) {
+		BusCompany busCompany=busCompanyService.getModelBusCompany(companyId);
+		Integer sumInteger=0;
+		sumInteger=ticketRepository.countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_BusCompany(TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), busCompany);
+		return sumInteger;
+		
+	}
+	public Object countTicketOnlineByRoute(Integer routeId) {
+		Route route=routeRepository.findById(routeId)
+				.orElseThrow(() -> new NotFoundException(Message.ROUTE_NOT_FOUND));
+		Integer sumInteger=0;
+		sumInteger=ticketRepository.countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_Route(TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), route);
+		return sumInteger;
+		
+				
+	}
+	
 
 }

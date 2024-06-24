@@ -9,12 +9,14 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.CreateTrip;
 import com.example.QuanLyNhaXe.Request.EditActiveDTO;
 import com.example.QuanLyNhaXe.Request.EditTrip;
 import com.example.QuanLyNhaXe.Request.TripAssignment;
+import com.example.QuanLyNhaXe.service.TicketService;
 import com.example.QuanLyNhaXe.service.TripService;
 
 import io.swagger.v3.oas.annotations.Parameter;
@@ -30,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminTripController {
 	
 	private final  TripService tripService;
+	
 	
 	
 	
@@ -57,5 +60,5 @@ public class AdminTripController {
 	public ResponseEntity<Object> distributeDeleteTripDriversBuses(@RequestBody TripAssignment tripAssignment) {
 		return new ResponseEntity<>(tripService.tripAssignmentDelete(tripAssignment), HttpStatus.OK);
 	}
-
+	
 }
