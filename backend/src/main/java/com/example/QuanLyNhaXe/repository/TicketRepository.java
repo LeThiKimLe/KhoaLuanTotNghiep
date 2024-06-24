@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.scheduling.concurrent.DefaultManagedTaskExecutor;
 
 import com.example.QuanLyNhaXe.model.BusCompany;
+import com.example.QuanLyNhaXe.model.Route;
 import com.example.QuanLyNhaXe.model.Ticket;
 
 public interface TicketRepository extends JpaRepository<Ticket, Integer> {
@@ -25,6 +26,12 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 	List<Ticket> findByStateAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompanyAndHistories_TransactionPaymentMethodNot(
 			String state, String scheduleState, LocalDate startDate, LocalDate endDate, BusCompany company,
 			String method);
+	
+	Integer countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_BusCompany(String state, String scheduleState,BusCompany company);
+	
+	Integer countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_Route(String state, String scheduleState,Route route);
+	
+	
 	
 	
 

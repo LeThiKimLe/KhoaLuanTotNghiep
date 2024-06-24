@@ -186,13 +186,13 @@ public class BookingService {
 		if (booking.getStatus().equals(BookingStatus.RESERVE.getLabel())) {
 			List<Ticket> tickets = booking.getTickets();
 			booking.setStatus(BookingStatus.CANCELED.getLabel());
-			bookingRepository.save(booking);
+			
 			bookingRepository.save(booking);
 			for (Ticket ticket : tickets) {
 				ticket.setState(TicketState.CANCELED.getLabel());
 			}
 			Schedule schedule = tickets.get(0).getSchedule();
-			schedule.setAvailability(schedule.getAvailability() - booking.getTicketNumber());
+			schedule.setAvailability(schedule.getAvailability() + booking.getTicketNumber());
 			scheduleRepository.save(schedule);
 			ticketRepository.saveAll(tickets);
 			if (bookingCode2 != "") {
@@ -206,7 +206,7 @@ public class BookingService {
 						ticket.setState(TicketState.CANCELED.getLabel());
 					}
 					Schedule schedule2 = tickets2.get(0).getSchedule();
-					schedule2.setAvailability(schedule2.getAvailability() - booking2.getTicketNumber());
+					schedule2.setAvailability(schedule2.getAvailability() + booking2.getTicketNumber());
 					scheduleRepository.save(schedule2);
 					ticketRepository.saveAll(tickets2);
 				}
