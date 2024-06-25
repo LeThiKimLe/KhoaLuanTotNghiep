@@ -60,6 +60,7 @@ import { StopStation } from './RouteManagement'
 import { CustomToast } from '../customToast/CustomToast'
 import tripThunk from 'src/feature/trip/trip.service'
 import { TRIP_STATUS } from 'src/utils/constants'
+import TripDistribute from '../schedule/TripDistribute'
 const ScheduleWrap = ({ schedule, turn }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
@@ -1222,6 +1223,17 @@ const TripManagement = () => {
                                         listFixSchedule={getFixSchedule(trip)}
                                         tripGoId={trip.turnGo.id}
                                     ></TableSchedule>
+                                </CCardBody>
+                            </CCard>
+                            <CCard className="mt-2 mb-3 border-top-info border-top-3">
+                                <CCardHeader>
+                                    <b>Phân công của tuyến</b>
+                                </CCardHeader>
+                                <CCardBody>
+                                    <TripDistribute
+                                        routeId={trip.route.id}
+                                        tripId={trip.turnGo.id}
+                                    ></TripDistribute>
                                 </CCardBody>
                             </CCard>
                         </TabPanel>

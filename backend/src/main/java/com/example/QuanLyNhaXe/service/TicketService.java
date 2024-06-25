@@ -26,7 +26,10 @@ import com.example.QuanLyNhaXe.dto.CancelRequestDTO;
 import com.example.QuanLyNhaXe.dto.CompanyMoneyDTO;
 import com.example.QuanLyNhaXe.dto.PolicyDTO;
 import com.example.QuanLyNhaXe.dto.ReponseCancelTicket;
+import com.example.QuanLyNhaXe.dto.RouteDTO;
 import com.example.QuanLyNhaXe.dto.TicKetFullDTO;
+import com.example.QuanLyNhaXe.dto.TicketCountByCompanyDTO;
+import com.example.QuanLyNhaXe.dto.TicketCountByRouteDTO;
 import com.example.QuanLyNhaXe.dto.TicketForMonthDTO;
 import com.example.QuanLyNhaXe.dto.TicketSaleDTO;
 import com.example.QuanLyNhaXe.dto.TransactionDTO;
@@ -821,21 +824,33 @@ public class TicketService {
 
 	}
 	
-	public Object countTicketOnlineByCompany(Integer companyId) {
-		BusCompany busCompany=busCompanyService.getModelBusCompany(companyId);
-		Integer sumInteger=0;
-		sumInteger=ticketRepository.countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_BusCompany(TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), busCompany);
-		return sumInteger;
-		
+	public Object countTicketOnlineByCompany() {
+		List<BusCompany> listCompany = busCompanyRepository.findAll();
+		List<TicketCountByCompanyDTO> ticketCountDTOs = new ArrayList<>();
+		Integer ticketCount = 0;
+		for (BusCompany busCompany : listCompany) {
+			ticketCount = ticketRepository
+					.countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_BusCompany(
+							TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), busCompany);
+			TicketCountByCompanyDTO ticketCountDTO = TicketCountByCompanyDTO.builder().busCompany(modelMapper.map(busCompany, BusCompanyDTO.class))
+					.count(ticketCount).build();
+			ticketCountDTOs.add(ticketCountDTO);
+		}
+		return ticketCountDTOs;
 	}
-	public Object countTicketOnlineByRoute(Integer routeId) {
-		Route route=routeRepository.findById(routeId)
-				.orElseThrow(() -> new NotFoundException(Message.ROUTE_NOT_FOUND));
-		Integer sumInteger=0;
-		sumInteger=ticketRepository.countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_Route(TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), route);
-		return sumInteger;
-		
-				
+	public Object countTicketOnlineByRoute() {
+		List<Route> listRoute = routeRepository.findAll();
+		List<TicketCountByRouteDTO> ticketCountDTOs = new ArrayList<>();
+		Integer ticketCount = 0;
+		for (Route route : listRoute) {
+			ticketCount = ticketRepository
+					.countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_Route(
+							TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), route);
+			TicketCountByRouteDTO ticketCountDTO = TicketCountByRouteDTO.builder().route(modelMapper.map(route, RouteDTO.class))
+					.count(ticketCount).build();
+			ticketCountDTOs.add(ticketCountDTO);
+		}
+		return ticketCountDTOs;
 	}
 	
 

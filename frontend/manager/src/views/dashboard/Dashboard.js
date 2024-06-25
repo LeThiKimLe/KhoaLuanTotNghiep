@@ -74,6 +74,8 @@ import userMale from 'src/assets/images/avatars/male.svg'
 import userFemale from 'src/assets/images/avatars/female.svg'
 import { convertToDisplayDate } from 'src/utils/convertUtils'
 import { selectListOnlineTicket } from 'src/feature/statistics/statistics.slice'
+import { selectListTicketCountByCompany } from 'src/feature/statistics/statistics.slice'
+import { selectListTicketCountByRoute } from 'src/feature/statistics/statistics.slice'
 
 const Dashboard = () => {
     const dispatch = useDispatch()
@@ -109,7 +111,8 @@ const Dashboard = () => {
     const listCompany = useSelector(selectListCompany)
     const listAssign = useSelector(selectListAssign)
     const listOnlineTicket = useSelector(selectListOnlineTicket)
-
+    const listTicketCountByRoute = useSelector(selectListTicketCountByRoute)
+    const listTicketCountByCompany = useSelector(selectListTicketCountByCompany)
     const listReview = useSelector(selectListReview)
     const handleYearChoose = (e) => {
         setYearValue(e)
@@ -304,6 +307,8 @@ const Dashboard = () => {
             .then(() => {})
             .catch(() => {})
         dispatch(statisticsThunk.getAllReview()).unwrap().then().catch()
+        dispatch(statisticsThunk.countTicketByCompany()).unwrap().then().catch()
+        dispatch(statisticsThunk.countTicketByRoute()).unwrap().then().catch()
     }, [])
     useEffect(() => {
         dispatch(
@@ -520,7 +525,11 @@ const Dashboard = () => {
                             <div>
                                 <b style={{ fontSize: '16px', fontWeight: '600' }}>Số vé đã bán</b>
                                 <br></br>
-                                <b style={{ fontSize: '20px' }}>3289534572</b>
+                                <b style={{ fontSize: '20px' }}>
+                                    {listTicketCountByCompany.reduce((sum, item) => {
+                                        return sum + item.count
+                                    }, 0)}
+                                </b>
                             </div>
                         </CCol>
                         <CCol
@@ -554,17 +563,26 @@ const Dashboard = () => {
                                         } nhà xe`}
                                     </small>
                                     <small>
-                                        {`${listOnlineTicket.reduce((sum, item) => {
-                                            return (
-                                                sum +
-                                                item.ticKets.filter(
-                                                    (tk) => tk.booking.trip.route.id === route.id,
-                                                ).length
-                                            )
-                                        }, 0)} đã bán`}
+                                        {`${
+                                            listTicketCountByRoute.find(
+                                                (item) => item.route.id === route.id,
+                                            )?.count
+                                        } đã bán`}
                                     </small>
                                 </div>
-                                <CProgress color={getRandomColor()} value={50} thin></CProgress>
+                                <CProgress
+                                    color={getRandomColor()}
+                                    value={(
+                                        (listTicketCountByRoute.find(
+                                            (item) => item.route.id === route.id,
+                                        )?.count /
+                                            listTicketCountByRoute.reduce((sum, item) => {
+                                                return sum + item.count
+                                            }, 0)) *
+                                        100
+                                    ).toFixed(2)}
+                                    thin
+                                ></CProgress>
                             </div>
                         </CCol>
                     ))}
@@ -619,7 +637,12 @@ const Dashboard = () => {
                                 </CTableDataCell>
                                 <CTableDataCell>
                                     <div className="d-flex justify-content-between text-nowrap">
-                                        <div className="fw-semibold">{50}%</div>
+                                        <div className="fw-semibold">{`${
+                                            listTicketCountByCompany.find(
+                                                (item) =>
+                                                    item.busCompany.id === company.busCompany.id,
+                                            )?.count
+                                        } vé`}</div>
                                         <div className="ms-3">
                                             <small className="text-body-secondary">
                                                 {`${
@@ -632,7 +655,20 @@ const Dashboard = () => {
                                             </small>
                                         </div>
                                     </div>
-                                    <CProgress thin color={getRandomColor()} value={50} />
+                                    <CProgress
+                                        thin
+                                        color={getRandomColor()}
+                                        value={(
+                                            (listTicketCountByCompany.find(
+                                                (item) =>
+                                                    item.busCompany.id === company.busCompany.id,
+                                            )?.count /
+                                                listTicketCountByCompany.reduce((sum, item) => {
+                                                    return sum + item.count
+                                                }, 0)) *
+                                            100
+                                        ).toFixed(2)}
+                                    />
                                 </CTableDataCell>
                                 <CTableDataCell className="text-center">
                                     <div className="small text-body-secondary text-nowrap">

@@ -51,13 +51,13 @@ public class ManagerTripController {
 	}
 
 	@GetMapping("tickets/count-Route")
-	public ResponseEntity<Object> getSumTicketsByRoute(@RequestParam Integer routeId) {
-		return new ResponseEntity<>(ticketService.countTicketOnlineByRoute(routeId), HttpStatus.OK);
+	public ResponseEntity<Object> getSumTicketsByRoute() {
+		return new ResponseEntity<>(ticketService.countTicketOnlineByRoute(), HttpStatus.OK);
 	}
 
 	@GetMapping("tickets/count-company")
-	public ResponseEntity<Object> getSumTicketsByCompany(@RequestParam Integer companyId) {
-		return new ResponseEntity<>(ticketService.countTicketOnlineByCompany(companyId), HttpStatus.OK);
+	public ResponseEntity<Object> getSumTicketsByCompany() {
+		return new ResponseEntity<>(ticketService.countTicketOnlineByCompany(), HttpStatus.OK);
 	}
 
 }

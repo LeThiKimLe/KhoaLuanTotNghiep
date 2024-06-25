@@ -682,7 +682,7 @@ const DriverManagement = () => {
             console.log(listFullDriver)
             setListCurDriver(listFullDriver.filter((drv) => drv.trip === 0))
         }
-    }, [curTrip, curRoute])
+    }, [curTrip, curRoute, listFullDriver])
     useEffect(() => {
         if (redirect.currentRoute === 0) {
             // setListCurDriver([])
@@ -700,6 +700,10 @@ const DriverManagement = () => {
             handleGetTripDriver()
         }
     }, [listDriver, listRoute])
+    useEffect(() => {
+        setListFullDriver(listDriver.map((drv) => ({ ...drv, trip: 0 })))
+        // setListCurDriver(listDriver.map((drv) => ({ ...drv, trip: 0 })))
+    }, [listDriver])
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />

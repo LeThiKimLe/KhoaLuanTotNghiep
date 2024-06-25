@@ -1,5 +1,5 @@
 import styles from './styles.module.css'
-
+import React from 'react';
 const SectionTitle = (props) => {
     const {title, subtitle, className, ...exprops} = props
     return(
