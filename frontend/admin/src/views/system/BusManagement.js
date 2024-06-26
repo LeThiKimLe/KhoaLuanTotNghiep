@@ -1864,7 +1864,7 @@ const BusManagement = () => {
         } else if (currentRoute === -1) {
             setCurrentTripBus(listFullBus.filter((bus) => bus.trip === 0))
         }
-    }, [currentTrip, currentRoute])
+    }, [currentTrip, currentRoute, listFullBus])
     useEffect(() => {
         if (redirect.currentRoute === 0) {
         } else {
@@ -1888,6 +1888,16 @@ const BusManagement = () => {
             handleGetTripBus()
         }
     }, [listBus, listRoute])
+    useEffect(() => {
+        setListFullBus(
+            listBus.map((bus) => {
+                return {
+                    ...bus,
+                    trip: 0,
+                }
+            }),
+        )
+    }, [listBus])
     return (
         <div>
             <CToaster ref={toaster} push={toast} placement="top-end" />

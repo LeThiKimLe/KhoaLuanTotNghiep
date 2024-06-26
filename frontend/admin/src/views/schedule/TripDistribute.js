@@ -36,6 +36,7 @@ import { cilExternalLink } from '@coreui/icons'
 import { busAction } from 'src/feature/bus/bus.slice'
 import { useNavigate } from 'react-router-dom'
 import { staffAction } from 'src/feature/staff/staff.slice'
+
 const ModalAddDriver = ({ visible, setVisible, listUnassigned, currentTrip, finishUpdate }) => {
     const [listChosen, setListChosen] = useState([])
     const [error, setError] = useState('')
@@ -175,15 +176,15 @@ const ModalAddBus = ({ visible, setVisible, listUnassigned, currentTrip, finishU
         </CModal>
     )
 }
-const TripDistribute = () => {
+const TripDistribute = ({ routeId, tripIdIn }) => {
     const dispatch = useDispatch()
-    const [curRoute, setCurRoute] = useState(0)
+    const [curRoute, setCurRoute] = useState(routeId)
     const listRoute = useSelector(selectListCompanyRoute)
     const [openAddBus, setOpenAddBus] = useState(false)
     const [openAddDriver, setOpenAddDriver] = useState(false)
     const [routeTripInfor, setRouteTripInfor] = useState(null)
     const [curListTrip, setCurListTrip] = useState([])
-    const [currentTrip, setCurrentTrip] = useState(0)
+    const [currentTrip, setCurrentTrip] = useState(tripIdIn)
     const [listUnassignedDriver, setListUnassignedDriver] = useState([])
     const [listUnassignedBus, setListUnassignedBus] = useState([])
     const [toast, addToast] = useState(0)
@@ -310,11 +311,16 @@ const TripDistribute = () => {
             setCurRoute(listRoute.filter((route) => route.active === true)[0].id)
     }, [listRoute])
 
+    useEffect(() => {
+        setCurRoute(routeId)
+        setCurrentTrip(tripIdIn)
+    }, [routeId, tripIdIn])
+
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
             <CRow className="justify-content-center">
-                <CCol md="3">
+                {/* <CCol md="3">
                     <b>Danh sách các tuyến xe</b>
                     <div
                         style={{
@@ -339,12 +345,12 @@ const TripDistribute = () => {
                                 ))}
                         </CListGroup>
                     </div>
-                </CCol>
-                <CCol md="8">
+                </CCol> */}
+                <CCol md="12">
                     <CCard>
-                        <CCardHeader>
+                        {/* <CCardHeader>
                             <b>Phân công của tuyến</b>
-                        </CCardHeader>
+                        </CCardHeader> */}
                         <CCardBody>
                             <CTable striped bordered>
                                 <CTableHead className="bg-success p-3">

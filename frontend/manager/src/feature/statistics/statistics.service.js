@@ -115,6 +115,30 @@ const getAllReview = createAsyncThunk('admin/review', async (_, thunkAPI) => {
         return thunkAPI.rejectWithValue(message)
     }
 })
+const countTicketByCompany = createAsyncThunk('admin/ticket/count/company', async (_, thunkAPI) => {
+    try {
+        const response = await axiosClient.get('manager/trips/tickets/count-company')
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
+const countTicketByRoute = createAsyncThunk('admin/ticket/count/route', async (_, thunkAPI) => {
+    try {
+        const response = await axiosClient.get('manager/trips/tickets/count-Route')
+        return response
+    } catch (error) {
+        const message =
+            (error.response && error.response.data && error.response.data.message) ||
+            error.message ||
+            error.toString()
+        return thunkAPI.rejectWithValue(message)
+    }
+})
 const statisticsThunk = {
     getTodayStatistics,
     getCurrentMonthStatistics,
@@ -122,5 +146,7 @@ const statisticsThunk = {
     getStatisticsTrip,
     getOnlineTicket,
     getAllReview,
+    countTicketByCompany,
+    countTicketByRoute,
 }
 export default statisticsThunk

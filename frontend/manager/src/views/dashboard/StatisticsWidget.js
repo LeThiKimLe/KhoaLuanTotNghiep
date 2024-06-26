@@ -18,6 +18,7 @@ import statisticsThunk from 'src/feature/statistics/statistics.service'
 import {
     selectCurrentStatistics,
     selectCurrentMonthStatistics,
+    selectListOnlineTicket,
 } from 'src/feature/statistics/statistics.slice'
 import format from 'date-fns/format'
 import parse from 'date-fns/parse'
@@ -26,6 +27,7 @@ const StatisticsWidget = () => {
     const today = new Date()
     const currentStatics = useSelector(selectCurrentStatistics)
     const currentMonthStatistics = useSelector(selectCurrentMonthStatistics)
+    const listOnlineTicket = useSelector(selectListOnlineTicket)
     const getTodayData = () => {
         const todayDt = currentStatics.find((value) => value.date.slice(-2) == today.getDate())
         if (todayDt) return todayDt
