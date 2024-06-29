@@ -133,10 +133,10 @@ const MapBox = ({ closeForm, showState, tripData }) => {
     const getRouteData = async () => {
         if (routeData === null) {
         //Get route location
-        const schedule = tripData?.trip?.route?.schedule
+        const schedule = tripData?.trip?.schedule
         const waypoints = []
         //Split schedule by '->'
-        const route = schedule.split(' -> ')
+        const route = schedule.split(' - ')
         //Get location of each station
         route.forEach(async (station, index) => {
             const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + station
@@ -481,12 +481,12 @@ const TripInfor = () => {
                             <i>Ghế: </i>
                             <b>{currentTicket.map((ticket) => ticket.seat).join()}</b>
                         </p>
-                        {/* <i className={styles.infor}>
+                        <i className={styles.infor}>
                             <i><FontAwesomeIcon icon={faMapLocationDot} /></i>
                             <a href="#" className={styles.showSchedule} onClick={() => setOpenMap(true)}>
                                 Theo dõi hành trình
                             </a>
-                        </i> */}
+                        </i>
                     </div>
                 )
                 : (
@@ -529,7 +529,8 @@ const TripInfor = () => {
                     </i>
                 </div>
             )}
-            {openMap && <MapBox closeForm={() => setOpenMap(false)} showState={openMap} tripData={onGoingTrip[0].bookingInfor} />}
+            {/* {openMap && <MapBox closeForm={() => setOpenMap(false)} showState={openMap} tripData={onGoingTrip[0].bookingInfor} />} */}
+            {openMap && <MapBox closeForm={() => setOpenMap(false)} showState={openMap} tripData={onGoingTrip.length > 0 ? onGoingTrip[0].bookingInfor : currentTicket[0].bookingInfor} />}
         </div>
     )
 }

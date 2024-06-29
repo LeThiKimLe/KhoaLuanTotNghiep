@@ -127,7 +127,7 @@ const ScheduleStatus = ({ data }) => {
             ></CIcon>
             <b
                 style={data.achived ? { color: '#000' } : { color: '#8f938f' }}
-            >{`${data.stationData.arrivalTime}. ${data.state?.label}`}</b>
+            >{`${data.stationData?.arrivalTime}. ${data.state?.label}`}</b>
             <small>{data.stationData?.station?.name}</small>
         </CCol>
     )
@@ -241,14 +241,14 @@ const ScheduleStatusTracker = ({ schedule, openOrderForm, closeForm, finishAdd }
         const currentStopStation = trip.stopStations.find((st) => st.id == currenStation)
         let currentIndex = currentStopStation ? currentStopStation.arrivalTime : 0
         for (let i = 0; i < listState.length; i++) {
-            if (listState[i].stationData.arrivalTime <= currentIndex) {
+            if (listState[i].stationData?.arrivalTime <= currentIndex) {
                 listState[i].achived = true
             }
         }
         listState.push({
             stationData: {
                 ...listState[listState.length - 1].stationData,
-                arrivalTime: listState[listState.length - 1].stationData.arrivalTime + 1,
+                arrivalTime: listState[listState.length - 1].stationData?.arrivalTime + 1,
             },
             stationType: 'Bãi đỗ cuối',
             state: SCHEDULE_STATE.find((st) => st.label === 'Hoàn thành'),
@@ -270,7 +270,7 @@ const ScheduleStatusTracker = ({ schedule, openOrderForm, closeForm, finishAdd }
                     setNextAction(
                         status.find(
                             (st) =>
-                                st.stationData.arrivalTime === currentStopStation.arrivalTime + 1,
+                                st.stationData?.arrivalTime === currentStopStation?.arrivalTime + 1,
                         ),
                     )
                 else {

@@ -6,7 +6,7 @@ const CustomButton = (props) => {
     if (loading === true)
         return (
             <CButton disabled {...exprops}>
-                <CSpinner component="span" size="sm" aria-hidden="true" />
+                <CSpinner component="span" size="sm" aria-hidden="true" data-testid="spinner" />
                 {` ${text ? text : ''}...`}
                 {children}
             </CButton>

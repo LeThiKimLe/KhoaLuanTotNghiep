@@ -19,7 +19,8 @@ describe('FormInput', () => {
 
     test('Form Input with type text', () => {
         let value = "John"
-        render(<FormInput label={'Name'} type="text" name="Name" value={value} />);
+        const mockFunction = jest.fn();
+        render(<FormInput label={'Name'} type="text" name="Name" value={value} onChange={mockFunction}/>);
         const input = screen.getByDisplayValue(value)
         expect(input).toBeInTheDocument();
     })

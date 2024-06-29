@@ -3,7 +3,7 @@ import { CToast, CToastHeader, CToastBody } from '@coreui/react'
 
 export const CustomToast = ({ message, type }) => {
     return (
-        <CToast>
+        <CToast role="toast">
             <CToastHeader closeButton>
                 <svg
                     className="rounded me-2"

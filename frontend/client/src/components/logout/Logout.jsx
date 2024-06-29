@@ -1,4 +1,5 @@
 import styles from './styles.module.css'
+import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCircleExclamation } from '@fortawesome/free-solid-svg-icons';
 import { OptionButton } from '../common/button';
