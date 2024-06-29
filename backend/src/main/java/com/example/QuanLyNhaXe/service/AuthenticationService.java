@@ -286,11 +286,9 @@ public class AuthenticationService {
 		if (account.getRefreshToken() != null) {
 			account.setRefreshToken(null);
 			accountRepository.save(account);
-
-			Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-			new SecurityContextLogoutHandler().logout(request, response, authentication);
-		} else
-			throw new NotFoundException("Không tìm thấy Refresh Token");
+		}
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+		new SecurityContextLogoutHandler().logout(request, response, authentication);
 		return new ResponseMessage("Đăng xuất thành công");
 	}
 
