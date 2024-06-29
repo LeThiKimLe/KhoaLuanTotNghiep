@@ -81,16 +81,31 @@ const authSlice = createSlice({
         state.user = null;
         state.loggingOut = false;
       })
-      .addCase(authThunk.getOTP.pending, (state) => {
+      .addCase(authThunk.getOTPSignup.pending, (state) => {
         state.loading = true;
       })
-      .addCase(authThunk.getOTP.fulfilled, (state, action) => {
+      .addCase(authThunk.getOTPSignup.fulfilled, (state, action) => {
         state.loading = false;
         state.message = action.payload.message || "Đã gửi OTP thành công";
         state.otpSessionTime = action.payload;
         state.error = false;
       })
-      .addCase(authThunk.getOTP.rejected, (state, action) => {
+      .addCase(authThunk.getOTPSignup.rejected, (state, action) => {
+        state.error = true;
+        state.loading = false;
+        state.otpSessionTime = null;
+        state.message = action.payload;
+      })
+      .addCase(authThunk.getOTPReset.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(authThunk.getOTPReset.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.message || "Đã gửi OTP thành công";
+        state.otpSessionTime = action.payload;
+        state.error = false;
+      })
+      .addCase(authThunk.getOTPReset.rejected, (state, action) => {
         state.error = true;
         state.loading = false;
         state.otpSessionTime = null;

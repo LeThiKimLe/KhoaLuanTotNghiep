@@ -46,8 +46,11 @@ public class TwilioService {
 
     
 
-    public Object sendOtp(String toPhoneNumber) {
-    	
+    public Object sendOtpReset(String toPhoneNumber) {
+    	boolean checkExist = accountRepository.existsByUsername(toPhoneNumber);
+		if (!checkExist) {
+			throw new ConflictException(Message.ACCOUNT_NOT_FOUND);
+		}
         Twilio.init(accountSid, authToken);
 
         try {

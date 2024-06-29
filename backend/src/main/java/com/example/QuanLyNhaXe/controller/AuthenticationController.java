@@ -80,10 +80,10 @@ public class AuthenticationController {
 				HttpStatus.OK);
 	}
 	
-	@PostMapping("/send-sms")
+	@PostMapping("/send-sms-reset")
     public ResponseEntity<Object> sendOtp(@RequestParam String phoneNumber) {
        
-        	return new ResponseEntity<>(twilioService.sendOtp(phoneNumber),HttpStatus.OK);
+        	return new ResponseEntity<>(twilioService.sendOtpReset(phoneNumber),HttpStatus.OK);
             
         
     }

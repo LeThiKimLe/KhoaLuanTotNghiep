@@ -287,7 +287,7 @@ const Login = () => {
 
     const handleGetOTP = (e) => {
         e.preventDefault();
-        dispatch(authThunk.getOTP(valuesSignup.telnum))
+        dispatch(authThunk.getOTPSignup(valuesSignup.telnum))
             .unwrap()
             .then(() => {
                 setValuesSignup({ ...valuesSignup, process: 1 })
@@ -374,7 +374,7 @@ const Login = () => {
 
     const handleGetOTPRepass = (e) => {
         e.preventDefault();
-        dispatch(authThunk.getOTP(valuesGetNewPwd.telnum))
+        dispatch(authThunk.getOTPReset(valuesGetNewPwd.telnum))
             .unwrap()
             .then(() => {
                 setValuesGetNewPwd({ ...valuesGetNewPwd, process: 1 })
