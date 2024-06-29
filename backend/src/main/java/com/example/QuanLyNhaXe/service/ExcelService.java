@@ -117,7 +117,8 @@ public class ExcelService {
 			Row dataRow = sheet.getRow(i);
 			// Kiểm tra không có ô trống trong hàng
 			if (dataRow == null || isRowEmpty(dataRow)) {
-				throw new NotFoundException(Message.EMPTY_DATA);
+				continue;
+				// throw new NotFoundException(Message.EMPTY_DATA);
 			}
 			List<String> staffData = new ArrayList<>();
 			for (int j = 0; j < 7; j++) {

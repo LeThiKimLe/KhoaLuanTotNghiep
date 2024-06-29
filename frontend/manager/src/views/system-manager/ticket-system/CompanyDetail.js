@@ -632,7 +632,7 @@ const AddRouteForm = ({ visible, setVisible, curAssign }) => {
                     })
     }
     const handleSaveInfo = async () => {
-        const companyId = curCompany.busCompany.id
+        const companyId = curCompany.busCompany?.id
         let listTrip = []
         let listRouteId = []
         if (companyRoute && companyRoute.route) {
@@ -1119,7 +1119,7 @@ const FeeInfo = ({ listAssignRouteId }) => {
     const [listTrip, setListTrip] = useState([])
     const [listCompanyServiceFee, setListCompanyServiceFee] = useState([])
     const curCompany = useSelector(selectCurCompany)
-    const startTime = new Date(curCompany.busCompany.coopDay)
+    const startTime = new Date(curCompany.busCompany?.coopDay)
     const today = new Date()
     const [chartData, setChartData] = useState({
         labels: [],
@@ -1196,7 +1196,7 @@ const FeeInfo = ({ listAssignRouteId }) => {
             .unwrap()
             .then((res) => {
                 setListCompanyServiceFee(
-                    res.filter((fee) => fee.company.id === curCompany.busCompany.id),
+                    res.filter((fee) => fee.company.id === curCompany.busCompany?.id),
                 )
             })
     }
@@ -1212,7 +1212,8 @@ const FeeInfo = ({ listAssignRouteId }) => {
             .then((res) => {
                 console.log(res)
                 setListCompanySchedule(
-                    res.find((item) => item.busCompany.id === curCompany.busCompany.id)?.schedules,
+                    res.find((item) => item.busCompany?.id === curCompany.busCompany?.id)
+                        ?.schedules,
                 )
                 setLoading(false)
                 // handleCalTicketSale()
@@ -1234,7 +1235,8 @@ const FeeInfo = ({ listAssignRouteId }) => {
             .then((res) => {
                 console.log(res)
                 setTotalMoney(
-                    res.find((item) => item.busCompany.id === curCompany.busCompany.id)?.ticketSave,
+                    res.find((item) => item.busCompany?.id === curCompany.busCompany?.id)
+                        ?.ticketSave,
                 )
             })
             .catch((err) => {
@@ -1294,6 +1296,7 @@ const FeeInfo = ({ listAssignRouteId }) => {
     useEffect(() => {
         getData()
     }, [])
+
     return (
         <div>
             <Tabs className="tabStyle">
@@ -1595,7 +1598,12 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                 </CTableHeaderCell>
                                 <CTableDataCell className="text-center">
                                     {format(
-                                        addDays(new Date(curCompany.busCompany.coopDay), 1),
+                                        addDays(
+                                            curCompany
+                                                ? new Date(curCompany.busCompany?.coopDay)
+                                                : new Date(),
+                                            1,
+                                        ),
                                         'dd/MM/yyyy',
                                     )}
                                 </CTableDataCell>
@@ -1603,7 +1611,7 @@ const FeeInfo = ({ listAssignRouteId }) => {
                                     {format(
                                         new Date(
                                             parse(
-                                                curCompany.busCompany.coopDay,
+                                                curCompany.busCompany?.coopDay,
                                                 'yyyy-MM-dd',
                                                 new Date(),
                                             ).getTime() +
@@ -1855,7 +1863,7 @@ const ReviewSection = () => {
                                 maxDate={new Date()}
                                 minDate={
                                     curCompany
-                                        ? new Date(curCompany.busCompany.coopDay)
+                                        ? new Date(curCompany.busCompany?.coopDay)
                                         : new Date()
                                 }
                             />
@@ -2023,7 +2031,7 @@ const CompanyDetail = () => {
     const listFixSchedule = useSelector(selectListFixSchedule)
     const listCurFix = listFixSchedule.filter((schedule) => {
         if (schedule.trip && schedule.trip.busCompany)
-            return schedule.trip.busCompany.id === curCompany.busCompany.id
+            return schedule?.trip?.busCompany?.id === curCompany?.busCompany?.id
         else return false
     })
     const { busCompany, admin } = curCompany ? curCompany : { busCompany: null, admin: null }
@@ -2040,7 +2048,7 @@ const CompanyDetail = () => {
     })
     const listAssign = useSelector(selectListAssign)
     const curAssign = listAssign.filter(
-        (assign) => assign.busCompanyId === curCompany.busCompany.id,
+        (assign) => assign.busCompanyId === curCompany?.busCompany?.id,
     )
     const listRoute = useSelector(selectListRoute)
     const handleChangeCompanyInfo = (e) => {
@@ -2054,20 +2062,19 @@ const CompanyDetail = () => {
                 setValidated(true)
                 setLoading(true)
                 const companyData = {
-                    id: curCompany.busCompany.id,
+                    id: curCompany.busCompany?.id,
                     representName: companyInfo.representName,
                     email: companyInfo.email,
                     telephone: companyInfo.telephone,
                     idCard: companyInfo.idCard,
                     address: companyInfo.address,
-                    beginWorkDate: curCompany.busCompany.coopDay,
+                    beginWorkDate: curCompany.busCompany?.coopDay,
                     firmName: companyInfo.firmName,
                     businessLicense: companyInfo.businessLicense,
                 }
                 dispatch(companyThunk.editCompanyInfor(companyData))
                     .unwrap()
-                    .then((res) => {
-                        dispatch(companyActions.setCurCompany(res))
+                    .then(() => {
                         setLoading(false)
                         setIsUpdate(false)
                         addToast(() =>
@@ -2076,6 +2083,7 @@ const CompanyDetail = () => {
                                 type: 'success',
                             }),
                         )
+                        dispatch(companyThunk.getCompany())
                     })
                     .catch((err) => {
                         setLoading(false)
@@ -2108,12 +2116,12 @@ const CompanyDetail = () => {
     const [openAddRouteForm, setOpenAddRouteForm] = useState(false)
     const handleOpenForm = () => {
         setOpenComfirmForm(true)
-        setIsDelete(curCompany.busCompany.active)
+        setIsDelete(curCompany.busCompany?.active)
     }
     const handleActiveCompany = () => {
         setLoading(true)
         dispatch(
-            companyThunk.activeCompany({ companyId: curCompany.busCompany.id, active: !isDelete }),
+            companyThunk.activeCompany({ companyId: curCompany.busCompany?.id, active: !isDelete }),
         )
             .unwrap()
             .then((res) => {
@@ -2128,7 +2136,7 @@ const CompanyDetail = () => {
     }
     const getListReview = () => {
         if (curCompany) {
-            dispatch(companyThunk.getReview(curCompany.busCompany.id))
+            dispatch(companyThunk.getReview(curCompany.busCompany?.id))
                 .unwrap()
                 .then((res) => {
                     setListReview(res)
@@ -2144,7 +2152,7 @@ const CompanyDetail = () => {
     useEffect(() => {
         if (curCompany) {
             const updateCompany = listCompany.find(
-                (company) => company.busCompany.id === curCompany.busCompany.id,
+                (company) => company.busCompany?.id === curCompany.busCompany?.id,
             )
             if (updateCompany) {
                 dispatch(companyActions.setCurCompany(updateCompany))
@@ -2299,7 +2307,7 @@ const CompanyDetail = () => {
                             </CCol>
                         </CRow>
                         <CRow className="mb-3 justify-content-center align-items-center">
-                            {!curCompany.busCompany.active && (
+                            {!curCompany?.busCompany?.active && (
                                 <i style={{ color: 'red' }} className="col-sm-10">
                                     Đã ngừng hợp tác với nhà xe này
                                 </i>
@@ -2328,7 +2336,7 @@ const CompanyDetail = () => {
                     </div>
                     <div className="col-6 offset-2">
                         <CButton color="danger" variant="outline" onClick={handleOpenForm}>
-                            {curCompany.busCompany.active ? 'Ngưng hợp tác' : 'Hợp tác lại'}
+                            {curCompany.busCompany?.active ? 'Ngưng hợp tác' : 'Hợp tác lại'}
                         </CButton>
                     </div>
                 </CCardFooter>
