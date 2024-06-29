@@ -80,10 +80,10 @@ public class AuthenticationController {
 				HttpStatus.OK);
 	}
 	
-	@PostMapping("/send-sms")
+	@PostMapping("/send-sms-reset")
     public ResponseEntity<Object> sendOtp(@RequestParam String phoneNumber) {
        
-        	return new ResponseEntity<>(twilioService.sendOtp(phoneNumber),HttpStatus.OK);
+        	return new ResponseEntity<>(twilioService.sendOtpReset(phoneNumber),HttpStatus.OK);
             
         
     }
@@ -101,5 +101,13 @@ public class AuthenticationController {
 		return new ResponseEntity<>(googleVerifyService.verifyToken(googleToken.getGoogleToken()),
 				HttpStatus.OK);
 	}
+	
+	@PostMapping("/send-sms-signup")
+    public ResponseEntity<Object> sendOtpSignup(@RequestParam String phoneNumber) {
+       
+        	return new ResponseEntity<>(twilioService.sendOtpForSignup(phoneNumber),HttpStatus.OK);
+            
+        
+    }
 
 }

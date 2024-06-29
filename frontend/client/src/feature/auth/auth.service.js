@@ -60,16 +60,33 @@ const register = createAsyncThunk(
   },
 );
 
-const getOTP = createAsyncThunk("auth/send-otp", async (telno, thunkAPI) => {
+const getOTPSignup = createAsyncThunk("auth/send-otp-signup", async (telno, thunkAPI) => {
   try {
-    const response = await axiosClient.post("auth/send-sms", null, {
+    const response = await axiosClient.post("auth/send-sms-signup", null, {
       params: {
         phoneNumber: telno.startsWith('0') ? '+84' + telno.slice(1) : telno,
       },
     });
     return response;
   } catch (error) {
-    const message = 'Số điện thoại không hợp lệ' ||
+    const message = 
+      (error.response && error.response.data && error.response.data.message) ||
+      error.message ||
+      error.toString();
+    return thunkAPI.rejectWithValue(message);
+  }
+});
+
+const getOTPReset = createAsyncThunk("auth/send-otp-reset", async (telno, thunkAPI) => {
+  try {
+    const response = await axiosClient.post("auth/send-sms-reset", null, {
+      params: {
+        phoneNumber: telno.startsWith('0') ? '+84' + telno.slice(1) : telno,
+      },
+    });
+    return response;
+  } catch (error) {
+    const message =
       (error.response && error.response.data && error.response.data.message) ||
       error.message ||
       error.toString();
@@ -203,12 +220,13 @@ const authThunk = {
   register,
   login,
   logout,
-  getOTP,
   validateOTP,
   updateProfile,
   changePassword,
   resetPass,
   authenGoogleToken,
+  getOTPReset,
+  getOTPSignup,
 };
 
 export default authThunk;

@@ -647,7 +647,7 @@ class BookingTest {
 	}
 
 	@Test
-	public void testBookingIsTicketing_BookingNotFound() {
+	 void testBookingIsTicketing_BookingNotFound() {
 		String bookingCode = "invalid_code";
 
 		// Mock behavior
@@ -685,7 +685,7 @@ class BookingTest {
 	}
 
 	@Test
-	public void testBookingIsTicketing_Success() {
+	 void testBookingIsTicketing_Success() {
 		// Giả lập dữ liệu
 		String bookingCode = "booking_code";
 		Booking booking = new Booking();
