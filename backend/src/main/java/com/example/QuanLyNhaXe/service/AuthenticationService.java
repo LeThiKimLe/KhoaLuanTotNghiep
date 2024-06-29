@@ -93,8 +93,7 @@ public class AuthenticationService {
 	private final TwilioService twilioService;
 	private final SystemManagerRepository managerRepository;
 	private final BusCompanyRepository busCompanyRepository;
-	// private final TripRepository tripRepository;
-	// private final TripService tripService;
+	
 
 	public TokenDTO login(LoginDTO loginDTO) {
 

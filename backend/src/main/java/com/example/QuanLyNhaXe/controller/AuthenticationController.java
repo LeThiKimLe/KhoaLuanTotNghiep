@@ -101,5 +101,13 @@ public class AuthenticationController {
 		return new ResponseEntity<>(googleVerifyService.verifyToken(googleToken.getGoogleToken()),
 				HttpStatus.OK);
 	}
+	
+	@PostMapping("/send-sms-signup")
+    public ResponseEntity<Object> sendOtpSignup(@RequestParam String phoneNumber) {
+       
+        	return new ResponseEntity<>(twilioService.sendOtpForSignup(phoneNumber),HttpStatus.OK);
+            
+        
+    }
 
 }
