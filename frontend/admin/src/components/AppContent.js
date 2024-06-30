@@ -162,6 +162,7 @@ const AppContent = () => {
             })
     }
     const getDueFeeNotice = () => {
+        dispatch(noticeAction.setNotice([]))
         if (listFee.length > 0) {
             const sortedFees = [...listFee].sort((a, b) => {
                 return new Date(b.dueDate) - new Date(a.dueDate)

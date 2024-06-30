@@ -83,6 +83,7 @@ import { addDays } from 'src/utils/convertUtils'
 import { getTripJourney } from 'src/utils/tripUtils'
 import { selectListOnlineTicket } from 'src/feature/statistics/statistics.slice'
 import statisticsThunk from 'src/feature/statistics/statistics.service'
+
 const ScheduleWrap = ({ schedule, turn, isEdit = false, removeTrip }) => {
     const getScheduleColor = () => {
         if (turn === true) return 'success'
@@ -840,12 +841,13 @@ const RouteInfo = ({ route, fixSchedule }) => {
         setIsDelete(active)
         setTargetTrip(trip)
     }
+    console.log(targetTrip)
     const handleSaveActiveState = () => {
         setLoading(true)
-        dispatch(tripThunk.activeTrip({ id: targetTrip.tripGo.id, active: !isDelete }))
+        dispatch(tripThunk.activeTrip({ id: targetTrip.turnGo.id, active: !isDelete }))
             .unwrap()
             .then((res) => {
-                dispatch(tripThunk.activeTrip({ id: targetTrip.tripBack.id, active: !isDelete }))
+                dispatch(tripThunk.activeTrip({ id: targetTrip.turnBack.id, active: !isDelete }))
                     .unwrap()
                     .then((res) => {
                         setOpenComfirmForm(false)
@@ -942,7 +944,7 @@ const RouteInfo = ({ route, fixSchedule }) => {
                                                 href="#"
                                                 onClick={(e) => {
                                                     e.preventDefault()
-                                                    handleActive(true)
+                                                    handleActive(true, officialTrip)
                                                 }}
                                             >
                                                 Ngừng tuyến

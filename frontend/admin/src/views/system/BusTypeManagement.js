@@ -347,7 +347,7 @@ const AutoName = ({ seatMap, setListSeat }) => {
             if (rule.value === 'seat') {
                 return {
                     ...seat,
-                    name: `${(rule.startIndex + index).toString().padStart(2, '0')}`,
+                    name: `${(parseInt(rule.startIndex) + index).toString().padStart(2, '0')}`,
                 }
             }
             if (rule.value === 'floor') {
