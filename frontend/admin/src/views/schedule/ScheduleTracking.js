@@ -493,6 +493,7 @@ const ScheduleData = ({ index, schedule, state, finishAdd }) => {
                             type: 'success',
                         }),
                     )
+                    finishAdd(schedule)
                 })
                 .catch((err) => {
                     addToast(() =>
@@ -965,6 +966,7 @@ const ScheduleTracking = () => {
         }
     }
     const [listTrip, setListTrip] = useState([])
+    console.log(showList)
     const getScheduleForStatus = (status) => {
         if (status === 'Ready') {
             //get schedule has departTime > current time at most 24 hours

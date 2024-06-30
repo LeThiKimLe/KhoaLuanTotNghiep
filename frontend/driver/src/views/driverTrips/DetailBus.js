@@ -440,6 +440,7 @@ const DetailBus = ({ visible, setVisible }) => {
     const [route, setRoute] = useState(0)
     const [tripBus, setTripBus] = useState(0)
     const listRoute = useSelector(selectListRoute)
+    const user = useSelector(selectUser)
     const setBusStateAttribute = (e) => {
         setBusState({
             ...busState,
@@ -456,13 +457,20 @@ const DetailBus = ({ visible, setVisible }) => {
                 setValidateState(true)
                 dispatch(driverThunk.updateBusState({ id: bus.id, busState: busState }))
                     .unwrap()
-                    .then(() => {
+                    .then(async () => {
                         setError('')
                         addToast(() =>
                             CustomToast({ message: 'Đã cập nhật thành công', type: 'success' }),
                         )
                         setIsUpdatingState(false)
-                        setUpdateTime(format(new Date(), 'yyyy-MM-dd'))
+                        // setUpdateTime(format(new Date(), 'yyyy-MM-dd'))
+                        await dispatch(
+                            driverThunk.getDriverSchedules(user.user.driver.driverId),
+                        ).unwrap()
+                        await dispatch(
+                            driverThunk.getDriverTrip(user.user.driver.driverId),
+                        ).unwrap()
+                        setTimeout(() => setVisible(false), 1000)
                     })
                     .catch((error) => {
                         setError(error)
@@ -871,7 +879,7 @@ const DetailBus = ({ visible, setVisible }) => {
                                                                 type="text"
                                                                 required
                                                                 disabled
-                                                                defaultValue={convertToDisplayDate(
+                                                                value={convertToDisplayDate(
                                                                     updateTime,
                                                                 )}
                                                             />
