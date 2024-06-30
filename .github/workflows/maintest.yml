@@ -29,4 +29,4 @@ jobs:
             echo "${{ secrets.FRONTEND_MANAGER_ENV }}" > frontend/manager/.env
             echo "${{ secrets.CHATBOT_ENV }}" > backend/src/main/python/.env
             echo "${{ secrets.APPLICATION_PROPERTIES }}" > backend/src/main/resources/application.properties
-            docker-compose up -d --build
+            docker compose up -d --build
