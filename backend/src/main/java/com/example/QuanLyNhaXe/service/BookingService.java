@@ -21,6 +21,7 @@ import com.example.QuanLyNhaXe.Request.SearchBookingDTO;
 import com.example.QuanLyNhaXe.dto.BookingDTO;
 import com.example.QuanLyNhaXe.dto.BookingSimpleDTO;
 import com.example.QuanLyNhaXe.dto.StatisticTripTicketsForMonth.SumTicKet;
+import com.example.QuanLyNhaXe.dto.UserStatistics;
 import com.example.QuanLyNhaXe.enumration.BookingStatus;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
@@ -34,6 +35,7 @@ import com.example.QuanLyNhaXe.model.Ticket;
 import com.example.QuanLyNhaXe.model.Trip;
 import com.example.QuanLyNhaXe.model.User;
 import com.example.QuanLyNhaXe.repository.BookingRepository;
+import com.example.QuanLyNhaXe.repository.CustomerRepository;
 import com.example.QuanLyNhaXe.repository.ScheduleRepository;
 import com.example.QuanLyNhaXe.repository.StopStationRepository;
 import com.example.QuanLyNhaXe.repository.TicketRepository;
@@ -59,6 +61,7 @@ public class BookingService {
 	private final EmailService emailService;
 	private final UtilityService utilityService;
 	private final VNPayService vnPayService;
+	private final CustomerRepository customerRepository;
 	
 
 	@Transactional
@@ -603,6 +606,14 @@ public class BookingService {
 			e.printStackTrace();
 		}
 		return bookingSimpleDTO;
+	}
+	
+	public Object getCustomerTotal() {
+		long sum=0;
+		long sum2=0;
+		sum=customerRepository.count();
+		sum2=bookingRepository.countDistinctPhoneNumbers();
+		return UserStatistics.builder().bookingUser(sum2).customer(sum).build();
 	}
 
 }
