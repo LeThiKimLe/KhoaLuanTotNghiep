@@ -58,7 +58,7 @@ import { AssignScheduleForm } from './AddScheduleForm'
 import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
 import { selectCompanyId } from 'src/feature/auth/auth.slice'
 import { subStractDays, addDays } from 'src/utils/convertUtils'
-const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
+const ScheduleInfor = ({ visible, setVisible, inSchedule, finishAction }) => {
     const [schedule, setSchedule] = useState(
         inSchedule
             ? inSchedule
@@ -133,20 +133,23 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
         dispatch(scheduleThunk.deleteSchedule(schedule.id))
             .unwrap()
             .then(() => {
+                setLoading(false)
                 addToast(() =>
                     CustomToast({
                         message: 'Đã xóa chuyến thành công',
                         type: 'success',
                     }),
                 )
-                setVisible(false)
-                setLoading(false)
-                setReload(true)
+                setTimeout(() => {
+                    setVisible(false)
+                    setReload(true)
+                    finishAction()
+                }, 1000)
             })
             .catch((err) => {
                 addToast(() =>
                     CustomToast({
-                        message: err,
+                        message: err.toString(),
                         type: 'error',
                     }),
                 )
@@ -190,6 +193,7 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                   },
         )
     }, [inSchedule])
+    console.log(inSchedule)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -238,7 +242,7 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
                                                     type="text"
                                                     id="trip"
                                                     disabled
-                                                    defaultValue={convertToDisplayDate(
+                                                    value={convertToDisplayDate(
                                                         schedule.departDate,
                                                     )}
                                                 />
@@ -420,7 +424,7 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule }) => {
         </>
     )
 }
-const Schedule = ({ schedule }) => {
+const Schedule = ({ schedule, finishAction }) => {
     const [showDetail, setShowDetail] = useState(false)
     const getScheduleColor = () => {
         if (schedule.fixed) return '#ccc'
@@ -450,6 +454,7 @@ const Schedule = ({ schedule }) => {
                     visible={showDetail}
                     setVisible={setShowDetail}
                     inSchedule={schedule}
+                    finishAction={finishAction}
                 ></ScheduleInfor>
             )}
         </>
@@ -465,6 +470,7 @@ const TimeTable = ({
     setCurrentDay,
     reload,
     fixSchedule,
+    finishAction,
 }) => {
     const [listSchedule, setListSchedule] = useState([])
     const dispatch = useDispatch()
@@ -653,6 +659,7 @@ const TimeTable = ({
                                                     <Schedule
                                                         key={schedule.id}
                                                         schedule={schedule}
+                                                        finishAction={finishAction}
                                                     ></Schedule>
                                                 ))}
                                             </CTableDataCell>
@@ -678,6 +685,7 @@ const TimeTable = ({
                                                     <Schedule
                                                         key={schedule.id}
                                                         schedule={schedule}
+                                                        finishAction={finishAction}
                                                     ></Schedule>
                                                 ))}
                                             </CTableDataCell>
@@ -703,6 +711,7 @@ const TimeTable = ({
                                                     <Schedule
                                                         key={schedule.id}
                                                         schedule={schedule}
+                                                        finishAction={finishAction}
                                                     ></Schedule>
                                                 ))}
                                             </CTableDataCell>
@@ -728,6 +737,7 @@ const TimeTable = ({
                                                     <Schedule
                                                         key={schedule.id}
                                                         schedule={schedule}
+                                                        finishAction={finishAction}
                                                     ></Schedule>
                                                 ))}
                                             </CTableDataCell>
@@ -1022,6 +1032,7 @@ const ScheduleManagement = () => {
                                     reload={reload}
                                     turn={1}
                                     fixSchedule={getFixSchedule(listTrip[currentTrip]?.turnGo?.id)}
+                                    finishAction={finishAdd}
                                 ></TimeTable>
                             </TabPanel>
                             <TabPanel>
@@ -1032,6 +1043,7 @@ const ScheduleManagement = () => {
                                     currentTrip={listTrip[currentTrip]?.turnBack?.id}
                                     setCurrentDay={setCurrentDay}
                                     reload={reload}
+                                    finishAction={finishAdd}
                                     turn={0}
                                     fixSchedule={getFixSchedule(
                                         listTrip[currentTrip]?.turnBack?.id,

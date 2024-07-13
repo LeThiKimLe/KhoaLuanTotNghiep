@@ -410,7 +410,7 @@ const SaleData = () => {
                                             className="text-center"
                                         >
                                             <b>{`${listCompanySchedule
-                                                .reduce((sum, schd) => {
+                                                ?.reduce((sum, schd) => {
                                                     return (
                                                         sum +
                                                         schd.tickets
@@ -611,7 +611,6 @@ const ServiceData = ({ reload, setReload }) => {
     const dispatch = useDispatch()
     const companyId = useSelector(selectCompanyId)
     const listRoute = useSelector(selectListCompanyRoute)
-    const [activeTab, setActiveTab] = useState(0)
     const [listTrip, setListTrip] = useState([])
     const [listCompanyServiceFee, setListCompanyServiceFee] = useState([])
     const curCompany = useSelector(selectCurCompany)
@@ -753,11 +752,6 @@ const ServiceData = ({ reload, setReload }) => {
     useEffect(() => {
         getData()
     }, [monthValue, yearValue])
-    useEffect(() => {
-        if (dueDate < new Date()) {
-            setActiveTab(1)
-        }
-    }, [dueDate])
     useEffect(() => {
         if (reload) getData()
     }, [reload])
@@ -1083,11 +1077,12 @@ const ServiceData = ({ reload, setReload }) => {
 }
 
 const Expense = () => {
-    const [activeTab, setActiveTab] = useState(0)
+    const [activeTab, setActiveTab] = useState(1)
     const dispatch = useDispatch()
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
     const [reload, setReload] = useState(false)
+    const dueDate = useSelector(selectServiceDueDate)
     const verifyPaymentStatus = () => {
         const url = window.location.href
         if (url.includes('vnp_ResponseCode') === false) return
@@ -1124,6 +1119,13 @@ const Expense = () => {
             addToast(() => CustomToast({ message: 'Thanh toán không hợp lệ', type: 'error' }))
         }
     }
+    useEffect(() => {
+        if (dueDate < new Date()) {
+            setActiveTab(1)
+        } else {
+            setActiveTab(0)
+        }
+    }, [dueDate])
     useEffect(() => {
         verifyPaymentStatus()
     }, [])

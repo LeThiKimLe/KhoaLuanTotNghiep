@@ -6,7 +6,7 @@ export const ListStation = ({trip}) => {
     const departure = trip.tripInfor.turn ? trip.tripInfor.route.departure : trip.tripInfor.route.destination
     const destination = trip.tripInfor.turn ? trip.tripInfor.route.destination : trip.tripInfor.route.departure
     const getStopStation = (direct) => {
-        return trip?.tripInfor?.stopStations?.filter((sta) => sta.stationType == direct)
+        return trip?.tripInfor?.stopStations?.filter((sta) => sta.stationType == direct && sta.active == true)
     }
 
     return (

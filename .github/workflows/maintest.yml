@@ -1,0 +1,32 @@
+name: Deploy to Server Test
+
+on:
+  push:
+    branches:
+      - test
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: SSH into server and deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_HOST_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.EC2_HOST_PORT }}
+          script: |
+            cd project/KhoaLuanTotNghiep
+            git pull
+            echo "${{ secrets.FRONTEND_ADMIN_ENV }}" > frontend/admin/.env
+            echo "${{ secrets.FRONTEND_CLIENT_ENV }}" > frontend/client/.env
+            echo "${{ secrets.FRONTEND_DRIVER_ENV }}" > frontend/driver/.env
+            echo "${{ secrets.FRONTEND_MANAGER_ENV }}" > frontend/manager/.env
+            echo "${{ secrets.CHATBOT_ENV }}" > backend/src/main/python/.env
+            echo "${{ secrets.APPLICATION_PROPERTIES }}" > backend/src/main/resources/application.properties
+            docker-compose up -d --build

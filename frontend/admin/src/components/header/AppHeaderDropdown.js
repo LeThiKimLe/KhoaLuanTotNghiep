@@ -32,6 +32,8 @@ import authThunk from 'src/feature/auth/auth.service'
 import { useState } from 'react'
 import { authActions, selectLoading, selectUser } from 'src/feature/auth/auth.slice'
 import { useSelector } from 'react-redux'
+import { noticeAction } from 'src/feature/notification/notice.slice'
+import { feeAction } from 'src/feature/fee/fee.slice'
 const AppHeaderDropdown = () => {
     const dispatch = useDispatch()
     const [openLogoutForm, setOpenLogoutForm] = useState(false)
@@ -41,6 +43,8 @@ const AppHeaderDropdown = () => {
     const [img, setImg] = useState(user.user.staff?.img ? user.user.staff.img : '')
     const handleLogout = () => {
         // dispatch(authActions.deleteUserInfor())
+        dispatch(noticeAction.setNotice([]))
+        dispatch(feeAction.resetListFee())
         dispatch(authThunk.logout())
             .unwrap()
             .then(() => {

@@ -82,7 +82,10 @@ const TimeBox = ({ time, removeTime, fix }) => {
         removeTime(time)
     }
     return (
-        <CCard textColor="warning" className="border-warning mb-1">
+        <CCard
+            textColor={fix ? 'success' : 'warning'}
+            className={`${fix ? 'border-success' : 'border-warning'} mb-1`}
+        >
             <CCardBody
                 className="p-2 position-relative text-center"
                 onMouseEnter={() => setShowRemove(true)}
@@ -409,7 +412,7 @@ const AddScheduleForm = ({
         return true
     }
     const handleSchedule = () => {
-        if (listTimeGo.length > 0 && checkTime()) {
+        if ((listTimeGo.length > 0 || listTimeReturn > 0) && checkTime()) {
             requestCount.current = 0
             let maxCount = 0
             const scheduleGoInfor = {
@@ -485,7 +488,8 @@ const AddScheduleForm = ({
                         setLoading(false)
                     })
         } else {
-            setError('Vui lòng chọn thời gian')
+            if (listTimeGo.length === 0 && listTimeReturn.length === 0)
+                setError('Vui lòng chọn thời gian')
         }
     }
     const reset = () => {
@@ -728,6 +732,30 @@ const AddScheduleForm = ({
                                             removeTime={removeTimeReturn}
                                             turn={0}
                                         ></ScheduleBox>
+                                        <CRow className="mb-3 justify-content-center">
+                                            <CCol
+                                                sm="10"
+                                                className="d-flex gap-2 align-items-center offset-4"
+                                            >
+                                                <i>* Chú thích</i>
+                                                <CCard
+                                                    className="border-success col-sm-2 p-0 text-center"
+                                                    textColor="success"
+                                                >
+                                                    <CCardBody className="p-1">
+                                                        <small>Chuyến đã có</small>
+                                                    </CCardBody>
+                                                </CCard>
+                                                <CCard
+                                                    className="border-warning col-sm-2 p-0 text-center"
+                                                    textColor="warning"
+                                                >
+                                                    <CCardBody className="p-1">
+                                                        <small>Chuyến mới</small>
+                                                    </CCardBody>
+                                                </CCard>
+                                            </CCol>
+                                        </CRow>
                                         {/* <CRow className="mb-3 justify-content-center">
                                             <CFormLabel
                                                 htmlFor="maxSchedule"
@@ -2792,16 +2820,16 @@ const TableSchedule = ({ listScheduleIn, startDate, finishUpdate }) => {
                         (item) => item.id == b.driver.driverId,
                     )
                     return (
-                        listPreDriverAssign[indexA].schedules.length -
-                        listPreDriverAssign[indexB].schedules.length
+                        listPreDriverAssign[indexA]?.schedules.length -
+                        listPreDriverAssign[indexB]?.schedules.length
                     )
                 })
                 let listBusIn = [...listBus].sort((a, b) => {
                     let indexA = listPreBusAssign.findIndex((item) => item.id == a.id)
                     let indexB = listPreBusAssign.findIndex((item) => item.id == b.id)
                     return (
-                        listPreBusAssign[indexA].schedules.length -
-                        listPreBusAssign[indexB].schedules.length
+                        listPreBusAssign[indexA]?.schedules.length -
+                        listPreBusAssign[indexB]?.schedules.length
                     )
                 })
                 if (driverAssign == 1) {

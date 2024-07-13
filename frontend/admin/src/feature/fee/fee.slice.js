@@ -13,6 +13,9 @@ const feeSlice = createSlice({
         setServiceDueDate: (state, action) => {
             state.serviceDueDate = action.payload
         },
+        resetListFee: (state) => {
+            state.listFee = []
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(feeThunk.getFee.fulfilled, (state, action) => {
