@@ -55,10 +55,11 @@ const AppContent = () => {
     const companyId = useSelector(selectCompanyId)
     const update = useSelector(selectUpdate)
     const dueDate = useSelector(selectServiceDueDate)
-    const [allowAccess, setAllowAccess] = React.useState(true)
+    const [allowAccess, setAllowAccess] = React.useState(false)
     const navigate = useNavigate()
     const listFee = useSelector(selectListFee)
     const curCompany = useSelector(selectCurCompany)
+    const [loading, setLoading] = React.useState(true)
     //Get company route info
     const getCompanyRouteData = () => {
         dispatch(routeThunk.getRoute())
@@ -138,6 +139,7 @@ const AppContent = () => {
     }
 
     const getServiceData = () => {
+        setLoading(true)
         dispatch(feeThunk.getFee())
             .unwrap()
             .then((res) => {
@@ -156,12 +158,15 @@ const AppContent = () => {
                         dispatch(feeAction.setServiceDueDate(new Date(lastestFee.dueDate)))
                     }
                 }
+                setLoading(false)
             })
             .catch((err) => {
                 console.log(err)
+                setLoading(false)
             })
     }
     const getDueFeeNotice = () => {
+        console.log('reload notice')
         if (listFee.length > 0) {
             const sortedFees = [...listFee].sort((a, b) => {
                 return new Date(b.dueDate) - new Date(a.dueDate)
@@ -218,14 +223,27 @@ const AppContent = () => {
     }, [listFee])
     return (
         <CContainer lg>
-            <Suspense fallback={<CSpinner color="primary" />}>
-                <Routes>
-                    {routes
-                        .filter((rt) => allowAccess || (!allowAccess && rt.limit === false))
-                        .map((route, idx) =>
-                            route.protected
-                                ? route.element && (
-                                      <Route element={<AdminProtectedRoute />} key={idx}>
+            {loading ? (
+                <CSpinner color="primary" />
+            ) : (
+                <Suspense fallback={<CSpinner color="primary" />}>
+                    <Routes>
+                        {routes
+                            .filter((rt) => allowAccess || (!allowAccess && rt.limit === false))
+                            .map((route, idx) =>
+                                route.protected
+                                    ? route.element && (
+                                          <Route element={<AdminProtectedRoute />} key={idx}>
+                                              <Route
+                                                  key={idx}
+                                                  path={route.path}
+                                                  exact={route.exact}
+                                                  name={route.name}
+                                                  element={<route.element />}
+                                              />
+                                          </Route>
+                                      )
+                                    : route.element && (
                                           <Route
                                               key={idx}
                                               path={route.path}
@@ -233,21 +251,20 @@ const AppContent = () => {
                                               name={route.name}
                                               element={<route.element />}
                                           />
-                                      </Route>
-                                  )
-                                : route.element && (
-                                      <Route
-                                          key={idx}
-                                          path={route.path}
-                                          exact={route.exact}
-                                          name={route.name}
-                                          element={<route.element />}
-                                      />
-                                  ),
+                                      ),
+                            )}
+                        {allowAccess && (
+                            <Route path="/" element={<Navigate to="dashboard" replace />} />
                         )}
-                    <Route path="/" element={<Navigate to="dashboard" replace />} />
-                </Routes>
-            </Suspense>
+                        {!allowAccess && (
+                            <Route
+                                path="/"
+                                element={<Navigate to="system-manage/expense" replace />}
+                            />
+                        )}
+                    </Routes>
+                </Suspense>
+            )}
         </CContainer>
     )
 }

@@ -22,6 +22,7 @@ import dropMarker from '../../../../assets/DropMarker.png'
 import pickMarker from '../../../../assets/PickMarker.png'
 import { add, set } from 'date-fns'
 import { OptionButton } from '../../../../components/common/button'
+import myPointMarker from '../../../../assets/MyPoint.png'
 
 var DefaultIcon = L.Icon.extend({
     options: {
@@ -85,6 +86,7 @@ const endIcon = new CenterIcon({iconUrl: endMarker, iconRetinaUrl: endMarker});
 const waypointIcon = new WaypointIcon({iconUrl: waypointMarker, iconRetinaUrl: waypointMarker});
 const dropIcon = new DropIcon({iconUrl: dropMarker, iconRetinaUrl: dropMarker});
 const pickIcon = new DropIcon({iconUrl: pickMarker, iconRetinaUrl: pickMarker});
+const myPointIcon = new CenterIcon({iconUrl: myPointMarker, iconRetinaUrl: myPointMarker});
 
 const MapBox = ({ closeForm, showState, tripData }) => {
     const map = useRef(null);
@@ -95,6 +97,8 @@ const MapBox = ({ closeForm, showState, tripData }) => {
     const [routeData, setRouteData] = useState(null)
     const currentAddress = useRef('')
     const currentSpeed = useRef(0)
+    const userPickStation = tripData?.pickStation?.station
+    const userDropStation = tripData?.dropStation?.station
 
     const calculateTime = (startPoint, endPoint) => {
         var time = -1;
@@ -130,6 +134,7 @@ const MapBox = ({ closeForm, showState, tripData }) => {
         e.stopPropagation()
     }
 
+
     const getRouteData = async () => {
         if (routeData === null) {
         //Get route location
@@ -137,33 +142,54 @@ const MapBox = ({ closeForm, showState, tripData }) => {
         const waypoints = []
         //Split schedule by '->'
         const route = schedule.split(' - ')
+        const startStation = tripData?.trip?.startStation.id
+        const endStation = tripData?.trip?.endStation.id
+        const getStationType = (station) => {
+            if (station.station.id === startStation)
+                return 'start'
+            else if (station.station.id === endStation)
+                return 'end'
+            else
+                return station.stationType
+        }
         //Get location of each station
-        route.forEach(async (station, index) => {
-            const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + station
-            await fetch(url)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        const pointData = {
-                            point: L.Routing.waypoint([data[0].lat, data[0].lon], station),
-                            type: index === 0 ? 'start' : index === route.length - 1 ? 'end' : 'waypoint'
-                        }
-                        waypoints.push(pointData)
-                    }
-                    if (waypoints.length === route.length) {
-                        console.log(waypoints)
-                        setRouteData(waypoints)
-                    }
-                })
-                .catch(error => console.log(error));
-            })
+        // route.forEach(async (station, index) => {
+        //     const url = 'https://nominatim.openstreetmap.org/search?format=json&q=' + station
+        //     await fetch(url)
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.length > 0) {
+        //                 const pointData = {
+        //                     point: L.Routing.waypoint([data[0].lat, data[0].lon], station),
+        //                     type: index === 0 ? 'start' : index === route.length - 1 ? 'end' : 'waypoint'
+        //                 }
+        //                 waypoints.push(pointData)
+        //             }
+        //             if (waypoints.length === route.length) {
+        //                 console.log(waypoints)
+        //                 setRouteData(waypoints)
+        //             }
+        //         })
+        //         .catch(error => console.log(error));
+        //     })
+        tripData?.trip?.stopStations.filter((sta) => sta.active == true).forEach((station, index) => {
+            if (!station.stationType.includes('park'))
+            {
+                const pointData = {
+                    point: L.Routing.waypoint([station.station.latitude, station.station.longitude], station.station.name),
+                    type: getStationType(station)
+                }
+                waypoints.push(pointData)
+            }
+        })
+        setRouteData(waypoints)
         }
     }
     const addDropPoint = () => {
         if (map.current){
-            pickPoint.current = L.marker([tripData.pickStation.station.latitude, tripData.pickStation.station.longitude], {icon: pickIcon})
+            pickPoint.current = L.marker([tripData.pickStation.station.latitude, tripData.pickStation.station.longitude], {icon: myPointIcon})
                             .addTo(map.current).bindPopup("Điểm đón: " + tripData.pickStation.station.name);
-            dropPoint.current = L.marker([tripData.dropStation.station.latitude, tripData.dropStation.station.longitude], {icon: dropIcon})
+            dropPoint.current = L.marker([tripData.dropStation.station.latitude, tripData.dropStation.station.longitude], {icon: myPointIcon})
                             .addTo(map.current).bindPopup("Điểm trả: " + tripData.dropStation.station.name);
         }
     }
@@ -175,8 +201,6 @@ const MapBox = ({ closeForm, showState, tripData }) => {
             content = "Vị trí của bạn: " + currentAddress.current
         if ( remainTime.current !== 0)
             content += "<br>Còn: " + remain +" nữa đến điểm trả"
-        if (currentSpeed.current)
-            content += "<br>Tốc độ hiện tại: " + currentSpeed.current + "km/h";
         return content;
     }
 
@@ -184,6 +208,43 @@ const MapBox = ({ closeForm, showState, tripData }) => {
         if (currentPoint.current) {
             map.current.setView(currentPoint.current.getLatLng(), 13);
         }
+    }
+
+    var container = L.DomUtil.get('map');
+    if (container != null) {
+        container._leaflet_id = null;
+    }
+
+    const getStationPopUp = (type, name) => {
+        let info = ''
+        if (type == 'start')
+            info = "Bến đi: " + name
+        else if (type == 'end')
+            info = "Bến đến: " + name
+        else if (type == 'pick')
+            info = "Trạm đón: " + name 
+        else if (type == 'drop')
+            info = "Trạm trả: " + name
+        else if (type == 'stop')
+            info = "Trạm dừng chân: "+ name
+        if (name == userPickStation.name)
+            info += "<br><b>Điểm đón của bạn</b>"
+        if (name == userDropStation.name)
+            info += "<br><b>Điểm trả của bạn</b>"
+        return info
+    }
+
+    const getMapIcon = (type) => {
+        if (type == 'start')
+            return startIcon
+        else if (type == 'end')
+            return endIcon
+        else if (type == 'pick')
+            return pickIcon
+        else if (type == 'drop')
+            return dropIcon
+        else if (type == 'stop')
+            return waypointIcon
     }
     
     useEffect(() => {
@@ -195,8 +256,8 @@ const MapBox = ({ closeForm, showState, tripData }) => {
                 createMarker: function(i, wp, nWps) {
                     if (routeData[i].type !== 'waypoint')
                         return L.marker(wp.latLng, {
-                            icon: routeData[i].type === 'start' ? startIcon : routeData[i].type === 'end' ? endIcon : waypointIcon
-                        }).bindPopup(wp.name)
+                            icon: getMapIcon(routeData[i].type)
+                        }).bindPopup(getStationPopUp(routeData[i].type, wp.name))
                     else
                         return null
                 }
@@ -213,7 +274,7 @@ const MapBox = ({ closeForm, showState, tripData }) => {
         // Get route data
         getRouteData()
         // Calculate speed
-        addDropPoint()
+        // addDropPoint()
         let previousPosition = null;
         let previousTime = null;
         function getDistance(position1, position2) {
@@ -246,7 +307,7 @@ const MapBox = ({ closeForm, showState, tripData }) => {
                 const time = (currentTime - previousTime) / 1000; // Convert milliseconds to seconds
                 const speed = distance / time; // Speed in meters per second
                 console.log("Current speed is " + speed + " m/s");
-                currentSpeed.current = (speed * 3.6).toFixed(2);
+                currentSpeed.current = (speed * 3.6 > 70 ? 70 : speed * 3.6).toFixed(2);
             }
         
             previousPosition = currentPosition;
@@ -255,8 +316,8 @@ const MapBox = ({ closeForm, showState, tripData }) => {
             if (currentPoint.current) {
                 currentPoint.current.setLatLng([latitude, longitude]);
             }
-            if (currentPoint.current && pickPoint.current) {
-                calculateTime(currentPoint.current, pickPoint.current)
+            if (currentPoint.current && userDropStation) {
+                calculateTime(currentPoint.current, L.marker([userDropStation.latitude, userDropStation.longitude], {icon: myPointIcon}));
             }
             if (currentPoint.current) {
                 var popup = currentPoint.current.getPopup();
@@ -298,7 +359,7 @@ const MapBox = ({ closeForm, showState, tripData }) => {
             alert("Trình duyệt của bạn không hỗ trợ định vị.");
         }
     }, []);
-
+    console.log(tripData)
     return (
         <div className={styles.mapbox}>
             <div className={styles.container}>

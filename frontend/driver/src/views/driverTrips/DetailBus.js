@@ -75,7 +75,7 @@ const ScheduleWrap = ({ schedule }) => {
         return abbreviatedParts.join('')
     }
     return (
-        <CTable bordered className="mb-1">
+        <CTable bordered className="mb-1" responsive>
             <CTableBody>
                 <CTableRow>
                     <CTableDataCell className="text-center p-0">
@@ -192,31 +192,39 @@ const BusScheduleHistory = ({ listSchedule, listTrip }) => {
         <>
             <CRow className="my-3">
                 <CCol
+                    md={6}
+                    sm={12}
                     style={{ textAlign: 'right' }}
                     className="d-flex align-items-center gap-1 customDatePicker"
                 >
-                    <b>
-                        <i>Ngày</i>
-                    </b>
-                    <DatePicker
-                        selected={currentDay}
-                        onChange={setCurrentDay}
-                        dateFormat="dd/MM/yyyy"
-                        showWeekNumbers
-                    />
-                    <b>
-                        <i>{` Tuần`}</i>
-                    </b>
-                    <CFormInput
-                        value={`${format(startDate, 'dd/MM/yyyy')} - ${format(
-                            endDate,
-                            'dd/MM/yyyy',
-                        )}`}
-                        disabled
-                        style={{ width: '250px', marrginLeft: '10px' }}
-                    ></CFormInput>
+                    <CRow>
+                        <CCol className="d-flex align-items-center gap-1 customDatePicker">
+                            <b>
+                                <i>Ngày</i>
+                            </b>
+                            <DatePicker
+                                selected={currentDay}
+                                onChange={setCurrentDay}
+                                dateFormat="dd/MM/yyyy"
+                                showWeekNumbers
+                            />
+                        </CCol>
+                        <CCol className="d-flex align-items-center gap-1 customDatePicker mt-2">
+                            <b>
+                                <i>{` Tuần`}</i>
+                            </b>
+                            <CFormInput
+                                value={`${format(startDate, 'dd/MM/yyyy')} - ${format(
+                                    endDate,
+                                    'dd/MM/yyyy',
+                                )}`}
+                                disabled
+                                style={{ width: '250px', marrginLeft: '10px' }}
+                            ></CFormInput>
+                        </CCol>
+                    </CRow>
                 </CCol>
-                <CCol style={{ textAlign: 'right' }}>
+                <CCol style={{ textAlign: 'right' }} sm={12} md={6} className="mt-2">
                     <CButtonGroup role="group" aria-label="Form option" color="info">
                         <CFormCheck
                             type="radio"
@@ -242,7 +250,7 @@ const BusScheduleHistory = ({ listSchedule, listTrip }) => {
                 </CCol>
             </CRow>
             {listFormOption === 'list' && (
-                <CTable>
+                <CTable responsive>
                     <CTableHead>
                         <CTableRow>
                             <CTableHeaderCell scope="col">#</CTableHeaderCell>

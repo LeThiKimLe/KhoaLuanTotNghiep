@@ -34,6 +34,7 @@ const AppHeader = () => {
     const listNotice = useSelector(selectListNotice)
     const [openList, setOpenList] = React.useState(false)
     const navigate = useNavigate()
+    console.log(listNotice)
     return (
         <CHeader position="sticky" className="mb-4">
             <CContainer fluid>

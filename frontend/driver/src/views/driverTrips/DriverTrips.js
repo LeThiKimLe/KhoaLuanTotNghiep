@@ -70,13 +70,18 @@ import { selectCurCompany } from 'src/feature/bus-company/busCompany.slice'
 import parse from 'date-fns/parse'
 import scheduleThunk from 'src/feature/schedule/schedule.service'
 import travelingImg from 'src/assets/images/loadingdots2.gif'
+import Webcam from 'react-webcam'
+
+const FACING_MODE_USER = { facingMode: 'user' } //Front Camera
+const FACING_MODE_ENVIRONMENT = { facingMode: { exact: 'environment' } } //Back Camera
+
 const ScheduleWrap = ({ schedule }) => {
     const getScheduleColor = () => {
         if (schedule.tripInfor && schedule.tripInfor.turn === true) return 'success'
         else return 'warning'
     }
     return (
-        <CTable bordered className="mb-1">
+        <CTable bordered className="mb-1" responsive>
             <CTableBody>
                 <CTableRow>
                     <CTableDataCell className="text-center p-0">
@@ -127,7 +132,7 @@ const ScheduleAsTable = ({ currentList, startDate }) => {
     }
     return (
         <>
-            <CTable stripedColumns bordered className="mt-3">
+            <CTable stripedColumns bordered className="mt-3" responsive>
                 <CTableHead>
                     <CTableRow>
                         <CTableHeaderCell scope="col">Buổi</CTableHeaderCell>
@@ -291,7 +296,7 @@ const OrderStatusTracker = ({ schedule }) => {
         setStatus(newStatus)
     }, [schedule])
     return (
-        <div className="d-flex gap-5 align-items-center justify-content-center">
+        <div className="d-flex gap-3 justify-content-center">
             {status.map((status, index) => (
                 <OrderStatus data={status} key={index}></OrderStatus>
             ))}
@@ -504,6 +509,130 @@ const ScheduleStatusTracker = ({ schedule, openOrderForm, closeForm }) => {
     )
 }
 
+const CameraBox = ({ visible, setVisible, setOutImage }) => {
+    const webcamRef = React.useRef(null)
+    const [image, setImage] = useState(null)
+    const [videoConstraints, setVideoConstraints] = useState(FACING_MODE_USER)
+
+    const getListOfVideoInputs = async () => {
+        const mediaDevices = await navigator.mediaDevices.enumerateDevices()
+        return mediaDevices.filter((device) => device.kind === 'videoinput')
+    }
+
+    const switchCamera = async () => {
+        const videoInpuList = await getListOfVideoInputs()
+        if (videoInpuList.length > 1) {
+            const currectVideoConstraints = { ...videoConstraints }
+
+            // If the current constraint is the front camera, switch to the back camera.
+            if (JSON.stringify(currectVideoConstraints) === JSON.stringify(FACING_MODE_USER)) {
+                setVideoConstraints(FACING_MODE_ENVIRONMENT)
+            }
+            // If the current constraint is the back camera, switch to the front camera.
+            if (
+                JSON.stringify(currectVideoConstraints) === JSON.stringify(FACING_MODE_ENVIRONMENT)
+            ) {
+                setVideoConstraints(FACING_MODE_USER)
+            }
+        } else {
+            alert('Device have only one camera.')
+        }
+    }
+
+    const capture = React.useCallback(() => {
+        const imageSrc = webcamRef.current.getScreenshot()
+        setImage(imageSrc)
+    }, [webcamRef, setImage])
+
+    const retake = () => setImage(null)
+
+    const convertToImage = (base64Image) => {
+        const encodedString = base64Image.replace(/^data:image\/(png|jpeg|jpg);base64,/, '')
+        // Convert base64 to binary
+        const binaryString = atob(encodedString)
+        const bytes = new Uint8Array(binaryString.length)
+        for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i)
+        }
+
+        // Create Blob with binary data and desired MIME type
+        const blob = new Blob([bytes], { type: 'image/jpeg' })
+
+        // Create a new File object with the Blob
+        return new File([blob], 'image.jpeg', { type: 'image/jpeg' })
+    }
+
+    const upload = () => {
+        // Do something with the image source, such as upload it to a server
+        setImage(null)
+        const imageObject = {
+            target: {
+                files: [convertToImage(image)],
+            },
+        }
+        setOutImage(imageObject)
+        setVisible(false)
+    }
+    useEffect(() => {}, [])
+    return (
+        <CModal visible={visible} onClose={() => setVisible(false)} size="lg" backdrop="static">
+            <CModalHeader className="bg-success">
+                <b>Chụp ảnh lệnh</b>
+            </CModalHeader>
+            <CModalBody>
+                <div className="d-flex flex-column align-items-center pt-3 container">
+                    <div className="container">
+                        <div className="row justify-content-center" style={{ height: '400px' }}>
+                            <div className="col-12 col-md-8 mb-3 mb-md-0 d-flex flex-column">
+                                {image ? (
+                                    <img src={image} alt="Captured" />
+                                ) : (
+                                    <Webcam
+                                        audio={false}
+                                        ref={webcamRef}
+                                        screenshotFormat="image/jpeg"
+                                        videoConstraints={videoConstraints}
+                                    />
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="row justify-content-center">
+                            <div className="col-12 col-md-6 mt-2 d-flex justify-content-center align-items-center flex-wrap">
+                                {image ? (
+                                    <button className="btn btn-primary me-2 mb-2" onClick={retake}>
+                                        Chụp lại
+                                    </button>
+                                ) : (
+                                    <>
+                                        <button
+                                            className="btn btn-secondary me-2 mb-2"
+                                            onClick={switchCamera}
+                                        >
+                                            Chuyển camera
+                                        </button>
+                                        <button
+                                            className="btn btn-primary me-2 mb-2"
+                                            onClick={capture}
+                                        >
+                                            Chụp
+                                        </button>
+                                    </>
+                                )}
+                                {image && (
+                                    <button className="btn btn-success mb-2" onClick={upload}>
+                                        Xác nhận
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </CModalBody>
+        </CModal>
+    )
+}
+
 const ScheduleItem = ({ schedule, index, time }) => {
     const curCompany = useSelector(selectCurCompany)
     const user = useSelector(selectUser)
@@ -521,9 +650,11 @@ const ScheduleItem = ({ schedule, index, time }) => {
     const toaster = useRef('')
     const [toast, addToast] = useState(0)
     const [showDetailBus, setShowDetailBus] = useState(false)
+    const [openCamera, setOpenCamera] = useState(false)
     const navigate = useNavigate()
     const getImage = () => {
         if (fileURL) return fileURL
+        else if (file) return file
         else if (schedule.transportationOrder && schedule.transportationOrder.image)
             return schedule.transportationOrder.image
         else return noImg
@@ -650,6 +781,7 @@ const ScheduleItem = ({ schedule, index, time }) => {
     useEffect(() => {
         setOrderStatus(currentOrderStatus?.label)
     }, [schedule])
+
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -749,16 +881,29 @@ const ScheduleItem = ({ schedule, index, time }) => {
                                     height={400}
                                 />
                                 {isUpdating && (
-                                    <input
-                                        type="file"
-                                        onChange={handleUpImage}
-                                        name="myImage"
-                                        style={{ width: '100%' }}
-                                    ></input>
+                                    <>
+                                        <input
+                                            type="file"
+                                            onChange={handleUpImage}
+                                            name="myImage"
+                                            style={{ width: '100%' }}
+                                        ></input>
+                                        <CButton
+                                            className="mt-2"
+                                            onClick={() => setOpenCamera(true)}
+                                        >
+                                            Chụp ảnh
+                                        </CButton>
+                                    </>
                                 )}
                             </div>
+                            <CameraBox
+                                visible={openCamera}
+                                setVisible={setOpenCamera}
+                                setOutImage={handleUpImage}
+                            ></CameraBox>
                         </CCol>
-                        <CCol md="5">
+                        <CCol md="5" className="mt-2">
                             <CFormSelect
                                 disabled={!isUpdating}
                                 value={orderStatus}
@@ -876,7 +1021,7 @@ const ScheduleAsList = ({ listSchedule, time }) => {
                     <h4>Chưa có chuyến xe</h4>
                 </div>
             ) : (
-                <CTable striped>
+                <CTable striped responsive>
                     <CTableHead>
                         <CTableRow color="info">
                             <CTableHeaderCell scope="col">#</CTableHeaderCell>

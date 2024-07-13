@@ -128,7 +128,7 @@ const InforBox = ({ visible, setVisible, date, record }) => {
                                 id="license"
                                 required
                                 disabled
-                                defaultValue={format(new Date(date), 'dd/MM/yyyy')}
+                                value={format(new Date(date), 'dd/MM/yyyy')}
                             />
                         </CCol>
                     </CRow>
@@ -146,7 +146,13 @@ const InforBox = ({ visible, setVisible, date, record }) => {
                                             value={fee.toLocaleString()}
                                             disabled={!isUpdate}
                                             onChange={(e) =>
-                                                setFee(parseFloat(e.target.value.replace(/,/g, '')))
+                                                setFee(
+                                                    e.target.value != ''
+                                                        ? parseFloat(
+                                                              e.target.value.replace(/,/g, ''),
+                                                          )
+                                                        : 0,
+                                                )
                                             }
                                             aria-describedby="price"
                                         />

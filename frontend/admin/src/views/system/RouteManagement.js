@@ -45,13 +45,17 @@ import tripThunk from 'src/feature/trip/trip.service'
 import { cilMediaPlay, cilPlus, cilX } from '@coreui/icons'
 import CIcon from '@coreui/icons-react'
 import axios from 'axios'
-export const StopStation = ({ trip, station, finishUpdate }) => {
+import { companyActions } from 'src/feature/bus-company/busCompany.slice'
+export const StopStation = ({ trip, station }) => {
     const [showDel, setShowDel] = useState(false)
     const dispatch = useDispatch()
     const [showConfirmClose, setShowConfirmClose] = useState(false)
     const [showConfirmOpen, setShowConfirmOpen] = useState(false)
     const [toast, addToast] = useState(0)
     const toaster = useRef('')
+    const finishUpdate = () => {
+        dispatch(companyActions.setUpdate(true))
+    }
     const handleDelStopStation = () => {
         dispatch(stationThunk.activeStopStation({ id: station.id, active: false }))
             .unwrap()
@@ -61,7 +65,7 @@ export const StopStation = ({ trip, station, finishUpdate }) => {
                 finishUpdate()
             })
             .catch((error) => {
-                addToast(() => CustomToast({ message: error, type: 'danger' }))
+                addToast(() => CustomToast({ message: error.toString(), type: 'danger' }))
                 setShowConfirmClose(false)
             })
     }
@@ -74,7 +78,7 @@ export const StopStation = ({ trip, station, finishUpdate }) => {
                 finishUpdate()
             })
             .catch((error) => {
-                addToast(() => CustomToast({ message: error, type: 'danger' }))
+                addToast(() => CustomToast({ message: error.toString(), type: 'danger' }))
                 setShowConfirmOpen(false)
             })
     }
@@ -106,7 +110,7 @@ export const StopStation = ({ trip, station, finishUpdate }) => {
                         <i style={{ color: 'red' }}>Trạm không còn được dùng cho tuyến</i>
                         {trip.active === true && (
                             <CButton
-                                className="mt-2 mb-1"
+                                className="mt-2 mb-1 w-50"
                                 variant="outline"
                                 color="success"
                                 onClick={() => setShowConfirmOpen(true)}
@@ -207,7 +211,7 @@ const Trip = ({ route, trip }) => {
                 setCloseTrip(false)
             })
             .catch((error) => {
-                addToast(() => CustomToast({ message: error, type: 'error' }))
+                addToast(() => CustomToast({ message: error.toString(), type: 'error' }))
                 setCloseTrip(false)
             })
     }
@@ -220,7 +224,7 @@ const Trip = ({ route, trip }) => {
                 setOpenTrip(false)
             })
             .catch((error) => {
-                addToast(() => CustomToast({ message: error, type: 'error' }))
+                addToast(() => CustomToast({ message: error.toString(), type: 'error' }))
                 setOpenTrip(false)
             })
     }
@@ -307,12 +311,14 @@ const Trip = ({ route, trip }) => {
                         })
                         .catch((error) => {
                             setLoadingAddStop(false)
-                            addToast(() => CustomToast({ message: error, type: 'error' }))
+                            addToast(() =>
+                                CustomToast({ message: error.toString(), type: 'error' }),
+                            )
                         })
                 })
                 .catch((error) => {
                     setLoadingAddStop(false)
-                    addToast(() => CustomToast({ message: error, type: 'error' }))
+                    addToast(() => CustomToast({ message: error.toString(), type: 'error' }))
                 })
         }
     }
@@ -351,12 +357,14 @@ const Trip = ({ route, trip }) => {
                         })
                         .catch((error) => {
                             setLoadingAddStop(false)
-                            addToast(() => CustomToast({ message: error, type: 'error' }))
+                            addToast(() =>
+                                CustomToast({ message: error.toString(), type: 'error' }),
+                            )
                         })
                 })
                 .catch((error) => {
                     setLoadingAddStop(false)
-                    addToast(() => CustomToast({ message: error, type: 'error' }))
+                    addToast(() => CustomToast({ message: error.toString(), type: 'error' }))
                 })
         }
     }
@@ -662,7 +670,7 @@ const AddTripForm = ({ route, visible, setVisible }) => {
                 setVisible(false)
             })
             .catch((error) => {
-                setError(error)
+                setError(error.toString())
                 setLoading(false)
             })
     }
@@ -804,7 +812,7 @@ const Route = ({ route }) => {
                     setIsUpdateRoute(false)
                 })
                 .catch((error) => {
-                    addToast(() => CustomToast({ message: error, type: 'error' }))
+                    addToast(() => CustomToast({ message: error.toString(), type: 'error' }))
                 })
         }
     }
@@ -877,7 +885,7 @@ const Route = ({ route }) => {
                                     <CCol sm={8}>
                                         <CRow>
                                             <CInputGroup
-                                                className="w-50"
+                                                className="w-25"
                                                 style={{ paddingRight: 0 }}
                                             >
                                                 <CFormInput
@@ -1333,7 +1341,7 @@ const RouteCreatForm = ({ visible, setVisible, finishAdd }) => {
                 finishAdd()
             })
             .catch((error) => {
-                setError(error)
+                setError(error.toString())
             })
     }
     const handleCancel = () => {
