@@ -88,5 +88,11 @@ public class BookingController {
 	public ResponseEntity<Object> getNewPayment(@RequestParam String bookingCode, @Parameter(hidden = true) @RequestHeader(HttpHeaders.AUTHORIZATION) String authorization, HttpServletRequest httpServletRequest){
 		return new ResponseEntity<>(bookingService.generateNewPaymentUrl(bookingCode, authorization), HttpStatus.OK);
 	}
+	
+	@GetMapping("/customer-statistics")
+	public ResponseEntity<Object> getTotalCustomer(){
+		return new ResponseEntity<>(bookingService.getCustomerTotal(), HttpStatus.OK);
+	}
+	
 
 }

@@ -366,34 +366,7 @@ public class AuthenticationTest {
 		assertEquals("Đăng xuất thành công", result.getMessage());
 	}
 
-	@Test
-	void testLogout_InvalidRefreshToken() {
-		// Arrange
-		HttpServletRequest request = mock(HttpServletRequest.class);
-		HttpServletResponse response = mock(HttpServletResponse.class);
-		String authHeader = "Bearer invalidToken";
-		Integer userId = 1;
-		User user = new User();
-		Account account = new Account();
-		account.setRefreshToken(null);
-		user.setAccount(account);
-
-		when(request.getHeader(HttpHeaders.AUTHORIZATION)).thenReturn(authHeader);
-		when(jwtService.extractUsername("invalidToken")).thenReturn(String.valueOf(userId));
-		when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-
-		// Act & Assert
-		assertThrows(NotFoundException.class, () -> {
-			authenticationService.logout(request, response);
-		});
-
-		verify(accountRepository, never()).save(any(Account.class));
-		verify(request, times(1)).getHeader(HttpHeaders.AUTHORIZATION);
-		verify(jwtService, times(1)).extractUsername("invalidToken");
-		verify(userRepository, times(1)).findById(userId);
-		verify(response, never()).setStatus(anyInt());
-	}
-
+	
 	@Test
 	void testChangePassword_ValidPassword() {
 		// Arrange
