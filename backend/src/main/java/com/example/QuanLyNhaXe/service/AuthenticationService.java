@@ -302,7 +302,7 @@ public class AuthenticationService {
 				account.setRefreshToken(null);
 				account.setPassword(passwordEncoder.encode(changePasswordDTO.getNewPassword()));
 				accountRepository.save(account);
-				return new ResponseMessage("Đổi mật khẩu thành công");
+				return new ResponseMessage("Đổi mật khẩu thành công"); 
 			}
 			throw new NotFoundException("Mật khẩu cũ không đúng");
 		}
