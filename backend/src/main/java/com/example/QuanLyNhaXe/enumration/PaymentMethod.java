@@ -4,7 +4,8 @@ public enum PaymentMethod {
     MOMO("Momo"),
     VNPAY("VNPay"),
     BANKING("Banking"),
-    CASH("Cash");
+    CASH("Cash"),
+    STRIPE("Stripe");
 
     private String label;
 

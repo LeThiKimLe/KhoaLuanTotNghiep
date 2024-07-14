@@ -101,7 +101,7 @@ public class TicketService {
 
 		}
 		String pay = createPaymentDTO.getPaymentMethod();
-		if (!pay.equals(PaymentMethod.VNPAY.getLabel())) {
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) && !pay.equals(PaymentMethod.STRIPE.getLabel())) {
 			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
 		}
 
@@ -638,7 +638,7 @@ public class TicketService {
 			throw new BadRequestException("Thanh toán không hợp lệ do đã hủy booking");
 		}
 		String pay = createPaymentDTO.getPaymentMethod();
-		if (!pay.equals(PaymentMethod.VNPAY.getLabel())) {
+		if (!pay.equals(PaymentMethod.VNPAY.getLabel()) && !pay.equals(PaymentMethod.STRIPE.getLabel())) {
 			throw new BadRequestException("Phương thức thanh toán không được hỗ trợ");
 		}
 

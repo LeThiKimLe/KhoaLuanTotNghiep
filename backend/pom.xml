@@ -230,6 +230,13 @@
     <version>1.10.0</version>
 </dependency>
 
+<!-- https://mvnrepository.com/artifact/com.stripe/stripe-java -->
+		<dependency>
+			<groupId>com.stripe</groupId>
+			<artifactId>stripe-java</artifactId>
+			<version>26.3.0</version>
+		</dependency>
+
 
 
 				
@@ -245,7 +252,6 @@
            <type>pom</type>
            <scope>import</scope>
        </dependency>
-       
 		
    </dependencies>
    

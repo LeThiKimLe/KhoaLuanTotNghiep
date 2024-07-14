@@ -32,6 +32,13 @@ import mobi_img from '../../../assets/mobi_banking.png'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faCircleCheck } from '@fortawesome/free-solid-svg-icons'
 import clock_img from '../../../assets/timer-clock.gif'
+import {Elements} from '@stripe/react-stripe-js';
+import {loadStripe} from '@stripe/stripe-js';
+import CheckoutForm from './TimeoutDialog/StripeCheckoutForm'
+import { format } from 'date-fns'
+
+const publicStripe = process.env.REACT_APP_STRIPE_PUBLIC_KEY
+const stripePromise = loadStripe(publicStripe);
 
 const Payment = () => {
     const message = useSelector(selectMessage)
@@ -40,7 +47,7 @@ const Payment = () => {
     const navigate = useNavigate()
     const bookingCode = useSelector(selectBookingCode)
     const bookingSession = useSelector(selectBookingSessionTime)
-    const [payment, setPayment] = useState('Momo')
+    const [payment, setPayment] = useState('VNPay')
     const isLogin = useSelector(selectIsLoggedIn)
     const handleChooseMethod = (e) => {
         setPayment(e.target.value)
@@ -63,9 +70,13 @@ const Payment = () => {
     const url = new URL(window.location.href);
     const params = new URLSearchParams(url.search);
     const [vnp_ResponseCode, setResponseCode] = useState(params.get('vnp_ResponseCode'))
-    const [vnp_TransactionNo, setTransactionNo] = useState(params.get('vnp_TransactionNo'))
-    const [vnp_TransactionDate, setTransactionDate] = useState(params.get('vnp_PayDate'))
+    const [vnp_TransactionNo, setTransactionNo] = useState(params.get('vnp_TransactionNo') || params.get('payment_intent'))
+    const [vnp_TransactionDate, setTransactionDate] = useState(params.get('vnp_PayDate') || format(new Date(), 'yyyyMMddHHmmss'))
+    const [stripe_Status, setStripeStatus] = useState(params.get('redirect_status'))
     const [processing, setProcessing] = useState(false)
+    const [stripeClientSecret, setStripeClientSecret] = useState('')
+    const [showStripeDialog, setShowStripeDialog] = useState(false)
+    const [returnUrl, setReturnUrl] = useState('')
     const handleCancelOut = async () => {
         let bookingCode = urlBookingCode
         if (bookingReturnCode !== '') {
@@ -110,7 +121,7 @@ const Payment = () => {
             setProcessing(true)
             dispatch(bookingThunk.bookingPayment(
                 { bookingCode: urlBookingCode,
-                  payment: 'VNPay',
+                  payment: stripe_Status === 'succeeded' ? 'Stripe' : 'VNPay',
                   transactionNo: vnp_TransactionNo,
                   transactionDate: vnp_TransactionDate}
             ))
@@ -131,7 +142,7 @@ const Payment = () => {
             dispatch(bookingThunk.bookingReturnPayment(
                 { bookingCode: urlBookingCode,
                   bookingCodeReturn: bookingReturnCode,
-                  payment: 'VNPay',
+                  payment: stripe_Status === 'succeeded' ? 'Stripe' : 'VNPay',
                   transactionNo: vnp_TransactionNo,
                   transactionDate: vnp_TransactionDate}
             ))
@@ -206,8 +217,12 @@ const Payment = () => {
     }
 
     const openPayment = () => {
-        if (payURL !== '') {
-            window.location.href = payURL
+        if (payment == "VNPay") {
+            if (payURL !== '') {
+                window.location.href = payURL
+            }
+        } else if (payment == "Stripe") {
+            setShowStripeDialog(true)
         }
     }
 
@@ -216,7 +231,22 @@ const Payment = () => {
         const costReturn = bookingInfor.bookingReturn ? bookingInfor.bookingReturn.bookingTrip.ticketPrice * bookingInfor.bookingReturn.bookedSeat.length : 0
         return costGo + costReturn
     }
-
+    const getClientSecret = () => {
+        dispatch(paymentThunk.createStripePayment({bookingCode: urlBookingCodeIn, amount: getTotalCost()}))
+        .unwrap()
+        .then((res) => {
+            setStripeClientSecret(res.clientSecret)
+            setReturnUrl(res.returnURL)
+        })
+    }
+    const appearance = {
+        theme: 'stripe',
+      };
+    const options = {
+        clientSecret: stripeClientSecret,
+        appearance,
+    };
+    
     useEffect(() => {
         const getBookingState = (status) => {
             return STATE_DICTIONARY.filter((state) => state.value === status)[0].key
@@ -304,7 +334,7 @@ const Payment = () => {
     }, [])
 
     useEffect(() => {
-        if (vnp_ResponseCode === '00') {
+        if (vnp_ResponseCode === '00' || stripe_Status === 'succeeded') {
             handlePayment()    
         }
         else if (vnp_ResponseCode) {
@@ -312,7 +342,11 @@ const Payment = () => {
             navigate('/')
         }
     }, [])
-    console.log(bookingInfor)
+    useEffect(() => {
+        if (payment === 'Stripe' && stripeClientSecret === '') {
+            getClientSecret()
+        }
+    }, [payment])
     return (
         <div>
             {message !== '' && <Message message={message} messagetype={error ? 2 : 1} />}
@@ -339,15 +373,37 @@ const Payment = () => {
                                             <h3 className={styles.colTitle}>Hình thức thanh toán</h3>
                                             <div className={styles.methods}>
                                                 <label style={{ margin: '15px 0' }}>
-                                                    <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/>
+                                                    {/* <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/> */}
+                                                    <input 
+                                                        type="radio" 
+                                                        name="pay-method" 
+                                                        value="VNPay" 
+                                                        checked={payment === 'VNPay'}
+                                                        onChange={handleChooseMethod}
+                                                    >
+                                                    </input>
                                                     <img src={vnpay} alt=""/>
                                                     <b>VNPay</b>
                                                 </label>
                                                 <br></br>
                                                 <label style={{ margin: '15px 0' }}>
+                                                    {/* <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/> */}
+                                                    <input 
+                                                        type="radio" 
+                                                        name="pay-method" 
+                                                        value="Stripe" 
+                                                        checked={payment === 'Stripe'}
+                                                        onChange={handleChooseMethod}
+                                                    >
+                                                    </input>
+                                                    <img src={visa_img} alt=""/>
+                                                    <b>Thẻ Visa/Master/JCB</b>
+                                                </label>
+                                                <br></br>
+                                                <label style={{ margin: '15px 0' }}>
                                                     <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/>
                                                     <img src={mobi_img} alt=""/>
-                                                    <b>Mobile Banking</b>
+                                                    <b>MobileBanking</b>
                                                 </label>
                                                 <br></br>
                                                 <label style={{ margin: '15px 0' }}>
@@ -356,11 +412,6 @@ const Payment = () => {
                                                     <b>Thẻ ATM nội địa</b>
                                                 </label>
                                                 <br></br>
-                                                <label style={{ margin: '15px 0' }}>
-                                                    <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/>
-                                                    <img src={visa_img} alt=""/>
-                                                    <b>Thẻ Visa/Master/JCB</b>
-                                                </label>
                                             </div>
                                         </Col>
                                         <Col lg={7} md={7} className={styles.qrCol}>
@@ -387,6 +438,13 @@ const Payment = () => {
                                                 </ol>
                                             </div>
                                             <Button text='Thanh toán tại đây' onClick={openPayment} loading={loading}></Button>
+                                            {
+                                                showStripeDialog && (
+                                                    <Elements stripe={stripePromise} options={options}>
+                                                        <CheckoutForm  returnUrl={returnUrl} onClose={() => setShowStripeDialog(false)}/>
+                                                    </Elements>
+                                                )
+                                            }
                                         </Col>
                                     </Row>
                                 </Col>

@@ -120,7 +120,7 @@ const Header = ({ type, active, listRoute }) => {
                                         <span>{t('header.menu.become_partner.sold_ticket')}</span>
                                     </Link>
                                 </li>
-                                <li>
+                                {/* <li>
                                     <Link className={`${styles.subMenuItem} ${activeLink === 'transport_partner' ? styles.active : ''}`}
                                         to="/transport_partner"
                                         onClick={() => handleNavigate('transport_partner')}
@@ -128,7 +128,7 @@ const Header = ({ type, active, listRoute }) => {
                                         <FontAwesomeIcon icon={faFileInvoice} />
                                         <span>{t('header.menu.become_partner.transport_partner')}</span>
                                     </Link>
-                                </li>
+                                </li> */}
                             </ul>
                         </div>
                     </div>

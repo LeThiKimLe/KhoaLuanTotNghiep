@@ -89,6 +89,7 @@
   min-width: 200px;
   text-decoration: none;
   align-items: center;
+  font-weight: 600;
 }
 
 .subMenuItem svg {
@@ -96,15 +97,15 @@
 }
 
 .subMenu li:first-child .subMenuItem {
-  border-radius: 10px 10px 0 0;
+  border-radius: 10px 10px 10px 10px;
 }
 
 .subMenu li:last-child .subMenuItem {
-  border-radius: 0 0 10px 10px;
+  border-radius: 10px 10px 10px 10px;
 }
 
 .subMenuItem:hover {
-  background-color: rgb(231, 227, 227);
+  background-color: rgb(235, 245, 181);
 }
 
 .subMenuItem.active {

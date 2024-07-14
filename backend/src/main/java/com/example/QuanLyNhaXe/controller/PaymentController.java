@@ -17,7 +17,10 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.QuanLyNhaXe.Request.CreateBookingDTO;
 import com.example.QuanLyNhaXe.Request.PaymentRequest;
+import com.example.QuanLyNhaXe.Request.StripeCharge;
+import com.example.QuanLyNhaXe.service.StripeService;
 import com.example.QuanLyNhaXe.service.VNPayService;
+import com.stripe.exception.StripeException;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -26,10 +29,12 @@ import jakarta.servlet.http.HttpServletRequest;
 @RequestMapping("/payment")
 public class PaymentController {
 	private final VNPayService vnpayService;
+	private final StripeService stripeService;
 
 	@Autowired
-	public PaymentController(VNPayService vnpayService) {
+	public PaymentController(VNPayService vnpayService, StripeService stripeService) {
 		this.vnpayService = vnpayService;
+		this.stripeService = stripeService;
 	}
 
 	@PostMapping("/refund")
@@ -49,6 +54,16 @@ public class PaymentController {
 			@RequestParam("transDate") String transDate, HttpServletRequest request) {
 		String result = vnpayService.queryDR(orderId, transDate, request);
 		return result;
+	}
+
+	@PostMapping("/stripe-charge")
+	public ResponseEntity<Object> chargeStripe(@RequestBody StripeCharge chargeRequest) {
+		return new ResponseEntity<>(stripeService.chargeCard(chargeRequest), HttpStatus.OK);
+	}
+
+	@PostMapping("/stripe-create-payment")
+	public ResponseEntity<Object> createPayment(@RequestBody StripeCharge chargeRequest) throws StripeException {
+		return new ResponseEntity<>(stripeService.createPaymentIntent(chargeRequest), HttpStatus.OK);
 	}
 
 //	@GetMapping("/generate-payment-url")

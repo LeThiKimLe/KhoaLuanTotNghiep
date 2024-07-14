@@ -1,0 +1,21 @@
+package com.example.QuanLyNhaXe.configuration;
+
+import com.stripe.Stripe;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class StripeConfig {
+
+    public static String stripe_Returnurl = "/payment/";
+    public static  String stripe_ReturnFeeUrl = "/system-manage/expense/";
+
+    @Value("${stripe.secretKey}")
+    private String secretKey;
+
+    @Bean
+    public void initStripe() {
+        Stripe.apiKey = secretKey;
+    }
+}

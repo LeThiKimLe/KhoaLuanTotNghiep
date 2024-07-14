@@ -3264,7 +3264,7 @@ export const AssignScheduleForm = ({ visible, setVisible, currentDay, finishAdd 
     const [listSchedule, setListSchedule] = useState([])
     const [loading, setLoading] = useState(false)
     const getScheduleData = async () => {
-        setLoading(false)
+        setLoading(true)
         const tempList = []
         let filterSchedule = []
         for (let j = 0; j < 2; j++) {
@@ -3342,7 +3342,10 @@ export const AssignScheduleForm = ({ visible, setVisible, currentDay, finishAdd 
                 </CModalHeader>
                 <CModalBody>
                     {loading ? (
-                        <CSpinner></CSpinner>
+                        <div className="d-flex justify-content-center align-items-center">
+                            {`Đang load dữ liệu. Vui lòng chờ ...   `}
+                            <CSpinner></CSpinner>
+                        </div>
                     ) : (
                         <CRow>
                             <CCard className="p-0">
