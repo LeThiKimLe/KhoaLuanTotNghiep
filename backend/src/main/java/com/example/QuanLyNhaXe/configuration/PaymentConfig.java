@@ -35,7 +35,7 @@ public class PaymentConfig {
 		public static String vnp_Url = "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html";
 		public  static String vnp_HashSecret = "HESYEZSHYLQULKQSJTOAXSWQKAQXCVYX";		
 		public static String vnp_ApiUrl = "https://sandbox.vnpayment.vn/merchant_webapi/api/transaction";
-		public static  String vnp_ReturnFeeUrl = "/system-manage/expense/";
+		public static  String vnp_ReturnFeeUrl = "/#/system-manage/expense/";
 
 		 public static String md5(String message) {
 		        String digest = null;
