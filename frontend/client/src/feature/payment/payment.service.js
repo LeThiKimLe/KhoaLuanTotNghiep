@@ -26,12 +26,15 @@ const vnpayPayment = createAsyncThunk(
 
 const createStripePayment = createAsyncThunk(
   "/stripe-create-payment",
-  async ({bookingCode, amount}, thunkAPI) => {
+  async ({ bookingCode, amount }, thunkAPI) => {
     try {
-      const response = await axiosClient.post("payment/stripe-create-payment", {
-        token: bookingCode,
-        amount: amount,
-      });
+      const response = await axiosClient.post(
+        "bookings/stripe-create-payment",
+        {
+          token: bookingCode,
+          amount: amount,
+        },
+      );
       return response;
     } catch (error) {
       const message =
@@ -44,7 +47,6 @@ const createStripePayment = createAsyncThunk(
     }
   },
 );
-
 
 const paymentThunk = {
   vnpayPayment,

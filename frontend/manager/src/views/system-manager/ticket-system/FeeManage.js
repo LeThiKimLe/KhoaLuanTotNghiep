@@ -1170,7 +1170,10 @@ const ServiceFee = () => {
                             <CTableDataCell className="text-center">{fee.status}</CTableDataCell>
                             <CTableDataCell className="text-center">
                                 {fee.systemTransaction
-                                    ? fee.systemTransaction.transactionNo
+                                    ? fee.systemTransaction.transactionNo.length > 8
+                                        ? fee.systemTransaction.transactionNo.substring(0, 8) +
+                                          '...'
+                                        : fee.systemTransaction.transactionNo
                                     : '---'}
                             </CTableDataCell>
                             <CTableDataCell className="text-center">

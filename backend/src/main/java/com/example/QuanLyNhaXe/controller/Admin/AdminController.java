@@ -26,12 +26,14 @@ import com.example.QuanLyNhaXe.Request.Excel;
 import com.example.QuanLyNhaXe.Request.PaymentServiceFee;
 import com.example.QuanLyNhaXe.Request.SignupDriverDTO;
 import com.example.QuanLyNhaXe.Request.SignupStaffDTO;
+import com.example.QuanLyNhaXe.Request.StripeCharge;
 import com.example.QuanLyNhaXe.service.AuthenticationService;
 import com.example.QuanLyNhaXe.service.BusCompanyService;
 import com.example.QuanLyNhaXe.service.ExcelService;
 import com.example.QuanLyNhaXe.service.FeeService;
 import com.example.QuanLyNhaXe.service.TicketService;
 import com.example.QuanLyNhaXe.service.UserService;
+import com.stripe.exception.StripeException;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -114,6 +116,11 @@ public class AdminController {
 	@PostMapping("/fee-payment")
 	public ResponseEntity<Object> gupdatePaymentServiceFee(@RequestBody PaymentServiceFee paymentServiceFee) {
 		return new ResponseEntity<>(feeService.updateServiceFee(paymentServiceFee), HttpStatus.OK);
+	}
+
+	@PostMapping("/fee-stripe-create-payment")
+	public ResponseEntity<Object> createStripePayment(@RequestBody StripeCharge chargeRequest) throws StripeException {
+		return new ResponseEntity<>(feeService.getFeeStripeIntent(chargeRequest.getToken()), HttpStatus.OK);
 	}
 	
 	@PutMapping("/policy")

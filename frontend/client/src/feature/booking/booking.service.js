@@ -180,9 +180,11 @@ const keepPayment = createAsyncThunk(
 
 const bookingReturn = createAsyncThunk(
   "bookings/return",
-  async ({bookingGo, bookingReturn, userInfo}, thunkAPI) => {
+  async ({ bookingGo, bookingReturn, userInfo }, thunkAPI) => {
     try {
-      const response = await axiosClient.post("/bookings/booking-return-ticket", {
+      const response = await axiosClient.post(
+        "/bookings/booking-return-ticket",
+        {
           ticketNumber: bookingGo.bookedSeat.length,
           name: userInfo.name,
           email: userInfo.email,
@@ -193,12 +195,13 @@ const bookingReturn = createAsyncThunk(
           dropStationId: bookingGo.dropPoint,
           seatName: bookingGo.bookedSeat,
           ticketNumberReturn: bookingReturn.bookedSeat.length,
-          tripReturnId:  bookingReturn.bookingTrip.tripInfor.id,
+          tripReturnId: bookingReturn.bookingTrip.tripInfor.id,
           scheduleReturnId: bookingReturn.bookingTrip.id,
           pickStationReturnId: bookingReturn.pickPoint,
           dropStationReturnId: bookingReturn.dropPoint,
-          seatNameReturn: bookingReturn.bookedSeat,      
-      });
+          seatNameReturn: bookingReturn.bookedSeat,
+        },
+      );
       return response;
     } catch (error) {
       const message =
@@ -220,11 +223,11 @@ const bookingReturnPayment = createAsyncThunk(
   ) => {
     try {
       const response = await axiosClient.put("tickets/payments", {
-          bookingCode: bookingCode,
-          bookingCodeReturn: bookingCodeReturn,
-          paymentMethod: payment,
-          transactionNo: transactionNo,
-          transactionDate: transactionDate,
+        bookingCode: bookingCode,
+        bookingCodeReturn: bookingCodeReturn,
+        paymentMethod: payment,
+        transactionNo: transactionNo,
+        transactionDate: transactionDate,
       });
       return response;
     } catch (error) {

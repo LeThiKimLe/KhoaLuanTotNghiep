@@ -2,20 +2,21 @@ import busCompanyThunk from "./busCompany.service";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    busCompanyList: [],
-}
+  busCompanyList: [],
+};
 
 const busCompanySlice = createSlice({
-    name: "busCompany",
-    initialState,
-    reducers: {
-    },
-    extraReducers: (builder) => {
-        builder
-        .addCase(busCompanyThunk.getListBusCompany.fulfilled, (state, action) => {
-            state.busCompanyList = action.payload;
-        })
-    },
+  name: "busCompany",
+  initialState,
+  reducers: {},
+  extraReducers: (builder) => {
+    builder.addCase(
+      busCompanyThunk.getListBusCompany.fulfilled,
+      (state, action) => {
+        state.busCompanyList = action.payload;
+      },
+    );
+  },
 });
 
 export const selectListCompany = (state) => state.busCompany.busCompanyList;

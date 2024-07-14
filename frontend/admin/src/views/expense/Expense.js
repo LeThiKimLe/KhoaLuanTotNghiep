@@ -19,6 +19,10 @@ import {
     CFormLabel,
     CFormInput,
     CSpinner,
+    CDropdown,
+    CDropdownToggle,
+    CDropdownMenu,
+    CDropdownItem,
 } from '@coreui/react'
 import { selectListCompanyRoute } from 'src/feature/route/route.slice'
 import { useState, useRef } from 'react'
@@ -45,6 +49,13 @@ import { getTripJourney } from 'src/utils/tripUtils'
 import statisticsThunk from 'src/feature/statistics/statistics.service'
 import { selectListOnlineTicket } from 'src/feature/statistics/statistics.slice'
 import { reverseString } from 'src/utils/tripUtils'
+import { PaymentElement, useStripe, useElements } from '@stripe/react-stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
+import { loadStripe } from '@stripe/stripe-js'
+
+const publicStripe = process.env.REACT_APP_STRIPE_PUBLIC_KEY
+const stripePromise = loadStripe(publicStripe)
+
 const SaleData = () => {
     const dispatch = useDispatch()
     const companyId = useSelector(selectCompanyId)
@@ -630,6 +641,9 @@ const ServiceData = ({ reload, setReload }) => {
     const dueDate = useSelector(selectServiceDueDate)
     const [loading, setLoading] = useState(false)
     const [listCompanySchedule, setListCompanySchedule] = useState([])
+    const [openStripe, setOpenStripe] = useState(false)
+    const [clientSecret, setClientSecret] = useState('')
+    const [returnUrl, setReturnUrl] = useState('')
     const getYearRange = () => {
         var year = []
         const startYear = startTime.getFullYear()
@@ -738,6 +752,30 @@ const ServiceData = ({ reload, setReload }) => {
         let currentSpan = parse(dueDate, 'yyyy-MM-dd', new Date())
         let lastDate = new Date(currentSpan.getFullYear(), currentSpan.getMonth() + 1, 0)
         return lastDate
+    }
+
+    const handleStripePayment = (fee) => {
+        setCurrentFee(fee)
+        if (clientSecret == '')
+            dispatch(feeThunk.createStripePayment(fee))
+                .unwrap()
+                .then((res) => {
+                    setClientSecret(res.clientSecret)
+                    setReturnUrl(res.returnURL)
+                    setOpenStripe(true)
+                })
+                .catch((err) => {
+                    console.log(err)
+                })
+        else setOpenStripe(true)
+    }
+
+    const appearance = {
+        theme: 'stripe',
+    }
+    const options = {
+        clientSecret: clientSecret,
+        appearance,
     }
 
     useEffect(() => {
@@ -918,7 +956,10 @@ const ServiceData = ({ reload, setReload }) => {
                                     className="text-center align-middle"
                                 >
                                     {fee.systemTransaction
-                                        ? fee.systemTransaction.transactionNo
+                                        ? fee.systemTransaction.transactionNo.length > 8
+                                            ? fee.systemTransaction.transactionNo.substring(0, 8) +
+                                              '...'
+                                            : fee.systemTransaction.transactionNo
                                         : '---'}
                                 </CTableDataCell>
                                 <CTableDataCell
@@ -926,12 +967,27 @@ const ServiceData = ({ reload, setReload }) => {
                                     className="text-center align-middle"
                                 >
                                     {fee.status === 'Chờ thanh toán' && (
-                                        <CButton
-                                            variant="outline"
-                                            onClick={() => handlePay(fee.id)}
-                                        >
-                                            Thanh toán
-                                        </CButton>
+                                        <CDropdown>
+                                            <CDropdownToggle color="secondary">
+                                                Thanh toán
+                                            </CDropdownToggle>
+                                            <CDropdownMenu>
+                                                <CDropdownItem
+                                                    as="button"
+                                                    role="button"
+                                                    onClick={() => handlePay(fee.id)}
+                                                >
+                                                    VNPay
+                                                </CDropdownItem>
+                                                <CDropdownItem
+                                                    as="button"
+                                                    role="button"
+                                                    onClick={() => handleStripePayment(fee)}
+                                                >
+                                                    Stripe - Thẻ Visa
+                                                </CDropdownItem>
+                                            </CDropdownMenu>
+                                        </CDropdown>
                                     )}
                                     {fee.status === 'Đã thanh toán' && (
                                         <CButton
@@ -1072,10 +1128,121 @@ const ServiceData = ({ reload, setReload }) => {
                     )}
                 </CModalBody>
             </CModal>
+            <CModal visible={openStripe} onClose={() => setOpenStripe(false)}>
+                <CModalHeader>
+                    <b>THANH TOÁN PHÍ</b>
+                </CModalHeader>
+                <CModalBody>
+                    <div className="w-100 text-center mb-1">
+                        <b>{`Số tiền thanh toán: ${currentFee?.fee?.toLocaleString()}đ`}</b>
+                    </div>
+                    {openStripe && clientSecret != '' && (
+                        <Elements stripe={stripePromise} options={options}>
+                            <StripePaymentDialog returnUrl={returnUrl}></StripePaymentDialog>
+                        </Elements>
+                    )}
+                </CModalBody>
+            </CModal>
         </>
     )
 }
+const StripePaymentDialog = ({ returnUrl }) => {
+    const stripe = useStripe()
+    const elements = useElements()
 
+    const [message, setMessage] = useState(null)
+    const [isLoading, setIsLoading] = useState(false)
+
+    useEffect(() => {
+        if (!stripe) {
+            return
+        }
+
+        const clientSecret = new URLSearchParams(window.location.search).get(
+            'payment_intent_client_secret',
+        )
+
+        if (!clientSecret) {
+            return
+        }
+
+        stripe.retrievePaymentIntent(clientSecret).then(({ paymentIntent }) => {
+            console.log(paymentIntent)
+            switch (paymentIntent.status) {
+                case 'succeeded':
+                    console.log('Thanh toán thành công')
+                    break
+                case 'processing':
+                    console.log('Đang thực hiện thanh toán')
+                    break
+                case 'requires_payment_method':
+                    console.log('Thanh toán thất bại')
+                    break
+                default:
+                    console.log('Có lỗi xảy ra. Vui lòng thử lại sau')
+                    break
+            }
+        })
+    }, [stripe])
+
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        if (!stripe || !elements) {
+            // Stripe.js hasn't yet loaded.
+            // Make sure to disable form submission until Stripe.js has loaded.
+            return
+        }
+
+        setIsLoading(true)
+
+        const { error } = await stripe.confirmPayment({
+            elements,
+            confirmParams: {
+                // Make sure to change this to your payment completion page
+                return_url: returnUrl,
+            },
+        })
+
+        // This point will only be reached if there is an immediate error when
+        // confirming the payment. Otherwise, your customer will be redirected to
+        // your `return_url`. For some payment methods like iDEAL, your customer will
+        // be redirected to an intermediate site first to authorize the payment, then
+        // redirected to the `return_url`.
+        if (error.type === 'card_error' || error.type === 'validation_error') {
+            setMessage(error.message)
+        } else {
+            setMessage('Có lỗi xảy ra.Vui lòng thử lại sau')
+        }
+
+        setIsLoading(false)
+    }
+
+    const paymentElementOptions = {
+        layout: 'tabs',
+    }
+
+    return (
+        <form id="payment-form" onSubmit={handleSubmit} className="stripe-form">
+            <PaymentElement id="payment-element" options={paymentElementOptions} />
+            <button
+                disabled={isLoading || !stripe || !elements}
+                id="submit"
+                className="stripe-button"
+            >
+                <span id="button-text">
+                    {isLoading ? (
+                        <div className="stripe-spinner" id="spinner"></div>
+                    ) : (
+                        'Thanh toán ngay'
+                    )}
+                </span>
+            </button>
+            {/* Show any error or success messages */}
+            {message && <div id="payment-message">{message}</div>}
+        </form>
+    )
+}
 const Expense = () => {
     const [activeTab, setActiveTab] = useState(1)
     const dispatch = useDispatch()
@@ -1083,47 +1250,66 @@ const Expense = () => {
     const toaster = useRef('')
     const [reload, setReload] = useState(false)
     const dueDate = useSelector(selectServiceDueDate)
+    const curDueDate = useRef('')
+    // http://localhost:3001/?payment_intent=pi_3PcXYiGlLuaJqSOV068Rp4Pz&payment_intent_client_secret=pi_3PcXYiGlLuaJqSOV068Rp4Pz_secret_5rnK9otJ71Lzr6p3qUkNcStqH&redirect_status=succeeded#/system-manage/expense?feeId=28/
     const verifyPaymentStatus = () => {
-        const url = window.location.href
-        if (url.includes('vnp_ResponseCode') === false) return
+        console.log('verify')
+        const url = window.location.search
+        if (!(url.includes('vnp_ResponseCode') || url.includes('redirect_status'))) return
         setActiveTab(1)
         const urlParams = new URLSearchParams(url)
-        const vnp_ResponseCode = urlParams.get('vnp_ResponseCode')
-        const vnp_TransactionNo = urlParams.get('vnp_TransactionNo')
-        const vnp_TransactionDate = urlParams.get('vnp_PayDate')
-        const content = urlParams.get('vnp_OrderInfo')
+        const vnp_ResponseCode =
+            urlParams.get('vnp_ResponseCode') || urlParams.get('redirect_status').split('#')[0]
+        const vnp_TransactionNo =
+            urlParams.get('vnp_TransactionNo') || urlParams.get('payment_intent')
+        const vnp_TransactionDate =
+            urlParams.get('vnp_PayDate') || format(new Date(), 'yyyyMMddHHmmss')
+        const content = urlParams.get('vnp_OrderInfo') || urlParams.get('feeId')
         //Get all character after "code" in content
-        const feeId = content.slice(content.indexOf('code') + 4)
-        if (vnp_ResponseCode === '00') {
-            dispatch(
-                feeThunk.feePay({
-                    feeServiceId: feeId,
-                    transactionNo: vnp_TransactionNo,
-                    transactionDate: vnp_TransactionDate,
-                }),
-            )
-                .unwrap()
-                .then(() => {
-                    addToast(() =>
-                        CustomToast({ message: 'Thanh toán thành công', type: 'success' }),
-                    )
-                    //Get url before ? in url
-                    setReload(true)
-                    dispatch(noticeAction.removeNotice({ id: parseInt(feeId), type: 'fee' }))
-                    window.history.pushState({}, document.title, url.split('?')[0])
-                })
-                .catch(() => {
-                    addToast(() => CustomToast({ message: 'Có lỗi xảy ra', type: 'error' }))
-                })
-        } else {
-            addToast(() => CustomToast({ message: 'Thanh toán không hợp lệ', type: 'error' }))
+        console.log(content)
+        let feeId = ''
+        if (content) {
+            if (content.includes('code')) feeId = content.slice(content.indexOf('code') + 4)
+            else feeId = content
+            if (vnp_ResponseCode === '00' || vnp_ResponseCode === 'succeeded') {
+                dispatch(
+                    feeThunk.feePay({
+                        feeServiceId: feeId,
+                        paymentMethod: vnp_ResponseCode === '00' ? 'VNPay' : 'Stripe',
+                        transactionNo: vnp_TransactionNo,
+                        transactionDate: vnp_TransactionDate,
+                    }),
+                )
+                    .unwrap()
+                    .then(() => {
+                        addToast(() =>
+                            CustomToast({ message: 'Thanh toán thành công', type: 'success' }),
+                        )
+                        //Get url before ? in url
+                        setTimeout(() => {
+                            setReload(true)
+                            dispatch(
+                                noticeAction.removeNotice({ id: parseInt(feeId), type: 'fee' }),
+                            )
+                            window.location.href = './#/system-manage/expense'
+                        }, [1000])
+                    })
+                    .catch(() => {
+                        addToast(() => CustomToast({ message: 'Có lỗi xảy ra', type: 'error' }))
+                    })
+            } else {
+                addToast(() => CustomToast({ message: 'Thanh toán không hợp lệ', type: 'error' }))
+            }
         }
     }
     useEffect(() => {
-        if (dueDate < new Date()) {
-            setActiveTab(1)
-        } else {
-            setActiveTab(0)
+        if (dueDate) {
+            if (dueDate < new Date() && format(dueDate, 'yyyyMMdd') !== curDueDate.current) {
+                setActiveTab(1)
+            } else if (format(dueDate, 'yyyyMMdd') !== curDueDate.current) {
+                setActiveTab(0)
+            }
+            curDueDate.current = format(dueDate, 'yyyyMMdd')
         }
     }, [dueDate])
     useEffect(() => {

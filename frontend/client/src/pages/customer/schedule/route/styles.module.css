@@ -55,7 +55,7 @@
   align-items: center;
   color: var(--sub-color);
   margin: 10px 0;
-  flex: 1
+  flex: 1;
 }
 
 .routeTime .time {

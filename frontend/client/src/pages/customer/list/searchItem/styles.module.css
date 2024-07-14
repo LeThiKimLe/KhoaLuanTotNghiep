@@ -139,10 +139,10 @@
   height: 85%;
   object-fit: cover;
   border: 1px solid #ccc;
-  border-radius: 5px,
+  border-radius: 5px;
 }
 
-.starCover{
+.starCover {
   background-color: #fac83f;
   color: #3e3d3d;
   font-weight: 500;

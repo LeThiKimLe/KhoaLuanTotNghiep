@@ -61,10 +61,6 @@ public class PaymentController {
 		return new ResponseEntity<>(stripeService.chargeCard(chargeRequest), HttpStatus.OK);
 	}
 
-	@PostMapping("/stripe-create-payment")
-	public ResponseEntity<Object> createPayment(@RequestBody StripeCharge chargeRequest) throws StripeException {
-		return new ResponseEntity<>(stripeService.createPaymentIntent(chargeRequest), HttpStatus.OK);
-	}
 
 //	@GetMapping("/generate-payment-url")
 //	public ResponseEntity<Object> pay(HttpServletRequest request, @RequestParam Integer amount) {

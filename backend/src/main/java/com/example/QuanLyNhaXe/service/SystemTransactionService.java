@@ -33,7 +33,7 @@ public class SystemTransactionService {
 		SystemTransaction systemTransaction = SystemTransaction.builder().transactionNo(pay.getTransactionNo())
 				.transactionType(TransactionType.PAYMENT.getLabel())
 				.paymentTime(utilityService.convertStringToDateTime(pay.getTransactionDate())).amount(fee)
-				.paymentMethod(PaymentMethod.VNPAY.getLabel()).build();
+				.paymentMethod(pay.getPaymentMethod()).build();
 		systemTransactionRepository.save(systemTransaction);
 		return systemTransaction;
 

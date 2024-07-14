@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,9 +19,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.QuanLyNhaXe.Request.BookingReturnTicket;
 import com.example.QuanLyNhaXe.Request.CreateBookingDTO;
 import com.example.QuanLyNhaXe.Request.SearchBookingDTO;
+import com.example.QuanLyNhaXe.configuration.StripeConfig;
 import com.example.QuanLyNhaXe.dto.BookingDTO;
 import com.example.QuanLyNhaXe.dto.BookingSimpleDTO;
 import com.example.QuanLyNhaXe.dto.StatisticTripTicketsForMonth.SumTicKet;
+import com.example.QuanLyNhaXe.dto.StripeClientDTO;
 import com.example.QuanLyNhaXe.dto.UserStatistics;
 import com.example.QuanLyNhaXe.enumration.BookingStatus;
 import com.example.QuanLyNhaXe.enumration.TicketState;
@@ -42,6 +45,7 @@ import com.example.QuanLyNhaXe.repository.TicketRepository;
 import com.example.QuanLyNhaXe.repository.TripRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
+import com.stripe.exception.StripeException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -62,8 +66,14 @@ public class BookingService {
 	private final UtilityService utilityService;
 	private final VNPayService vnPayService;
 	private final CustomerRepository customerRepository;
-	
+	private final StripeService stripeService;
 
+	@Value("${base.url}")
+    private String baseUrl;
+
+    @Value("${base.adminUrl}")
+    private String baseAdminUrl;
+	
 	@Transactional
 	public Object booking(CreateBookingDTO createBookingDTO, String authorization, HttpServletRequest request) {
 		User user = null;
@@ -614,6 +624,34 @@ public class BookingService {
 		sum=customerRepository.count();
 		sum2=bookingRepository.countDistinctPhoneNumbers();
 		return UserStatistics.builder().bookingUser(sum2).customer(sum).build();
+	}
+
+	public Object getBookingStripeIntent(String bookingCode) throws StripeException {
+		//split bookingCode by "and"
+		String[] bookingCodes=bookingCode.split("and");
+		String bookingCode1=bookingCodes[0];
+		String bookingCode2="";
+		if (bookingCodes.length>1) {
+			bookingCode2=bookingCodes[1];
+		}
+		Booking booking1 = bookingRepository.findByCode(bookingCode1)
+				.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+		Long price = (long) (booking1.getTicketNumber()*booking1.getTickets().get(0).getTicketPrice());
+		if (bookingCode2 != "") {
+			Booking booking2 = bookingRepository.findByCode(bookingCode2)
+					.orElseThrow(() -> new NotFoundException(Message.BOOKING_NOT_FOUND));
+			price += (long)(booking2.getTicketNumber()*booking2.getTickets().get(0).getTicketPrice());
+		}
+
+		String clientSecret = stripeService.createPaymentIntent(price, bookingCode);
+		
+		 //Token is the booking code
+		 String returnUrl = baseUrl + StripeConfig.stripe_Returnurl + bookingCode + "/";
+
+		return StripeClientDTO.builder()
+				 .clientSecret(clientSecret)
+				 .returnURL(returnUrl)
+				 .build();
 	}
 
 }

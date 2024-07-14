@@ -11,15 +11,13 @@ export const createListRoutes = (routeData) => {
       listDeparture: listDeparture,
       listDestination: listDestination,
     };
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
     return {
       listDeparture: listDeparture,
       listDestination: listDestination,
     };
   }
-  
 };
 
 const addRoute = (route, round) => {

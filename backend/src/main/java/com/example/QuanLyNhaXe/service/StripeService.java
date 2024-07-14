@@ -32,6 +32,9 @@ public class StripeService {
     @Value("${base.url}")
     private String baseUrl;
 
+    @Value("${base.adminUrl}")
+    private String baseAdminUrl;
+
     public Object chargeCard(StripeCharge chargeRequest) {
         try {
             ChargeCreateParams createParams = new ChargeCreateParams.Builder()
@@ -47,10 +50,11 @@ public class StripeService {
         }
     }
 
-    public Object createPaymentIntent(StripeCharge chargeInfo) throws StripeException {
+    public String createPaymentIntent(Long amount, String token) throws StripeException {
         PaymentIntentCreateParams params = PaymentIntentCreateParams.builder()
-                .setAmount(chargeInfo.getAmount())
+                .setAmount(amount)
                 .setCurrency(currency)
+                .putMetadata("order_id", token)
                 // In the latest version of the API, specifying the `automatic_payment_methods`
                 // parameter is optional because Stripe enables its functionality by default.
                 .setAutomaticPaymentMethods(
@@ -62,12 +66,6 @@ public class StripeService {
 
         // Create a PaymentIntent with the order amount and currency
         PaymentIntent paymentIntent = PaymentIntent.create(params);
-        //Token is the booking code
-        String returnUrl = baseUrl + StripeConfig.stripe_Returnurl + chargeInfo.getToken() + "/";
-
-        return StripeClientDTO.builder()
-                .clientSecret(paymentIntent.getClientSecret())
-                .returnURL(returnUrl)
-                .build();
+        return paymentIntent.getClientSecret();
     }
 }

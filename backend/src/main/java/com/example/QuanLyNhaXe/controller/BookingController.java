@@ -16,8 +16,10 @@ import com.example.QuanLyNhaXe.Request.BookingReturnTicket;
 import com.example.QuanLyNhaXe.Request.CreateBookingDTO;
 import com.example.QuanLyNhaXe.Request.CreateReview;
 import com.example.QuanLyNhaXe.Request.SearchBookingDTO;
+import com.example.QuanLyNhaXe.Request.StripeCharge;
 import com.example.QuanLyNhaXe.service.BookingService;
 import com.example.QuanLyNhaXe.service.ReviewService;
+import com.stripe.exception.StripeException;
 
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -93,6 +95,10 @@ public class BookingController {
 	public ResponseEntity<Object> getTotalCustomer(){
 		return new ResponseEntity<>(bookingService.getCustomerTotal(), HttpStatus.OK);
 	}
-	
 
+	@PostMapping("/stripe-create-payment")
+	public ResponseEntity<Object> createStripeBookingPayment(@RequestBody StripeCharge chargeRequest, @RequestHeader(value = HttpHeaders.AUTHORIZATION, required = false) String authorization) throws StripeException {
+		return new ResponseEntity<>(bookingService.getBookingStripeIntent(chargeRequest.getToken()), HttpStatus.OK);
+	}
+	
 }

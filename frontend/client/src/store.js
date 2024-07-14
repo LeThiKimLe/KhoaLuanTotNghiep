@@ -20,7 +20,7 @@ const rootPersistConfig = {
   key: "rootClient",
   storage,
   stateReconciler: autoMergeLevel2,
-  whitelist: ["route","trip", "booking"],
+  whitelist: ["route", "trip", "booking"],
 };
 
 // Có thể làm thêm các config riêng cho một reducer riêng

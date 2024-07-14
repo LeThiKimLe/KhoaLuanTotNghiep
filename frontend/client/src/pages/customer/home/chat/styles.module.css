@@ -135,7 +135,7 @@
   font-weight: 500;
 }
 
-.form-input{
+.form-input {
   position: absolute;
   left: -245px;
   width: fit-content;
@@ -146,7 +146,7 @@
   background-color: aliceblue;
 }
 
-.form-input input{
+.form-input input {
   width: 100%;
   padding: 5px;
   border-radius: 5px;
@@ -154,7 +154,7 @@
   margin: 10px 0;
 }
 
-.form-input label{
+.form-input label {
   font-weight: 700;
   margin-bottom: 5px;
 }

@@ -10,11 +10,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.QuanLyNhaXe.Request.PaymentServiceFee;
+import com.example.QuanLyNhaXe.configuration.StripeConfig;
 import com.example.QuanLyNhaXe.dto.ServiceFeeDTO;
+import com.example.QuanLyNhaXe.dto.StripeClientDTO;
 import com.example.QuanLyNhaXe.enumration.TicketState;
 import com.example.QuanLyNhaXe.exception.BadRequestException;
 import com.example.QuanLyNhaXe.exception.NotFoundException;
 import com.example.QuanLyNhaXe.model.Admin;
+import com.example.QuanLyNhaXe.model.Booking;
 import com.example.QuanLyNhaXe.model.BusCompany;
 import com.example.QuanLyNhaXe.model.Route;
 import com.example.QuanLyNhaXe.model.RouteAssign;
@@ -28,6 +31,8 @@ import com.example.QuanLyNhaXe.repository.RouteAssignRepository;
 import com.example.QuanLyNhaXe.repository.ServiceFeeRepository;
 import com.example.QuanLyNhaXe.util.Message;
 import com.example.QuanLyNhaXe.util.ResponseMessage;
+import com.stripe.exception.StripeException;
+import org.springframework.beans.factory.annotation.Value;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +52,10 @@ public class FeeService {
 	private final VNPayService vnPayService;
 	private final SystemTransactionService systemTransactionService;
 	private final UserService userService;
+	private final StripeService stripeService;
+
+    @Value("${base.adminUrl}")
+    private String baseAdminUrl;
 
 	public ServiceFeeDTO createServiceFee(Integer companyId) {
 		BusCompany busCompany = busCompanyRepository.findById(companyId)
@@ -185,6 +194,23 @@ public class FeeService {
 			
 		}
 		return false;
+	}
+
+	public Object getFeeStripeIntent(String feeIdString) throws StripeException {
+
+		Integer feeId = Integer.parseInt(feeIdString);
+		
+		ServiceFee serviceFee = feeRepository.findById(feeId)
+				.orElseThrow(() -> new NotFoundException(Message.FEE_NOT_FOUND));
+
+		String clientSecret = stripeService.createPaymentIntent((long) serviceFee.getFee(), feeIdString);
+		
+		String returnUrl = baseAdminUrl + "/?" + "feeId=" + feeIdString + StripeConfig.stripe_ReturnFeeUrl ;
+
+        return StripeClientDTO.builder()
+                .clientSecret(clientSecret)
+                .returnURL(returnUrl)
+                .build();
 	}
 
 }

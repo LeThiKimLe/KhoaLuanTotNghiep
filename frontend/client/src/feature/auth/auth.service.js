@@ -6,7 +6,9 @@ const login = createAsyncThunk(
   async ({ username, password }, thunkAPI) => {
     try {
       const response = await axiosClient.post("auth/login", {
-        username: username.startsWith('0') ? '+84' + username.slice(1) : username,
+        username: username.startsWith("0")
+          ? "+84" + username.slice(1)
+          : username,
         password,
       });
       localStorage.setItem("current_user", JSON.stringify(response));
@@ -40,7 +42,7 @@ const register = createAsyncThunk(
   async ({ tel, name, email, password, oauthId }, thunkAPI) => {
     try {
       const response = await axiosClient.post("auth/signup", {
-        tel: tel.startsWith('0') ? '+84' + tel.slice(1) : tel,
+        tel: tel.startsWith("0") ? "+84" + tel.slice(1) : tel,
         name,
         email,
         password,
@@ -60,46 +62,56 @@ const register = createAsyncThunk(
   },
 );
 
-const getOTPSignup = createAsyncThunk("auth/send-otp-signup", async (telno, thunkAPI) => {
-  try {
-    const response = await axiosClient.post("auth/send-sms-signup", null, {
-      params: {
-        phoneNumber: telno.startsWith('0') ? '+84' + telno.slice(1) : telno,
-      },
-    });
-    return response;
-  } catch (error) {
-    const message = 
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
-    return thunkAPI.rejectWithValue(message);
-  }
-});
+const getOTPSignup = createAsyncThunk(
+  "auth/send-otp-signup",
+  async (telno, thunkAPI) => {
+    try {
+      const response = await axiosClient.post("auth/send-sms-signup", null, {
+        params: {
+          phoneNumber: telno.startsWith("0") ? "+84" + telno.slice(1) : telno,
+        },
+      });
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
 
-const getOTPReset = createAsyncThunk("auth/send-otp-reset", async (telno, thunkAPI) => {
-  try {
-    const response = await axiosClient.post("auth/send-sms-reset", null, {
-      params: {
-        phoneNumber: telno.startsWith('0') ? '+84' + telno.slice(1) : telno,
-      },
-    });
-    return response;
-  } catch (error) {
-    const message =
-      (error.response && error.response.data && error.response.data.message) ||
-      error.message ||
-      error.toString();
-    return thunkAPI.rejectWithValue(message);
-  }
-});
+const getOTPReset = createAsyncThunk(
+  "auth/send-otp-reset",
+  async (telno, thunkAPI) => {
+    try {
+      const response = await axiosClient.post("auth/send-sms-reset", null, {
+        params: {
+          phoneNumber: telno.startsWith("0") ? "+84" + telno.slice(1) : telno,
+        },
+      });
+      return response;
+    } catch (error) {
+      const message =
+        (error.response &&
+          error.response.data &&
+          error.response.data.message) ||
+        error.message ||
+        error.toString();
+      return thunkAPI.rejectWithValue(message);
+    }
+  },
+);
 
 const validateOTP = createAsyncThunk(
   "auth/verify-otp",
   async ({ telno, otp }, thunkAPI) => {
     try {
       const response = await axiosClient.post("auth/sms-verify", {
-        tel: telno.startsWith('0') ? '+84' + telno.slice(1) : telno,
+        tel: telno.startsWith("0") ? "+84" + telno.slice(1) : telno,
         otp: otp,
       });
       return response;
@@ -142,7 +154,12 @@ const updateProfile = createAsyncThunk(
   async ({ updatedInfor }, thunkAPI) => {
     try {
       const formData = new FormData();
-      formData.append("tel", updatedInfor.tel.startsWith('0') ? '+84' + updatedInfor.tel.slice(1) : updatedInfor.tel);
+      formData.append(
+        "tel",
+        updatedInfor.tel.startsWith("0")
+          ? "+84" + updatedInfor.tel.slice(1)
+          : updatedInfor.tel,
+      );
       formData.append("name", updatedInfor.name);
       formData.append("email", updatedInfor.email);
       formData.append("address", updatedInfor.address);

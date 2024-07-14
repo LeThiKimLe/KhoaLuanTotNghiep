@@ -399,7 +399,7 @@ const Payment = () => {
                                                     <img src={visa_img} alt=""/>
                                                     <b>Thẻ Visa/Master/JCB</b>
                                                 </label>
-                                                <br></br>
+                                                {/* <br></br>
                                                 <label style={{ margin: '15px 0' }}>
                                                     <FontAwesomeIcon icon={faCircleCheck} style={{color: 'green'}}/>
                                                     <img src={mobi_img} alt=""/>
@@ -411,7 +411,7 @@ const Payment = () => {
                                                     <img src={atm_img} alt=""/>
                                                     <b>Thẻ ATM nội địa</b>
                                                 </label>
-                                                <br></br>
+                                                <br></br> */}
                                             </div>
                                         </Col>
                                         <Col lg={7} md={7} className={styles.qrCol}>

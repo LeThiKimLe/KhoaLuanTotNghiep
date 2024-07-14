@@ -167,7 +167,6 @@ public class TicketService {
 						.state(RequestState.PENDING_APPROVAL.getLabel()).build();
 				cancelRequestRepository.save(cancelRequest);
 				for (Ticket ticket : tickets) {
-
 					ticket.setState(TicketState.PENDING_CANCEL.getLabel());
 					ticket.setCancelRequest(cancelRequest);
 					ticketCancels.add(ticket);
