@@ -44,7 +44,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/manager/company/assign-company", "/manager/locations", "/manager/company").hasAnyAuthority(STAFF, ADMIN, MANAGER, DRIVER)
                         .requestMatchers(HttpMethod.GET, "/manager/company").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/manager/**", "staff/bookings/schedules/reviews-company").hasAnyAuthority(ADMIN,MANAGER)
+                        .requestMatchers(HttpMethod.GET, "/manager/**", "staff/bookings/schedules/reviews-company").hasAnyAuthority(STAFF, ADMIN,MANAGER)
                         .requestMatchers(HttpMethod.PUT, "staff/bookings/schedules/reviews").hasAnyAuthority(MANAGER)
                         .requestMatchers("/admin/stations/**").hasAnyAuthority(ADMIN,MANAGER)
                         .requestMatchers("/manager/**").hasAuthority(MANAGER)                     

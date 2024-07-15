@@ -193,7 +193,6 @@ const ScheduleInfor = ({ visible, setVisible, inSchedule, finishAction }) => {
                   },
         )
     }, [inSchedule])
-    console.log(inSchedule)
     return (
         <>
             <CToaster ref={toaster} push={toast} placement="top-end" />
@@ -472,6 +471,7 @@ const TimeTable = ({
     fixSchedule,
     finishAction,
 }) => {
+    console.log(fixSchedule)
     const [listSchedule, setListSchedule] = useState([])
     const dispatch = useDispatch()
     const currentSearch = useRef({
@@ -588,7 +588,7 @@ const TimeTable = ({
             }
             setListSchedule([...listPreSchedule])
         }
-    }, [fixSchedule])
+    }, [fixSchedule, listSchedule.length])
     return (
         <>
             {listSchedule.length === 7 &&
@@ -810,14 +810,14 @@ const ScheduleManagement = () => {
         dispatch(scheduleAction.setCurrentTurn(index === 1 ? 0 : 1))
     }
     const getFixSchedule = (tripId) => {
-        return listFixSchedule.filter((schd) => schd.trip.id === tripId)
+        return listFixSchedule.filter((schd) => schd.trip.id == tripId)
     }
     const getDayFixSchedule = () => {
         let dayOfWeek = currentDay.getDay()
         if (dayOfWeek === 0) {
             dayOfWeek = 8
         } else {
-            dayOfWeek += 2
+            dayOfWeek += 1
         }
         return listFixSchedule.filter(
             (schd) =>

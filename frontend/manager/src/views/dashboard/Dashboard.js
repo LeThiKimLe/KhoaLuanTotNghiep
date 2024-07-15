@@ -238,7 +238,7 @@ const Dashboard = () => {
                         return (
                             sum +
                             item.ticKets.filter((tk) => {
-                                const date = new Date(tk.schedule.departDate)
+                                const date = new Date(tk.booking.bookingDate)
                                 return (
                                     date.getDate() === i &&
                                     date.getMonth() === monthValue &&
@@ -257,7 +257,7 @@ const Dashboard = () => {
                         return (
                             sum +
                             item.ticKets.filter((tk) => {
-                                const date = new Date(tk.schedule.departDate)
+                                const date = new Date(tk.booking.bookingDate)
                                 return date.getMonth() === i && date.getFullYear() === yearValue
                             }).length
                         )
@@ -328,7 +328,7 @@ const Dashboard = () => {
     }, [timeOption, listOnlineTicket])
     return (
         <>
-            <StatisticsWidget />
+            {/* <StatisticsWidget /> */}
             <CCard className="mb-4">
                 <CCardBody>
                     <CRow className="mb-3">

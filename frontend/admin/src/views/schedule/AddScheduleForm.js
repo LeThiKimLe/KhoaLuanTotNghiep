@@ -532,6 +532,7 @@ const AddScheduleForm = ({
         ])
     }, [currentDay])
     useEffect(() => {
+        console.log(fixSchedule)
         setListTimeGo(
             listPreTimeGo.length > 0
                 ? listPreTimeGo.map((time) => ({ time: time, fix: true }))

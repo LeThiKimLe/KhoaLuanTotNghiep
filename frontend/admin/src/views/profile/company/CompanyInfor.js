@@ -3,7 +3,7 @@ import busImg from '../../../assets/brand/bus-img.jpg'
 import { useDispatch, useSelector } from 'react-redux'
 import { selectListCompany } from 'src/feature/bus-company/busCompany.slice'
 import companyThunk from 'src/feature/bus-company/busCompany.service'
-import { selectUser } from 'src/feature/auth/auth.slice'
+import { selectUser, selectUserRoleId } from 'src/feature/auth/auth.slice'
 import styles from './styles.module.css'
 import {
     CCard,
@@ -32,6 +32,7 @@ const CompanyInfor = () => {
     const dispatch = useDispatch()
     const listCompany = useSelector(selectListCompany)
     const user = useSelector(selectUser)
+    const userRoleId = useSelector(selectUserRoleId)
     const [isUpdating, setIsUpdating] = useState(false)
     const companyInfo = listCompany?.find(
         (company) => company.busCompany.id === user.user.staff.busCompanyId,
@@ -298,9 +299,15 @@ const CompanyInfor = () => {
                                     )}
                                 </CCardBody>
                                 <CCardFooter>
-                                    <CButton variant="outline" onClick={handleSave} color="success">
-                                        {editPolicy ? 'Lưu' : 'Cập nhật chính sách'}
-                                    </CButton>
+                                    {userRoleId === 3 && (
+                                        <CButton
+                                            variant="outline"
+                                            onClick={handleSave}
+                                            color="success"
+                                        >
+                                            {editPolicy ? 'Lưu' : 'Cập nhật chính sách'}
+                                        </CButton>
+                                    )}
                                     {editPolicy && (
                                         <CButton
                                             variant="outline"

@@ -1251,7 +1251,6 @@ const Expense = () => {
     const [reload, setReload] = useState(false)
     const dueDate = useSelector(selectServiceDueDate)
     const curDueDate = useRef('')
-    // http://localhost:3001/?payment_intent=pi_3PcXYiGlLuaJqSOV068Rp4Pz&payment_intent_client_secret=pi_3PcXYiGlLuaJqSOV068Rp4Pz_secret_5rnK9otJ71Lzr6p3qUkNcStqH&redirect_status=succeeded#/system-manage/expense?feeId=28/
     const verifyPaymentStatus = () => {
         console.log('verify')
         const url = window.location.search

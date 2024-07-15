@@ -25,6 +25,7 @@ const SeatMap = ({ seatMap, activeTicket }) => {
     const getColWidth = () => {
         if (seatMap.colNo === 3) return '3'
         else if (seatMap.colNo === 4) return '3'
+        else if (seatMap.colNo === 2) return '4'
         else return '2'
     }
     const [showBookingForm, setShowBookingForm] = useState(false)

@@ -16,6 +16,7 @@ import { bookingActions, selectCurrentTrip } from 'src/feature/booking/booking.s
 import bookingThunk from 'src/feature/booking/booking.service'
 import { getDesandDep } from 'src/utils/routeUtils'
 import { de } from 'date-fns/locale'
+import { selectCompanyId } from 'src/feature/auth/auth.slice'
 const ScheduleContainer = ({ schedule }) => {
     const dispatch = useDispatch()
     const listRoutes = useSelector(selectListCompanyRoute)
@@ -98,6 +99,7 @@ const IncomingSchedule = () => {
     const tomorrow = addDays(current, 1)
     const listCompanyRoute = useSelector(selectListCompanyRoute)
     const listTrip = tripProcess(listCompanyRoute)
+    const companyId = useSelector(selectCompanyId)
     const [listIncoming, setListIncoming] = useState([])
     const dispatch = useDispatch()
     //Lấy các chuyến sắp khởi hành trước 4h
@@ -126,11 +128,12 @@ const IncomingSchedule = () => {
                                 const currentTime = new Date()
                                 const arriveTime = addHours(departTime, schedule.tripInfor.hours)
                                 return (
-                                    (currentTime.getTime() < departTime.getTime() &&
+                                    schedule?.tripInfor?.busCompany?.id == companyId &&
+                                    ((currentTime.getTime() < departTime.getTime() &&
                                         currentTime.getTime() + 24 * 60 * 60 * 1000 >
                                             departTime.getTime()) ||
-                                    (departTime.getTime() - currentTime.getTime() <= 0 &&
-                                        currentTime.getTime() - arriveTime.getTime() <= 0)
+                                        (departTime.getTime() - currentTime.getTime() <= 0 &&
+                                            currentTime.getTime() - arriveTime.getTime() <= 0))
                                 )
                             })
                             if (filterSchedule.length > 0) {

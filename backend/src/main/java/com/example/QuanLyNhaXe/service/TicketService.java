@@ -781,11 +781,19 @@ public class TicketService {
 
 			 endDate = utilityService.convertHCMDateTime().toLocalDate();
 		}
+		LocalDateTime startDateTime = LocalDateTime.of(startDate, LocalTime.of(0, 0));
+		LocalDateTime endDateTime = LocalDateTime.of(endDate, LocalTime.of(23, 59));
 
+		// List<Ticket> tickets = ticketRepository
+		// 		.findByStateAndBookingConductStaffIsNullAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompany(
+		// 				TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), startDate, endDate,
+		// 				busCompany);
+	
 		List<Ticket> tickets = ticketRepository
-				.findByStateAndBookingConductStaffIsNullAndScheduleStateAndScheduleDepartDateBetweenAndSchedule_Trip_BusCompany(
-						TicketState.PAID.getLabel(), ScheduleState.HOAN_THANH.getLabel(), startDate, endDate,
+				.findByStateAndBookingConductStaffIsNullAndBookingBookingDateBetweenAndSchedule_Trip_BusCompany(
+						TicketState.PAID.getLabel(), startDateTime, endDateTime,
 						busCompany);
+		
 		if (tickets.isEmpty()) {
 
 			return ticKetFullDTOs;

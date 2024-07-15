@@ -1,6 +1,7 @@
 package com.example.QuanLyNhaXe.repository;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 	
 	Integer countByStateAndBookingConductStaffIsNullAndScheduleStateAndSchedule_Trip_Route(String state, String scheduleState,Route route);
 	
-	
+	List<Ticket> findByStateAndBookingConductStaffIsNullAndBookingBookingDateBetweenAndSchedule_Trip_BusCompany(
+			String state, LocalDateTime startDate, LocalDateTime endDate, BusCompany company);
+
 	
 	
 

@@ -592,6 +592,7 @@ const TicketDetail = ({ ticket, visible, handleShow }) => {
                                         <option value="Momo">MoMo</option>
                                         <option value="VNPay">VNPay</option>
                                         <option value="Banking">Chuyển khoản</option>
+                                        <option value="Stripe">Stripe - Thẻ Visa</option>
                                     </CFormSelect>
                                     {!ticket.booking.transaction && (
                                         <>
