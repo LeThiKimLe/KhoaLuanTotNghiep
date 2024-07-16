@@ -5,7 +5,7 @@ services:
       - MYSQL_ROOT_PASSWORD=Conchosu@1
     volumes:
       - ./mydata9:/var/lib/mysql
-      - ./backupv1.sql:/docker-entrypoint-initdb.d/backupfile.sql
+      - ./backupv2.sql:/docker-entrypoint-initdb.d/backupfile.sql
     command: --init-file /docker-entrypoint-initdb.d/backupfile.sql --max_allowed_packet=128M
 
   backend:
