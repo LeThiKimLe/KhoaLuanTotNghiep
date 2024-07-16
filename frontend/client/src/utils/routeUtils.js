@@ -5,7 +5,7 @@ export const createListRoutes = (routeData) => {
   try {
     routeData.forEach((route) => {
       addRoute(route, "forward");
-      addRoute(route, "backward");
+      addRoute(route, "backward"); 
     });
     return {
       listDeparture: listDeparture,
