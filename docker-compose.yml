@@ -4,7 +4,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=Conchosu@1
     volumes:
-      - ./mydata7:/var/lib/mysql
+      - ./mydata8:/var/lib/mysql
       - ./backupv15.sql:/docker-entrypoint-initdb.d/backup.sql
     command: --init-file /docker-entrypoint-initdb.d/backup.sql
 
@@ -78,7 +78,7 @@ services:
       - manager-frontend
 
 volumes:
-  mydata7:
+  mydata8:
   webdata-client:
   webdata-admin:
   webdata-driver:
