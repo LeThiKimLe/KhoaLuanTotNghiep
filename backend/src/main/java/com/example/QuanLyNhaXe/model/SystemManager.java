@@ -48,6 +48,6 @@ public class SystemManager {
     private Date beginWorkDate;
 
     public String getImg() {
-        return "https://vexe.workon.space" + this.img;
+        return "http://localhost:5000" + this.img;
     }
 }

@@ -6,6 +6,7 @@ services:
     volumes:
       - ./mydata3:/var/lib/mysql
       - ./backupv1.sql:/docker-entrypoint-initdb.d/backup.sql
+      - ./my.cnf:/etc/mysql/my.cnf
     command: --init-file /docker-entrypoint-initdb.d/backup.sql --max_allowed_packet=128M
 
   backend:
