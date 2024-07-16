@@ -21,7 +21,7 @@ jobs:
         password: ${{ secrets.HOST_PASSWORD }}
         port: ${{ secrets.HOST_PORT }}
         script: |
-          cd project/20110248_20110315/KhoaLuanTotNghiep-final/KhoaLuanTotNghiep
+          cd project/20110248_20110315/project/KhoaLuanTotNghiep
           git pull
           echo "${{ secrets.FRONTEND_ADMIN_ENV }}" > frontend/admin/.env
           echo "${{ secrets.FRONTEND_CLIENT_ENV }}" > frontend/client/.env
