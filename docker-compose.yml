@@ -1,13 +1,16 @@
 services:
-  mysql-container-v2:
+  mysqldb:
     image: mysql:8.3.0
     environment:
       - MYSQL_ROOT_PASSWORD=Conchosu@1
+      - MYSQL_USER=myuser
+      - MYSQL_PASSWORD=123456
+      - MYSQL_ROOT_HOST=%
+    restart: unless-stopped  
     volumes:
-      - ./mydata3:/var/lib/mysql
+      - db:/var/lib/mysql
       - ./backupv1.sql:/docker-entrypoint-initdb.d/backup.sql
-      - ./my.cnf:/etc/mysql/my.cnf
-    command: --init-file /docker-entrypoint-initdb.d/backup.sql --max_allowed_packet=128M
+    command: --init-file /docker-entrypoint-initdb.d/backup.sql
 
   backend:
     build:
@@ -18,11 +21,11 @@ services:
     volumes:
       - image-volume:/app/src/main/resources/static/images
     environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://mysql-container-v2/QuanLyNhaXe
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=Conchosu@1
+      - SPRING_DATASOURCE_URL=jdbc:mysql://mysqldb/QuanLyNhaXe
+      - SPRING_DATASOURCE_USERNAME=myuser
+      - SPRING_DATASOURCE_PASSWORD=123456
     depends_on:
-      - mysql-container-v2
+      - mysqldb
 
   client-frontend:
     build:
@@ -79,7 +82,7 @@ services:
       - manager-frontend
 
 volumes:
-  mydata3:
+  db:
   webdata-client:
   webdata-admin:
   webdata-driver:

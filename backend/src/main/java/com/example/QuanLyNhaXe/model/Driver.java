@@ -62,6 +62,6 @@ public class Driver {
     private BusCompany busCompany;
 
     public String getImg() {
-        return "http://localhost:5000" + this.img;
+        return "https://vexe.workon.space" + this.img;
     }
 }

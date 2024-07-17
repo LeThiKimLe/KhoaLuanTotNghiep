@@ -54,6 +54,6 @@ public class TransportationOrder {
 	private Schedule schedule;
 	
 	public String getImage() {
-        return "http://localhost:5000" + this.image;
+        return "https://vexe.workon.space" + this.image;
     }
 }
