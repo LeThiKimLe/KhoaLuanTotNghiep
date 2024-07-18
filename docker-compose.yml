@@ -10,7 +10,7 @@ services:
     volumes:
       - db:/var/lib/mysql
       - ./backupv1.sql:/docker-entrypoint-initdb.d/backup.sql
-    command: --init-file /docker-entrypoint-initdb.d/backup.sql
+    # command: --init-file /docker-entrypoint-initdb.d/backup.sql
 
   backend:
     build:
