@@ -103,6 +103,6 @@ public class BusType {
 	private boolean tiviLed;
 
     public String getImage() {
-        return "https://vexe.workon.space" + this.image;
+        return "http://localhost:5000" + this.image;
     }
 }

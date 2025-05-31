@@ -367,25 +367,30 @@ const SaleData = () => {
                                                     align="center"
                                                     className="text-center"
                                                 >
-                                                    {listCompanySchedule.reduce((sum, item) => {
-                                                        if (getTripJourney(item.trip) === label) {
-                                                            return (
-                                                                sum +
-                                                                item.tickets.filter(
-                                                                    (tk) =>
-                                                                        tk.state == 'Đã thanh toán',
-                                                                ).length
-                                                            )
-                                                        }
-                                                        return sum
-                                                    }, 0) -
-                                                        listOnlineTicket?.ticKets?.filter(
-                                                            (item) =>
-                                                                getTripJourney(
-                                                                    item.booking.trip,
-                                                                ) === label &&
-                                                                item.state == 'Đã thanh toán',
-                                                        ).length}
+                                                    {Math.abs(
+                                                        listCompanySchedule?.reduce((sum, item) => {
+                                                            if (
+                                                                getTripJourney(item.trip) === label
+                                                            ) {
+                                                                return (
+                                                                    sum +
+                                                                    item.tickets.filter(
+                                                                        (tk) =>
+                                                                            tk.state ==
+                                                                            'Đã thanh toán',
+                                                                    ).length
+                                                                )
+                                                            }
+                                                            return sum
+                                                        }, 0) -
+                                                            listOnlineTicket?.ticKets?.filter(
+                                                                (item) =>
+                                                                    getTripJourney(
+                                                                        item.booking.trip,
+                                                                    ) === label &&
+                                                                    item.state == 'Đã thanh toán',
+                                                            ).length,
+                                                    )}
                                                 </CTableDataCell>
                                             </CTableRow>
                                         ))}
@@ -432,7 +437,7 @@ const SaleData = () => {
                                                                         (tic) => tic.id == tk.id,
                                                                     ),
                                                             )
-                                                            .reduce((sum, tk) => {
+                                                            ?.reduce((sum, tk) => {
                                                                 return sum + tk.ticketPrice
                                                             }, 0) +
                                                         schd.tickets
@@ -447,7 +452,7 @@ const SaleData = () => {
                                                                                 'Cash',
                                                                     ),
                                                             )
-                                                            .reduce((sum, tk) => {
+                                                            ?.reduce((sum, tk) => {
                                                                 return (
                                                                     sum +
                                                                     tk.ticketPrice -
@@ -551,7 +556,7 @@ const SaleData = () => {
                                                 {totalMoney != '---'
                                                     ? (
                                                           (totalMoney.ticketSales * 80) / 100 +
-                                                          listCompanySchedule.reduce(
+                                                          listCompanySchedule?.reduce(
                                                               (sum, schd) => {
                                                                   return (
                                                                       sum +
@@ -566,7 +571,7 @@ const SaleData = () => {
                                                                                           tk.id,
                                                                                   ),
                                                                           )
-                                                                          .reduce((sum, tk) => {
+                                                                          ?.reduce((sum, tk) => {
                                                                               return (
                                                                                   sum +
                                                                                   tk.ticketPrice
@@ -587,7 +592,7 @@ const SaleData = () => {
                                                                                               'Cash',
                                                                                   ),
                                                                           )
-                                                                          .reduce((sum, tk) => {
+                                                                          ?.reduce((sum, tk) => {
                                                                               return (
                                                                                   sum +
                                                                                   tk.ticketPrice -
